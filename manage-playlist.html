@@ -6,7 +6,7 @@
 <title>ARICH IPTV — Panel</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%237B2FFF'/><stop offset='100%25' stop-color='%23FF2D55'/></linearGradient></defs><rect width='100' height='100' rx='22' fill='url(%23g)'/><text y='.9em' font-size='70' x='15'>📡</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
@@ -26,7 +26,7 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{font-family:'Syne',system-ui,sans-serif;background:var(--bg);color:var(--t);min-height:100vh;overflow-x:hidden}
+body{font-family:'DM Sans','Syne',system-ui,sans-serif;word-break:break-word;background:var(--bg);color:var(--t);min-height:100vh;overflow-x:hidden}
 
 /* ── BG ── */
 .bg-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
@@ -261,7 +261,7 @@ tbody td:first-child{color:var(--t)}
 .chart-wrap{position:relative;height:220px}
 
 /* ── RESPONSIVE ── */
-@media(max-width:768px){
+@media(max-width:768px){.content{overflow-x:hidden}
   :root{--sb:0px}
   .sidebar{transform:translateX(-260px);width:260px}
   .sidebar.mob-open{transform:translateX(0)}
@@ -361,6 +361,7 @@ tbody td:first-child{color:var(--t)}
         <div class="nav-item active" onclick="go('adash')"><div class="nav-icon">📊</div><span>Dashboard</span></div>
         <div class="nav-item" onclick="go('users')"><div class="nav-icon">👥</div><span>Utilisateurs</span></div>
         <div class="nav-item" onclick="go('alicenses')"><div class="nav-icon">🔑</div><span>Licences</span></div>
+        <div class="nav-item" onclick="go('astats')"><div class="nav-icon">📈</div><span>Statistiques</span></div>
       </div>
     </nav>
     <div class="sb-footer">
@@ -374,7 +375,7 @@ tbody td:first-child{color:var(--t)}
         <div class="topbar-title" id="tb-title">Dashboard</div>
         <div class="topbar-sub" id="tb-sub">Vue d'ensemble</div>
       </div>
-      <div class="topbar-actions">
+      <div class="topbar-actions"><a href="https://devhertox.github.io/arich_iptv/auth.html" style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--s);border:1px solid var(--b);border-radius:9px;color:var(--t2);font-size:11px;font-weight:700;text-decoration:none;transition:var(--tr);white-space:nowrap" onmouseover="this.style.color='var(--t)';this.style.background='var(--s2)'" onmouseout="this.style.color='var(--t2)';this.style.background='var(--s)'">🔐 Espace compte</a>
         <span class="admin-badge" id="admin-badge" style="display:none">🛡️ ADMIN</span>
         <div class="topbar-btn" onclick="refresh()" title="Actualiser">🔄</div>
       </div>
@@ -538,6 +539,58 @@ tbody td:first-child{color:var(--t)}
         <div class="card">
           <p style="color:var(--t2);font-size:13px;margin-bottom:16px">Sélectionne un utilisateur dans l'onglet <strong>Utilisateurs</strong> pour gérer sa licence.</p>
           <div id="quick-stats-lic" class="loading-center"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+      <!-- ═══ ADMIN STATS ═══ -->
+      <div class="section" id="section-astats">
+        <div class="sh">
+          <div><h2>Statistiques App</h2><p>Compteurs globaux de l'application Flutter</p></div>
+          <button class="topbar-btn" onclick="loadAStats()" title="Actualiser" style="cursor:pointer">🔄</button>
+        </div>
+        <div class="stats-grid" style="margin-bottom:20px">
+          <div class="card stat-card">
+            <div class="glow" style="background:#29b6f6"></div>
+            <div class="s-icon" style="background:rgba(41,182,246,.12)">📥</div>
+            <div class="card-title">Installations App</div>
+            <div class="card-val" id="st-installs">—</div>
+            <div class="card-sub up" id="st-installs-sub">Chargement…</div>
+          </div>
+          <div class="card stat-card">
+            <div class="glow" style="background:var(--g)"></div>
+            <div class="s-icon" style="background:rgba(0,230,118,.12)">▶️</div>
+            <div class="card-title">Sessions App</div>
+            <div class="card-val" id="st-sessions">—</div>
+            <div class="card-sub up" id="st-sessions-sub">Chargement…</div>
+          </div>
+          <div class="card stat-card">
+            <div class="glow" style="background:var(--gold)"></div>
+            <div class="s-icon" style="background:rgba(255,215,64,.12)">📊</div>
+            <div class="card-title">Ratio Sessions/Install</div>
+            <div class="card-val" id="st-ratio">—</div>
+            <div class="card-sub" id="st-ratio-sub">Engagements moyens</div>
+          </div>
+        </div>
+        <div class="g2" style="margin-bottom:20px">
+          <div class="card">
+            <div class="card-title" style="margin-bottom:12px;font-size:13px;font-weight:700;color:var(--t)">📊 Installations vs Sessions</div>
+            <div class="chart-wrap"><canvas id="ch-stats-bar"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-title" style="margin-bottom:12px;font-size:13px;font-weight:700;color:var(--t)">🍩 Répartition</div>
+            <div class="chart-wrap"><canvas id="ch-stats-donut"></canvas></div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-size:13px;font-weight:700;margin-bottom:14px">Détail des compteurs</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Métrique</th><th>Valeur</th><th>Description</th><th>Table Supabase</th></tr></thead>
+              <tbody id="stats-detail-tbody">
+                <tr><td colspan="4"><div class="loading-center"><div class="spinner"></div></div></td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -735,6 +788,7 @@ const PAGES = {
   adash:     { title:'Dashboard Admin', sub:'Statistiques globales',      load: loadAdminDash },
   users:     { title:'Utilisateurs',    sub:'Gestion des devices',        load: loadUsers },
   alicenses: { title:'Licences',        sub:'Gestion des licences',       load: loadAdminLicenses },
+  astats:    { title:'Statistiques',     sub:'Compteurs app_installs et app_sessions', load: loadAStats },
 };
 
 function go(page) {
@@ -1149,6 +1203,152 @@ async function loadAdminLicenses() {
       <p style="font-size:12px;color:var(--t2);margin-top:16px">Pour gérer les licences individuellement, rendez-vous dans <strong>Utilisateurs</strong> et cliquez sur un device.</p>
     `;
   } catch(e) { el.innerHTML = `<p style="color:var(--r)">${e.message}</p>`; }
+}
+
+// ══════════════════════════════════════════════
+// ADMIN — STATS (app_installs + app_sessions)
+// ══════════════════════════════════════════════
+async function loadAStats() {
+  // Reset UI
+  ['st-installs','st-sessions','st-ratio'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = '—';
+  });
+  const tbody = document.getElementById('stats-detail-tbody');
+  if (tbody) tbody.innerHTML = '<tr><td colspan="4"><div class="loading-center"><div class="spinner"></div></div></td></tr>';
+
+  try {
+    // Fetch both counters from Supabase (table: app_stats or similar)
+    // Try fetching from a dedicated stats table first
+    let installs = 0, sessions = 0;
+    let installsUpdated = null, sessionsUpdated = null;
+
+    // Attempt 1: table named app_stats with (key, value) structure
+    const { data: statsRows, error: statsErr } = await sb
+      .from('app_stats')
+      .select('*');
+
+    if (!statsErr && statsRows && statsRows.length) {
+      const installRow = statsRows.find(r => r.key === 'app_installs' || r.name === 'app_installs' || r.metric === 'app_installs');
+      const sessionRow = statsRows.find(r => r.key === 'app_sessions' || r.name === 'app_sessions' || r.metric === 'app_sessions');
+      if (installRow) { installs = parseInt(installRow.value || installRow.count || 0); installsUpdated = installRow.updated_at; }
+      if (sessionRow) { sessions = parseInt(sessionRow.value || sessionRow.count || 0); sessionsUpdated = sessionRow.updated_at; }
+    } else {
+      // Attempt 2: table with columns named app_installs and app_sessions (single row)
+      const { data: row2, error: err2 } = await sb
+        .from('app_stats')
+        .select('app_installs, app_sessions, updated_at')
+        .single();
+
+      if (!err2 && row2) {
+        installs = parseInt(row2.app_installs || 0);
+        sessions = parseInt(row2.app_sessions || 0);
+        installsUpdated = row2.updated_at;
+        sessionsUpdated = row2.updated_at;
+      } else {
+        // Attempt 3: count rows in devices and sessions tables
+        const [{ count: devCount }, { count: sesCount }] = await Promise.all([
+          sb.from('devices').select('*', { count: 'exact', head: true }),
+          sb.from('sessions').select('*', { count: 'exact', head: true })
+        ]);
+        installs = devCount || 0;
+        sessions = sesCount || 0;
+      }
+    }
+
+    const ratio = sessions > 0 && installs > 0 ? (sessions / installs).toFixed(1) : '—';
+
+    // Animate numbers
+    animNum('st-installs', installs);
+    animNum('st-sessions', sessions);
+    const ratioEl = document.getElementById('st-ratio');
+    if (ratioEl) ratioEl.textContent = ratio !== '—' ? ratio + 'x' : '—';
+
+    const iSub = document.getElementById('st-installs-sub');
+    const sSub = document.getElementById('st-sessions-sub');
+    if (iSub) iSub.textContent = installsUpdated ? '↑ Mis à jour ' + fmtDate(installsUpdated) : '↑ Données en direct';
+    if (sSub) sSub.textContent = sessionsUpdated ? '↑ Mis à jour ' + fmtDate(sessionsUpdated) : '↑ Données en direct';
+
+    // Detail table
+    if (tbody) {
+      tbody.innerHTML = [
+        ['app_installs', fmt(installs), "Nombre total d'installations de l'app Flutter", 'app_stats'],
+        ['app_sessions', fmt(sessions), 'Nombre total de sessions démarrées', 'app_stats'],
+        ['ratio sessions/install', ratio !== '—' ? ratio + 'x' : '—', 'Sessions moyennes par utilisateur installé', '(calculé)'],
+      ].map(([m,v,d,t]) => `<tr>
+        <td><span class="mono" style="color:var(--v);font-size:11px">${m}</span></td>
+        <td><strong style="font-size:14px">${v}</strong></td>
+        <td style="color:var(--t2);font-size:12px">${d}</td>
+        <td><span class="badge b-trial" style="font-size:9px">${t}</span></td>
+      </tr>`).join('');
+    }
+
+    // Render charts
+    renderStatsCharts(installs, sessions);
+
+    if (installs === 0 && sessions === 0) {
+      toast('info', 'Données vides', 'Les compteurs sont à 0 — vérifiez votre table app_stats.');
+    }
+
+  } catch(e) {
+    toast('error', 'Erreur stats', e.message);
+    if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="color:var(--r);padding:20px;text-align:center">${esc(e.message)}</td></tr>`;
+  }
+}
+
+function renderStatsCharts(installs, sessions) {
+  // Bar chart
+  const ctx1 = document.getElementById('ch-stats-bar');
+  if (ctx1) {
+    if (S.charts.statsBar) S.charts.statsBar.destroy();
+    S.charts.statsBar = new Chart(ctx1.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: ['Installations', 'Sessions'],
+        datasets: [{
+          data: [installs, sessions],
+          backgroundColor: ['rgba(41,182,246,0.7)', 'rgba(0,230,118,0.7)'],
+          borderRadius: 8,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: 'rgba(255,255,255,.4)', font: { size: 11, family: 'DM Sans' } } },
+          y: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: 'rgba(255,255,255,.4)', font: { size: 10, family: 'DM Sans' } }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  // Donut chart
+  const ctx2 = document.getElementById('ch-stats-donut');
+  if (ctx2) {
+    if (S.charts.statsDonut) S.charts.statsDonut.destroy();
+    S.charts.statsDonut = new Chart(ctx2.getContext('2d'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Installations', 'Sessions'],
+        datasets: [{
+          data: [installs, sessions],
+          backgroundColor: ['rgba(41,182,246,0.75)', 'rgba(0,230,118,0.75)'],
+          borderColor: ['transparent', 'transparent'],
+          borderRadius: 4,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: '68%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { color: 'rgba(255,255,255,.5)', font: { size: 11 }, padding: 12 }
+          }
+        }
+      }
+    });
+  }
 }
 
 // ══════════════════════════════════════════════

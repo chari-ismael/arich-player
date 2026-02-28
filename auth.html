@@ -3,673 +3,860 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ARICH IPTV — Connexion</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%237B2FFF'/><stop offset='100%25' stop-color='%23FF2D55'/></linearGradient></defs><rect width='100' height='100' rx='22' fill='url(%23g)'/><text y='.9em' font-size='70' x='15'>▶</text></svg>">
+<title>ARICH IPTV — Authentification</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --v: #7B2FFF; --vd: #5a1fd4; --r: #FF2D55; --rd: #cc0033;
-  --bg: #07070f; --bg2: #0c0c1a; --bg3: #111126;
-  --s: rgba(255,255,255,0.04); --s2: rgba(255,255,255,0.08);
-  --b: rgba(255,255,255,0.08); --b2: rgba(255,255,255,0.14);
-  --t: #fff; --t2: rgba(255,255,255,0.6); --t3: rgba(255,255,255,0.3);
-  --g: #00e676; --gold: #ffd740; --danger: #FF2D55;
-  --blur: blur(24px) saturate(180%);
-  --tr: all 0.22s cubic-bezier(.4,0,.2,1);
-  --r8: 8px; --r12: 12px; --r16: 16px; --r24: 24px;
+  --bg: #07090f;
+  --glass: rgba(255,255,255,0.038);
+  --glass-border: rgba(255,255,255,0.09);
+  --glass-hover: rgba(255,255,255,0.065);
+  --accent: #7c8fff;
+  --accent2: #b197fc;
+  --accent3: #38d9f5;
+  --gradient: linear-gradient(135deg, #7c8fff 0%, #b197fc 100%);
+  --text: #eeeef5;
+  --text-sub: rgba(238,238,245,0.5);
+  --text-muted: rgba(238,238,245,0.32);
+  --error: #ff6b8a;
+  --success: #36d9a0;
+  --warn: #fbbf24;
+  --input-bg: rgba(255,255,255,0.045);
+  --input-border: rgba(255,255,255,0.1);
+  --radius: 22px;
+  --radius-sm: 13px;
+  --ez: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ez-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-html, body {
-  min-height: 100%; height: 100%;
-  font-family: 'Syne', system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--t);
-  overflow-x: hidden;
+html { height: 100%; }
+body {
+  min-height: 100%; background: var(--bg);
+  color: var(--text); font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden; -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
 }
 
-/* ── BG ── */
-.bg-wrap { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+/* ═══════════════════════════════ BACKGROUND ══════════════════════════════ */
+.scene {
+  position: fixed; inset: 0; z-index: 0; overflow: hidden;
+  pointer-events: none;
+}
 .orb {
   position: absolute; border-radius: 50%;
-  filter: blur(90px);
-  animation: orbDrift 20s ease-in-out infinite alternate;
+  filter: blur(90px); will-change: transform;
 }
 .orb-1 {
-  width: 600px; height: 600px;
-  top: -200px; left: -150px;
-  background: radial-gradient(circle, rgba(123,47,255,0.22) 0%, transparent 70%);
-  animation-delay: 0s;
+  width: 55vmax; height: 55vmax; opacity: 0.28;
+  background: radial-gradient(circle at 30% 30%, #7c8fff, transparent 65%);
+  top: -20vmax; left: -15vmax;
+  animation: drift1 18s ease-in-out infinite alternate;
 }
 .orb-2 {
-  width: 500px; height: 500px;
-  bottom: -150px; right: -120px;
-  background: radial-gradient(circle, rgba(255,45,85,0.18) 0%, transparent 70%);
-  animation-delay: -7s;
+  width: 45vmax; height: 45vmax; opacity: 0.22;
+  background: radial-gradient(circle at 60% 40%, #b197fc, transparent 65%);
+  bottom: -15vmax; right: -12vmax;
+  animation: drift2 14s ease-in-out infinite alternate;
 }
 .orb-3 {
-  width: 350px; height: 350px;
-  top: 50%; left: 55%;
-  background: radial-gradient(circle, rgba(0,200,150,0.1) 0%, transparent 70%);
-  animation-delay: -14s;
+  width: 35vmax; height: 35vmax; opacity: 0.14;
+  background: radial-gradient(circle, #38d9f5, transparent 65%);
+  top: 45%; left: 55%; transform: translate(-50%,-50%);
+  animation: drift3 20s ease-in-out infinite alternate;
 }
-@keyframes orbDrift {
-  0%   { transform: translate(0,0) scale(1); }
-  33%  { transform: translate(40px,-30px) scale(1.07); }
-  66%  { transform: translate(-25px,35px) scale(0.95); }
-  100% { transform: translate(20px,15px) scale(1.03); }
-}
+@keyframes drift1 { to { transform: translate(6vmin, 8vmin) scale(1.06); } }
+@keyframes drift2 { to { transform: translate(-5vmin, -7vmin) scale(1.04); } }
+@keyframes drift3 { to { transform: translate(-40px, 50px) scale(1.1); } }
+
 .grain {
-  position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.5;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
-  background-size: 128px;
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  opacity: 0.022;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 250px;
 }
 
-/* ── PAGE ── */
+/* ═══════════════════════════════ LAYOUT ═══════════════════════════════════ */
 .page {
   position: relative; z-index: 2;
   min-height: 100vh;
   display: flex; align-items: center; justify-content: center;
-  padding: 20px 16px;
+  padding: 24px 16px;
 }
 
-/* ── CARD ── */
-.card {
-  width: 100%; max-width: 420px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid var(--b2);
-  border-radius: var(--r24);
-  backdrop-filter: var(--blur);
-  -webkit-backdrop-filter: var(--blur);
-  padding: 36px 32px;
-  box-shadow: 0 32px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06);
-  animation: cardIn 0.55s cubic-bezier(0.16,1,0.3,1) both;
+/* Landscape layout */
+@media (orientation: landscape) and (max-height: 600px) {
+  .page { padding: 12px 16px; align-items: flex-start; }
 }
+
+/* ═══════════════════════════════ CARD ════════════════════════════════════ */
+.card {
+  width: 100%; max-width: 440px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(40px) saturate(160%) brightness(1.04);
+  -webkit-backdrop-filter: blur(40px) saturate(160%) brightness(1.04);
+  padding: 44px 40px;
+  animation: cardIn 0.65s var(--ez) both;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04) inset,
+    0 32px 80px rgba(0,0,0,0.45),
+    0 8px 24px rgba(0,0,0,0.3);
+}
+
+@media (max-width: 480px) { .card { padding: 32px 22px; } }
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .card { max-width: 560px; padding: 24px 32px; }
+  .logo { margin-bottom: 18px; }
+}
+
 @keyframes cardIn {
-  from { opacity: 0; transform: translateY(28px) scale(0.97); }
+  from { opacity: 0; transform: translateY(30px) scale(0.965); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* ── LOGO ── */
-.logo { text-align: center; margin-bottom: 28px; }
-.logo-ring {
-  width: 64px; height: 64px; margin: 0 auto 14px;
-  background: linear-gradient(135deg, var(--v), var(--r));
-  border-radius: 18px;
+/* ═══════════════════════════════ LOGO ════════════════════════════════════ */
+.logo {
+  display: flex; align-items: center; gap: 11px;
+  margin-bottom: 36px;
+  animation: upFade 0.5s 0.12s var(--ez) both;
+}
+.logo-gem {
+  width: 42px; height: 42px; border-radius: 13px; flex-shrink: 0;
+  background: var(--gradient);
   display: flex; align-items: center; justify-content: center;
-  font-size: 28px;
-  box-shadow: 0 0 40px rgba(123,47,255,0.5);
-  position: relative;
+  font-family: 'Syne', sans-serif;
+  font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -0.03em;
+  box-shadow: 0 6px 24px rgba(124,143,255,0.45), 0 2px 8px rgba(0,0,0,0.3);
+  position: relative; overflow: hidden;
 }
-.logo-ring::after {
+.logo-gem::after {
   content: '';
-  position: absolute; inset: -4px;
-  border-radius: 22px;
-  border: 1px solid rgba(123,47,255,0.4);
-  animation: ringPulse 2.5s ease-in-out infinite;
+  position: absolute; top: 0; left: 0; right: 0; height: 50%;
+  background: rgba(255,255,255,0.15);
+  border-radius: 13px 13px 0 0;
 }
-@keyframes ringPulse {
-  0%,100% { opacity: 0.3; transform: scale(1); }
-  50%      { opacity: 0.7; transform: scale(1.04); }
+.logo-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 21px; font-weight: 700; letter-spacing: -0.025em;
 }
-.logo h1 {
-  font-size: 24px; font-weight: 800; letter-spacing: 2px;
-  background: linear-gradient(90deg, var(--v), var(--r));
+.logo-name em {
+  background: var(--gradient);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.logo p { font-size: 12px; color: var(--t3); margin-top: 4px; }
-
-/* ── PANELS ── */
-.panel { display: none; }
-.panel.active {
-  display: block;
-  animation: panelSlide 0.35s cubic-bezier(0.16,1,0.3,1) both;
-}
-@keyframes panelSlide {
-  from { opacity: 0; transform: translateX(18px); }
-  to   { opacity: 1; transform: translateX(0); }
+  background-clip: text; font-style: normal;
 }
 
-/* ── TABS ── */
-.tabs {
-  display: flex; gap: 3px;
-  background: var(--s);
-  border-radius: 10px; padding: 3px;
-  margin-bottom: 22px;
+/* ═══════════════════════════════ VIEWS ═══════════════════════════════════ */
+.view { display: none; flex-direction: column; gap: 20px; }
+.view.active {
+  display: flex;
+  animation: viewSlideIn 0.38s var(--ez) both;
 }
-.tab-btn {
-  flex: 1; padding: 8px 4px;
-  border: none; background: transparent; cursor: pointer;
-  color: var(--t2); font-family: 'Syne', sans-serif;
-  font-size: 12px; font-weight: 700; letter-spacing: 0.3px;
-  border-radius: 8px; transition: var(--tr);
+.view.exit-left {
+  animation: viewSlideLeft 0.28s var(--ez) both;
+  pointer-events: none;
 }
-.tab-btn.active {
-  background: linear-gradient(135deg, var(--v), var(--r));
-  color: #fff;
+.view.exit-right {
+  animation: viewSlideRight 0.28s var(--ez) both;
+  pointer-events: none;
 }
 
-/* ── PANEL TITLE ── */
-.p-title { font-size: 18px; font-weight: 800; margin-bottom: 5px; }
-.p-sub   { font-size: 12px; color: var(--t2); margin-bottom: 20px; line-height: 1.6; }
+@keyframes viewSlideIn   { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: none; } }
+@keyframes viewSlideLeft { from { opacity:1; transform: none; }             to { opacity:0; transform: translateX(-20px); } }
+@keyframes viewSlideRight{ from { opacity:1; transform: none; }             to { opacity:0; transform: translateX(20px); } }
 
-/* ── FORM ── */
-.field { margin-bottom: 14px; }
-.field label {
-  display: block; font-size: 11px; font-weight: 700;
-  letter-spacing: 0.5px; color: var(--t2); margin-bottom: 7px;
+/* ═══════════════════════════════ TYPOGRAPHY ══════════════════════════════ */
+h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(22px, 5vw, 27px);
+  font-weight: 700; letter-spacing: -0.035em; line-height: 1.2;
+}
+.sub {
+  font-size: 14px; color: var(--text-sub);
+  font-weight: 300; margin-top: 5px; line-height: 1.55;
+}
+
+/* ═══════════════════════════════ FORM ════════════════════════════════════ */
+.field { display: flex; flex-direction: column; gap: 7px; }
+label {
+  font-size: 12.5px; font-weight: 500;
+  color: rgba(238,238,245,0.62); letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 .input-wrap { position: relative; }
-.input-wrap input {
-  width: 100%; padding: 12px 14px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid var(--b);
-  border-radius: var(--r12);
-  color: var(--t); font-family: 'Syne', sans-serif; font-size: 13px;
-  outline: none; transition: var(--tr);
-}
-.input-wrap input:focus {
-  border-color: var(--v);
-  background: rgba(123,47,255,0.06);
-  box-shadow: 0 0 0 3px rgba(123,47,255,0.12);
-}
-.input-wrap input::placeholder { color: var(--t3); }
-.input-wrap input.has-icon { padding-right: 42px; }
-.toggle-pw {
-  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-  background: none; border: none; cursor: pointer; color: var(--t3);
-  font-size: 16px; padding: 4px; transition: color 0.2s;
-  line-height: 1;
-}
-.toggle-pw:hover { color: var(--t2); }
 
-/* ── STRENGTH ── */
-.strength { margin-top: 7px; }
-.strength-bars { display: flex; gap: 4px; margin-bottom: 5px; }
-.s-bar {
-  height: 3px; flex: 1; border-radius: 99px;
-  background: rgba(255,255,255,0.08);
-  transition: background 0.3s cubic-bezier(.4,0,.2,1);
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+  width: 100%; padding: 13px 16px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  color: var(--text); font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 400; outline: none;
+  transition: border-color 0.22s, box-shadow 0.22s, background 0.22s;
+  -webkit-appearance: none;
 }
-.s-bar.w { background: #ff4444; }
-.s-bar.f { background: #ff9500; }
-.s-bar.g { background: #ffd740; }
-.s-bar.s { background: #00e676; }
-.strength-lbl { font-size: 10px; color: var(--t3); font-weight: 600; }
+input::placeholder { color: var(--text-muted); }
+input:focus {
+  border-color: rgba(124,143,255,0.55);
+  box-shadow: 0 0 0 3.5px rgba(124,143,255,0.14);
+  background: rgba(255,255,255,0.065);
+}
+input.has-icon { padding-right: 46px; }
+input.err {
+  border-color: rgba(255,107,138,0.55);
+}
+input.err:focus {
+  box-shadow: 0 0 0 3.5px rgba(255,107,138,0.13);
+}
 
-/* ── BUTTONS ── */
+/* Eye toggle */
+.eye {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  color: var(--text-muted); padding: 3px;
+  display: flex; align-items: center; justify-content: center;
+  transition: color 0.2s; line-height: 1;
+}
+.eye:hover { color: var(--text); }
+
+/* Forgot link */
+.forgot { text-align: right; }
+
+/* ═══════════════════════════════ PASSWORD STRENGTH ═══════════════════════ */
+.pw-strength { display: flex; flex-direction: column; gap: 6px; }
+.bars { display: flex; gap: 5px; height: 3px; }
+.bar {
+  flex: 1; border-radius: 3px;
+  background: rgba(255,255,255,0.1);
+  transition: background 0.35s var(--ez);
+}
+.bar.s1 { background: var(--error); }
+.bar.s2 { background: var(--warn); }
+.bar.s3 { background: var(--success); }
+.strength-lbl {
+  font-size: 11px; font-weight: 500; color: var(--text-muted);
+  transition: color 0.35s; letter-spacing: 0.02em;
+  text-transform: uppercase; height: 14px;
+}
+
+/* ═══════════════════════════════ BUTTONS ════════════════════════════════ */
 .btn {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: 100%; padding: 13px;
-  border: none; border-radius: var(--r12); cursor: pointer;
-  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
-  letter-spacing: 0.3px;
-  transition: var(--tr); position: relative; overflow: hidden;
+  width: 100%; border: none; border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
+  padding: 13.5px 20px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  transition: transform 0.18s var(--ez-spring), box-shadow 0.18s, opacity 0.18s, background 0.2s;
+  position: relative; overflow: hidden; user-select: none;
+  letter-spacing: 0.01em;
 }
-.btn-primary {
-  background: linear-gradient(135deg, var(--v), var(--r));
-  color: #fff;
-  box-shadow: 0 4px 18px rgba(123,47,255,0.35);
+.btn::after {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(255,255,255,0); transition: background 0.2s;
 }
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 26px rgba(123,47,255,0.5);
-}
-.btn-primary:active:not(:disabled) { transform: translateY(0) scale(0.99); }
-.btn-outline {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid var(--b);
-  color: var(--t2);
-  margin-top: 10px;
-}
-.btn-outline:hover:not(:disabled) { background: var(--s2); color: var(--t); }
-.btn-google {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid var(--b);
-  color: var(--t);
-}
-.btn-google:hover:not(:disabled) { background: var(--s2); }
-.btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; }
-.btn.loading .btn-lbl { opacity: 0.6; }
+.btn:not(:disabled):active { transform: scale(0.96); }
+.btn:not(:disabled):hover::after { background: rgba(255,255,255,0.06); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
-/* spinner inside button */
-.spin {
-  width: 15px; height: 15px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 0.65s linear infinite;
-  display: none; flex-shrink: 0;
+.btn-primary {
+  background: var(--gradient); color: #fff;
+  box-shadow: 0 5px 28px rgba(124,143,255,0.38), 0 2px 8px rgba(0,0,0,0.25);
 }
-.btn.loading .spin { display: block; }
+.btn-primary:not(:disabled):hover {
+  box-shadow: 0 8px 36px rgba(124,143,255,0.52), 0 2px 8px rgba(0,0,0,0.25);
+  transform: translateY(-1.5px);
+}
+
+.btn-ghost {
+  background: rgba(255,255,255,0.055);
+  border: 1px solid var(--glass-border); color: var(--text);
+}
+.btn-ghost:hover { background: var(--glass-hover); }
+
+/* Spinner */
+.spin {
+  width: 17px; height: 17px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.28);
+  border-top-color: #fff;
+  animation: spin 0.65s linear infinite;
+  flex-shrink: 0; display: none;
+}
+.btn.loading .spin   { display: block; }
+.btn.loading .blbl   { display: none; }
+
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── DIVIDER ── */
+/* ═══════════════════════════════ DIVIDER ════════════════════════════════ */
 .divider {
-  display: flex; align-items: center; gap: 10px;
-  margin: 16px 0; color: var(--t3); font-size: 10px; font-weight: 700;
-  letter-spacing: 1px;
+  display: flex; align-items: center; gap: 12px;
+  color: var(--text-muted); font-size: 12px; letter-spacing: 0.02em;
 }
 .divider::before, .divider::after {
-  content: ''; flex: 1; height: 1px; background: var(--b);
+  content: ''; flex: 1; height: 1px; background: var(--glass-border);
 }
 
-/* ── LINK ── */
-.link {
-  background: none; border: none; cursor: pointer;
-  color: var(--v); font-size: 12px; font-family: 'Syne', sans-serif;
-  font-weight: 700; text-decoration: none;
-  transition: opacity 0.2s;
+/* ═══════════════════════════════ MESSAGES ═══════════════════════════════ */
+.msg {
+  border-radius: var(--radius-sm); font-size: 13.5px; line-height: 1.55;
+  padding: 12px 14px; display: none;
+  align-items: flex-start; gap: 9px;
 }
-.link:hover { opacity: 0.75; }
-.foot { text-align: center; margin-top: 18px; font-size: 12px; color: var(--t3); }
+.msg.show { display: flex; animation: msgPop 0.3s var(--ez) both; }
+.msg.error   { background: rgba(255,107,138,0.11); border: 1px solid rgba(255,107,138,0.22); color: var(--error); }
+.msg.success { background: rgba(54,217,160,0.11); border: 1px solid rgba(54,217,160,0.22); color: var(--success); }
+.msg.info    { background: rgba(124,143,255,0.11); border: 1px solid rgba(124,143,255,0.22); color: var(--accent); }
 
-/* ── ALERT ── */
-.alert {
-  padding: 11px 13px; border-radius: 10px;
-  font-size: 12px; margin-bottom: 14px;
-  display: none; line-height: 1.5;
+@keyframes msgPop {
+  from { opacity:0; transform: scale(0.97) translateY(-5px); }
+  to   { opacity:1; transform: none; }
 }
-.alert.err  { background: rgba(255,45,85,0.12); border: 1px solid rgba(255,45,85,0.25); color: #ff8fa3; }
-.alert.ok   { background: rgba(0,230,118,0.12); border: 1px solid rgba(0,230,118,0.25); color: #69f0ae; }
-.alert.show { display: block; animation: alertIn 0.28s cubic-bezier(.4,0,.2,1); }
-@keyframes alertIn { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:translateY(0); } }
 
-/* ── GOOGLE SVG ── */
-.g-icon { width: 18px; height: 18px; flex-shrink: 0; }
-
-/* ── CONFIRM SCREEN ── */
-.confirm-screen { text-align: center; padding: 16px 0; }
-.confirm-emoji { font-size: 52px; margin-bottom: 14px; display: block; animation: pop 0.5s cubic-bezier(0.16,1,0.3,1); }
-@keyframes pop { from { transform: scale(0.4); opacity:0; } to { transform: scale(1); opacity:1; } }
-
-/* ── RESPONSIVE ── */
-@media (max-width: 480px) {
-  .card { padding: 28px 18px; }
-  .logo-ring { width: 54px; height: 54px; }
-  .logo h1 { font-size: 20px; }
+/* ═══════════════════════════════ LINKS ═════════════════════════════════ */
+.lnk {
+  color: var(--accent); text-decoration: none; font-weight: 500;
+  font-size: 14px; cursor: pointer; background: none; border: none;
+  font-family: inherit; padding: 0; transition: color 0.2s; display: inline;
 }
-@media (max-width: 360px) {
-  .card { padding: 22px 14px; border-radius: 18px; }
+.lnk:hover { color: var(--accent2); }
+
+.form-footer {
+  display: flex; justify-content: center; align-items: center;
+  gap: 6px; font-size: 14px; color: var(--text-sub);
+}
+
+/* ═══════════════════════════════ GOOGLE BTN ICON ═══════════════════════ */
+.g-svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* ═══════════════════════════════ CHECKBOX ════════════════════════════════ */
+.chk-row {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 13px; color: var(--text-sub); line-height: 1.55;
+}
+.chk-row input { margin-top: 2px; width: 15px; height: 15px; accent-color: var(--accent); flex-shrink: 0; cursor: pointer; }
+
+/* ═══════════════════════════════ MISC ANIMATIONS ═══════════════════════ */
+@keyframes upFade {
+  from { opacity:0; transform: translateY(10px); }
+  to   { opacity:1; transform: none; }
+}
+
+/* Landscape two-col layout */
+@media (orientation: landscape) and (min-width: 700px) and (max-height: 550px) {
+  .card {
+    max-width: 720px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    column-gap: 36px;
+    row-gap: 0;
+    padding: 28px 36px;
+  }
+  .logo { grid-column: 1 / -1; margin-bottom: 8px; }
+  #view-login, #view-signup, #view-forgot, #view-reset {
+    grid-column: 1 / -1;
+  }
+  .view.active.two-col {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 24px;
+    align-items: start;
+  }
+  .two-col .view-head { grid-column: 1/-1; }
+  .two-col .msg-slot  { grid-column: 1/-1; }
+  .two-col .form-footer { grid-column: 1/-1; }
+  .two-col .divider   { grid-column: 1/-1; }
+  .two-col .btn-google { grid-column: 1/-1; }
 }
 </style>
 </head>
 <body>
 
-<div class="bg-wrap">
+<!-- BACKGROUND -->
+<div class="scene">
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
   <div class="orb orb-3"></div>
 </div>
 <div class="grain"></div>
 
+<!-- PAGE -->
 <div class="page">
   <div class="card">
 
+    <!-- LOGO -->
     <div class="logo">
-      <div class="logo-ring">▶</div>
-      <h1>ARICH IPTV</h1>
-      <p>Accès à votre espace personnel</p>
+      <div class="logo-gem">A</div>
+      <div class="logo-name"><em>ARICH</em> IPTV</div>
     </div>
 
-    <!-- ════ PANEL AUTH (Login + Signup tabs) ════ -->
-    <div class="panel active" id="p-auth">
-      <div class="tabs">
-        <button class="tab-btn active" id="t-login" onclick="switchTab('login')">Connexion</button>
-        <button class="tab-btn" id="t-signup" onclick="switchTab('signup')">Inscription</button>
+    <!-- ══════════════ VIEW: LOGIN ══════════════ -->
+    <div class="view active" id="view-login">
+      <div class="view-head">
+        <h1>Bon retour 👋</h1>
+        <p class="sub">Connectez-vous pour accéder à vos playlists.</p>
       </div>
 
-      <!-- LOGIN -->
-      <div id="f-login">
-        <div class="alert" id="al-login"></div>
-        <div class="field">
-          <label>Email</label>
-          <div class="input-wrap">
-            <input type="email" id="l-email" placeholder="vous@exemple.com" autocomplete="email">
-          </div>
-        </div>
-        <div class="field">
-          <label>Mot de passe</label>
-          <div class="input-wrap">
-            <input type="password" id="l-pw" class="has-icon" placeholder="••••••••" autocomplete="current-password">
-            <button class="toggle-pw" onclick="togglePw('l-pw',this)" tabindex="-1">👁</button>
-          </div>
-        </div>
-        <div style="text-align:right;margin-bottom:16px">
-          <button class="link" onclick="showPanel('p-forgot')">Mot de passe oublié ?</button>
-        </div>
-        <button class="btn btn-primary" id="btn-login" onclick="doLogin()">
-          <div class="spin"></div><span class="btn-lbl">Se connecter</span>
-        </button>
-        <div class="divider">OU</div>
-        <button class="btn btn-google" onclick="doGoogle()">
-          <svg class="g-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-          <span class="btn-lbl">Continuer avec Google</span>
-        </button>
+      <div class="msg-slot">
+        <div class="msg" id="login-msg"></div>
       </div>
 
-      <!-- SIGNUP -->
-      <div id="f-signup" style="display:none">
-        <div class="alert" id="al-signup"></div>
-        <div class="field">
-          <label>Email</label>
-          <div class="input-wrap">
-            <input type="email" id="s-email" placeholder="vous@exemple.com" autocomplete="email">
-          </div>
-        </div>
-        <div class="field">
-          <label>Mot de passe</label>
-          <div class="input-wrap">
-            <input type="password" id="s-pw" class="has-icon" placeholder="••••••••" autocomplete="new-password" oninput="checkStrength(this.value)">
-            <button class="toggle-pw" onclick="togglePw('s-pw',this)" tabindex="-1">👁</button>
-          </div>
-          <div class="strength" id="strength-wrap" style="display:none">
-            <div class="strength-bars">
-              <div class="s-bar" id="sb1"></div>
-              <div class="s-bar" id="sb2"></div>
-              <div class="s-bar" id="sb3"></div>
-              <div class="s-bar" id="sb4"></div>
-            </div>
-            <span class="strength-lbl" id="slbl"></span>
-          </div>
-        </div>
-        <div class="field">
-          <label>Confirmer le mot de passe</label>
-          <div class="input-wrap">
-            <input type="password" id="s-pw2" class="has-icon" placeholder="••••••••" autocomplete="new-password">
-            <button class="toggle-pw" onclick="togglePw('s-pw2',this)" tabindex="-1">👁</button>
-          </div>
-        </div>
-        <button class="btn btn-primary" id="btn-signup" onclick="doSignup()">
-          <div class="spin"></div><span class="btn-lbl">Créer mon compte</span>
-        </button>
-        <div class="divider">OU</div>
-        <button class="btn btn-google" onclick="doGoogle()">
-          <svg class="g-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-          <span class="btn-lbl">Continuer avec Google</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- ════ PANEL FORGOT ════ -->
-    <div class="panel" id="p-forgot">
-      <div class="alert" id="al-forgot"></div>
-      <div class="p-title">Mot de passe oublié</div>
-      <div class="p-sub">Entrez votre email pour recevoir un lien de réinitialisation.</div>
-      <div class="field">
-        <label>Email</label>
-        <div class="input-wrap">
-          <input type="email" id="fg-email" placeholder="vous@exemple.com">
-        </div>
-      </div>
-      <button class="btn btn-primary" id="btn-forgot" onclick="doForgot()">
-        <div class="spin"></div><span class="btn-lbl">Envoyer le lien</span>
+      <!-- Google -->
+      <button class="btn btn-ghost" id="btn-google" onclick="loginGoogle()">
+        <div class="spin"></div>
+        <span class="blbl" style="display:flex;align-items:center;gap:9px;">
+          <svg class="g-svg" viewBox="0 0 24 24">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          Continuer avec Google
+        </span>
       </button>
-      <div class="foot">
-        <button class="link" onclick="showPanel('p-auth')">← Retour à la connexion</button>
+
+      <div class="divider">ou</div>
+
+      <div class="field">
+        <label>Adresse e-mail</label>
+        <input type="email" id="login-email" placeholder="vous@exemple.com" autocomplete="email">
+      </div>
+
+      <div class="field">
+        <label>Mot de passe</label>
+        <div class="input-wrap">
+          <input type="password" id="login-pw" placeholder="••••••••" class="has-icon" autocomplete="current-password">
+          <button class="eye" type="button" onclick="togglePw('login-pw',this)" aria-label="Voir mot de passe">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="forgot">
+        <button class="lnk" onclick="goView('login','forgot')">Mot de passe oublié ?</button>
+      </div>
+
+      <button class="btn btn-primary" id="btn-login" onclick="doLogin()">
+        <div class="spin"></div>
+        <span class="blbl">Se connecter</span>
+      </button>
+
+      <div class="form-footer">
+        <span>Pas encore de compte ?</span>
+        <button class="lnk" onclick="goView('login','signup')">Créer un compte</button>
       </div>
     </div>
 
-    <!-- ════ PANEL RESET PASSWORD ════ -->
-    <div class="panel" id="p-reset">
-      <div class="alert" id="al-reset"></div>
-      <div class="p-title">Nouveau mot de passe</div>
-      <div class="p-sub">Choisissez un mot de passe sécurisé pour votre compte.</div>
+    <!-- ══════════════ VIEW: SIGNUP ══════════════ -->
+    <div class="view" id="view-signup">
+      <div class="view-head">
+        <h1>Créer un compte ✨</h1>
+        <p class="sub">Rejoignez ARICH IPTV et gérez vos playlists.</p>
+      </div>
+
+      <div class="msg-slot">
+        <div class="msg" id="signup-msg"></div>
+      </div>
+
+      <button class="btn btn-ghost" onclick="loginGoogle()">
+        <div class="spin"></div>
+        <span class="blbl" style="display:flex;align-items:center;gap:9px;">
+          <svg class="g-svg" viewBox="0 0 24 24">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          S'inscrire avec Google
+        </span>
+      </button>
+
+      <div class="divider">ou</div>
+
+      <div class="field">
+        <label>Adresse e-mail</label>
+        <input type="email" id="signup-email" placeholder="vous@exemple.com" autocomplete="email">
+      </div>
+
+      <div class="field">
+        <label>Mot de passe</label>
+        <div class="input-wrap">
+          <input type="password" id="signup-pw" placeholder="8 caractères minimum" class="has-icon" autocomplete="new-password" oninput="checkStrength(this.value)">
+          <button class="eye" type="button" onclick="togglePw('signup-pw',this)" aria-label="Voir mot de passe">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div class="pw-strength">
+          <div class="bars">
+            <div class="bar" id="bar1"></div>
+            <div class="bar" id="bar2"></div>
+            <div class="bar" id="bar3"></div>
+          </div>
+          <div class="strength-lbl" id="strength-lbl"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Confirmer le mot de passe</label>
+        <div class="input-wrap">
+          <input type="password" id="signup-pw2" placeholder="••••••••" class="has-icon" autocomplete="new-password">
+          <button class="eye" type="button" onclick="togglePw('signup-pw2',this)" aria-label="Voir mot de passe">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btn-signup" onclick="doSignup()">
+        <div class="spin"></div>
+        <span class="blbl">Créer mon compte</span>
+      </button>
+
+      <div class="form-footer">
+        <span>Déjà un compte ?</span>
+        <button class="lnk" onclick="goView('signup','login','back')">Se connecter</button>
+      </div>
+    </div>
+
+    <!-- ══════════════ VIEW: FORGOT ══════════════ -->
+    <div class="view" id="view-forgot">
+      <div class="view-head">
+        <h1>Mot de passe oublié 🔑</h1>
+        <p class="sub">Entrez votre e-mail et nous vous enverrons un lien de réinitialisation.</p>
+      </div>
+
+      <div class="msg-slot">
+        <div class="msg" id="forgot-msg"></div>
+      </div>
+
+      <div class="field">
+        <label>Adresse e-mail</label>
+        <input type="email" id="forgot-email" placeholder="vous@exemple.com" autocomplete="email">
+      </div>
+
+      <button class="btn btn-primary" id="btn-forgot" onclick="doForgot()">
+        <div class="spin"></div>
+        <span class="blbl">Envoyer le lien</span>
+      </button>
+
+      <div class="form-footer">
+        <button class="lnk" onclick="goView('forgot','login','back')">← Retour à la connexion</button>
+      </div>
+    </div>
+
+    <!-- ══════════════ VIEW: RESET ══════════════ -->
+    <div class="view" id="view-reset">
+      <div class="view-head">
+        <h1>Nouveau mot de passe 🛡️</h1>
+        <p class="sub">Choisissez un nouveau mot de passe sécurisé.</p>
+      </div>
+
+      <div class="msg-slot">
+        <div class="msg" id="reset-msg"></div>
+      </div>
+
       <div class="field">
         <label>Nouveau mot de passe</label>
         <div class="input-wrap">
-          <input type="password" id="r-pw" class="has-icon" placeholder="••••••••">
-          <button class="toggle-pw" onclick="togglePw('r-pw',this)" tabindex="-1">👁</button>
+          <input type="password" id="reset-pw" placeholder="8 caractères minimum" class="has-icon" oninput="checkStrength(this.value,'reset')">
+          <button class="eye" type="button" onclick="togglePw('reset-pw',this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div class="pw-strength">
+          <div class="bars">
+            <div class="bar" id="rbar1"></div>
+            <div class="bar" id="rbar2"></div>
+            <div class="bar" id="rbar3"></div>
+          </div>
+          <div class="strength-lbl" id="rstrength-lbl"></div>
         </div>
       </div>
+
+      <div class="field">
+        <label>Confirmer</label>
+        <div class="input-wrap">
+          <input type="password" id="reset-pw2" placeholder="••••••••" class="has-icon">
+          <button class="eye" type="button" onclick="togglePw('reset-pw2',this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+
       <button class="btn btn-primary" id="btn-reset" onclick="doReset()">
-        <div class="spin"></div><span class="btn-lbl">Mettre à jour</span>
+        <div class="spin"></div>
+        <span class="blbl">Mettre à jour</span>
       </button>
     </div>
 
-    <!-- ════ PANEL CONFIRM EMAIL ════ -->
-    <div class="panel" id="p-confirm">
-      <div class="confirm-screen">
-        <span class="confirm-emoji">📬</span>
-        <div class="p-title">Vérifiez votre email</div>
-        <div class="p-sub">Un lien de confirmation a été envoyé. Cliquez dessus pour activer votre compte.</div>
-        <button class="btn btn-outline" onclick="showPanel('p-auth')" style="margin-top:4px">← Retour à la connexion</button>
-      </div>
-    </div>
-
-  </div>
-</div>
+  </div><!-- /card -->
+</div><!-- /page -->
 
 <script>
-'use strict';
+/* ═══════════════════════════ SUPABASE INIT ═══════════════════════════════ */
+const SUPABASE_URL  = 'https://aynucieohuowgkwyftiy.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk';
+const REDIRECT_URL  = 'https://devhertox.github.io/arich_iptv/manage-playlist.html';
 
-const SB_URL  = 'https://aynucieohuowgkwyftiy.supabase.co';
-const SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk';
-const MANAGE  = 'https://devhertox.github.io/arich_iptv/manage-playlist.html';
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-const sb = supabase.createClient(SB_URL, SB_KEY);
-
-// ── ERROR TRANSLATIONS ──
-const ERR = {
-  'Invalid login credentials':            'Email ou mot de passe incorrect.',
-  'Email not confirmed':                   'Veuillez confirmer votre email avant de vous connecter.',
-  'User already registered':               'Un compte avec cet email existe déjà.',
-  'Password should be at least 6':         'Le mot de passe doit contenir au moins 6 caractères.',
-  'Unable to validate email address':      'Format d\'email invalide.',
-  'Email rate limit exceeded':             'Trop de tentatives. Attendez quelques minutes.',
-  'you can only request this once every 60 seconds': 'Attendez 60 secondes avant de renvoyer un email.',
-  'Token has expired or is invalid':       'Le lien de réinitialisation a expiré. Veuillez recommencer.',
-  'signup_disabled':                       'Les inscriptions sont temporairement désactivées.',
-  'email_address_not_authorized':          'Cet email n\'est pas autorisé.',
-};
-function xlat(msg) {
-  if (!msg) return 'Une erreur est survenue. Veuillez réessayer.';
-  for (const [k, v] of Object.entries(ERR)) {
-    if (msg.includes(k)) return v;
-  }
+/* ═══════════════════════════ ERROR TRANSLATIONS ══════════════════════════ */
+function translateError(msg) {
+  if (!msg) return 'Une erreur est survenue.';
+  const m = msg.toLowerCase();
+  if (m.includes('invalid login credentials') || m.includes('invalid credentials'))
+    return 'Email ou mot de passe incorrect.';
+  if (m.includes('email not confirmed'))
+    return 'Veuillez confirmer votre adresse email avant de vous connecter.';
+  if (m.includes('user already registered') || m.includes('already registered'))
+    return 'Un compte existe déjà avec cet email.';
+  if (m.includes('password should be at least'))
+    return 'Le mot de passe doit contenir au moins 8 caractères.';
+  if (m.includes('invalid email'))
+    return 'Adresse email invalide.';
+  if (m.includes('signup disabled'))
+    return 'L\'inscription est momentanément désactivée.';
+  if (m.includes('rate limit') || m.includes('too many'))
+    return 'Trop de tentatives. Veuillez patienter quelques minutes.';
+  if (m.includes('network') || m.includes('fetch'))
+    return 'Erreur réseau. Vérifiez votre connexion internet.';
+  if (m.includes('token') && m.includes('expired'))
+    return 'Lien expiré. Veuillez en demander un nouveau.';
+  if (m.includes('user not found'))
+    return 'Aucun compte trouvé avec cet email.';
   return msg;
 }
 
-// ── PANELS ──
-let curPanel = 'p-auth';
-let curTab   = 'login';
+/* ═══════════════════════════ SESSION CHECK ═══════════════════════════════ */
+async function checkSession() {
+  // Handle OAuth callback (hash contains access_token)
+  const hash = window.location.hash;
+  if (hash && hash.includes('access_token')) {
+    const params = new URLSearchParams(hash.substring(1));
+    const type = params.get('type');
+    if (type === 'recovery') {
+      showView('reset');
+      return;
+    }
+    // Regular OAuth callback — session will be set automatically
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) { redirect(); return; }
+  }
 
-function showPanel(id) {
-  document.getElementById(curPanel).classList.remove('active');
-  document.getElementById(id).classList.add('active');
-  curPanel = id;
+  // Check existing session
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) { redirect(); return; }
 }
 
-// ── TABS ──
-function switchTab(tab) {
-  curTab = tab;
-  document.getElementById('t-login').classList.toggle('active', tab === 'login');
-  document.getElementById('t-signup').classList.toggle('active', tab === 'signup');
-  document.getElementById('f-login').style.display  = tab === 'login'  ? '' : 'none';
-  document.getElementById('f-signup').style.display = tab === 'signup' ? '' : 'none';
+function redirect() {
+  window.location.href = REDIRECT_URL;
 }
 
-// ── TOGGLE PASSWORD ──
-function togglePw(id, btn) {
-  const el = document.getElementById(id);
-  el.type = el.type === 'password' ? 'text' : 'password';
-  btn.textContent = el.type === 'password' ? '👁' : '🙈';
+/* ═══════════════════════════ VIEW TRANSITIONS ════════════════════════════ */
+let currentView = 'login';
+function goView(from, to, dir = 'forward') {
+  const fromEl = document.getElementById('view-' + from);
+  const toEl   = document.getElementById('view-' + to);
+  clearMsg(from); clearMsg(to);
+
+  fromEl.classList.add(dir === 'back' ? 'exit-right' : 'exit-left');
+  fromEl.addEventListener('animationend', () => {
+    fromEl.classList.remove('active','exit-left','exit-right');
+    toEl.classList.add('active');
+    currentView = to;
+    // Focus first input
+    const inp = toEl.querySelector('input');
+    if (inp) setTimeout(() => inp.focus(), 80);
+  }, { once: true });
 }
 
-// ── PASSWORD STRENGTH ──
-const SCL = ['','w','f','g','s'];
-const SLBL = ['','Trop faible','Correct','Bien','Fort 🔒'];
-const SCOL = { w:'#ff4444', f:'#ff9500', g:'#ffd740', s:'#00e676' };
-
-function checkStrength(pw) {
-  const wrap = document.getElementById('strength-wrap');
-  if (!pw) { wrap.style.display = 'none'; return; }
-  wrap.style.display = 'block';
-  let score = 0;
-  if (pw.length >= 8)          score++;
-  if (/[A-Z]/.test(pw))        score++;
-  if (/[0-9]/.test(pw))        score++;
-  if (/[^A-Za-z0-9]/.test(pw)) score++;
-  const cls = SCL[score] || 'w';
-  [1,2,3,4].forEach(i => {
-    const bar = document.getElementById('sb'+i);
-    bar.className = 's-bar' + (i <= score ? ' '+cls : '');
+function showView(name) {
+  ['login','signup','forgot','reset'].forEach(v => {
+    const el = document.getElementById('view-' + v);
+    el.classList.remove('active','exit-left','exit-right');
   });
-  const lbl = document.getElementById('slbl');
-  lbl.textContent = SLBL[score] || '';
-  lbl.style.color = SCOL[cls] || '#fff';
+  document.getElementById('view-' + name).classList.add('active');
+  currentView = name;
 }
 
-// ── LOADING ──
-function setLoad(id, on) {
-  const btn = document.getElementById(id);
+/* ═══════════════════════════ MESSAGES ════════════════════════════════════ */
+function showMsg(id, text, type = 'error') {
+  const el = document.getElementById(id + '-msg');
+  if (!el) return;
+  el.textContent = text;
+  el.className = 'msg ' + type + ' show';
+}
+function clearMsg(id) {
+  const el = document.getElementById(id + '-msg');
+  if (el) { el.className = 'msg'; el.textContent = ''; }
+}
+
+/* ═══════════════════════════ BUTTON LOADING ══════════════════════════════ */
+function setLoading(btnId, on) {
+  const btn = document.getElementById(btnId);
   if (!btn) return;
   btn.disabled = on;
   btn.classList.toggle('loading', on);
 }
 
-// ── ALERTS ──
-function showAlert(id, msg, type='err') {
-  const el = document.getElementById(id);
-  el.className = `alert ${type} show`;
-  el.textContent = msg;
-}
-function clearAlert(id) {
-  const el = document.getElementById(id);
-  el.className = 'alert';
+/* ═══════════════════════════ PASSWORD TOGGLE ═════════════════════════════ */
+function togglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  const isHidden = inp.type === 'password';
+  inp.type = isHidden ? 'text' : 'password';
+  btn.querySelector('svg').style.opacity = isHidden ? '1' : '0.5';
 }
 
-// ── LOGIN ──
-async function doLogin() {
-  clearAlert('al-login');
-  const email = document.getElementById('l-email').value.trim();
-  const pw    = document.getElementById('l-pw').value;
-  if (!email || !pw) { showAlert('al-login', 'Veuillez remplir tous les champs.'); return; }
-  setLoad('btn-login', true);
-  const { error } = await sb.auth.signInWithPassword({ email, password: pw });
-  setLoad('btn-login', false);
-  if (error) { showAlert('al-login', xlat(error.message)); return; }
-  window.location.replace(MANAGE);
+/* ═══════════════════════════ PASSWORD STRENGTH ═══════════════════════════ */
+function checkStrength(val, prefix = '') {
+  const p = prefix ? 'r' : '';
+  const b1 = document.getElementById(p+'bar1');
+  const b2 = document.getElementById(p+'bar2');
+  const b3 = document.getElementById(p+'bar3');
+  const lbl = document.getElementById(p+'strength-lbl');
+  if (!b1) return;
+
+  [b1,b2,b3].forEach(b => b.className = 'bar');
+
+  if (!val) { lbl.textContent = ''; lbl.style.color = ''; return; }
+
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (val.length >= 12 || /[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val) && /[^A-Za-z0-9]/.test(val)) score++;
+
+  const configs = [
+    { lbl: 'Faible',  color: 'var(--error)', bars: [1,0,0] },
+    { lbl: 'Moyen',   color: 'var(--warn)',  bars: [1,1,0] },
+    { lbl: 'Fort',    color: 'var(--success)', bars: [1,1,1] },
+  ];
+  const cfg = configs[Math.min(score, 2)];
+  lbl.textContent = cfg.lbl;
+  lbl.style.color = cfg.color;
+  [b1,b2,b3].forEach((b,i) => { if (cfg.bars[i]) b.classList.add('s' + (score)); });
 }
 
-// ── SIGNUP ──
-async function doSignup() {
-  clearAlert('al-signup');
-  const email = document.getElementById('s-email').value.trim();
-  const pw    = document.getElementById('s-pw').value;
-  const pw2   = document.getElementById('s-pw2').value;
-  if (!email || !pw || !pw2) { showAlert('al-signup', 'Veuillez remplir tous les champs.'); return; }
-  if (pw !== pw2)            { showAlert('al-signup', 'Les mots de passe ne correspondent pas.'); return; }
-  if (pw.length < 6)         { showAlert('al-signup', 'Le mot de passe doit contenir au moins 6 caractères.'); return; }
-  setLoad('btn-signup', true);
-  const { data, error } = await sb.auth.signUp({
-    email, password: pw,
-    options: { emailRedirectTo: MANAGE }
+/* ═══════════════════════════ AUTH ACTIONS ════════════════════════════════ */
+async function loginGoogle() {
+  const btns = document.querySelectorAll('#btn-google, .btn-ghost');
+  btns.forEach(b => { b.disabled = true; b.classList.add('loading'); });
+
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: REDIRECT_URL,
+      queryParams: { access_type: 'offline', prompt: 'consent' }
+    }
   });
-  setLoad('btn-signup', false);
-  if (error) { showAlert('al-signup', xlat(error.message)); return; }
-  // Supabase renvoie un user avec identities vide si l'email existe déjà
-  if (data?.user?.identities?.length === 0) {
-    showAlert('al-signup', 'Un compte avec cet email existe déjà.');
+
+  if (error) {
+    btns.forEach(b => { b.disabled = false; b.classList.remove('loading'); });
+    showMsg(currentView, translateError(error.message));
+  }
+  // On success → browser redirects automatically
+}
+
+async function doLogin() {
+  clearMsg('login');
+  const email = document.getElementById('login-email').value.trim();
+  const pw    = document.getElementById('login-pw').value;
+
+  if (!email || !pw) { showMsg('login', 'Veuillez remplir tous les champs.'); return; }
+
+  setLoading('btn-login', true);
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
+  setLoading('btn-login', false);
+
+  if (error) { showMsg('login', translateError(error.message)); return; }
+  if (data.session) redirect();
+}
+
+async function doSignup() {
+  clearMsg('signup');
+  const email = document.getElementById('signup-email').value.trim();
+  const pw    = document.getElementById('signup-pw').value;
+  const pw2   = document.getElementById('signup-pw2').value;
+
+  if (!email || !pw || !pw2) { showMsg('signup', 'Veuillez remplir tous les champs.'); return; }
+  if (pw !== pw2)            { showMsg('signup', 'Les mots de passe ne correspondent pas.'); return; }
+  if (pw.length < 8)         { showMsg('signup', 'Le mot de passe doit contenir au moins 8 caractères.'); return; }
+
+  setLoading('btn-signup', true);
+  const { data, error } = await sb.auth.signUp({ email, password: pw, options: { emailRedirectTo: REDIRECT_URL } });
+  setLoading('btn-signup', false);
+
+  if (error) { showMsg('signup', translateError(error.message)); return; }
+
+  // If email confirmation required
+  if (data.user && !data.session) {
+    showMsg('signup', '📬 Un email de confirmation a été envoyé. Vérifiez votre boîte mail !', 'success');
     return;
   }
-  showPanel('p-confirm');
+  if (data.session) redirect();
 }
 
-// ── GOOGLE OAUTH ──
-async function doGoogle() {
-  await sb.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: MANAGE }
-  });
-}
-
-// ── FORGOT PASSWORD ──
 async function doForgot() {
-  clearAlert('al-forgot');
-  const email = document.getElementById('fg-email').value.trim();
-  if (!email) { showAlert('al-forgot', 'Veuillez saisir votre email.'); return; }
-  setLoad('btn-forgot', true);
-  // Le lien de reset redirige vers cette même page avec type=recovery
-  const resetUrl = window.location.origin + window.location.pathname;
-  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: resetUrl });
-  setLoad('btn-forgot', false);
-  if (error) { showAlert('al-forgot', xlat(error.message)); return; }
-  showAlert('al-forgot', 'Email envoyé ! Vérifiez votre boîte de réception.', 'ok');
+  clearMsg('forgot');
+  const email = document.getElementById('forgot-email').value.trim();
+  if (!email) { showMsg('forgot', 'Veuillez entrer votre adresse e-mail.'); return; }
+
+  setLoading('btn-forgot', true);
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://devhertox.github.io/arich_iptv/auth.html'
+  });
+  setLoading('btn-forgot', false);
+
+  if (error) { showMsg('forgot', translateError(error.message)); return; }
+  showMsg('forgot', '✅ Email envoyé ! Consultez votre boîte mail pour réinitialiser votre mot de passe.', 'success');
 }
 
-// ── RESET PASSWORD ──
 async function doReset() {
-  clearAlert('al-reset');
-  const pw = document.getElementById('r-pw').value;
-  if (!pw || pw.length < 6) { showAlert('al-reset', 'Le mot de passe doit contenir au moins 6 caractères.'); return; }
-  setLoad('btn-reset', true);
+  clearMsg('reset');
+  const pw  = document.getElementById('reset-pw').value;
+  const pw2 = document.getElementById('reset-pw2').value;
+
+  if (!pw || !pw2) { showMsg('reset', 'Veuillez remplir tous les champs.'); return; }
+  if (pw !== pw2)  { showMsg('reset', 'Les mots de passe ne correspondent pas.'); return; }
+  if (pw.length < 8) { showMsg('reset', 'Le mot de passe doit contenir au moins 8 caractères.'); return; }
+
+  setLoading('btn-reset', true);
   const { error } = await sb.auth.updateUser({ password: pw });
-  setLoad('btn-reset', false);
-  if (error) { showAlert('al-reset', xlat(error.message)); return; }
-  showAlert('al-reset', 'Mot de passe mis à jour ! Redirection…', 'ok');
-  setTimeout(() => window.location.replace(MANAGE), 1500);
+  setLoading('btn-reset', false);
+
+  if (error) { showMsg('reset', translateError(error.message)); return; }
+  showMsg('reset', '🎉 Mot de passe mis à jour ! Redirection...', 'success');
+  setTimeout(redirect, 1800);
 }
 
-// ── KEYBOARD ──
+/* ═══════════════════════════ KEYBOARD SHORTCUTS ═════════════════════════ */
 document.addEventListener('keydown', e => {
   if (e.key !== 'Enter') return;
-  if (curPanel === 'p-auth' && curTab === 'login')  doLogin();
-  if (curPanel === 'p-auth' && curTab === 'signup') doSignup();
-  if (curPanel === 'p-forgot') doForgot();
-  if (curPanel === 'p-reset')  doReset();
+  const v = currentView;
+  if (v === 'login')  doLogin();
+  if (v === 'signup') doSignup();
+  if (v === 'forgot') doForgot();
+  if (v === 'reset')  doReset();
 });
 
-// ── INIT ──
-async function init() {
-  const hash   = window.location.hash;
-  const params = new URLSearchParams(hash.substring(1));
-
-  // 1. OAuth / recovery callback via hash
-  if (hash.includes('access_token')) {
-    const type = params.get('type');
-    if (type === 'recovery') {
-      // Supabase doit établir la session depuis le hash automatiquement
-      // On attend un tick puis on affiche le reset
-      await new Promise(r => setTimeout(r, 200));
-      showPanel('p-reset');
-      return;
-    }
-    // Login OAuth normal — la session est établie automatiquement
-    await new Promise(r => setTimeout(r, 300));
-    const { data: { session } } = await sb.auth.getSession();
-    if (session) { window.location.replace(MANAGE); return; }
+/* ═══════════════════════════ AUTH STATE LISTENER ════════════════════════ */
+sb.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN' && session) {
+    // Don't redirect if we're on the reset view (user just signed in via recovery link)
+    if (currentView !== 'reset') redirect();
   }
-
-  // 2. Reset password via query param (cas Supabase email link)
-  const qs = new URLSearchParams(window.location.search);
-  if (qs.get('type') === 'recovery') {
-    showPanel('p-reset');
-    return;
+  if (event === 'PASSWORD_RECOVERY') {
+    showView('reset');
   }
+});
 
-  // 3. Déjà connecté ?
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) { window.location.replace(MANAGE); return; }
-
-  // 4. Écouter les changements d'état auth (pour OAuth qui revient en session)
-  sb.auth.onAuthStateChange((event, session) => {
-    if (event === 'PASSWORD_RECOVERY') {
-      showPanel('p-reset');
-      return;
-    }
-    if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session) {
-      window.location.replace(MANAGE);
-    }
-  });
-}
-
-init();
+/* ═══════════════════════════ INIT ════════════════════════════════════════ */
+checkSession();
 </script>
 </body>
 </html>

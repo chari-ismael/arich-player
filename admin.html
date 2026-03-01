@@ -1447,7 +1447,7 @@ function renderDevices(rows) {
       <td>${licBadge}</td>
       <td style="font-size:11.5px;color:var(--muted);">${seen}</td>
       <td class="td-actions">
-        <button class="btn btn-ghost btn-xs" onclick='openDevice(${JSON.stringify(d).replace(/'/g,"\\'")})'}>👁️</button>
+        <button class="btn btn-ghost btn-xs" onclick='openDevice(${JSON.stringify(d).replace(/'/g,"\\'")}')>👁️</button>
         <button class="btn btn-xs ${d.is_banned?'btn-success':'btn-danger'}" onclick="quickBanDevice('${d.id}',${d.is_banned},'${esc(d.device_name||d.id)}')">
           ${d.is_banned?'✅':'🚫'}
         </button>

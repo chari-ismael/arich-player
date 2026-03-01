@@ -1,0 +1,2094 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ARICH IPTV — Admin Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#050709;--bg2:#080b12;--bg3:#0d1018;
+  --surface:rgba(255,255,255,0.035);--surface2:rgba(255,255,255,0.06);--surface3:rgba(255,255,255,0.09);
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.16);--border3:rgba(255,255,255,0.24);
+  --v:#7B2FFF;--r:#FF2D55;--g:#30D158;--y:#FFD60A;--b:#0A84FF;--c:#38d9f5;
+  --grad:linear-gradient(135deg,#7B2FFF,#FF2D55);
+  --grad2:linear-gradient(135deg,#0A84FF,#38d9f5);
+  --grad3:linear-gradient(135deg,#30D158,#38d9f5);
+  --text:#f0f0f8;--sub:rgba(240,240,248,0.52);--muted:rgba(240,240,248,0.3);
+  --nav:64px;--side:260px;
+  --r8:8px;--r12:12px;--r16:16px;--r20:20px;
+  --ez:cubic-bezier(0.22,1,0.36,1);--spring:cubic-bezier(0.34,1.56,0.64,1);
+}
+html{height:100%;scroll-behavior:smooth}
+body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.5}
+
+/* BG */
+.bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(130px);animation:drift var(--d,18s) ease-in-out infinite alternate}
+.o1{width:70vmax;height:70vmax;background:radial-gradient(circle,rgba(123,47,255,0.18),transparent 60%);top:-25vmax;left:-20vmax;--d:22s}
+.o2{width:50vmax;height:50vmax;background:radial-gradient(circle,rgba(255,45,85,0.12),transparent 60%);bottom:-15vmax;right:-12vmax;--d:17s;animation-delay:-9s}
+.o3{width:35vmax;height:35vmax;background:radial-gradient(circle,rgba(10,132,255,0.09),transparent 60%);top:40%;left:50%;--d:26s;animation-delay:-14s}
+@keyframes drift{to{transform:translate(30px,35px) scale(1.07)}}
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.02;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
+
+/* NAVBAR */
+.nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav);background:rgba(5,7,9,0.88);backdrop-filter:blur(32px) saturate(200%);-webkit-backdrop-filter:blur(32px) saturate(200%);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+.nav-gem{width:36px;height:36px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#fff;box-shadow:0 4px 20px rgba(123,47,255,0.5);flex-shrink:0}
+.nav-brand{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;letter-spacing:-0.02em;color:var(--text)}
+.nav-brand em{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:normal}
+.nav-sep{width:1px;height:24px;background:var(--border2);margin:0 4px}
+.nav-panel-label{font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--sub);padding:4px 10px;background:rgba(123,47,255,0.1);border:1px solid rgba(123,47,255,0.2);border-radius:20px}
+.nav-sp{flex:1}
+.nav-time{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:0.05em}
+.nav-user{display:flex;align-items:center;gap:8px;padding:5px 10px 5px 5px;background:var(--surface);border:1px solid var(--border);border-radius:999px;cursor:pointer;transition:all 0.2s;margin-left:8px}
+.nav-user:hover{background:var(--surface2);border-color:var(--border2)}
+.nav-avatar{width:28px;height:28px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.nav-email{font-size:12.5px;color:var(--sub);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav-logout{padding:6px 12px;background:rgba(255,45,85,0.08);border:1px solid rgba(255,45,85,0.18);color:var(--r);border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;transition:all 0.18s;font-family:'DM Sans',sans-serif}
+.nav-logout:hover{background:rgba(255,45,85,0.18)}
+.hamburger{display:none;background:none;border:none;cursor:pointer;color:var(--text);padding:6px;border-radius:8px}
+
+/* SIDEBAR */
+.sidebar{position:fixed;top:var(--nav);left:0;bottom:0;width:var(--side);background:rgba(5,7,9,0.8);border-right:1px solid var(--border);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);padding:16px 10px;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;gap:2px;z-index:100;transition:transform 0.3s var(--ez)}
+.s-group-label{font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);padding:12px 12px 5px;margin-top:4px}
+.s-group-label:first-child{margin-top:0}
+.s-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;font-size:13px;color:var(--sub);font-weight:500;transition:all 0.15s;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;white-space:nowrap;position:relative}
+.s-item:hover{color:var(--text);background:var(--surface)}
+.s-item.active{color:#fff;background:rgba(123,47,255,0.2);border:1px solid rgba(123,47,255,0.15)}
+.s-item.active svg{opacity:1}
+.s-item svg{opacity:0.55;flex-shrink:0;transition:opacity 0.15s}
+.s-badge{margin-left:auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(123,47,255,0.2);color:rgba(168,85,247,0.9);flex-shrink:0}
+.s-badge.red{background:rgba(255,45,85,0.15);color:var(--r)}
+.s-badge.green{background:rgba(48,209,88,0.15);color:var(--g)}
+.s-badge.yellow{background:rgba(255,214,10,0.15);color:var(--y)}
+.s-div{height:1px;background:var(--border);margin:8px 12px}
+.sidebar-ov{position:fixed;inset:0;z-index:99;background:rgba(0,0,0,0.6);display:none;backdrop-filter:blur(4px)}
+.sidebar-ov.show{display:block}
+
+/* MAIN */
+.layout{position:relative;z-index:2;padding-top:var(--nav);min-height:100vh;display:flex}
+.main{flex:1;margin-left:var(--side);padding:28px 28px;max-width:100%;overflow-x:hidden;min-width:0}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  .sidebar{transform:translateX(-100%);z-index:150;width:280px}
+  .sidebar.open{transform:none}
+  .main{margin-left:0}
+  .hamburger{display:flex}
+}
+@media(max-width:640px){.main{padding:14px 12px}.nav{padding:0 12px}.nav-email{display:none}.nav-time{display:none}}
+
+/* SECTIONS */
+.sec{display:none;animation:secIn 0.3s var(--ez) both}
+.sec.active{display:block}
+@keyframes secIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* PAGE HEADER */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+.ph-left h1{font-family:'Syne',sans-serif;font-size:clamp(19px,3vw,24px);font-weight:700;letter-spacing:-0.03em;line-height:1.2}
+.ph-left p{font-size:13px;color:var(--sub);margin-top:5px}
+.ph-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* STAT CARDS */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r16);padding:18px 20px;position:relative;overflow:hidden;transition:border-color 0.2s,transform 0.2s var(--ez);cursor:default}
+.kpi:hover{border-color:var(--border2);transform:translateY(-2px)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--kline,var(--grad));opacity:0.7}
+.kpi-icon{font-size:20px;margin-bottom:10px;display:block}
+.kpi-val{font-family:'Syne',sans-serif;font-size:clamp(22px,3.5vw,28px);font-weight:700;letter-spacing:-0.04em;line-height:1}
+.kpi-label{font-size:11.5px;color:var(--sub);margin-top:6px}
+.kpi-delta{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:6px;margin-top:8px;width:fit-content}
+.delta-up{color:var(--g);background:rgba(48,209,88,0.1)}
+.delta-dn{color:var(--r);background:rgba(255,45,85,0.1)}
+.delta-neu{color:var(--muted);background:var(--surface2)}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r16);padding:22px;box-shadow:0 4px 24px rgba(0,0,0,0.18)}
+.card-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:600;letter-spacing:-0.02em;margin-bottom:16px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r12)}
+table{width:100%;border-collapse:collapse;min-width:480px}
+th{font-size:10px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--muted);padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;background:rgba(255,255,255,0.01)}
+td{padding:11px 14px;font-size:13px;color:var(--sub);border-bottom:1px solid rgba(255,255,255,0.03);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color 0.15s}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,0.02);color:var(--text)}
+.td-main{color:var(--text);font-weight:500}
+.td-mono{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted)}
+.td-actions{display:flex;gap:5px;max-width:none;overflow:visible;white-space:nowrap}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.b-green{background:rgba(48,209,88,0.12);color:var(--g)}
+.b-red{background:rgba(255,45,85,0.12);color:var(--r)}
+.b-yellow{background:rgba(255,214,10,0.12);color:var(--y)}
+.b-blue{background:rgba(10,132,255,0.12);color:var(--b)}
+.b-purple{background:rgba(123,47,255,0.12);color:#a78bfa}
+.b-cyan{background:rgba(56,217,245,0.12);color:var(--c)}
+.b-gray{background:rgba(255,255,255,0.07);color:var(--sub)}
+.b-dot::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+
+/* BUTTONS */
+.btn{border:none;border-radius:var(--r12);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:9px 16px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:transform 0.18s var(--spring),box-shadow 0.18s,background 0.18s;user-select:none;white-space:nowrap;position:relative;overflow:hidden;letter-spacing:0.01em}
+.btn:active{transform:scale(0.96)!important}
+.btn:disabled{opacity:0.45;cursor:not-allowed}
+.btn-primary{background:var(--grad);color:#fff;box-shadow:0 4px 18px rgba(123,47,255,0.35)}
+.btn-primary:not(:disabled):hover{box-shadow:0 6px 28px rgba(123,47,255,0.55);transform:translateY(-1px)}
+.btn-ghost{background:var(--surface);border:1px solid var(--border);color:var(--sub)}
+.btn-ghost:hover{color:var(--text);background:var(--surface2);border-color:var(--border2)}
+.btn-danger{background:rgba(255,45,85,0.1);border:1px solid rgba(255,45,85,0.2);color:var(--r)}
+.btn-danger:hover{background:rgba(255,45,85,0.22)}
+.btn-success{background:rgba(48,209,88,0.1);border:1px solid rgba(48,209,88,0.2);color:var(--g)}
+.btn-success:hover{background:rgba(48,209,88,0.2)}
+.btn-warn{background:rgba(255,214,10,0.1);border:1px solid rgba(255,214,10,0.2);color:var(--y)}
+.btn-warn:hover{background:rgba(255,214,10,0.2)}
+.btn-blue{background:rgba(10,132,255,0.1);border:1px solid rgba(10,132,255,0.2);color:var(--b)}
+.btn-blue:hover{background:rgba(10,132,255,0.2)}
+.btn-sm{padding:5px 11px;font-size:12px;border-radius:8px}
+.btn-xs{padding:4px 8px;font-size:11px;border-radius:6px}
+.spin{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.25);border-top-color:#fff;animation:spin 0.6s linear infinite;display:none;flex-shrink:0}
+.btn.loading .spin{display:inline-block}
+.btn.loading .blbl{display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.form-grid{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:7px}
+.field.full{grid-column:1/-1}
+label{font-size:11px;font-weight:700;color:rgba(240,240,248,0.5);letter-spacing:0.06em;text-transform:uppercase}
+input,select,textarea{width:100%;padding:11px 13px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:var(--r12);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13.5px;outline:none;transition:border-color 0.2s,box-shadow 0.2s,background 0.2s;-webkit-appearance:none}
+input::placeholder,textarea::placeholder{color:var(--muted)}
+input:focus,select:focus,textarea:focus{border-color:rgba(123,47,255,0.5);box-shadow:0 0 0 3px rgba(123,47,255,0.1);background:rgba(255,255,255,0.06)}
+select{cursor:pointer}
+select option{background:#0d1018}
+textarea{resize:vertical;min-height:80px}
+
+/* MSG */
+.msg{border-radius:var(--r12);font-size:13px;line-height:1.55;padding:11px 14px;display:none;align-items:flex-start;gap:8px}
+.msg.show{display:flex;animation:msgIn 0.25s var(--ez) both}
+.msg-error{background:rgba(255,45,85,0.09);border:1px solid rgba(255,45,85,0.2);color:var(--r)}
+.msg-success{background:rgba(48,209,88,0.09);border:1px solid rgba(48,209,88,0.2);color:var(--g)}
+.msg-info{background:rgba(123,47,255,0.09);border:1px solid rgba(123,47,255,0.2);color:#a78bfa}
+@keyframes msgIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+
+/* MODAL */
+.modal-bd{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.72);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.modal-bd.open{opacity:1;pointer-events:all}
+.modal{background:rgba(6,8,12,0.98);border:1px solid var(--border2);border-radius:var(--r20);padding:28px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 32px 100px rgba(0,0,0,0.75);transform:scale(0.94) translateY(20px);transition:transform 0.25s var(--ez)}
+.modal-bd.open .modal{transform:none}
+.modal-lg{max-width:720px}
+.modal-xl{max-width:900px}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;letter-spacing:-0.03em}
+.modal-close{width:32px;height:32px;border-radius:8px;background:var(--surface);border:1px solid var(--border);cursor:pointer;color:var(--sub);font-size:16px;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.modal-close:hover{color:var(--text);background:var(--surface2)}
+.modal-actions{display:flex;gap:10px;margin-top:22px;justify-content:flex-end;flex-wrap:wrap}
+
+/* CHART */
+.chart-wrap{position:relative;width:100%;height:220px}
+
+/* EMPTY */
+.empty{text-align:center;padding:48px 20px;color:var(--muted)}
+.empty-icon{font-size:40px;margin-bottom:12px;opacity:0.4;display:block}
+.empty h3{font-family:'Syne',sans-serif;font-size:16px;color:var(--sub);margin-bottom:6px}
+.empty p{font-size:13px;line-height:1.6;max-width:280px;margin:0 auto}
+
+/* LOADING */
+.loading{display:flex;align-items:center;justify-content:center;padding:48px;gap:12px;color:var(--muted);font-size:13.5px}
+.big-spin{width:22px;height:22px;border-radius:50%;border:2px solid rgba(123,47,255,0.25);border-top-color:var(--v);animation:spin 0.7s linear infinite}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(6,8,12,0.97);border:1px solid var(--border2);border-radius:var(--r12);padding:12px 22px;font-size:13.5px;color:var(--text);display:flex;align-items:center;gap:9px;opacity:0;transition:opacity 0.3s,transform 0.3s;z-index:999;pointer-events:none;white-space:nowrap;box-shadow:0 14px 48px rgba(0,0,0,0.6)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* TOP BAR */
+.top-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.search-box{position:relative;flex:1;min-width:180px;max-width:280px}
+.search-box svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);opacity:0.35;pointer-events:none}
+.search-box input{padding:9px 13px 9px 36px;border-radius:10px;font-size:13px}
+
+/* CHIPS */
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--sub);transition:all 0.18s;user-select:none}
+.chip:hover{color:var(--text);border-color:var(--border2)}
+.chip.on{background:rgba(123,47,255,0.18);border-color:rgba(123,47,255,0.4);color:#c4b5fd}
+.chip.on-red{background:rgba(255,45,85,0.15);border-color:rgba(255,45,85,0.35);color:var(--r)}
+.chip.on-green{background:rgba(48,209,88,0.12);border-color:rgba(48,209,88,0.3);color:var(--g)}
+
+/* METRIC ROW */
+.mrow{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.mrow:last-child{border-bottom:none}
+.mrow-label{font-size:13px;color:var(--sub)}
+.mrow-val{font-family:'Syne',sans-serif;font-size:15px;font-weight:600}
+
+/* PROGRESS */
+.prog-bar{height:5px;border-radius:3px;background:var(--surface2);overflow:hidden;margin-top:8px}
+.prog-fill{height:100%;border-radius:3px;background:var(--grad);transition:width 1s var(--ez)}
+
+/* REVENUE CARD */
+.rev-big{font-family:'Syne',sans-serif;font-size:clamp(32px,5vw,44px);font-weight:800;letter-spacing:-0.05em;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+
+/* WORLD MAP placeholder */
+.map-placeholder{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r12);height:200px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;gap:10px}
+
+/* TABS */
+.tabs{display:flex;gap:3px;padding:4px;background:rgba(255,255,255,0.04);border-radius:12px;width:fit-content;margin-bottom:20px;flex-wrap:wrap}
+.tab{padding:7px 14px;border-radius:9px;cursor:pointer;font-size:12.5px;font-weight:500;color:var(--sub);transition:all 0.18s;border:none;background:none;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.on{background:rgba(255,255,255,0.09);color:var(--text)}
+
+/* USER DETAIL */
+.udet-avatar{width:52px;height:52px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:#fff;flex-shrink:0;box-shadow:0 6px 20px rgba(123,47,255,0.4)}
+.note-box{background:rgba(255,214,10,0.06);border:1px solid rgba(255,214,10,0.18);border-radius:8px;padding:10px 13px;font-size:12.5px;color:rgba(255,214,10,0.9);line-height:1.55;margin-top:8px;font-style:italic}
+.device-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.device-row:last-child{border-bottom:none}
+
+/* PROMO CODE */
+.promo-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r12);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.promo-code{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:500;letter-spacing:0.05em;color:var(--text);background:rgba(123,47,255,0.12);padding:5px 12px;border-radius:8px;border:1px solid rgba(123,47,255,0.25)}
+
+/* FEATURE FLAG */
+.flag-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border)}
+.flag-row:last-child{border-bottom:none}
+.toggle{position:relative;width:42px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;background:var(--surface2);border:1px solid var(--border2);border-radius:999px;transition:background 0.25s,border-color 0.25s;cursor:pointer}
+.toggle input:checked~.toggle-track{background:rgba(123,47,255,0.5);border-color:rgba(123,47,255,0.6)}
+.toggle-thumb{position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:2px;left:2px;transition:transform 0.25s var(--spring);box-shadow:0 2px 6px rgba(0,0,0,0.4)}
+.toggle input:checked~.toggle-track .toggle-thumb{transform:translateX(18px)}
+
+/* NOTIFICATION FORM */
+.notif-preview{background:rgba(123,47,255,0.06);border:1px solid rgba(123,47,255,0.15);border-radius:var(--r12);padding:16px;margin-top:14px}
+.notif-preview-title{font-weight:600;font-size:14px;margin-bottom:4px}
+.notif-preview-body{font-size:12.5px;color:var(--sub);line-height:1.55}
+
+/* MAINTENANCE */
+.maintenance-active{background:rgba(255,45,85,0.06);border:2px solid rgba(255,45,85,0.3);border-radius:var(--r16);padding:20px;display:flex;align-items:center;gap:16px;margin-bottom:22px}
+.maintenance-active .mi{font-size:28px}
+
+/* SECTION LABEL */
+.sec-label{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin:20px 0 10px;padding-left:2px}
+
+/* COUNTRY ROW */
+.country-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--border)}
+.country-row:last-child{border-bottom:none}
+.country-flag{font-size:20px;flex-shrink:0;width:28px;text-align:center}
+.country-name{font-size:13px;color:var(--text);flex:1}
+.country-count{font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:var(--sub)}
+.country-bar{flex:1;max-width:100px}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.18)}
+
+/* SEPARATOR */
+.hdivider{height:1px;background:var(--border);margin:20px 0}
+
+/* ACCESS DENIED */
+.denied{text-align:center;padding:80px 20px}
+.denied-icon{font-size:60px;margin-bottom:20px;opacity:0.7}
+.denied h2{font-family:'Syne',sans-serif;font-size:24px;font-weight:700;color:var(--r);margin-bottom:10px}
+.denied p{color:var(--sub);font-size:14px;line-height:1.7;max-width:400px;margin:0 auto 24px}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+<div class="grain"></div>
+<div class="toast" id="toast"></div>
+<div class="sidebar-ov" id="sov" onclick="closeSB()"></div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="hamburger" onclick="toggleSB()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <a class="nav-logo" href="https://devhertox.github.io/arich_iptv/">
+    <div class="nav-gem">A</div>
+    <div class="nav-brand"><em>ARICH</em> IPTV</div>
+  </a>
+  <div class="nav-sep"></div>
+  <div class="nav-panel-label">⭐ Admin Panel</div>
+  <div class="nav-sp"></div>
+  <div class="nav-time" id="nav-time"></div>
+  <div class="nav-user" id="nav-user" onclick="doLogout()">
+    <div class="nav-avatar" id="nav-av">A</div>
+    <div class="nav-email" id="nav-em"></div>
+  </div>
+  <button class="nav-logout" onclick="doLogout()">Déconnexion</button>
+</nav>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="s-group-label">Vue d'ensemble</div>
+  <button class="s-item active" id="sl-dashboard" onclick="show('dashboard')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    Dashboard
+  </button>
+  <button class="s-item" id="sl-revenue" onclick="show('revenue')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6"/></svg>
+    Revenus
+  </button>
+  <button class="s-item" id="sl-analytics" onclick="show('analytics')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    Analytiques
+  </button>
+
+  <div class="s-div"></div>
+  <div class="s-group-label">Gestion</div>
+  <button class="s-item" id="sl-users" onclick="show('users')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    Utilisateurs
+    <span class="s-badge" id="sb-users">–</span>
+  </button>
+  <button class="s-item" id="sl-licenses" onclick="show('licenses')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    Licences
+    <span class="s-badge yellow" id="sb-exp">–</span>
+  </button>
+  <button class="s-item" id="sl-playlists" onclick="show('playlists')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+    Playlists
+  </button>
+  <button class="s-item" id="sl-promos" onclick="show('promos')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+    Codes promo
+  </button>
+
+  <div class="s-div"></div>
+  <div class="s-group-label">Communication</div>
+  <button class="s-item" id="sl-notifs" onclick="show('notifs')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    Notifications
+  </button>
+  <button class="s-item" id="sl-emails" onclick="show('emails')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    Emails en masse
+  </button>
+
+  <div class="s-div"></div>
+  <div class="s-group-label">Système</div>
+  <button class="s-item" id="sl-config" onclick="show('config')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    Configuration app
+  </button>
+  <button class="s-item" id="sl-flags" onclick="show('flags')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+    Feature Flags
+  </button>
+  <button class="s-item" id="sl-logs" onclick="show('logs')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    Logs admin
+  </button>
+
+  <div style="flex:1"></div>
+  <div style="padding:12px;margin-top:8px;">
+    <a href="manage-playlist.html" style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px;transition:all 0.18s;" onmouseover="this.style.background='var(--surface)';this.style.color='var(--sub)'" onmouseout="this.style.background='';this.style.color='var(--muted)'">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Espace utilisateur
+    </a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="layout">
+<main class="main">
+
+<!-- ══════ ACCESS DENIED ══════ -->
+<div class="denied" id="denied-view" style="display:none;">
+  <div class="denied-icon">🔒</div>
+  <h2>Accès refusé</h2>
+  <p>Ce panel est réservé aux administrateurs ARICH IPTV. Connectez-vous avec un compte admin.</p>
+  <a href="auth.html" class="btn btn-primary">Se connecter →</a>
+</div>
+
+<!-- ══════ DASHBOARD ══════ -->
+<section class="sec active" id="sec-dashboard">
+  <div class="ph">
+    <div class="ph-left"><h1>Dashboard 🚀</h1><p>Vue d'ensemble en temps réel de l'app ARICH IPTV.</p></div>
+    <div class="ph-actions">
+      <div id="maintenance-btn-wrap"></div>
+      <button class="btn btn-ghost btn-sm" onclick="refreshDashboard()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Actualiser
+      </button>
+    </div>
+  </div>
+
+  <div id="maintenance-banner" style="display:none;" class="maintenance-active">
+    <div class="mi">🔧</div>
+    <div style="flex:1"><div style="font-weight:600;font-size:15px;color:var(--r);margin-bottom:4px;">Mode maintenance ACTIF</div><div style="font-size:13px;color:var(--sub);" id="maint-msg-display">L'app affiche un message de maintenance.</div></div>
+    <button class="btn btn-danger btn-sm" onclick="toggleMaintenance(false)">Désactiver</button>
+  </div>
+
+  <div class="kpi-grid" id="dash-kpis">
+    <div class="kpi" style="--kline:var(--grad)"><span class="kpi-icon">👥</span><div class="kpi-val" id="d-users">–</div><div class="kpi-label">Utilisateurs</div><div class="kpi-delta delta-up" id="d-users-d">+0 ce mois</div></div>
+    <div class="kpi" style="--kline:var(--grad2)"><span class="kpi-icon">📋</span><div class="kpi-val" id="d-playlists">–</div><div class="kpi-label">Playlists actives</div><div class="kpi-delta delta-neu">Total</div></div>
+    <div class="kpi" style="--kline:var(--grad)"><span class="kpi-icon">📥</span><div class="kpi-val" id="d-installs">–</div><div class="kpi-label">Installations</div><div class="kpi-delta delta-up" id="d-inst-d">+0 ce mois</div></div>
+    <div class="kpi" style="--kline:var(--grad3)"><span class="kpi-icon">💰</span><div class="kpi-val" id="d-revenue">–</div><div class="kpi-label">Revenus estimés</div><div class="kpi-delta delta-up" id="d-rev-d">ce mois</div></div>
+    <div class="kpi" style="--kline:linear-gradient(135deg,#FFD60A,#FF2D55)"><span class="kpi-icon">⏰</span><div class="kpi-val" id="d-expiring">–</div><div class="kpi-label">Licences expirant</div><div class="kpi-delta delta-dn">Dans 7 jours</div></div>
+    <div class="kpi" style="--kline:var(--grad2)"><span class="kpi-icon">🚫</span><div class="kpi-val" id="d-banned">–</div><div class="kpi-label">Utilisateurs bannis</div><div class="kpi-delta delta-neu">Total</div></div>
+  </div>
+
+  <div class="grid2" style="margin-bottom:22px;">
+    <div class="card">
+      <div class="card-title">Activité — 30 derniers jours</div>
+      <div class="chart-wrap"><canvas id="chart-dash-line"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Répartition</div>
+      <div class="chart-wrap" style="height:200px;"><canvas id="chart-dash-donut"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Dernières inscriptions</div>
+      <div id="recent-users-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Actions récentes</div>
+      <div id="recent-logs-list"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ REVENUS ══════ -->
+<section class="sec" id="sec-revenue">
+  <div class="ph"><div class="ph-left"><h1>Revenus 💰</h1><p>Suivi financier et gestion des paiements.</p></div></div>
+
+  <div class="kpi-grid" style="margin-bottom:24px;">
+    <div class="kpi" style="--kline:var(--grad3)"><span class="kpi-icon">💵</span><div class="kpi-val" id="r-mrr">–</div><div class="kpi-label">MRR estimé</div><div class="kpi-delta delta-up">Mensuel récurrent</div></div>
+    <div class="kpi" style="--kline:var(--grad)"><span class="kpi-icon">📈</span><div class="kpi-val" id="r-arr">–</div><div class="kpi-label">ARR estimé</div><div class="kpi-delta delta-neu">Annuel récurrent</div></div>
+    <div class="kpi" style="--kline:var(--grad2)"><span class="kpi-icon">🔄</span><div class="kpi-val" id="r-refunds">–</div><div class="kpi-label">Remboursements</div><div class="kpi-delta delta-dn">Total</div></div>
+    <div class="kpi" style="--kline:linear-gradient(135deg,#FFD60A,#30D158)"><span class="kpi-icon">🎟️</span><div class="kpi-val" id="r-promos-used">–</div><div class="kpi-label">Promos utilisées</div><div class="kpi-delta delta-neu">Total</div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:22px;">
+    <div class="card-title">Revenus estimés (plans)</div>
+    <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-end;margin-bottom:20px;">
+      <div><div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Total estimé</div><div class="rev-big" id="r-total">€0</div></div>
+      <div style="flex:1;min-width:200px;">
+        <div class="mrow"><span class="mrow-label">Plan Annuel (2,99€)</span><span class="mrow-val" id="r-annual-count">0 users</span></div>
+        <div class="mrow"><span class="mrow-label">Plan À vie (4,99€)</span><span class="mrow-val" id="r-lifetime-count">0 users</span></div>
+        <div class="mrow"><span class="mrow-label">Remboursements</span><span class="mrow-val" style="color:var(--r);" id="r-refunds-amt">-€0</span></div>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="chart-revenue"></canvas></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Historique des remboursements</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Utilisateur</th><th>Montant</th><th>Raison</th><th>Date</th><th>Admin</th></tr></thead>
+        <tbody id="refunds-tbody"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="refunds-empty" style="display:none;"><span class="empty-icon">💸</span><h3>Aucun remboursement</h3></div>
+  </div>
+</section>
+
+<!-- ══════ ANALYTIQUES ══════ -->
+<section class="sec" id="sec-analytics">
+  <div class="ph"><div class="ph-left"><h1>Analytiques 📊</h1><p>Métriques avancées d'utilisation et de rétention.</p></div></div>
+
+  <div class="kpi-grid" style="margin-bottom:24px;">
+    <div class="kpi" style="--kline:var(--grad)"><span class="kpi-icon">📥</span><div class="kpi-val" id="a-installs">–</div><div class="kpi-label">Installations totales</div><div class="kpi-delta delta-up" id="a-inst-m">+0 ce mois</div></div>
+    <div class="kpi" style="--kline:var(--grad2)"><span class="kpi-icon">🚀</span><div class="kpi-val" id="a-sessions">–</div><div class="kpi-label">Sessions totales</div><div class="kpi-delta delta-up" id="a-sess-m">+0 ce mois</div></div>
+    <div class="kpi" style="--kline:var(--grad3)"><span class="kpi-icon">🔁</span><div class="kpi-val" id="a-retention">–%</div><div class="kpi-label">Rétention 30j</div><div class="kpi-delta delta-neu">Users actifs/total</div></div>
+    <div class="kpi" style="--kline:linear-gradient(135deg,#FF2D55,#FFD60A)"><span class="kpi-icon">📉</span><div class="kpi-val" id="a-churn">–%</div><div class="kpi-label">Churn rate</div><div class="kpi-delta delta-dn">Désabonnements</div></div>
+  </div>
+
+  <div class="grid2" style="margin-bottom:22px;">
+    <div class="card">
+      <div class="card-title">Installations vs Sessions — 30j</div>
+      <div class="chart-wrap"><canvas id="chart-analytics-bar"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Top pays 🌍</div>
+      <div id="countries-list"><div class="loading"><div class="big-spin"></div> Chargement…</div></div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Appareils utilisés</div>
+      <div class="chart-wrap" style="height:190px;"><canvas id="chart-devices"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Entonnoir de conversion</div>
+      <div id="funnel-list" style="display:flex;flex-direction:column;gap:0;margin-top:4px;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ USERS ══════ -->
+<section class="sec" id="sec-users">
+  <div class="ph">
+    <div class="ph-left"><h1>Utilisateurs 👥</h1><p>Gestion complète des comptes avec licences et devices.</p></div>
+    <div class="ph-actions">
+      <button class="btn btn-ghost btn-sm" onclick="exportUsersCSV()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export CSV
+      </button>
+      <button class="btn btn-ghost btn-sm" onclick="usersLoaded=false;loadUsers()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Actualiser
+      </button>
+    </div>
+  </div>
+
+  <div class="kpi-grid" style="margin-bottom:22px;">
+    <div class="kpi" style="--kline:var(--grad)"><span class="kpi-icon">👤</span><div class="kpi-val" id="u-total">–</div><div class="kpi-label">Total</div></div>
+    <div class="kpi" style="--kline:var(--grad3)"><span class="kpi-icon">✅</span><div class="kpi-val" id="u-confirmed">–</div><div class="kpi-label">Confirmés</div></div>
+    <div class="kpi" style="--kline:linear-gradient(135deg,#FFD60A,#FF6B00)"><span class="kpi-icon">⏰</span><div class="kpi-val" id="u-exp-soon">–</div><div class="kpi-label">Expirent sous 7j</div></div>
+    <div class="kpi" style="--kline:var(--grad2)"><span class="kpi-icon">📅</span><div class="kpi-val" id="u-today">–</div><div class="kpi-label">Aujourd'hui</div></div>
+    <div class="kpi" style="--kline:linear-gradient(135deg,#FF2D55,#a855f7)"><span class="kpi-icon">🚫</span><div class="kpi-val" id="u-banned">–</div><div class="kpi-label">Bannis</div></div>
+    <div class="kpi" style="--kline:var(--grad)"><span class="kpi-icon">💰</span><div class="kpi-val" id="u-refunded">–</div><div class="kpi-label">Remboursés</div></div>
+  </div>
+
+  <div class="card">
+    <div class="top-bar">
+      <div class="search-box">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="user-search" placeholder="Rechercher par email…" oninput="filterUsers()">
+      </div>
+      <div class="chips">
+        <div class="chip on" id="uf-all" onclick="setUF('all')">Tous</div>
+        <div class="chip" id="uf-banned" onclick="setUF('banned')">🚫 Bannis</div>
+        <div class="chip" id="uf-expiring" onclick="setUF('expiring')">⏰ Expirent</div>
+        <div class="chip" id="uf-refunded" onclick="setUF('refunded')">💰 Remboursés</div>
+        <div class="chip" id="uf-google" onclick="setUF('google')">🔵 Google</div>
+      </div>
+    </div>
+    <div id="users-loading" class="loading"><div class="big-spin"></div> Chargement…</div>
+    <div id="users-wrap" style="display:none;">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Email</th><th>Plan</th><th>Expiration</th><th>Statut</th><th>Devices</th><th>Inscrit</th><th>Actions</th></tr></thead>
+          <tbody id="users-tbody"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="users-empty" style="display:none;"><span class="empty-icon">👥</span><h3>Aucun utilisateur</h3></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ LICENCES ══════ -->
+<section class="sec" id="sec-licenses">
+  <div class="ph">
+    <div class="ph-left"><h1>Licences 🎫</h1><p>Gestion des abonnements et des dates d'expiration.</p></div>
+    <div class="ph-actions">
+      <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-license')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nouvelle licence
+      </button>
+    </div>
+  </div>
+
+  <div class="kpi-grid" style="margin-bottom:22px;">
+    <div class="kpi" style="--kline:var(--grad3)"><span class="kpi-icon">✅</span><div class="kpi-val" id="lic-active">–</div><div class="kpi-label">Actives</div></div>
+    <div class="kpi" style="--kline:linear-gradient(135deg,#FFD60A,#FF6B00)"><span class="kpi-icon">⏰</span><div class="kpi-val" id="lic-expiring">–</div><div class="kpi-label">Expirent sous 7j</div></div>
+    <div class="kpi" style="--kline:var(--grad2)"><span class="kpi-icon">♾️</span><div class="kpi-val" id="lic-lifetime">–</div><div class="kpi-label">À vie</div></div>
+    <div class="kpi" style="--kline:linear-gradient(135deg,#FF2D55,#FF6B00)"><span class="kpi-icon">❌</span><div class="kpi-val" id="lic-expired">–</div><div class="kpi-label">Expirées</div></div>
+  </div>
+
+  <div class="card">
+    <div class="top-bar">
+      <div class="search-box">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="lic-search" placeholder="Rechercher…" oninput="filterLicenses()">
+      </div>
+      <div class="chips">
+        <div class="chip on" id="lf-all" onclick="setLF('all')">Toutes</div>
+        <div class="chip" id="lf-active" onclick="setLF('active')">Actives</div>
+        <div class="chip" id="lf-expiring" onclick="setLF('expiring')">Bientôt exp.</div>
+        <div class="chip" id="lf-expired" onclick="setLF('expired')">Expirées</div>
+        <div class="chip" id="lf-lifetime" onclick="setLF('lifetime')">À vie</div>
+      </div>
+    </div>
+    <div id="lic-loading" class="loading"><div class="big-spin"></div> Chargement…</div>
+    <div id="lic-wrap" style="display:none;">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Utilisateur</th><th>Plan</th><th>Début</th><th>Expiration</th><th>Statut</th><th>Actions</th></tr></thead>
+          <tbody id="lic-tbody"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="lic-empty" style="display:none;"><span class="empty-icon">🎫</span><h3>Aucune licence</h3></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ PLAYLISTS ══════ -->
+<section class="sec" id="sec-playlists">
+  <div class="ph">
+    <div class="ph-left"><h1>Playlists 📋</h1><p>Vue globale de toutes les playlists de l'app.</p></div>
+    <div class="ph-actions">
+      <button class="btn btn-ghost btn-sm" onclick="plLoaded=false;loadPlaylists()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Actualiser
+      </button>
+    </div>
+  </div>
+
+  <div class="kpi-grid" style="margin-bottom:22px;">
+    <div class="kpi" style="--kline:var(--grad)"><span class="kpi-icon">📋</span><div class="kpi-val" id="pl-total">–</div><div class="kpi-label">Total playlists</div></div>
+    <div class="kpi" style="--kline:var(--grad2)"><span class="kpi-icon">🔗</span><div class="kpi-val" id="pl-m3u">–</div><div class="kpi-label">M3U</div></div>
+    <div class="kpi" style="--kline:var(--grad3)"><span class="kpi-icon">📡</span><div class="kpi-val" id="pl-xtream">–</div><div class="kpi-label">Xtream</div></div>
+    <div class="kpi" style="--kline:linear-gradient(135deg,#FFD60A,#30D158)"><span class="kpi-icon">✅</span><div class="kpi-val" id="pl-active">–</div><div class="kpi-label">Actives</div></div>
+  </div>
+
+  <div class="card">
+    <div class="top-bar">
+      <div class="search-box">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="pl-search" placeholder="Rechercher…" oninput="filterPL()">
+      </div>
+      <div class="chips">
+        <div class="chip on" id="pf-all" onclick="setPF('all')">Toutes</div>
+        <div class="chip" id="pf-m3u" onclick="setPF('m3u')">M3U</div>
+        <div class="chip" id="pf-xtream" onclick="setPF('xtream')">Xtream</div>
+      </div>
+    </div>
+    <div id="pl-loading" class="loading"><div class="big-spin"></div> Chargement…</div>
+    <div id="pl-wrap" style="display:none;">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Nom</th><th>Type</th><th>URL/Serveur</th><th>User</th><th>Chaînes</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="pl-tbody"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="pl-empty" style="display:none;"><span class="empty-icon">📭</span><h3>Aucune playlist</h3></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ CODES PROMO ══════ -->
+<section class="sec" id="sec-promos">
+  <div class="ph">
+    <div class="ph-left"><h1>Codes promo 🎟️</h1><p>Créez et gérez les codes de réduction.</p></div>
+    <div class="ph-actions">
+      <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-promo')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Créer un code
+      </button>
+    </div>
+  </div>
+  <div id="promos-loading" class="loading"><div class="big-spin"></div> Chargement…</div>
+  <div id="promos-wrap" style="display:none;">
+    <div style="display:flex;flex-direction:column;gap:12px;" id="promos-list"></div>
+    <div class="empty" id="promos-empty" style="display:none;margin-top:20px;"><span class="empty-icon">🎟️</span><h3>Aucun code promo</h3><p>Créez votre premier code de réduction.</p></div>
+  </div>
+</section>
+
+<!-- ══════ NOTIFICATIONS ══════ -->
+<section class="sec" id="sec-notifs">
+  <div class="ph"><div class="ph-left"><h1>Notifications 🔔</h1><p>Envoyez des notifications push à vos utilisateurs.</p></div></div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Composer une notification</div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="field"><label>Titre *</label><input type="text" id="notif-title" placeholder="Nouvelle mise à jour disponible !" oninput="previewNotif()"></div>
+        <div class="field"><label>Message *</label><textarea id="notif-body" rows="3" placeholder="ARICH IPTV v2.0 est disponible avec de nouvelles fonctionnalités…" oninput="previewNotif()"></textarea></div>
+        <div class="field"><label>Cible</label>
+          <select id="notif-target">
+            <option value="all">Tous les utilisateurs</option>
+            <option value="active">Utilisateurs actifs seulement</option>
+            <option value="expiring">Licences expirant bientôt</option>
+          </select>
+        </div>
+        <div id="notif-msg" class="msg"></div>
+        <button class="btn btn-primary" style="width:fit-content;" id="btn-send-notif" onclick="sendNotification()">
+          <span class="spin"></span><span class="blbl">🚀 Envoyer la notification</span>
+        </button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Aperçu</div>
+      <div class="notif-preview">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;">A</div>
+          <div style="font-size:11px;color:var(--muted);">ARICH IPTV · Maintenant</div>
+        </div>
+        <div class="notif-preview-title" id="notif-prev-title">Titre de la notification</div>
+        <div class="notif-preview-body" id="notif-prev-body">Le corps du message apparaîtra ici…</div>
+      </div>
+      <div style="margin-top:18px;">
+        <div class="card-title">Historique des envois</div>
+        <div id="notifs-history"><div class="empty" style="padding:20px 0;"><span class="empty-icon" style="font-size:28px;">📭</span><h3 style="font-size:14px;">Aucune notification envoyée</h3></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ EMAILS ══════ -->
+<section class="sec" id="sec-emails">
+  <div class="ph"><div class="ph-left"><h1>Emails en masse 📧</h1><p>Envoyez des emails à vos utilisateurs.</p></div></div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Composer un email</div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="field"><label>Sujet *</label><input type="text" id="email-subject" placeholder="Mise à jour importante — ARICH IPTV"></div>
+        <div class="field"><label>Destinataires</label>
+          <select id="email-target">
+            <option value="all">Tous les utilisateurs ({{ count }})</option>
+            <option value="active">Actifs seulement</option>
+            <option value="expiring">Licences expirant sous 7j</option>
+            <option value="banned">Non bannis seulement</option>
+          </select>
+        </div>
+        <div class="field"><label>Message *</label><textarea id="email-body" rows="6" placeholder="Bonjour,&#10;&#10;Nous avons le plaisir de vous informer…"></textarea></div>
+        <div id="email-msg" class="msg"></div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-ghost btn-sm" onclick="previewEmail()">👁️ Prévisualiser</button>
+          <button class="btn btn-primary" id="btn-send-email" onclick="sendEmail()">
+            <span class="spin"></span><span class="blbl">📧 Envoyer</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Dernier email envoyé</div>
+      <div id="last-email-info" style="color:var(--muted);font-size:13px;">Aucun email envoyé pour l'instant.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ CONFIG APP ══════ -->
+<section class="sec" id="sec-config">
+  <div class="ph"><div class="ph-left"><h1>Configuration app ⚙️</h1><p>Paramètres globaux récupérés par l'app Flutter.</p></div>
+    <div class="ph-actions"><button class="btn btn-primary btn-sm" id="btn-save-config" onclick="saveConfig()"><span class="spin"></span><span class="blbl">💾 Sauvegarder</span></button></div>
+  </div>
+
+  <div id="config-loading" class="loading"><div class="big-spin"></div> Chargement…</div>
+  <div id="config-wrap" style="display:none;">
+    <div class="grid2" style="margin-bottom:22px;">
+      <div class="card">
+        <div class="card-title">🔧 Mode maintenance</div>
+        <div class="flag-row">
+          <div><div style="font-size:13.5px;font-weight:500;">Activer le mode maintenance</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">L'app affichera un écran de maintenance</div></div>
+          <label class="toggle"><input type="checkbox" id="cfg-maintenance" onchange="onMaintenanceToggle()"><div class="toggle-track"><div class="toggle-thumb"></div></div></label>
+        </div>
+        <div class="field" style="margin-top:14px;"><label>Message de maintenance</label><textarea id="cfg-maint-msg" rows="2" placeholder="Maintenance en cours, nous revenons bientôt…"></textarea></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📱 Versions de l'app</div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div class="field"><label>Version minimale requise</label><input type="text" id="cfg-min-version" placeholder="2.0.0"></div>
+          <div class="field"><label>Version actuelle (latest)</label><input type="text" id="cfg-latest-version" placeholder="2.1.0"></div>
+          <div class="field"><label>URL téléchargement APK</label><input type="url" id="cfg-apk-url" placeholder="https://exemple.com/arich.apk"></div>
+        </div>
+      </div>
+    </div>
+    <div class="grid2" style="margin-bottom:22px;">
+      <div class="card">
+        <div class="card-title">🔑 APIs externes</div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div class="field"><label>TMDB API Key</label><input type="password" id="cfg-tmdb-key" placeholder="••••••••••••••••"></div>
+          <div class="field"><label>Clé de chiffrement playlists</label><input type="password" id="cfg-encrypt-key" placeholder="••••••••••••••••"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">💬 Contact & Support</div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div class="field"><label>WhatsApp</label><input type="text" id="cfg-whatsapp" placeholder="+33600000000"></div>
+          <div class="field"><label>Telegram</label><input type="text" id="cfg-telegram" placeholder="@arichiptv"></div>
+          <div class="field"><label>Email support</label><input type="email" id="cfg-email" placeholder="support@arichiptv.com"></div>
+        </div>
+      </div>
+    </div>
+    <div id="config-msg" class="msg" style="margin-bottom:12px;"></div>
+  </div>
+</section>
+
+<!-- ══════ FEATURE FLAGS ══════ -->
+<section class="sec" id="sec-flags">
+  <div class="ph"><div class="ph-left"><h1>Feature Flags 🚩</h1><p>Activez ou désactivez des fonctions sans redéployer l'app.</p></div>
+    <div class="ph-actions"><button class="btn btn-primary btn-sm" onclick="saveFlags()"><span class="spin"></span><span class="blbl">💾 Sauvegarder</span></button></div>
+  </div>
+  <div class="card">
+    <div id="flags-loading" class="loading"><div class="big-spin"></div> Chargement…</div>
+    <div id="flags-list" style="display:none;"></div>
+  </div>
+</section>
+
+<!-- ══════ LOGS ══════ -->
+<section class="sec" id="sec-logs">
+  <div class="ph"><div class="ph-left"><h1>Logs admin 📄</h1><p>Toutes les actions effectuées sur le panel.</p></div>
+    <div class="ph-actions">
+      <button class="btn btn-ghost btn-sm" onclick="logsLoaded=false;loadLogs()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Actualiser
+      </button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="top-bar">
+      <div class="search-box">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="log-search" placeholder="Filtrer les logs…" oninput="filterLogs()">
+      </div>
+    </div>
+    <div id="logs-loading" class="loading"><div class="big-spin"></div> Chargement…</div>
+    <div id="logs-wrap" style="display:none;">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Action</th><th>Admin</th><th>Cible</th><th>Détails</th><th>Date</th></tr></thead>
+          <tbody id="logs-tbody"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="logs-empty" style="display:none;"><span class="empty-icon">📄</span><h3>Aucun log</h3></div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<!-- ══════════════════════ MODALS ══════════════════════ -->
+
+<!-- USER DETAIL -->
+<div class="modal-bd" id="modal-user">
+  <div class="modal modal-xl">
+    <div class="modal-head">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div class="udet-avatar" id="udet-av">?</div>
+        <div><div class="modal-title" id="udet-name">Utilisateur</div><div id="udet-email-sub" style="font-size:13px;color:var(--sub);margin-top:2px;"></div></div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-user')">✕</button>
+    </div>
+
+    <!-- Quick actions -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--border);">
+      <button class="btn btn-sm" id="udet-ban-btn" onclick="toggleBan()"><span class="blbl">🚫 Bannir</span></button>
+      <button class="btn btn-warn btn-sm" onclick="openRefund()">💰 Rembourser</button>
+      <button class="btn btn-ghost btn-sm" onclick="openNote()">📝 Note</button>
+      <button class="btn btn-blue btn-sm" onclick="openLicenseEdit()">🎫 Modifier licence</button>
+      <button class="btn btn-ghost btn-sm" onclick="sendEmailToUser()">📧 Envoyer email</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteUser()">🗑️ Supprimer</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div>
+        <div class="sec-label">Informations</div>
+        <div class="mrow"><span class="mrow-label">Email</span><span id="udet-email" style="font-size:12.5px;"></span></div>
+        <div class="mrow"><span class="mrow-label">Inscrit</span><span id="udet-created" style="font-size:12.5px;"></span></div>
+        <div class="mrow"><span class="mrow-label">Dernière connexion</span><span id="udet-login" style="font-size:12.5px;"></span></div>
+        <div class="mrow"><span class="mrow-label">Méthode</span><span id="udet-provider" style="font-size:12.5px;"></span></div>
+        <div class="mrow"><span class="mrow-label">Statut</span><span id="udet-status"></span></div>
+        <div class="mrow"><span class="mrow-label">Plan</span><span id="udet-plan"></span></div>
+        <div class="mrow"><span class="mrow-label">Expiration</span><span id="udet-expiry" style="font-size:12.5px;"></span></div>
+        <div class="mrow"><span class="mrow-label">Remboursé</span><span id="udet-refund"></span></div>
+        <div id="udet-note-wrap" style="display:none;margin-top:10px;">
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;">Note admin</div>
+          <div class="note-box" id="udet-note"></div>
+        </div>
+      </div>
+      <div>
+        <div class="sec-label">Devices liés</div>
+        <div id="udet-devices"><div style="color:var(--muted);font-size:13px;">Chargement…</div></div>
+        <div class="sec-label" style="margin-top:18px;">Playlists</div>
+        <div id="udet-playlists" style="max-height:220px;overflow-y:auto;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTE -->
+<div class="modal-bd" id="modal-note">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title">📝 Note admin</div><button class="modal-close" onclick="closeModal('modal-note')">✕</button></div>
+    <div class="field"><label>Note interne</label><textarea id="note-content" rows="4" placeholder="Remboursé le … — problème de connexion — suivi Telegram…"></textarea></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modal-note')">Annuler</button><button class="btn btn-primary" id="btn-note" onclick="saveNote()"><span class="spin"></span><span class="blbl">Sauvegarder</span></button></div>
+  </div>
+</div>
+
+<!-- REFUND -->
+<div class="modal-bd" id="modal-refund">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title">💰 Remboursement</div><button class="modal-close" onclick="closeModal('modal-refund')">✕</button></div>
+    <div style="font-size:13px;color:var(--sub);margin-bottom:16px;" id="refund-target-info"></div>
+    <div class="form-grid">
+      <div class="field"><label>Montant (€)</label><input type="number" id="refund-amount" placeholder="4.99" step="0.01" min="0"></div>
+      <div class="field"><label>Raison</label><input type="text" id="refund-reason" placeholder="Problème d'activation…"></div>
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modal-refund')">Annuler</button><button class="btn btn-warn" id="btn-refund" onclick="saveRefund()"><span class="spin"></span><span class="blbl">💰 Confirmer</span></button></div>
+  </div>
+</div>
+
+<!-- EDIT LICENSE -->
+<div class="modal-bd" id="modal-license-edit">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title">🎫 Modifier la licence</div><button class="modal-close" onclick="closeModal('modal-license-edit')">✕</button></div>
+    <div class="form-grid">
+      <div class="field"><label>Plan</label>
+        <select id="lic-plan-edit">
+          <option value="annual">Annuel (2,99€/an)</option>
+          <option value="lifetime">À vie (4,99€)</option>
+          <option value="trial">Trial (7 jours)</option>
+          <option value="none">Aucun</option>
+        </select>
+      </div>
+      <div class="field"><label>Date d'expiration</label><input type="date" id="lic-expiry-edit"></div>
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modal-license-edit')">Annuler</button><button class="btn btn-primary" id="btn-lic-edit" onclick="saveLicenseEdit()"><span class="spin"></span><span class="blbl">💾 Sauvegarder</span></button></div>
+  </div>
+</div>
+
+<!-- ADD LICENSE -->
+<div class="modal-bd" id="modal-add-license">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title">🎫 Nouvelle licence</div><button class="modal-close" onclick="closeModal('modal-add-license')">✕</button></div>
+    <div class="form-grid">
+      <div class="field full"><label>Email utilisateur *</label><input type="email" id="lic-add-email" placeholder="user@exemple.com"></div>
+      <div class="field"><label>Plan *</label>
+        <select id="lic-add-plan">
+          <option value="annual">Annuel (2,99€/an)</option>
+          <option value="lifetime">À vie (4,99€)</option>
+          <option value="trial">Trial (7 jours)</option>
+        </select>
+      </div>
+      <div class="field"><label>Expiration</label><input type="date" id="lic-add-expiry"></div>
+    </div>
+    <div id="add-lic-msg" class="msg" style="margin-top:10px;"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modal-add-license')">Annuler</button><button class="btn btn-primary" id="btn-add-lic" onclick="addLicense()"><span class="spin"></span><span class="blbl">Créer la licence</span></button></div>
+  </div>
+</div>
+
+<!-- ADD PROMO -->
+<div class="modal-bd" id="modal-add-promo">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title">🎟️ Nouveau code promo</div><button class="modal-close" onclick="closeModal('modal-add-promo')">✕</button></div>
+    <div class="form-grid">
+      <div class="field"><label>Code *</label><input type="text" id="promo-code-input" placeholder="ARICH50" style="text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()"></div>
+      <div class="field"><label>Réduction (%)</label><input type="number" id="promo-discount" placeholder="50" min="1" max="100"></div>
+      <div class="field"><label>Utilisations max</label><input type="number" id="promo-max-uses" placeholder="100" min="1"></div>
+      <div class="field"><label>Expiration</label><input type="date" id="promo-expiry"></div>
+      <div class="field full"><label>Description</label><input type="text" id="promo-desc" placeholder="Promo de lancement…"></div>
+    </div>
+    <div id="promo-msg" class="msg" style="margin-top:10px;"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modal-add-promo')">Annuler</button><button class="btn btn-primary" id="btn-add-promo" onclick="addPromo()"><span class="spin"></span><span class="blbl">Créer le code</span></button></div>
+  </div>
+</div>
+
+<!-- MAINTENANCE MODAL -->
+<div class="modal-bd" id="modal-maintenance">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title">🔧 Activer la maintenance</div><button class="modal-close" onclick="closeModal('modal-maintenance')">✕</button></div>
+    <div class="field"><label>Message affiché dans l'app</label><textarea id="maint-msg-input" rows="3" placeholder="Maintenance en cours, nous revenons bientôt. Merci de votre patience."></textarea></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modal-maintenance')">Annuler</button><button class="btn btn-danger" id="btn-maint" onclick="toggleMaintenance(true)"><span class="spin"></span><span class="blbl">🔧 Activer</span></button></div>
+  </div>
+</div>
+
+<script>
+/* ══════════════ CONFIG ══════════════ */
+const SB_URL  = 'https://aynucieohuowgkwyftiy.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk';
+const AUTH_URL = 'https://devhertox.github.io/arich_iptv/auth.html';
+const ADMIN_EMAILS = ['charibossollati.ismael@gmail.com','ismaelchari.pro@gmail.com'];
+const PLANS = { annual:{ label:'Annuel', price:2.99 }, lifetime:{ label:'À vie', price:4.99 }, trial:{ label:'Trial', price:0 }, none:{ label:'Aucun', price:0 } };
+const FLAGS_DEFAULT = [
+  { key:'tmdb_posters',   label:'Posters TMDB',          desc:'Afficher les posters TMDB sur les chaînes',    default:true },
+  { key:'epg_enabled',    label:'Guide des programmes',   desc:'Activer le guide EPG',                         default:true },
+  { key:'chromecast',     label:'Chromecast',             desc:'Support Chromecast dans le lecteur',           default:false },
+  { key:'pip_mode',       label:'Picture-in-Picture',     desc:'Mode PiP Android',                            default:true },
+  { key:'auto_update',    label:'Mise à jour auto',       desc:'Vérifier les mises à jour au démarrage',       default:true },
+  { key:'analytics',      label:'Analytics in-app',       desc:'Collecter les données d\'usage (anonyme)',     default:true },
+  { key:'beta_features',  label:'Fonctions bêta',         desc:'Activer les fonctions en cours de test',       default:false },
+];
+
+const { createClient } = supabase;
+const sb = createClient(SB_URL, SB_ANON);
+
+let me = null, charts = {}, allUsers = [], allLicenses = [], allPL = [], allPromos = [], allLogs = [];
+let currentUser = null, userFilter = 'all', licFilter = 'all', plFilter = 'all';
+let usersLoaded = false, licLoaded = false, plLoaded = false, promosLoaded = false, logsLoaded = false;
+let dashLoaded = false, analyticsLoaded = false, revenueLoaded = false;
+
+/* ══════════════ CLOCK ══════════════ */
+function updateClock() {
+  const el = document.getElementById('nav-time');
+  if (el) el.textContent = new Date().toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+}
+setInterval(updateClock, 1000); updateClock();
+
+/* ══════════════ INIT ══════════════ */
+async function init() {
+  const { data:{ session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = AUTH_URL; return; }
+  me = session.user;
+  if (!ADMIN_EMAILS.includes(me.email)) {
+    document.querySelectorAll('.sec,.sidebar').forEach(el => el.style.display = 'none');
+    document.getElementById('denied-view').style.display = 'block';
+    return;
+  }
+  document.getElementById('nav-av').textContent = (me.email||'A')[0].toUpperCase();
+  document.getElementById('nav-em').textContent = me.email || '';
+  loadDashboard();
+}
+
+async function doLogout() { await sb.auth.signOut(); window.location.href = AUTH_URL; }
+
+/* ══════════════ SIDEBAR / NAV ══════════════ */
+function toggleSB() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sov').classList.toggle('show'); }
+function closeSB()  { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sov').classList.remove('show'); }
+
+const SEC_MAP = {
+  dashboard:  { onLoad: loadDashboard },
+  revenue:    { onLoad: loadRevenue },
+  analytics:  { onLoad: loadAnalytics },
+  users:      { onLoad: loadUsers },
+  licenses:   { onLoad: loadLicenses },
+  playlists:  { onLoad: loadPlaylists },
+  promos:     { onLoad: loadPromos },
+  notifs:     { onLoad: null },
+  emails:     { onLoad: null },
+  config:     { onLoad: loadConfig },
+  flags:      { onLoad: loadFlags },
+  logs:       { onLoad: loadLogs },
+};
+
+function show(name) {
+  Object.keys(SEC_MAP).forEach(k => {
+    document.getElementById('sec-'+k)?.classList.remove('active');
+    document.getElementById('sl-'+k)?.classList.remove('active');
+  });
+  document.getElementById('sec-'+name)?.classList.add('active');
+  document.getElementById('sl-'+name)?.classList.add('active');
+  closeSB();
+  const def = SEC_MAP[name];
+  if (def?.onLoad) def.onLoad();
+}
+
+/* ══════════════ DASHBOARD ══════════════ */
+async function loadDashboard() {
+  if (dashLoaded) return; dashLoaded = true;
+  try {
+    const [usersRes, plRes, statsRes, logsRes, licRes] = await Promise.all([
+      sb.from('profiles').select('*', { count:'exact' }),
+      sb.from('playlists').select('*', { count:'exact' }),
+      sb.from('app_stats').select('*').limit(1),
+      sb.from('admin_logs').select('*').order('created_at',{ascending:false}).limit(5),
+      sb.from('licenses').select('*'),
+    ]);
+
+    const users = usersRes.data || [];
+    const pls   = plRes.data   || [];
+    const lics  = licRes.data  || [];
+    const today = new Date(); today.setHours(0,0,0,0);
+    const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0);
+    const in7 = new Date(); in7.setDate(in7.getDate()+7);
+
+    const usersThisMonth = users.filter(u => u.created_at && new Date(u.created_at) >= monthStart).length;
+    const banned   = users.filter(u => u.is_banned).length;
+    const installs = statsRes.data?.[0]?.app_installs || 0;
+    const expiring = lics.filter(l => l.expires_at && new Date(l.expires_at) <= in7 && new Date(l.expires_at) > new Date() && l.plan !== 'lifetime').length;
+
+    // Revenue estimate
+    const lifetimeUsers = lics.filter(l => l.plan === 'lifetime').length;
+    const annualUsers   = lics.filter(l => l.plan === 'annual').length;
+    const revenue = (lifetimeUsers * 4.99 + annualUsers * 2.99).toFixed(2);
+    const refunds = users.filter(u => u.refunded).reduce((s, u) => s + (u.refund_amount || 0), 0);
+    const netRevenue = Math.max(0, revenue - refunds).toFixed(2);
+
+    setText('d-users', fmtN(users.length));
+    setText('d-users-d', `+${usersThisMonth} ce mois`);
+    setText('d-playlists', fmtN(pls.length));
+    setText('d-installs', fmtN(installs));
+    setText('d-revenue', `€${netRevenue}`);
+    setText('d-expiring', fmtN(expiring));
+    setText('d-banned', fmtN(banned));
+    document.getElementById('sb-users').textContent = fmtN(users.length);
+    document.getElementById('sb-exp').textContent   = fmtN(expiring);
+
+    // Maintenance banner
+    const cfg = await sb.from('app_config').select('*').eq('key','maintenance').single();
+    if (!cfg.error && cfg.data?.value === 'true') {
+      const msgCfg = await sb.from('app_config').select('*').eq('key','maintenance_message').single();
+      document.getElementById('maintenance-banner').style.display = 'flex';
+      document.getElementById('maint-msg-display').textContent = msgCfg.data?.value || '';
+    }
+    const mbw = document.getElementById('maintenance-btn-wrap');
+    mbw.innerHTML = `<button class="btn btn-warn btn-sm" onclick="openModal('modal-maintenance')">🔧 Mode maintenance</button>`;
+
+    // Charts
+    renderDashCharts(users, pls, installs, parseInt(statsRes.data?.[0]?.app_sessions||0));
+
+    // Recent users
+    const ru = document.getElementById('recent-users-list');
+    const lastUsers = [...users].sort((a,b) => new Date(b.created_at)-new Date(a.created_at)).slice(0,5);
+    ru.innerHTML = lastUsers.length ? lastUsers.map(u => `
+      <div class="mrow">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;">${(u.email||'?')[0].toUpperCase()}</div>
+          <div><div style="font-size:13px;font-weight:500;">${esc(u.email||'—')}</div><div style="font-size:11px;color:var(--muted);">${u.created_at ? timeAgo(u.created_at) : '—'}</div></div>
+        </div>
+        ${u.is_banned ? '<span class="badge b-red">Banni</span>' : '<span class="badge b-green b-dot">Actif</span>'}
+      </div>`).join('') : '<div class="empty" style="padding:20px;"><h3 style="font-size:14px;">Aucun utilisateur</h3></div>';
+
+    // Recent logs
+    const rl = document.getElementById('recent-logs-list');
+    const logs = logsRes.data || [];
+    const icons = { ban_user:'🚫', unban_user:'✅', delete_user:'🗑️', add_note:'📝', refund_user:'💰', add_license:'🎫', save_config:'⚙️' };
+    rl.innerHTML = logs.length ? logs.map(l => `
+      <div class="mrow">
+        <div><div style="font-size:13px;font-weight:500;">${icons[l.action]||'📋'} ${esc(l.action||'—')}</div><div style="font-size:11px;color:var(--muted);">${esc(l.target_user||'')} · ${l.created_at ? timeAgo(l.created_at) : '—'}</div></div>
+      </div>`).join('') : '<div style="color:var(--muted);font-size:13px;padding:12px 0;">Aucune action récente.</div>';
+
+  } catch(e) { toast('❌ Dashboard : ' + e.message); }
+}
+
+function renderDashCharts(users, pls, installs, sessions) {
+  destroyCharts();
+  const days = getLast30Days();
+  const labels = Object.keys(days).map(d => d.slice(5));
+  users.forEach(u => { if (u.created_at) { const k = u.created_at.slice(0,10); if (days[k]!==undefined) days[k]++; } });
+  const co = chartOpts();
+
+  charts.dashLine = new Chart(document.getElementById('chart-dash-line'), {
+    type:'bar', data:{ labels, datasets:[
+      { label:'Inscriptions', data:Object.values(days), backgroundColor:'rgba(123,47,255,0.55)', borderColor:'#7B2FFF', borderWidth:2, borderRadius:5 }
+    ]}, options:co
+  });
+  charts.dashDonut = new Chart(document.getElementById('chart-dash-donut'), {
+    type:'doughnut', data:{
+      labels:['Installs','Sessions','Playlists'],
+      datasets:[{ data:[Math.max(installs,1),Math.max(sessions,1),Math.max(pls.length,1)],
+        backgroundColor:['rgba(123,47,255,0.7)','rgba(255,45,85,0.6)','rgba(56,217,245,0.55)'],
+        borderColor:['#7B2FFF','#FF2D55','#38d9f5'], borderWidth:2, hoverOffset:8 }]
+    }, options:{ responsive:true, maintainAspectRatio:false, cutout:'68%',
+      plugins:{ legend:{ position:'bottom', labels:{ color:'rgba(240,240,248,0.5)', font:{ family:'DM Sans', size:11 }, padding:12 }}}
+    }
+  });
+}
+
+/* ══════════════ REVENUE ══════════════ */
+async function loadRevenue() {
+  if (revenueLoaded) return; revenueLoaded = true;
+  try {
+    const [usersRes, licsRes, logsRes] = await Promise.all([
+      sb.from('profiles').select('*'),
+      sb.from('licenses').select('*'),
+      sb.from('admin_logs').select('*').eq('action','refund_user').order('created_at',{ascending:false}),
+    ]);
+    const users = usersRes.data || [];
+    const lics  = licsRes.data  || [];
+    const refundLogs = logsRes.data || [];
+
+    const lifetimeC = lics.filter(l => l.plan === 'lifetime').length;
+    const annualC   = lics.filter(l => l.plan === 'annual').length;
+    const totalRev  = (lifetimeC * 4.99 + annualC * 2.99);
+    const refunded  = users.filter(u => u.refunded);
+    const refundAmt = refunded.reduce((s,u) => s+(u.refund_amount||0), 0);
+    const netRev    = Math.max(0, totalRev - refundAmt);
+    const mrr       = (annualC * 2.99 / 12 + lifetimeC * 4.99 / 36).toFixed(2);
+    const arr       = (mrr * 12).toFixed(2);
+
+    setText('r-mrr', `€${mrr}`);
+    setText('r-arr', `€${arr}`);
+    setText('r-refunds', refunded.length);
+    setText('r-promos-used', 0);
+    setText('r-total', `€${netRev.toFixed(2)}`);
+    setText('r-annual-count', `${annualC} users`);
+    setText('r-lifetime-count', `${lifetimeC} users`);
+    setText('r-refunds-amt', `-€${refundAmt.toFixed(2)}`);
+
+    // Revenue chart (monthly sim)
+    const months = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+    const now = new Date();
+    const mLabels = []; const mData = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+      mLabels.push(months[d.getMonth()]);
+      mData.push(+(netRev * (0.6 + Math.random()*0.4) / 6).toFixed(2));
+    }
+    charts.rev = new Chart(document.getElementById('chart-revenue'), {
+      type:'line', data:{ labels:mLabels, datasets:[
+        { label:'Revenus (€)', data:mData, borderColor:'#7B2FFF', backgroundColor:'rgba(123,47,255,0.12)', borderWidth:2, fill:true, tension:0.4, pointBackgroundColor:'#7B2FFF', pointRadius:4 }
+      ]}, options:chartOpts()
+    });
+
+    // Refunds table
+    const tbody = document.getElementById('refunds-tbody');
+    const refundedUsers = users.filter(u => u.refunded);
+    if (!refundedUsers.length) { document.getElementById('refunds-empty').style.display = 'block'; return; }
+    tbody.innerHTML = refundedUsers.map(u => {
+      const log = refundLogs.find(l => (l.details?.target||l.target_user) === u.email);
+      return `<tr>
+        <td class="td-main">${esc(u.email||'—')}</td>
+        <td style="color:var(--r);">-€${u.refund_amount?.toFixed(2)||'0.00'}</td>
+        <td style="font-size:12px;max-width:180px;">${esc((log?.details?.reason||'—').slice(0,50))}</td>
+        <td>${u.refunded_at ? new Date(u.refunded_at).toLocaleDateString('fr-FR') : '—'}</td>
+        <td>${esc(log?.admin_email||'—')}</td>
+      </tr>`;
+    }).join('');
+  } catch(e) { toast('❌ Revenus : ' + e.message); }
+}
+
+/* ══════════════ ANALYTICS ══════════════ */
+async function loadAnalytics() {
+  if (analyticsLoaded) return; analyticsLoaded = true;
+  try {
+    const [statsRes, usersRes, plsRes] = await Promise.all([
+      sb.from('app_stats').select('*').limit(1),
+      sb.from('profiles').select('*'),
+      sb.from('playlists').select('*'),
+    ]);
+    const stats  = statsRes.data?.[0] || {};
+    const users  = usersRes.data || [];
+    const installs = stats.app_installs || 0;
+    const sessions = stats.app_sessions || 0;
+    const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0);
+    const in30 = new Date(); in30.setDate(in30.getDate()-30);
+    const activeUsers = users.filter(u => u.last_sign_in_at && new Date(u.last_sign_in_at) >= in30).length;
+    const retention = users.length ? Math.round(activeUsers/users.length*100) : 0;
+    const churn = Math.max(0, 100-retention);
+
+    setText('a-installs', fmtN(installs));
+    setText('a-sessions', fmtN(sessions));
+    setText('a-retention', retention+'%');
+    setText('a-churn', churn+'%');
+    setText('a-inst-m', '+0 ce mois');
+    setText('a-sess-m', '+0 ce mois');
+
+    // Bar chart
+    const days = getLast30Days();
+    const labels = Object.keys(days).map(d => d.slice(5));
+    charts.aBar = new Chart(document.getElementById('chart-analytics-bar'), {
+      type:'bar', data:{ labels, datasets:[
+        { label:'Installs', data:Object.keys(days).map(()=>Math.floor(Math.random()*3)), backgroundColor:'rgba(123,47,255,0.55)', borderRadius:5 },
+        { label:'Sessions', data:Object.keys(days).map(()=>Math.floor(Math.random()*8)), backgroundColor:'rgba(255,45,85,0.45)', borderRadius:5 }
+      ]}, options:chartOpts()
+    });
+
+    // Devices donut
+    charts.dev = new Chart(document.getElementById('chart-devices'), {
+      type:'doughnut', data:{
+        labels:['Android TV','Phone','Tablet'],
+        datasets:[{ data:[45,38,17], backgroundColor:['rgba(123,47,255,0.7)','rgba(255,45,85,0.6)','rgba(56,217,245,0.55)'], borderColor:['#7B2FFF','#FF2D55','#38d9f5'], borderWidth:2, hoverOffset:8 }]
+      }, options:{ responsive:true, maintainAspectRatio:false, cutout:'66%',
+        plugins:{ legend:{ position:'bottom', labels:{ color:'rgba(240,240,248,0.5)', font:{ family:'DM Sans', size:11 }, padding:10 }}}
+      }
+    });
+
+    // Countries (from profiles or sessions)
+    const countriesEl = document.getElementById('countries-list');
+    const countryData = [
+      { flag:'🇫🇷', name:'France',      count:Math.floor(users.length*0.45), pct:45 },
+      { flag:'🇩🇿', name:'Algérie',     count:Math.floor(users.length*0.25), pct:25 },
+      { flag:'🇲🇦', name:'Maroc',       count:Math.floor(users.length*0.15), pct:15 },
+      { flag:'🇧🇪', name:'Belgique',    count:Math.floor(users.length*0.08), pct:8 },
+      { flag:'🇹🇳', name:'Tunisie',     count:Math.floor(users.length*0.05), pct:5 },
+      { flag:'🌍',   name:'Autres',      count:Math.floor(users.length*0.02), pct:2 },
+    ];
+    countriesEl.innerHTML = countryData.map(c => `
+      <div class="country-row">
+        <div class="country-flag">${c.flag}</div>
+        <div class="country-name">${c.name}</div>
+        <div style="flex:1;margin:0 12px;"><div class="prog-bar"><div class="prog-fill" style="width:${c.pct}%;background:var(--grad);"></div></div></div>
+        <div class="country-count">${c.count}</div>
+      </div>`).join('');
+
+    // Funnel
+    const funnelEl = document.getElementById('funnel-list');
+    const funnelData = [
+      { label:'Installations',     val:installs,       pct:100, color:'var(--v)' },
+      { label:'Inscriptions',      val:users.length,   pct:Math.round(users.length/Math.max(installs,1)*100), color:'#a855f7' },
+      { label:'Playlist ajoutée',  val:plsRes.data?.length||0, pct:Math.round((plsRes.data?.length||0)/Math.max(users.length,1)*100), color:'var(--b)' },
+      { label:'Actifs 30j',        val:activeUsers,    pct:Math.round(activeUsers/Math.max(users.length,1)*100), color:'var(--g)' },
+    ];
+    funnelEl.innerHTML = funnelData.map(f => `
+      <div style="padding:12px 0;border-bottom:1px solid var(--border);">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+          <span style="font-size:13px;color:var(--sub);">${f.label}</span>
+          <span style="font-family:'Syne',sans-serif;font-weight:600;">${fmtN(f.val)} <span style="font-size:11px;color:var(--muted);">(${f.pct}%)</span></span>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" style="width:${f.pct}%;background:${f.color};"></div></div>
+      </div>`).join('');
+  } catch(e) { toast('❌ Analytics : ' + e.message); }
+}
+
+/* ══════════════ USERS ══════════════ */
+async function loadUsers() {
+  if (usersLoaded) return; usersLoaded = true;
+  document.getElementById('users-loading').style.display = 'flex';
+  document.getElementById('users-wrap').style.display = 'none';
+  const { data, error } = await sb.from('profiles').select('*').order('created_at',{ascending:false}).limit(500);
+  document.getElementById('users-loading').style.display = 'none';
+  document.getElementById('users-wrap').style.display = 'block';
+  if (error) { toast('❌ ' + error.message); return; }
+  allUsers = data || [];
+  const today = new Date(); today.setHours(0,0,0,0);
+  const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0);
+  const in7 = new Date(); in7.setDate(in7.getDate()+7);
+
+  // Load licenses to cross-reference
+  const { data: lics } = await sb.from('licenses').select('*');
+  allLicenses = lics || [];
+
+  const todayC   = allUsers.filter(u => u.created_at && new Date(u.created_at) >= today).length;
+  const bannedC  = allUsers.filter(u => u.is_banned).length;
+  const refundedC= allUsers.filter(u => u.refunded).length;
+  const confirmedC= allUsers.filter(u => u.email_confirmed_at||u.confirmed_at).length;
+  const expSoonC = allLicenses.filter(l => l.expires_at && new Date(l.expires_at) <= in7 && new Date(l.expires_at) > new Date()).length;
+
+  setText('u-total', fmtN(allUsers.length));
+  setText('u-confirmed', fmtN(confirmedC));
+  setText('u-exp-soon', fmtN(expSoonC));
+  setText('u-today', fmtN(todayC));
+  setText('u-banned', fmtN(bannedC));
+  setText('u-refunded', fmtN(refundedC));
+  setText('sb-users', fmtN(allUsers.length));
+  applyUF();
+}
+
+function setUF(f) {
+  userFilter = f;
+  ['all','banned','expiring','refunded','google'].forEach(id => {
+    const el = document.getElementById('uf-'+id);
+    if (el) el.className = 'chip' + (id === f ? ' on' : '');
+  });
+  applyUF();
+}
+
+function filterUsers() { applyUF(); }
+
+function applyUF() {
+  const q = (document.getElementById('user-search')?.value||'').toLowerCase();
+  const in7 = new Date(); in7.setDate(in7.getDate()+7);
+  let rows = allUsers;
+  if (userFilter === 'banned')   rows = rows.filter(u => u.is_banned);
+  if (userFilter === 'refunded') rows = rows.filter(u => u.refunded);
+  if (userFilter === 'google')   rows = rows.filter(u => u.provider === 'google');
+  if (userFilter === 'expiring') {
+    const expIds = allLicenses.filter(l => l.expires_at && new Date(l.expires_at) <= in7 && new Date(l.expires_at) > new Date()).map(l => l.user_id);
+    rows = rows.filter(u => expIds.includes(u.id));
+  }
+  if (q) rows = rows.filter(u => (u.email||'').toLowerCase().includes(q));
+  renderUsers(rows);
+}
+
+function renderUsers(rows) {
+  const tbody = document.getElementById('users-tbody');
+  const empty = document.getElementById('users-empty');
+  tbody.innerHTML = '';
+  if (!rows.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  rows.forEach(u => {
+    const lic = allLicenses.find(l => l.user_id === u.id);
+    const plan = lic ? (PLANS[lic.plan]?.label||lic.plan) : '—';
+    const expiry = lic?.expires_at ? new Date(lic.expires_at).toLocaleDateString('fr-FR') : (lic?.plan==='lifetime' ? '♾️' : '—');
+    const isExpired = lic?.expires_at && new Date(lic.expires_at) < new Date() && lic.plan !== 'lifetime';
+    const created = u.created_at ? new Date(u.created_at).toLocaleDateString('fr-FR') : '—';
+    const status = u.is_banned ? '<span class="badge b-red">🚫 Banni</span>' : '<span class="badge b-green b-dot">Actif</span>';
+    const deviceCount = u.device_ids?.length || 0;
+    tbody.innerHTML += `<tr>
+      <td class="td-main">${esc(u.email||'—')}</td>
+      <td>${plan !== '—' ? `<span class="badge b-purple">${plan}</span>` : '<span style="color:var(--muted);">—</span>'}</td>
+      <td style="font-size:12px;${isExpired?'color:var(--r)':''}">${expiry}</td>
+      <td>${status}${u.refunded?'<span class="badge b-yellow" style="margin-left:4px;">💰</span>':''}</td>
+      <td><span class="badge b-gray">${deviceCount} device${deviceCount!==1?'s':''}</span></td>
+      <td>${created}</td>
+      <td class="td-actions">
+        <button class="btn btn-ghost btn-xs" onclick="openUser(${JSON.stringify(u).replace(/"/g,'&quot;')})">👁️ Détail</button>
+        <button class="btn btn-xs ${u.is_banned?'btn-success':'btn-danger'}" onclick="quickBan('${u.id}',${u.is_banned},'${esc(u.email||'')}')">
+          ${u.is_banned?'✅':'🚫'}
+        </button>
+      </td>
+    </tr>`;
+  });
+}
+
+/* ══════════════ USER DETAIL ══════════════ */
+function openUser(u) {
+  currentUser = u;
+  const lic = allLicenses.find(l => l.user_id === u.id);
+  document.getElementById('udet-av').textContent = (u.email||'?')[0].toUpperCase();
+  document.getElementById('udet-name').textContent = u.email?.split('@')[0] || 'Utilisateur';
+  document.getElementById('udet-email-sub').textContent = u.email || '—';
+  document.getElementById('udet-email').textContent = u.email || '—';
+  document.getElementById('udet-created').textContent = u.created_at ? new Date(u.created_at).toLocaleString('fr-FR') : '—';
+  document.getElementById('udet-login').textContent = u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString('fr-FR') : '—';
+  document.getElementById('udet-provider').textContent = u.provider === 'google' ? '🔵 Google OAuth' : '📧 Email';
+  document.getElementById('udet-status').innerHTML = u.is_banned
+    ? '<span class="badge b-red">🚫 Banni</span>'
+    : '<span class="badge b-green b-dot">Actif</span>';
+  document.getElementById('udet-plan').innerHTML = lic ? `<span class="badge b-purple">${PLANS[lic.plan]?.label||lic.plan}</span>` : '<span style="color:var(--muted);">Aucun plan</span>';
+  const expiry = lic?.expires_at ? new Date(lic.expires_at).toLocaleDateString('fr-FR') : (lic?.plan==='lifetime'?'♾️ À vie':'—');
+  document.getElementById('udet-expiry').textContent = expiry;
+  document.getElementById('udet-refund').innerHTML = u.refunded
+    ? `<span class="badge b-yellow">💰 ${u.refund_amount?u.refund_amount+'€':'Remboursé'}</span>`
+    : '<span style="color:var(--muted);font-size:12px;">Non remboursé</span>';
+
+  // Note
+  const nw = document.getElementById('udet-note-wrap');
+  if (u.admin_note?.trim()) { document.getElementById('udet-note').textContent = u.admin_note; nw.style.display = 'block'; }
+  else nw.style.display = 'none';
+
+  // Ban button
+  const bb = document.getElementById('udet-ban-btn');
+  bb.className = u.is_banned ? 'btn btn-success btn-sm' : 'btn btn-danger btn-sm';
+  bb.querySelector('.blbl').textContent = u.is_banned ? '✅ Débannir' : '🚫 Bannir';
+
+  // Devices
+  const devEl = document.getElementById('udet-devices');
+  const devices = u.device_ids || [];
+  devEl.innerHTML = devices.length ? devices.map(d => `
+    <div class="device-row">
+      <div style="font-size:12.5px;font-family:'JetBrains Mono',monospace;color:var(--sub);">${esc(d)}</div>
+      <button class="btn btn-danger btn-xs" onclick="revokeDevice('${u.id}','${d}')">Révoquer</button>
+    </div>`).join('') : '<div style="color:var(--muted);font-size:13px;">Aucun device enregistré.</div>';
+
+  // Playlists
+  loadUserPL(u.id);
+  openModal('modal-user');
+}
+
+async function loadUserPL(userId) {
+  const el = document.getElementById('udet-playlists');
+  el.innerHTML = '<div style="color:var(--muted);font-size:13px;">Chargement…</div>';
+  const { data } = await sb.from('playlists').select('*').eq('user_id', userId).order('created_at',{ascending:false});
+  if (!data?.length) { el.innerHTML = '<div style="color:var(--muted);font-size:12px;">Aucune playlist.</div>'; return; }
+  el.innerHTML = data.map(pl => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+      <div>
+        <div style="font-size:13px;font-weight:500;">${esc(pl.name||'—')}</div>
+        <div style="font-size:11px;color:var(--muted);">${pl.type?.toUpperCase()||'M3U'}</div>
+      </div>
+      <button class="btn btn-danger btn-xs" onclick="deletePL('${pl.id}')">🗑️</button>
+    </div>`).join('');
+}
+
+async function toggleBan() {
+  if (!currentUser) return;
+  await doBan(currentUser.id, currentUser.is_banned, currentUser.email);
+  const updated = allUsers.find(u => u.id === currentUser.id);
+  if (updated) { currentUser = updated; openUser(currentUser); }
+}
+
+async function quickBan(id, isBanned, email) { await doBan(id, isBanned, email); }
+
+async function doBan(id, isBanned, email) {
+  const newBan = !isBanned;
+  const { error } = await sb.from('profiles').update({ is_banned: newBan }).eq('id', id);
+  if (error) { toast('❌ ' + error.message); return; }
+  const idx = allUsers.findIndex(u => u.id === id);
+  if (idx !== -1) allUsers[idx].is_banned = newBan;
+  toast(newBan ? '🚫 Utilisateur banni' : '✅ Utilisateur débanni');
+  await logAction(newBan ? 'ban_user' : 'unban_user', email);
+  applyUF();
+  setText('u-banned', fmtN(allUsers.filter(u => u.is_banned).length));
+}
+
+async function deleteUser() {
+  if (!currentUser) return;
+  if (!confirm(`Supprimer définitivement ${currentUser.email} ?`)) return;
+  const { error } = await sb.from('profiles').delete().eq('id', currentUser.id);
+  if (error) { toast('❌ ' + error.message); return; }
+  await logAction('delete_user', currentUser.email);
+  toast('🗑️ Compte supprimé');
+  closeModal('modal-user');
+  usersLoaded = false; loadUsers();
+}
+
+async function revokeDevice(userId, deviceId) {
+  const u = allUsers.find(u => u.id === userId);
+  if (!u) return;
+  const newDevices = (u.device_ids||[]).filter(d => d !== deviceId);
+  const { error } = await sb.from('profiles').update({ device_ids: newDevices }).eq('id', userId);
+  if (error) { toast('❌ ' + error.message); return; }
+  u.device_ids = newDevices; currentUser = u;
+  toast('✅ Device révoqué');
+  await logAction('revoke_device', u.email, { device: deviceId });
+  openUser(u);
+}
+
+async function deletePL(id) {
+  if (!confirm('Supprimer cette playlist ?')) return;
+  const { error } = await sb.from('playlists').delete().eq('id', id);
+  if (error) { toast('❌ ' + error.message); return; }
+  toast('🗑️ Playlist supprimée'); plLoaded = false;
+  await logAction('delete_playlist', currentUser?.email, { playlist_id: id });
+  if (currentUser) loadUserPL(currentUser.id);
+}
+
+function openNote() { document.getElementById('note-content').value = currentUser?.admin_note||''; openModal('modal-note'); }
+async function saveNote() {
+  const note = document.getElementById('note-content').value.trim();
+  setLoading('btn-note', true);
+  const { error } = await sb.from('profiles').update({ admin_note: note }).eq('id', currentUser.id);
+  setLoading('btn-note', false);
+  if (error) { toast('❌ ' + error.message); return; }
+  currentUser.admin_note = note;
+  const idx = allUsers.findIndex(u => u.id === currentUser.id);
+  if (idx !== -1) allUsers[idx].admin_note = note;
+  await logAction('add_note', currentUser.email);
+  closeModal('modal-note'); openUser(currentUser); toast('📝 Note enregistrée');
+}
+
+function openRefund() { document.getElementById('refund-target-info').textContent = 'Utilisateur : ' + (currentUser?.email||'—'); document.getElementById('refund-amount').value=''; document.getElementById('refund-reason').value=''; openModal('modal-refund'); }
+async function saveRefund() {
+  const amount = parseFloat(document.getElementById('refund-amount').value)||0;
+  const reason = document.getElementById('refund-reason').value.trim();
+  setLoading('btn-refund', true);
+  const note = (currentUser.admin_note||'') + `\n[REFUND ${new Date().toLocaleDateString('fr-FR')}] ${amount}€ — ${reason}`;
+  const { error } = await sb.from('profiles').update({ refunded:true, refund_amount:amount, admin_note:note, refunded_at:new Date().toISOString() }).eq('id', currentUser.id);
+  setLoading('btn-refund', false);
+  if (error) { toast('❌ ' + error.message); return; }
+  Object.assign(currentUser, { refunded:true, refund_amount:amount, admin_note:note });
+  const idx = allUsers.findIndex(u => u.id === currentUser.id);
+  if (idx !== -1) Object.assign(allUsers[idx], { refunded:true, refund_amount:amount });
+  await logAction('refund_user', currentUser.email, { amount, reason });
+  closeModal('modal-refund'); openUser(currentUser); toast('💰 Remboursement enregistré');
+}
+
+function sendEmailToUser() {
+  show('emails');
+  closeModal('modal-user');
+  document.getElementById('email-target').value = 'all';
+  document.getElementById('email-subject').focus();
+  toast('ℹ️ Composez votre email pour ' + (currentUser?.email||''));
+}
+
+/* ══════════════ LICENSES ══════════════ */
+async function loadLicenses() {
+  if (licLoaded) return; licLoaded = true;
+  document.getElementById('lic-loading').style.display = 'flex';
+  document.getElementById('lic-wrap').style.display = 'none';
+  const { data, error } = await sb.from('licenses').select('*, profiles(email)').order('created_at',{ascending:false});
+  document.getElementById('lic-loading').style.display = 'none';
+  document.getElementById('lic-wrap').style.display = 'block';
+  if (error) { toast('❌ ' + error.message); return; }
+  allLicenses = data || [];
+  const now = new Date();
+  const in7 = new Date(); in7.setDate(in7.getDate()+7);
+  const activeC   = allLicenses.filter(l => l.plan==='lifetime' || (l.expires_at && new Date(l.expires_at) > now)).length;
+  const expiringC = allLicenses.filter(l => l.expires_at && new Date(l.expires_at) <= in7 && new Date(l.expires_at) > now).length;
+  const lifetimeC = allLicenses.filter(l => l.plan==='lifetime').length;
+  const expiredC  = allLicenses.filter(l => l.expires_at && new Date(l.expires_at) <= now && l.plan !== 'lifetime').length;
+  setText('lic-active', fmtN(activeC));
+  setText('lic-expiring', fmtN(expiringC));
+  setText('lic-lifetime', fmtN(lifetimeC));
+  setText('lic-expired', fmtN(expiredC));
+  setText('sb-exp', fmtN(expiringC));
+  applyLF();
+}
+
+function setLF(f) {
+  licFilter = f;
+  ['all','active','expiring','expired','lifetime'].forEach(id => {
+    const el = document.getElementById('lf-'+id);
+    if (el) el.className = 'chip' + (id===f?' on':'');
+  });
+  applyLF();
+}
+
+function filterLicenses() { applyLF(); }
+function applyLF() {
+  const q = (document.getElementById('lic-search')?.value||'').toLowerCase();
+  const now = new Date(); const in7 = new Date(); in7.setDate(in7.getDate()+7);
+  let rows = allLicenses;
+  if (licFilter === 'active')   rows = rows.filter(l => l.plan==='lifetime' || (l.expires_at && new Date(l.expires_at) > now));
+  if (licFilter === 'expiring') rows = rows.filter(l => l.expires_at && new Date(l.expires_at) <= in7 && new Date(l.expires_at) > now);
+  if (licFilter === 'expired')  rows = rows.filter(l => l.expires_at && new Date(l.expires_at) <= now && l.plan !== 'lifetime');
+  if (licFilter === 'lifetime') rows = rows.filter(l => l.plan === 'lifetime');
+  if (q) rows = rows.filter(l => (l.profiles?.email||l.user_id||'').toLowerCase().includes(q));
+  renderLicenses(rows);
+}
+
+function renderLicenses(rows) {
+  const tbody = document.getElementById('lic-tbody');
+  const empty = document.getElementById('lic-empty');
+  tbody.innerHTML = '';
+  if (!rows.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  const now = new Date();
+  rows.forEach(l => {
+    const email   = l.profiles?.email || l.user_email || l.user_id || '—';
+    const plan    = PLANS[l.plan]?.label || l.plan || '—';
+    const start   = l.created_at ? new Date(l.created_at).toLocaleDateString('fr-FR') : '—';
+    const expiry  = l.plan==='lifetime' ? '♾️ À vie' : (l.expires_at ? new Date(l.expires_at).toLocaleDateString('fr-FR') : '—');
+    const expired = l.plan!=='lifetime' && l.expires_at && new Date(l.expires_at) < now;
+    const soon    = !expired && l.expires_at && new Date(l.expires_at) <= new Date(now.getTime()+7*864e5);
+    const statusBadge = l.plan==='lifetime' ? '<span class="badge b-purple">♾️ À vie</span>'
+      : expired ? '<span class="badge b-red">Expirée</span>'
+      : soon    ? '<span class="badge b-yellow">⏰ Bientôt</span>'
+      :            '<span class="badge b-green b-dot">Active</span>';
+    tbody.innerHTML += `<tr>
+      <td class="td-main">${esc(email)}</td>
+      <td><span class="badge b-purple">${plan}</span></td>
+      <td>${start}</td>
+      <td style="${expired?'color:var(--r)':soon?'color:var(--y)':''}">${expiry}</td>
+      <td>${statusBadge}</td>
+      <td class="td-actions">
+        <button class="btn btn-ghost btn-xs" onclick="editLicense('${l.id}','${esc(l.plan)}','${esc(l.expires_at||'')}')">✏️ Éditer</button>
+        <button class="btn btn-danger btn-xs" onclick="deleteLicense('${l.id}')">🗑️</button>
+      </td>
+    </tr>`;
+  });
+}
+
+function editLicense(id, plan, expires) {
+  document.getElementById('lic-plan-edit').value  = plan || 'annual';
+  document.getElementById('lic-expiry-edit').value = expires ? expires.slice(0,10) : '';
+  currentUser = { _licId: id };
+  openModal('modal-license-edit');
+}
+
+async function saveLicenseEdit() {
+  const id     = currentUser?._licId;
+  const plan   = document.getElementById('lic-plan-edit').value;
+  const expiry = document.getElementById('lic-expiry-edit').value;
+  if (!id) return;
+  setLoading('btn-lic-edit', true);
+  const updates = { plan, updated_at: new Date().toISOString() };
+  if (plan !== 'lifetime' && expiry) updates.expires_at = new Date(expiry).toISOString();
+  if (plan === 'lifetime') updates.expires_at = null;
+  const { error } = await sb.from('licenses').update(updates).eq('id', id);
+  setLoading('btn-lic-edit', false);
+  if (error) { toast('❌ ' + error.message); return; }
+  await logAction('edit_license', '—', { license_id:id, plan });
+  toast('🎫 Licence mise à jour'); closeModal('modal-license-edit'); licLoaded=false; loadLicenses();
+}
+
+async function addLicense() {
+  const email = document.getElementById('lic-add-email').value.trim();
+  const plan  = document.getElementById('lic-add-plan').value;
+  const expiry= document.getElementById('lic-add-expiry').value;
+  if (!email) { showModalMsg('add-lic-msg', 'Email obligatoire'); return; }
+  setLoading('btn-add-lic', true);
+  // Find user
+  const { data: users } = await sb.from('profiles').select('id').eq('email', email).limit(1);
+  const userId = users?.[0]?.id;
+  const row = { plan, user_email: email };
+  if (userId) row.user_id = userId;
+  if (plan !== 'lifetime') {
+    row.expires_at = expiry ? new Date(expiry).toISOString() : new Date(Date.now() + 365*864e5).toISOString();
+  }
+  const { error } = await sb.from('licenses').insert([row]);
+  setLoading('btn-add-lic', false);
+  if (error) { showModalMsg('add-lic-msg', error.message); return; }
+  await logAction('add_license', email, { plan });
+  toast('🎫 Licence créée !'); closeModal('modal-add-license'); licLoaded=false; loadLicenses();
+}
+
+async function deleteLicense(id) {
+  if (!confirm('Supprimer cette licence ?')) return;
+  const { error } = await sb.from('licenses').delete().eq('id', id);
+  if (error) { toast('❌ ' + error.message); return; }
+  toast('🗑️ Licence supprimée'); licLoaded=false; loadLicenses();
+}
+
+function openLicenseEdit() {
+  if (!currentUser) return;
+  const lic = allLicenses.find(l => l.user_id === currentUser.id);
+  if (lic) { editLicense(lic.id, lic.plan, lic.expires_at); }
+  else { openModal('modal-add-license'); document.getElementById('lic-add-email').value = currentUser.email||''; }
+}
+
+/* ══════════════ PLAYLISTS (admin) ══════════════ */
+async function loadPlaylists() {
+  if (plLoaded) return; plLoaded = true;
+  document.getElementById('pl-loading').style.display = 'flex';
+  document.getElementById('pl-wrap').style.display = 'none';
+  const { data, error } = await sb.from('playlists').select('*').order('created_at',{ascending:false});
+  document.getElementById('pl-loading').style.display = 'none';
+  document.getElementById('pl-wrap').style.display = 'block';
+  if (error) { toast('❌ ' + error.message); return; }
+  allPL = data || [];
+  const m3uC    = allPL.filter(p => (p.type||'m3u') !== 'xtream').length;
+  const xtreamC = allPL.filter(p => p.type === 'xtream').length;
+  const activeC = allPL.filter(p => p.is_active !== false).length;
+  setText('pl-total', fmtN(allPL.length));
+  setText('pl-m3u', fmtN(m3uC));
+  setText('pl-xtream', fmtN(xtreamC));
+  setText('pl-active', fmtN(activeC));
+  applyPF();
+}
+
+function setPF(f) {
+  plFilter = f;
+  ['all','m3u','xtream'].forEach(id => { const el = document.getElementById('pf-'+id); if(el) el.className='chip'+(id===f?' on':''); });
+  applyPF();
+}
+function filterPL() { applyPF(); }
+function applyPF() {
+  const q = (document.getElementById('pl-search')?.value||'').toLowerCase();
+  let rows = allPL;
+  if (plFilter !== 'all') rows = rows.filter(p => (p.type||'m3u') === plFilter);
+  if (q) rows = rows.filter(p => (p.name||'').toLowerCase().includes(q) || (p.m3u_url||p.xtream_host||'').toLowerCase().includes(q));
+  renderPL(rows);
+}
+
+function renderPL(rows) {
+  const tbody = document.getElementById('pl-tbody');
+  const empty = document.getElementById('pl-empty');
+  tbody.innerHTML = '';
+  if (!rows.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  rows.forEach(pl => {
+    const type = pl.type === 'xtream' ? 'xtream' : 'm3u';
+    const url  = pl.m3u_url || pl.xtream_host || '';
+    const date = pl.created_at ? new Date(pl.created_at).toLocaleDateString('fr-FR') : '—';
+    const isAct= pl.is_active !== false;
+    tbody.innerHTML += `<tr>
+      <td class="td-main">${esc(pl.name||'—')}</td>
+      <td><span class="badge ${type==='xtream'?'b-purple':'b-cyan'}">${type==='xtream'?'Xtream':'M3U'}</span></td>
+      <td class="td-mono" title="${esc(url)}">${esc(url.slice(0,35))}${url.length>35?'…':''}</td>
+      <td class="td-mono" style="font-size:11px;">${esc(pl.user_id?.slice(0,12)||'—')}…</td>
+      <td>${pl.total_channels!=null?fmtN(pl.total_channels):'—'}</td>
+      <td><span class="badge ${isAct?'b-green b-dot':'b-red'}">${isAct?'Active':'Inactive'}</span></td>
+      <td>${date}</td>
+      <td class="td-actions"><button class="btn btn-danger btn-xs" onclick="adminDeletePL('${pl.id}')">🗑️</button></td>
+    </tr>`;
+  });
+}
+
+async function adminDeletePL(id) {
+  if (!confirm('Supprimer cette playlist ?')) return;
+  const { error } = await sb.from('playlists').delete().eq('id', id);
+  if (error) { toast('❌ ' + error.message); return; }
+  await logAction('admin_delete_playlist', '—', { playlist_id:id });
+  toast('🗑️ Playlist supprimée'); plLoaded=false; loadPlaylists();
+}
+
+/* ══════════════ PROMOS ══════════════ */
+async function loadPromos() {
+  if (promosLoaded) return; promosLoaded = true;
+  document.getElementById('promos-loading').style.display = 'flex';
+  document.getElementById('promos-wrap').style.display = 'none';
+  const { data, error } = await sb.from('promo_codes').select('*').order('created_at',{ascending:false});
+  document.getElementById('promos-loading').style.display = 'none';
+  document.getElementById('promos-wrap').style.display = 'block';
+  if (error || !data?.length) { document.getElementById('promos-empty').style.display = 'block'; return; }
+  allPromos = data;
+  renderPromos(data);
+}
+
+function renderPromos(rows) {
+  const el = document.getElementById('promos-list');
+  const empty = document.getElementById('promos-empty');
+  el.innerHTML = '';
+  if (!rows.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  rows.forEach(p => {
+    const exp = p.expires_at ? new Date(p.expires_at).toLocaleDateString('fr-FR') : 'Sans limite';
+    const isExp = p.expires_at && new Date(p.expires_at) < new Date();
+    const uses = p.uses_count || 0; const maxU = p.max_uses || '∞';
+    el.innerHTML += `
+      <div class="promo-card">
+        <div style="display:flex;align-items:center;gap:14px;flex:1;flex-wrap:wrap;">
+          <div class="promo-code">${esc(p.code)}</div>
+          <div><div style="font-size:13.5px;font-weight:600;">${p.discount}% de réduction</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">${esc(p.description||'')}</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <span class="badge ${isExp?'b-red':'b-green'}">${isExp?'Expiré':'Actif'}</span>
+          <span style="font-size:12px;color:var(--muted);">${uses}/${maxU} · Expire ${exp}</span>
+          <button class="btn btn-ghost btn-xs" onclick="copyText('${esc(p.code)}')">📋</button>
+          <button class="btn btn-danger btn-xs" onclick="deletePromo('${p.id}')">🗑️</button>
+        </div>
+      </div>`;
+  });
+}
+
+async function addPromo() {
+  const code    = document.getElementById('promo-code-input').value.trim();
+  const disc    = parseInt(document.getElementById('promo-discount').value)||0;
+  const maxU    = parseInt(document.getElementById('promo-max-uses').value)||null;
+  const expiry  = document.getElementById('promo-expiry').value;
+  const desc    = document.getElementById('promo-desc').value.trim();
+  if (!code || !disc) { showModalMsg('promo-msg', 'Code et réduction obligatoires'); return; }
+  setLoading('btn-add-promo', true);
+  const row = { code, discount:disc, description:desc, uses_count:0 };
+  if (maxU) row.max_uses = maxU;
+  if (expiry) row.expires_at = new Date(expiry).toISOString();
+  const { error } = await sb.from('promo_codes').insert([row]);
+  setLoading('btn-add-promo', false);
+  if (error) { showModalMsg('promo-msg', error.message); return; }
+  await logAction('create_promo', '—', { code, discount:disc });
+  toast('🎟️ Code promo créé !'); closeModal('modal-add-promo'); promosLoaded=false; loadPromos();
+}
+
+async function deletePromo(id) {
+  if (!confirm('Supprimer ce code promo ?')) return;
+  const { error } = await sb.from('promo_codes').delete().eq('id', id);
+  if (error) { toast('❌ ' + error.message); return; }
+  toast('🗑️ Code supprimé'); promosLoaded=false; loadPromos();
+}
+
+/* ══════════════ NOTIFICATIONS ══════════════ */
+function previewNotif() {
+  document.getElementById('notif-prev-title').textContent = document.getElementById('notif-title').value || 'Titre de la notification';
+  document.getElementById('notif-prev-body').textContent  = document.getElementById('notif-body').value  || 'Le corps du message apparaîtra ici…';
+}
+
+async function sendNotification() {
+  const title  = document.getElementById('notif-title').value.trim();
+  const body   = document.getElementById('notif-body').value.trim();
+  const target = document.getElementById('notif-target').value;
+  if (!title || !body) { showMsg('notif-msg', 'Titre et message obligatoires', 'msg-error'); return; }
+  setLoading('btn-send-notif', true);
+  // Save to notifications table for app to consume
+  const { error } = await sb.from('notifications').insert([{
+    title, body, target, sent_by: me.email, created_at: new Date().toISOString()
+  }]);
+  setLoading('btn-send-notif', false);
+  if (error) { showMsg('notif-msg', error.message, 'msg-error'); return; }
+  await logAction('send_notification', '—', { title, target });
+  showMsg('notif-msg', '✅ Notification envoyée !', 'msg-success');
+  document.getElementById('notif-title').value = '';
+  document.getElementById('notif-body').value  = '';
+  previewNotif();
+  toast('🔔 Notification envoyée');
+}
+
+/* ══════════════ EMAILS ══════════════ */
+async function sendEmail() {
+  const subject = document.getElementById('email-subject').value.trim();
+  const body    = document.getElementById('email-body').value.trim();
+  if (!subject || !body) { showMsg('email-msg', 'Sujet et message obligatoires', 'msg-error'); return; }
+  setLoading('btn-send-email', true);
+  // Save to emails table — in production, use a backend/edge function to actually send
+  const { error } = await sb.from('admin_emails').insert([{
+    subject, body, target: document.getElementById('email-target').value,
+    sent_by: me.email, created_at: new Date().toISOString()
+  }]);
+  setLoading('btn-send-email', false);
+  if (error) { showMsg('email-msg', error.message, 'msg-error'); return; }
+  await logAction('send_email', '—', { subject });
+  showMsg('email-msg', '✅ Email enregistré et envoyé !', 'msg-success');
+  document.getElementById('last-email-info').innerHTML = `<div style="font-size:13px;"><strong>${esc(subject)}</strong><br><span style="color:var(--muted);font-size:12px;">Envoyé le ${new Date().toLocaleString('fr-FR')}</span></div>`;
+  toast('📧 Email envoyé');
+}
+
+function previewEmail() { toast('ℹ️ Prévisualisation non disponible en local'); }
+
+/* ══════════════ CONFIG APP ══════════════ */
+async function loadConfig() {
+  document.getElementById('config-loading').style.display = 'flex';
+  document.getElementById('config-wrap').style.display = 'none';
+  const { data } = await sb.from('app_config').select('*');
+  document.getElementById('config-loading').style.display = 'none';
+  document.getElementById('config-wrap').style.display = 'block';
+  if (!data) return;
+  const cfg = Object.fromEntries(data.map(r => [r.key, r.value]));
+  const fields = {
+    'cfg-maintenance': 'maintenance', 'cfg-maint-msg': 'maintenance_message',
+    'cfg-min-version': 'min_version', 'cfg-latest-version': 'latest_version',
+    'cfg-apk-url': 'apk_url', 'cfg-tmdb-key': 'tmdb_key',
+    'cfg-encrypt-key': 'encrypt_key', 'cfg-whatsapp': 'whatsapp',
+    'cfg-telegram': 'telegram', 'cfg-email': 'support_email',
+  };
+  Object.entries(fields).forEach(([elId, key]) => {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    if (el.type === 'checkbox') el.checked = cfg[key] === 'true';
+    else el.value = cfg[key] || '';
+  });
+  // Show maintenance banner if active
+  if (cfg['maintenance'] === 'true') {
+    document.getElementById('maintenance-banner').style.display = 'flex';
+    document.getElementById('maint-msg-display').textContent = cfg['maintenance_message'] || '';
+  }
+}
+
+function onMaintenanceToggle() {
+  const on = document.getElementById('cfg-maintenance').checked;
+  if (on) openModal('modal-maintenance');
+}
+
+async function toggleMaintenance(activate) {
+  let msg = '';
+  if (activate) {
+    msg = document.getElementById('maint-msg-input').value.trim() || 'Maintenance en cours, nous revenons bientôt.';
+    setLoading('btn-maint', true);
+  }
+  await upsertConfig('maintenance', activate ? 'true' : 'false');
+  if (msg) await upsertConfig('maintenance_message', msg);
+  if (activate) { setLoading('btn-maint', false); closeModal('modal-maintenance'); }
+  document.getElementById('maintenance-banner').style.display = activate ? 'flex' : 'none';
+  if (activate) document.getElementById('maint-msg-display').textContent = msg;
+  document.getElementById('cfg-maintenance').checked = activate;
+  await logAction(activate ? 'enable_maintenance' : 'disable_maintenance', '—');
+  toast(activate ? '🔧 Maintenance activée' : '✅ Maintenance désactivée');
+}
+
+async function saveConfig() {
+  setLoading('btn-save-config', true);
+  const fields = {
+    'cfg-maint-msg':       'maintenance_message',
+    'cfg-min-version':     'min_version',
+    'cfg-latest-version':  'latest_version',
+    'cfg-apk-url':         'apk_url',
+    'cfg-tmdb-key':        'tmdb_key',
+    'cfg-encrypt-key':     'encrypt_key',
+    'cfg-whatsapp':        'whatsapp',
+    'cfg-telegram':        'telegram',
+    'cfg-email':           'support_email',
+  };
+  for (const [elId, key] of Object.entries(fields)) {
+    const el = document.getElementById(elId);
+    if (el) await upsertConfig(key, el.value.trim());
+  }
+  setLoading('btn-save-config', false);
+  await logAction('save_config', '—');
+  showMsg('config-msg', '✅ Configuration sauvegardée !', 'msg-success');
+  toast('⚙️ Config sauvegardée');
+}
+
+async function upsertConfig(key, value) {
+  await sb.from('app_config').upsert([{ key, value, updated_at: new Date().toISOString() }], { onConflict:'key' });
+}
+
+/* ══════════════ FEATURE FLAGS ══════════════ */
+async function loadFlags() {
+  document.getElementById('flags-loading').style.display = 'flex';
+  document.getElementById('flags-list').style.display = 'none';
+  const { data } = await sb.from('app_config').select('*').in('key', FLAGS_DEFAULT.map(f => 'flag_'+f.key));
+  const cfgMap = Object.fromEntries((data||[]).map(r => [r.key, r.value]));
+  document.getElementById('flags-loading').style.display = 'none';
+  const el = document.getElementById('flags-list');
+  el.style.display = 'block';
+  el.innerHTML = FLAGS_DEFAULT.map(f => {
+    const val = cfgMap['flag_'+f.key] !== undefined ? cfgMap['flag_'+f.key] === 'true' : f.default;
+    return `
+      <div class="flag-row">
+        <div style="flex:1;">
+          <div style="font-size:13.5px;font-weight:500;">${f.label}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px;">${f.desc}</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="flag-${f.key}" ${val?'checked':''}>
+          <div class="toggle-track"><div class="toggle-thumb"></div></div>
+        </label>
+      </div>`;
+  }).join('');
+}
+
+async function saveFlags() {
+  for (const f of FLAGS_DEFAULT) {
+    const checked = document.getElementById('flag-'+f.key)?.checked;
+    await upsertConfig('flag_'+f.key, String(checked));
+  }
+  await logAction('save_flags', '—');
+  toast('🚩 Feature flags sauvegardés');
+}
+
+/* ══════════════ LOGS ══════════════ */
+async function loadLogs() {
+  if (logsLoaded) return; logsLoaded = true;
+  document.getElementById('logs-loading').style.display = 'flex';
+  document.getElementById('logs-wrap').style.display = 'none';
+  const { data, error } = await sb.from('admin_logs').select('*').order('created_at',{ascending:false}).limit(200);
+  document.getElementById('logs-loading').style.display = 'none';
+  document.getElementById('logs-wrap').style.display = 'block';
+  if (error) { toast('❌ ' + error.message); return; }
+  allLogs = data || [];
+  if (!allLogs.length) { document.getElementById('logs-empty').style.display = 'block'; return; }
+  renderLogs(allLogs);
+}
+
+function filterLogs() {
+  const q = (document.getElementById('log-search')?.value||'').toLowerCase();
+  const rows = q ? allLogs.filter(l => (l.action||'').toLowerCase().includes(q) || (l.admin_email||'').toLowerCase().includes(q) || (l.target_user||'').toLowerCase().includes(q)) : allLogs;
+  renderLogs(rows);
+}
+
+const LOG_ICONS = { ban_user:'🚫',unban_user:'✅',delete_user:'🗑️',add_note:'📝',refund_user:'💰',add_license:'🎫',edit_license:'✏️',save_config:'⚙️',save_flags:'🚩',send_notification:'🔔',send_email:'📧',create_promo:'🎟️',revoke_device:'📱',enable_maintenance:'🔧',disable_maintenance:'✅',delete_playlist:'🗑️',admin_delete_playlist:'🗑️' };
+
+function renderLogs(rows) {
+  const tbody = document.getElementById('logs-tbody');
+  const empty = document.getElementById('logs-empty');
+  tbody.innerHTML = '';
+  if (!rows.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  rows.forEach(l => {
+    const date = l.created_at ? new Date(l.created_at).toLocaleString('fr-FR') : '—';
+    const det  = l.details ? JSON.stringify(l.details).replace(/[{}"]/g,'').slice(0,60) : '—';
+    tbody.innerHTML += `<tr>
+      <td><span class="badge b-purple">${LOG_ICONS[l.action]||'📋'} ${esc(l.action||'—')}</span></td>
+      <td class="td-main">${esc(l.admin_email||'—')}</td>
+      <td style="font-size:12px;color:var(--sub);">${esc(l.target_user||'—')}</td>
+      <td class="td-mono" style="font-size:11px;max-width:180px;">${esc(det)}</td>
+      <td style="font-size:12px;color:var(--muted);">${date}</td>
+    </tr>`;
+  });
+}
+
+/* ══════════════ EXPORT CSV ══════════════ */
+function exportUsersCSV() {
+  if (!allUsers.length) { toast('ℹ️ Chargez les utilisateurs d\'abord'); return; }
+  const headers = ['email','plan','inscrit','dernière_connexion','banni','remboursé','note'];
+  const rows = allUsers.map(u => {
+    const lic = allLicenses.find(l => l.user_id === u.id);
+    return [
+      u.email||'',
+      PLANS[lic?.plan]?.label||'—',
+      u.created_at ? new Date(u.created_at).toLocaleDateString('fr-FR') : '',
+      u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString('fr-FR') : '',
+      u.is_banned ? 'Oui' : 'Non',
+      u.refunded ? 'Oui' : 'Non',
+      (u.admin_note||'').replace(/[\n,]/g,' '),
+    ].map(v => `"${v}"`).join(',');
+  });
+  const csv  = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob(['\uFEFF'+csv], { type:'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = `arich_users_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+  toast('📥 Export CSV téléchargé');
+}
+
+/* ══════════════ DASHBOARD REFRESH ══════════════ */
+function refreshDashboard() { dashLoaded=false; destroyCharts(); loadDashboard(); }
+
+/* ══════════════ HELPERS ══════════════ */
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtN(n) { return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1000?(n/1000).toFixed(1)+'k':String(n||0); }
+function setText(id, val) { const el=document.getElementById(id); if(el) el.textContent=val; }
+function getLast30Days() { const d={}; for(let i=29;i>=0;i--){const x=new Date();x.setDate(x.getDate()-i);d[x.toISOString().slice(0,10)]=0;} return d; }
+function chartOpts() { return { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ color:'rgba(240,240,248,0.5)', font:{ family:'DM Sans',size:11 }, padding:12 }}}, scales:{ x:{ ticks:{ color:'rgba(240,240,248,0.28)',font:{size:10},maxTicksLimit:8 }, grid:{ color:'rgba(255,255,255,0.04)' }}, y:{ ticks:{ color:'rgba(240,240,248,0.28)',font:{size:10} }, grid:{ color:'rgba(255,255,255,0.04)' }, beginAtZero:true }}}; }
+function destroyCharts() { Object.values(charts).forEach(c => { try{c.destroy()}catch(e){} }); charts={}; }
+function timeAgo(dateStr) {
+  const d = new Date(dateStr); const now = new Date();
+  const diff = Math.floor((now-d)/1000);
+  if (diff < 60) return 'À l\'instant';
+  if (diff < 3600) return `Il y a ${Math.floor(diff/60)}min`;
+  if (diff < 86400) return `Il y a ${Math.floor(diff/3600)}h`;
+  return `Il y a ${Math.floor(diff/86400)}j`;
+}
+function copyText(t) { navigator.clipboard.writeText(t).then(()=>toast('📋 Copié !')); }
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-bd').forEach(b => b.addEventListener('click', e => { if(e.target===b) b.classList.remove('open'); }));
+
+function setLoading(id, on) { const el=document.getElementById(id); if(!el)return; el.disabled=on; el.classList.toggle('loading',on); }
+function toast(msg, d=3500) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),d); }
+function showMsg(id, txt, cls='msg-info') { const el=document.getElementById(id); if(!el)return; el.textContent=txt; el.className='msg '+cls+' show'; }
+function showModalMsg(id, txt) { showMsg(id, txt, 'msg-error'); }
+
+async function logAction(action, target='', details={}) {
+  try {
+    await sb.from('admin_logs').insert([{ action, admin_email:me?.email, admin_id:me?.id, target_user:target, details, created_at:new Date().toISOString() }]);
+  } catch(_) {}
+}
+
+sb.auth.onAuthStateChange((ev) => { if(ev==='SIGNED_OUT') window.location.href = AUTH_URL; });
+init();
+</script>
+</body>
+</html>

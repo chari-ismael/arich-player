@@ -1469,7 +1469,7 @@ function openDevice(d) {
   setText('ddet-android-ver', d.android_version||'—');
   setText('ddet-app-ver', d.app_version||'—');
   setText('ddet-ip', d.ip_address||'—');
-  setText('ddet-country', d.country||(d.country_code?`(${d.country_code})`):'—');
+  setText('ddet-country', d.country||(d.country_code?`(${d.country_code})`:'—'));
   setText('ddet-first-seen', d.first_seen_at?new Date(d.first_seen_at).toLocaleString('fr-FR'):'—');
   setText('ddet-last-seen', d.last_seen_at?new Date(d.last_seen_at).toLocaleString('fr-FR'):'—');
 

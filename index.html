@@ -298,18 +298,78 @@
     h2 { font-family: 'Syne', sans-serif; font-size: clamp(30px, 4vw, 48px); font-weight: 800; letter-spacing: -1.5px; line-height: 1.1; }
     .section-sub { font-size: 15px; color: var(--muted); line-height: 1.7; max-width: 500px; margin-top: 14px; }
 
-    /* ── DISCLAIMER BANNER ─────────────────────────── */
-    .disclaimer-banner {
-      background: rgba(255,214,10,0.06);
-      border: 1px solid rgba(255,214,10,0.2);
-      border-radius: 14px;
-      padding: 16px 22px;
-      display: flex; align-items: flex-start; gap: 12px;
-      font-size: 13px; color: var(--muted); line-height: 1.6;
-      margin-bottom: 20px;
+    /* ── HERO STAT SEP ─── */
+    .hero-stat-sep { width: 1px; height: 32px; background: rgba(255,255,255,0.12); flex-shrink: 0; }
+    @media (max-width: 480px) { .hero-stat-sep { display: none; } .hero-stats { gap: 12px 20px; flex-wrap: wrap; } }
+
+    /* ── DISCLAIMER POPUP ───────────────────────────── */
+    .disclaimer-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.72);
+      backdrop-filter: blur(10px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      animation: fadeIn 0.3s ease;
     }
-    .disclaimer-banner .disc-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-    .disclaimer-banner strong { color: rgba(255,214,10,0.9); display: block; margin-bottom: 3px; font-size: 13px; }
+    .disclaimer-popup {
+      background: #111118;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 24px;
+      max-width: 480px; width: 100%;
+      padding: 36px 32px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.7);
+      animation: popupIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+    @keyframes popupIn { from { opacity:0; transform:scale(0.92) translateY(20px); } to { opacity:1; transform:none; } }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+    .disc-popup-icon { font-size: 44px; margin-bottom: 16px; display: block; }
+    .disc-popup-title {
+      font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700;
+      margin-bottom: 14px; letter-spacing: -0.02em;
+    }
+    .disc-popup-body { font-size: 13.5px; color: rgba(255,255,255,0.6); line-height: 1.75; margin-bottom: 24px; }
+    .disc-popup-body strong { color: rgba(255,255,255,0.85); }
+    .disc-popup-btn {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, #7B2FFF, #FF2D55);
+      color: white; border: none; border-radius: 12px;
+      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .disc-popup-btn:hover { box-shadow: 0 8px 28px rgba(123,47,255,0.45); transform: translateY(-1px); }
+
+    /* ── COOKIE BANNER ───────────────────────────────── */
+    .cookie-banner {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 900;
+      background: rgba(10,10,18,0.97);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(20px);
+      padding: 18px 32px;
+      display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+      transform: translateY(100%);
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .cookie-banner.show { transform: translateY(0); }
+    .cookie-text { flex: 1; font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.6; min-width: 200px; }
+    .cookie-text a { color: #7B2FFF; text-decoration: none; }
+    .cookie-actions { display: flex; gap: 10px; flex-shrink: 0; flex-wrap: wrap; }
+    .cookie-btn {
+      padding: 9px 20px; border-radius: 10px; font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 600; cursor: pointer; border: none;
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .cookie-btn-accept { background: linear-gradient(135deg,#7B2FFF,#FF2D55); color: white; }
+    .cookie-btn-accept:hover { box-shadow: 0 4px 18px rgba(123,47,255,0.4); }
+    .cookie-btn-reject { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.12); }
+    .cookie-btn-reject:hover { background: rgba(255,255,255,0.12); color: white; }
+
+    @media (max-width: 600px) {
+      .cookie-banner { padding: 16px 18px; }
+      .cookie-actions { width: 100%; }
+      .cookie-btn { flex: 1; text-align: center; }
+      .disc-popup-icon { font-size: 36px; }
+      .disclaimer-popup { padding: 28px 22px; }
+    }
 
     /* ── FEATURES ──────────────────────────────────── */
     .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 60px; }
@@ -556,10 +616,12 @@
           <span>Xtream</span>
           <span>& M3U natif</span>
         </div>
+        <div class="hero-stat-sep"></div>
         <div class="hero-stat">
           <span>4K / HD</span>
           <span>Qualité max</span>
         </div>
+        <div class="hero-stat-sep"></div>
         <div class="hero-stat">
           <span>Android</span>
           <span>6.0+</span>
@@ -607,14 +669,29 @@
   </div>
 </div>
 
-<!-- ── DISCLAIMER LÉGAL ──────────────────────────── -->
-<div style="max-width:900px;margin:0 auto;padding:0 48px;">
-  <div class="disclaimer-banner">
-    <span class="disc-icon">ℹ️</span>
-    <div>
-      <strong>Arich IPTV est un lecteur multimédia — nous ne fournissons aucun contenu.</strong>
-      Cette application est un outil technique permettant de lire des flux vidéo depuis vos propres accès IPTV (Xtream Codes, playlists M3U). Vous devez disposer de votre propre abonnement IPTV auprès du fournisseur de votre choix. Arich IPTV n'est pas responsable du contenu diffusé via l'application.
+<!-- ── DISCLAIMER POPUP ──────────────────────────── -->
+<div class="disclaimer-overlay" id="disclaimer-overlay" style="display:none;">
+  <div class="disclaimer-popup">
+    <span class="disc-popup-icon">📺</span>
+    <div class="disc-popup-title">Avant de continuer</div>
+    <div class="disc-popup-body">
+      <strong>Arich IPTV est un lecteur multimédia — nous ne fournissons aucun contenu.</strong><br><br>
+      Cette application est un outil technique permettant de lire des flux vidéo depuis vos propres accès IPTV (Xtream Codes, playlists M3U).<br><br>
+      Vous devez disposer de votre propre abonnement IPTV auprès du fournisseur de votre choix. Arich IPTV n'est pas responsable du contenu diffusé via l'application.
     </div>
+    <button class="disc-popup-btn" onclick="acceptDisclaimer()">J'ai compris, continuer →</button>
+  </div>
+</div>
+
+<!-- ── COOKIE BANNER ──────────────────────────── -->
+<div class="cookie-banner" id="cookie-banner">
+  <div class="cookie-text">
+    Nous utilisons des cookies <strong style="color:rgba(255,255,255,0.8);">essentiels</strong> pour maintenir votre session, des cookies <strong style="color:rgba(255,255,255,0.8);">analytiques</strong> pour améliorer l'app, et des cookies de <strong style="color:rgba(255,255,255,0.8);">préférences</strong> pour personnaliser votre expérience.
+    <a href="privacy-policy.html"> En savoir plus</a>
+  </div>
+  <div class="cookie-actions">
+    <button class="cookie-btn cookie-btn-reject" onclick="rejectCookies()">Refuser</button>
+    <button class="cookie-btn cookie-btn-accept" onclick="acceptCookies()">Accepter tout</button>
   </div>
 </div>
 
@@ -821,11 +898,11 @@
           <span>Réponse rapide · +33 6 00 00 00 00</span>
         </div>
       </a>
-      <a href="mailto:arich-iptv@proton.me" class="contact-chip" data-umami-event="contact-email">
+      <a href="/cdn-cgi/l/email-protection#87e6f5eee4efaaeef7f3f1c7f7f5e8f3e8e9a9eae2" class="contact-chip" data-umami-event="contact-email">
         <div class="contact-chip-icon" style="background:rgba(10,132,255,0.1);">✉️</div>
         <div class="contact-chip-text">
           <strong>Email</strong>
-          <span>arich-iptv@proton.me</span>
+          <span><span class="__cf_email__" data-cfemail="9effecf7fdf6b3f7eeeae8deeeecf1eaf1f0b0f3fb">[email&#160;protected]</span></span>
         </div>
       </a>
       <a href="https://t.me/arichiptv" target="_blank" class="contact-chip" data-umami-event="contact-telegram">
@@ -874,7 +951,7 @@
   </div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // ── Custom cursor ─────────────────────────────────────────────────────────
   const cursor = document.getElementById('cursor');
   const ring   = document.getElementById('cursor-ring');
@@ -954,6 +1031,35 @@
     setTimeout(() => t.classList.remove('show'), 3000);
   }
 
+  // ── Disclaimer popup ─────────────────────────────────────────────────────
+  function acceptDisclaimer() {
+    sessionStorage.setItem('disclaimer_accepted', '1');
+    document.getElementById('disclaimer-overlay').style.display = 'none';
+    // Show cookie banner after disclaimer
+    if (!localStorage.getItem('cookie_choice')) {
+      setTimeout(() => document.getElementById('cookie-banner').classList.add('show'), 600);
+    }
+  }
+
+  if (!sessionStorage.getItem('disclaimer_accepted')) {
+    document.getElementById('disclaimer-overlay').style.display = 'flex';
+  } else if (!localStorage.getItem('cookie_choice')) {
+    setTimeout(() => document.getElementById('cookie-banner').classList.add('show'), 1000);
+  }
+
+  // ── Cookie banner ─────────────────────────────────────────────────────────
+  function acceptCookies() {
+    localStorage.setItem('cookie_choice', 'accepted');
+    document.getElementById('cookie-banner').classList.remove('show');
+    // Initialize analytics if accepted
+    console.log('[ARICH] Cookies analytiques activés');
+  }
+
+  function rejectCookies() {
+    localStorage.setItem('cookie_choice', 'rejected');
+    document.getElementById('cookie-banner').classList.remove('show');
+  }
+
   // ── Tracking sessions site (Supabase) ────────────────────────────────────
   const SUPABASE_URL  = 'https://aynucieohuowgkwyftiy.supabase.co';
   const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk';
@@ -990,16 +1096,3 @@
           user_agent:       navigator.userAgent,
           created_at:       new Date().toISOString(),
         }),
-      });
-    } catch (_) {}
-  }
-
-  window.addEventListener('beforeunload', _sendSiteSession);
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') _sendSiteSession();
-  });
-</script>
-
-</body>
-</html>
-

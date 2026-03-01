@@ -723,7 +723,7 @@ function renderPlaylists() {
     const syncB = p.last_synced_at
       ? `<span class="badge b-gray">${timeAgo(p.last_synced_at)}</span>`
       : '<span class="badge b-gray">Jamais</span>';
-    const server = p.type === 'xtream' ? (p.server_url || '—') : (p.m3u_url || '—');
+    const server = p.type === 'xtream' ? (p.xtream_host || '—') : (p.m3u_url || '—');
     const shortServer = server.length > 32 ? server.substring(0, 32) + '…' : server;
     const channels = p.channel_count ? p.channel_count.toLocaleString() : '—';
 
@@ -787,9 +787,9 @@ async function addPlaylist() {
     const user = document.getElementById('add-user').value.trim();
     const pass = document.getElementById('add-pass').value.trim();
     if (!server || !user) { showMsg('add-msg', 'error', '⚠️ Serveur et utilisateur sont requis.'); return; }
-    row.server_url = server;
-    row.username = user;
-    row.password = pass;
+    row.xtream_host = server;
+    row.xtream_username = user;
+    row.xtream_password = pass;
   }
 
   setBtnLoading('btn-add-pl', true);
@@ -809,7 +809,7 @@ function openEdit(id) {
   if (!p) return;
   document.getElementById('edit-id').value = id;
   document.getElementById('edit-name').value = p.name || '';
-  document.getElementById('edit-url').value = p.m3u_url || p.server_url || '';
+  document.getElementById('edit-url').value = p.m3u_url || p.xtream_host || '';
   hideMsg('edit-msg');
   openModal('modal-edit');
 }
@@ -823,7 +823,7 @@ async function saveEdit() {
   const p = allPL.find(x => x.id === id);
   const upd = { name };
   if (p?.type === 'm3u') upd.m3u_url = url;
-  else upd.server_url = url;
+  else upd.xtream_host = url;
 
   setBtnLoading('btn-edit-pl', true);
   const { error } = await sb.from('playlists').update(upd).eq('id', id).eq('user_id', me.id);

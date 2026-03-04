@@ -2,248 +2,630 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Politique de confidentialité — Arich IPTV</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #000000;
+      --surface: #111111;
+      --surface-high: #1a1a1a;
+      --surface-higher: #242424;
+      --violet: #7B2FFF;
+      --red: #FF2D55;
+      --green: #30D158;
+      --gold: #FFD60A;
+      --blue: #0A84FF;
+      --text: #FFFFFF;
+      --text-secondary: #AEAEB2;
+      --text-muted: #8E8E93;
+      --border: rgba(255,255,255,0.07);
+      --grad: linear-gradient(135deg, #7B2FFF, #FF2D55);
+    }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0a0a0f;
-      color: #e0e0e0;
-      line-height: 1.8;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    header {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-      border-bottom: 1px solid rgba(139, 92, 246, 0.2);
-      padding: 28px 24px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
+    /* ── CURSOR ── */
+    @media (pointer: fine) {
+      * { cursor: none !important; }
+      #cursor {
+        position: fixed; top: 0; left: 0; z-index: 9999;
+        width: 10px; height: 10px;
+        background: var(--violet);
+        border-radius: 50%;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+        transition: width .2s, height .2s, background .2s;
+        box-shadow: 0 0 16px var(--violet);
+      }
+      #cursor.big {
+        width: 32px; height: 32px;
+        background: transparent;
+        border: 1.5px solid var(--violet);
+        box-shadow: 0 0 24px var(--violet);
+      }
     }
 
-    .logo {
-      width: 48px;
-      height: 48px;
-      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 40px;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
     }
-
-    header h1 {
-      font-size: 20px;
-      font-weight: 700;
-      color: #fff;
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--text);
     }
-
-    header p {
+    .nav-logo-icon {
+      width: 32px; height: 32px;
+      background: var(--grad);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+    .nav-back {
+      display: flex; align-items: center; gap: 7px;
+      text-decoration: none;
+      color: var(--text-secondary);
       font-size: 13px;
-      color: rgba(255,255,255,0.45);
+      font-weight: 500;
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      transition: all .2s;
+    }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 140px 40px 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 400px;
+      background: radial-gradient(ellipse at center, rgba(123,47,255,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px;
+      border: 1px solid rgba(123,47,255,0.3);
+      border-radius: 100px;
+      background: rgba(123,47,255,0.08);
+      font-size: 12px;
+      font-weight: 500;
+      color: #a78bff;
+      margin-bottom: 24px;
+      letter-spacing: .3px;
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(32px, 5vw, 56px);
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .hero h1 span {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      color: var(--text-secondary);
+      font-size: 16px;
+      max-width: 520px;
+      margin: 0 auto 12px;
+    }
+    .hero-date {
+      font-size: 12px;
+      color: var(--text-muted);
     }
 
-    .container {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 48px 24px 80px;
+    /* ── SUMMARY CARD ── */
+    .summary {
+      max-width: 780px;
+      margin: 0 auto 64px;
+      padding: 0 24px;
     }
+    .summary-card {
+      background: rgba(48, 209, 88, 0.06);
+      border: 1px solid rgba(48, 209, 88, 0.2);
+      border-radius: 20px;
+      padding: 24px 28px;
+      display: flex; gap: 16px; align-items: flex-start;
+    }
+    .summary-icon {
+      font-size: 24px; flex-shrink: 0; margin-top: 2px;
+    }
+    .summary-card p {
+      color: #86efac;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+    .summary-card strong { color: #bbf7d0; }
+
+    /* ── CONTENT ── */
+    .content {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+    }
+
+    .section {
+      margin-bottom: 40px;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .5s cubic-bezier(0.22,1,0.36,1), transform .5s cubic-bezier(0.22,1,0.36,1);
+    }
+    .section.visible { opacity: 1; transform: none; }
+
+    .section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px 32px;
+      transition: border-color .2s;
+    }
+    .section-card:hover { border-color: rgba(123,47,255,0.25); }
+
+    .section-header {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 18px;
+    }
+    .section-emoji {
+      width: 44px; height: 44px; flex-shrink: 0;
+      background: var(--surface-high);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      border: 1px solid var(--border);
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 17px;
+      color: var(--text);
+    }
+
+    .section-body {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.75;
+    }
+    .section-body p + p { margin-top: 12px; }
+    .section-body strong { color: var(--text); font-weight: 500; }
+    .section-body a {
+      color: #a78bff;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(167,139,255,0.3);
+      transition: border-color .2s;
+    }
+    .section-body a:hover { border-color: #a78bff; }
+
+    /* ── DATA TABLE ── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 13px;
+    }
+    .data-table th {
+      text-align: left;
+      padding: 10px 14px;
+      background: var(--surface-high);
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+    .data-table th:first-child { border-radius: 8px 0 0 8px; }
+    .data-table th:last-child { border-radius: 0 8px 8px 0; }
+    .data-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-secondary);
+      vertical-align: top;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table td:first-child { color: var(--text); font-weight: 500; }
 
     .badge {
       display: inline-block;
-      background: rgba(139, 92, 246, 0.15);
-      border: 1px solid rgba(139, 92, 246, 0.3);
-      color: #a78bfa;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 4px 12px;
+      padding: 2px 8px;
       border-radius: 100px;
-      margin-bottom: 32px;
-      letter-spacing: 0.5px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .badge-green { background: rgba(48,209,88,0.12); color: #30D158; }
+    .badge-blue  { background: rgba(10,132,255,0.12); color: #0A84FF; }
+    .badge-red   { background: rgba(255,45,85,0.12);  color: #FF2D55; }
+
+    /* ── RIGHTS LIST ── */
+    .rights-list {
+      list-style: none;
+      margin-top: 14px;
+    }
+    .rights-list li {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    .rights-list li:last-child { border-bottom: none; }
+    .rights-list li::before {
+      content: '→';
+      color: var(--violet);
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
     }
 
-    h2 {
-      font-size: 28px;
+    /* ── CONTACT CARD ── */
+    .contact-card {
+      background: var(--grad);
+      border-radius: 20px;
+      padding: 32px;
+      text-align: center;
+      margin-top: 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.25);
+      border-radius: 20px;
+    }
+    .contact-card > * { position: relative; }
+    .contact-card h3 {
+      font-family: 'Syne', sans-serif;
       font-weight: 800;
-      color: #fff;
+      font-size: 22px;
       margin-bottom: 8px;
     }
-
-    .subtitle {
-      color: rgba(255,255,255,0.45);
+    .contact-card p {
+      color: rgba(255,255,255,0.8);
       font-size: 14px;
-      margin-bottom: 48px;
-    }
-
-    .card {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 16px;
-      padding: 28px 32px;
       margin-bottom: 20px;
     }
-
-    .card h3 {
-      font-size: 16px;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .card h3 .icon {
-      width: 32px;
-      height: 32px;
-      background: rgba(139, 92, 246, 0.15);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      flex-shrink: 0;
-    }
-
-    .card p {
-      color: rgba(255,255,255,0.6);
-      font-size: 14px;
-      line-height: 1.8;
-    }
-
-    .highlight {
-      background: rgba(139, 92, 246, 0.08);
-      border: 1px solid rgba(139, 92, 246, 0.2);
-      border-radius: 12px;
-      padding: 20px 24px;
-      margin: 32px 0;
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-    }
-
-    .highlight .dot {
-      width: 8px;
-      height: 8px;
-      background: #8b5cf6;
-      border-radius: 50%;
-      margin-top: 7px;
-      flex-shrink: 0;
-    }
-
-    .highlight p {
-      color: rgba(255,255,255,0.7);
-      font-size: 14px;
-      line-height: 1.7;
-    }
-
-    .contact-box {
-      background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(109,40,217,0.05));
-      border: 1px solid rgba(139, 92, 246, 0.25);
-      border-radius: 16px;
-      padding: 28px 32px;
-      margin-top: 40px;
-      text-align: center;
-    }
-
-    .contact-box h3 {
-      color: #fff;
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .contact-box p {
-      color: rgba(255,255,255,0.5);
-      font-size: 13px;
-      margin-bottom: 16px;
-    }
-
-    .contact-box a {
-      color: #a78bfa;
+    .contact-btn {
+      display: inline-block;
+      padding: 12px 28px;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 100px;
+      color: white;
       text-decoration: none;
       font-weight: 600;
       font-size: 14px;
+      backdrop-filter: blur(8px);
+      transition: background .2s;
     }
+    .contact-btn:hover { background: rgba(255,255,255,0.25); }
 
+    /* ── FOOTER ── */
     footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 40px;
       text-align: center;
-      padding: 24px;
-      color: rgba(255,255,255,0.2);
-      font-size: 12px;
-      border-top: 1px solid rgba(255,255,255,0.05);
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+
+    @media (max-width: 600px) {
+      nav { padding: 14px 20px; }
+      .hero { padding: 110px 20px 60px; }
+      .summary { padding: 0 16px; }
+      .content { padding: 0 16px 80px; }
+      .section-card { padding: 22px 20px; }
+      .data-table { font-size: 12px; }
+      .data-table th, .data-table td { padding: 8px 10px; }
+      footer { padding: 24px 20px; }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="logo">📺</div>
-    <div>
-      <a href="index.html"><h1>Arich IPTV</h1>
-      <p>Lecteur IPTV premium</p></a>
+<div id="cursor"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-icon">▶</div>
+    ARICH IPTV
+  </a>
+  <a href="index.html" class="nav-back">
+    ← Retour au site
+  </a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">🔐 Transparence totale</div>
+  <h1>Politique de<br><span>confidentialité</span></h1>
+  <p class="hero-sub">Ce que nous collectons, pourquoi, et comment vos données sont protégées.</p>
+  <p class="hero-date">Dernière mise à jour : mars 2025</p>
+</section>
+
+<!-- SUMMARY -->
+<div class="summary">
+  <div class="summary-card">
+    <div class="summary-icon">✅</div>
+    <p><strong>En résumé :</strong> Arich IPTV collecte uniquement les données techniques nécessaires au fonctionnement de l'application (identifiant d'appareil, sessions d'utilisation). Nous ne vendons jamais vos données. Aucune publicité ciblée. Vos identifiants IPTV restent sur votre appareil.</p>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- 1. Qui sommes-nous -->
+  <div class="section">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-emoji">🏢</div>
+        <div class="section-title">Qui sommes-nous ?</div>
+      </div>
+      <div class="section-body">
+        <p>Arich IPTV est un lecteur multimédia pour Android développé et distribué par l'équipe Arich IPTV. L'application permet de lire des flux vidéo IPTV depuis vos propres accès (Xtream Codes ou M3U).</p>
+        <p><strong>Contact :</strong> <a href="mailto:arich-iptv@proton.me">arich-iptv@proton.me</a></p>
+      </div>
     </div>
-  </header>
-
-  <div class="container">
-
-    <div class="badge">POLITIQUE DE CONFIDENTIALITÉ</div>
-    <h2>Vos données vous appartiennent</h2>
-    <p class="subtitle">Dernière mise à jour : juin 2025</p>
-
-    <div class="highlight">
-      <div class="dot"></div>
-      <p><strong style="color:#fff">En résumé :</strong> Arich IPTV ne collecte, ne stocke et ne transmet aucune donnée personnelle vers nos serveurs. Toutes vos informations restent sur votre appareil.</p>
-    </div>
-
-    <div class="card">
-      <h3><span class="icon">🔐</span> Données collectées</h3>
-      <p>Arich IPTV ne collecte aucune donnée personnelle identifiable. L'application ne demande pas votre nom, adresse e-mail, numéro de téléphone ou toute autre information personnelle.</p>
-    </div>
-
-    <div class="card">
-      <h3><span class="icon">📱</span> Stockage local</h3>
-      <p>Les informations suivantes sont stockées <strong style="color:#fff">uniquement sur votre appareil</strong> et ne sont jamais transmises à l'extérieur : vos identifiants de connexion IPTV (serveur, nom d'utilisateur, mot de passe), vos chaînes favorites, votre historique de lecture et vos préférences d'affichage.</p>
-    </div>
-
-    <div class="card">
-      <h3><span class="icon">📡</span> Connexions réseau</h3>
-      <p>L'application se connecte uniquement aux serveurs IPTV que vous configurez vous-même. Aucune connexion n'est établie vers des serveurs tiers par Arich IPTV. Les flux vidéo sont chargés directement depuis votre fournisseur IPTV.</p>
-    </div>
-
-    <div class="card">
-      <h3><span class="icon">🎥</span> Permissions utilisées</h3>
-      <p>L'application peut demander l'accès à Internet (obligatoire pour lire les flux IPTV) et au stockage (pour sauvegarder vos préférences en local). Aucune permission liée à la caméra, au microphone ou à la localisation n'est requise.</p>
-    </div>
-
-    <div class="card">
-      <h3><span class="icon">🚫</span> Pas de publicité ni de tracking</h3>
-      <p>Arich IPTV ne contient aucune publicité, aucun SDK de tracking, aucun outil d'analyse de comportement (analytics) et ne partage aucune donnée avec des tiers.</p>
-    </div>
-
-    <div class="card">
-      <h3><span class="icon">👶</span> Protection des mineurs</h3>
-      <p>Arich IPTV n'est pas destiné aux enfants de moins de 13 ans. L'application ne collecte sciemment aucune donnée provenant de mineurs.</p>
-    </div>
-
-    <div class="card">
-      <h3><span class="icon">🔄</span> Modifications de cette politique</h3>
-      <p>Nous pouvons mettre à jour cette politique de confidentialité ponctuellement. Toute modification sera publiée sur cette page avec une date de mise à jour. Nous vous encourageons à consulter cette page régulièrement.</p>
-    </div>
-
-    <div class="contact-box">
-      <h3>Une question ?</h3>
-      <p>Pour toute question concernant cette politique de confidentialité, contactez-nous.</p>
-      <a href="https://github.com/devhertox/arich_iptv">github.com/devhertox/arich_iptv</a>
-    </div>
-
   </div>
 
-  <footer>
-    © 2025 Arich IPTV — Tous droits réservés
-  </footer>
+  <!-- 2. Données collectées -->
+  <div class="section">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-emoji">📊</div>
+        <div class="section-title">Données collectées</div>
+      </div>
+      <div class="section-body">
+        <p>Voici l'ensemble des données que nous collectons et leur utilisation :</p>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Donnée</th>
+              <th>Pourquoi</th>
+              <th>Stockage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Android ID / Device Key</td>
+              <td>Identification unique de l'appareil pour la gestion des licences</td>
+              <td><span class="badge badge-blue">Supabase</span></td>
+            </tr>
+            <tr>
+              <td>Modèle / Marque appareil</td>
+              <td>Support technique et compatibilité</td>
+              <td><span class="badge badge-blue">Supabase</span></td>
+            </tr>
+            <tr>
+              <td>Version Android / App</td>
+              <td>Détection de bugs et mises à jour</td>
+              <td><span class="badge badge-blue">Supabase</span></td>
+            </tr>
+            <tr>
+              <td>Adresse IP / Pays</td>
+              <td>Détection de fraude, statistiques régionales anonymes</td>
+              <td><span class="badge badge-blue">Supabase</span></td>
+            </tr>
+            <tr>
+              <td>Sessions d'utilisation</td>
+              <td>Amélioration de l'app, comptage d'installations actives</td>
+              <td><span class="badge badge-blue">Supabase</span></td>
+            </tr>
+            <tr>
+              <td>Email (si compte créé)</td>
+              <td>Authentification, support, notifications importantes</td>
+              <td><span class="badge badge-blue">Supabase Auth</span></td>
+            </tr>
+            <tr>
+              <td>Identifiants IPTV (serveur, login, mdp)</td>
+              <td>Connexion à vos accès IPTV</td>
+              <td><span class="badge badge-green">Local uniquement</span></td>
+            </tr>
+            <tr>
+              <td>Favoris & Historique</td>
+              <td>Reprise de lecture, accès rapide</td>
+              <td><span class="badge badge-green">Local uniquement</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Ce que nous ne faisons PAS -->
+  <div class="section">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-emoji">🚫</div>
+        <div class="section-title">Ce que nous ne faisons jamais</div>
+      </div>
+      <div class="section-body">
+        <ul class="rights-list">
+          <li>Vendre vos données à des tiers</li>
+          <li>Afficher de la publicité ciblée</li>
+          <li>Utiliser des SDK de tracking comportemental (Facebook, Google Analytics, etc.)</li>
+          <li>Accéder à votre caméra, microphone ou localisation GPS</li>
+          <li>Lire ou stocker vos identifiants IPTV sur nos serveurs</li>
+          <li>Partager vos données avec des partenaires publicitaires</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Base légale -->
+  <div class="section">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-emoji">⚖️</div>
+        <div class="section-title">Base légale (RGPD)</div>
+      </div>
+      <div class="section-body">
+        <p>Conformément au Règlement Général sur la Protection des Données (RGPD), nous traitons vos données sur les bases légales suivantes :</p>
+        <p><strong>Exécution du contrat</strong> — L'identifiant d'appareil est nécessaire pour activer et vérifier votre licence. Sans cette donnée, le service ne peut pas fonctionner.</p>
+        <p><strong>Intérêt légitime</strong> — Les données de sessions et d'utilisation nous permettent d'améliorer l'application et de détecter les usages frauduleux.</p>
+        <p><strong>Consentement</strong> — Si vous créez un compte (email), vous consentez explicitement au traitement de votre adresse email pour l'authentification et les communications de service.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Durée de conservation -->
+  <div class="section">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-emoji">🕐</div>
+        <div class="section-title">Durée de conservation</div>
+      </div>
+      <div class="section-body">
+        <p><strong>Données d'appareil</strong> — Conservées tant que votre appareil est enregistré. Supprimées sur demande.</p>
+        <p><strong>Données de licence</strong> — Conservées 2 ans après l'expiration de votre licence pour les obligations légales et comptables.</p>
+        <p><strong>Sessions d'utilisation</strong> — Conservées 12 mois maximum, puis supprimées automatiquement.</p>
+        <p><strong>Compte email</strong> — Conservé jusqu'à suppression de votre compte ou demande de suppression.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Vos droits -->
+  <div class="section">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-emoji">🛡️</div>
+        <div class="section-title">Vos droits</div>
+      </div>
+      <div class="section-body">
+        <p>Conformément au RGPD, vous disposez des droits suivants :</p>
+        <ul class="rights-list">
+          <li><strong>Droit d'accès</strong> — Obtenir une copie de toutes les données que nous détenons sur vous</li>
+          <li><strong>Droit de rectification</strong> — Corriger des données inexactes</li>
+          <li><strong>Droit à l'effacement</strong> — Demander la suppression de toutes vos données ("droit à l'oubli")</li>
+          <li><strong>Droit à la portabilité</strong> — Recevoir vos données dans un format lisible par machine</li>
+          <li><strong>Droit d'opposition</strong> — Vous opposer au traitement de vos données</li>
+        </ul>
+        <p style="margin-top:14px;">Pour exercer vos droits, contactez-nous à <a href="mailto:arich-iptv@proton.me">arich-iptv@proton.me</a>. Nous répondons sous 30 jours.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Sécurité -->
+  <div class="section">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-emoji">🔒</div>
+        <div class="section-title">Sécurité des données</div>
+      </div>
+      <div class="section-body">
+        <p>Vos données sont hébergées sur <strong>Supabase</strong> (infrastructure PostgreSQL sécurisée, certifiée SOC 2 Type II), avec chiffrement en transit (TLS 1.3) et au repos (AES-256).</p>
+        <p>L'accès à la base de données est restreint par des politiques Row Level Security (RLS) — chaque utilisateur n'accède qu'à ses propres données.</p>
+        <p>Aucun mot de passe IPTV ne transite ou n'est stocké sur nos serveurs. Ces données restent exclusivement sur votre appareil.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Mineurs -->
+  <div class="section">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-emoji">👶</div>
+        <div class="section-title">Protection des mineurs</div>
+      </div>
+      <div class="section-body">
+        <p>Arich IPTV n'est pas destiné aux enfants de moins de <strong>13 ans</strong>. Nous ne collectons sciemment aucune donnée provenant de mineurs. Si vous estimez qu'un mineur nous a fourni des données personnelles, contactez-nous pour suppression immédiate.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. Modifications -->
+  <div class="section">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-emoji">🔄</div>
+        <div class="section-title">Modifications de cette politique</div>
+      </div>
+      <div class="section-body">
+        <p>Nous pouvons mettre à jour cette politique ponctuellement. En cas de modification substantielle, nous vous en informerons via une notification dans l'application ou par email si vous avez un compte.</p>
+        <p>La date de dernière mise à jour est toujours indiquée en haut de cette page.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="contact-card section">
+    <h3>Une question sur vos données ?</h3>
+    <p>Nous répondons à toutes les demandes RGPD sous 30 jours.</p>
+    <a href="mailto:arich-iptv@proton.me" class="contact-btn">✉️ Nous contacter</a>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 Arich IPTV · Lecteur multimédia uniquement · Aucun contenu fourni</p>
+  <p style="margin-top:8px;">
+    <a href="index.html">Accueil</a> &nbsp;·&nbsp;
+    <a href="auth.html">Mon compte</a> &nbsp;·&nbsp;
+    <a href="mailto:arich-iptv@proton.me">Contact</a>
+  </p>
+</footer>
+
+<script>
+  // ── Cursor ──
+  const cursor = document.getElementById('cursor');
+  if (cursor) {
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top  = e.clientY + 'px';
+    });
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('big'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('big'));
+    });
+  }
+
+  // ── Scroll animations ──
+  function checkVisible() {
+    document.querySelectorAll('.section').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight - 60) {
+        el.classList.add('visible');
+      }
+    });
+  }
+  window.addEventListener('scroll', checkVisible);
+  setTimeout(checkVisible, 50);
+</script>
 
 </body>
 </html>

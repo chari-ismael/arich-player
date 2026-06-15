@@ -498,11 +498,10 @@
     // ── Authenticate session in Supabase ─────────────────────────────────────
     async function authenticateSession(userId, email) {
       if (!TOKEN) return;
-      await sb.from('tv_sessions').update({
-        status:  'authenticated',
-        user_id: userId,
-        email:   email,
-      }).eq('token', TOKEN);
+      const { error } = await sb.from('tv_sessions')
+        .update({ status: 'authenticated', user_id: userId, email })
+        .eq('token', TOKEN);
+      if (error) console.error('[TV Auth] Update failed:', error.message);
     }
 
     // ── Show success panel ───────────────────────────────────────────────────

@@ -497,11 +497,27 @@
 
     // ── Authenticate session in Supabase ─────────────────────────────────────
     async function authenticateSession(userId, email) {
-      if (!TOKEN) return;
+      if (!TOKEN) {
+        console.error("[TV Auth] Aucun token trouvé dans l'URL");
+        return;
+      }
+      
+      // On fait l'UPDATE et on récupère l'éventuelle erreur
       const { error } = await sb.from('tv_sessions')
-        .update({ status: 'authenticated', user_id: userId, email })
+        .update({ 
+          status: 'authenticated', 
+          user_id: userId, 
+          email: email 
+        })
         .eq('token', TOKEN);
-      if (error) console.error('[TV Auth] Update failed:', error.message);
+    
+      if (error) {
+        console.error("[TV Auth] L'UPDATE a échoué :", error.message);
+        alert("Erreur de liaison : " + error.message); // Une alerte temporaire pour le voir direct sur le phone
+      } else {
+        console.log("[TV Auth] Session mise à jour avec succès !");
+        showSuccess(); // La fonction qui affiche le message de succès sur le phone
+      }
     }
 
     // ── Show success panel ───────────────────────────────────────────────────

@@ -31,13 +31,11 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Cursor ── */
     body { cursor: none; }
     #cursor {
       position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999;
       width: 10px; height: 10px;
-      background: var(--violet);
-      border-radius: 50%;
+      background: var(--violet); border-radius: 50%;
       transform: translate(-50%,-50%);
       transition: transform .15s, background .15s, width .15s, height .15s;
       mix-blend-mode: screen;
@@ -46,19 +44,13 @@
     body:has(button:hover) #cursor { width: 28px; height: 28px; background: var(--red); }
     @media (hover: none) { #cursor { display: none; } body { cursor: auto; } }
 
-    /* ── Layout ── */
     .page {
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      position: relative;
-      overflow: hidden;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 24px; position: relative; overflow: hidden;
     }
 
-    /* Glows */
     .glow-top {
       position: fixed; top: -120px; left: -120px;
       width: 420px; height: 420px; border-radius: 50%;
@@ -72,13 +64,11 @@
       pointer-events: none;
     }
 
-    /* ── Card ── */
     .card {
       width: 100%; max-width: 420px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 36px 32px;
+      border-radius: 24px; padding: 36px 32px;
       box-shadow: 0 40px 80px rgba(0,0,0,.6), 0 0 60px rgba(123,47,255,.08);
       animation: fadeUp .5s cubic-bezier(.22,1,.36,1) both;
     }
@@ -87,93 +77,58 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Logo ── */
-    .logo-row {
-      display: flex; align-items: center; gap: 12px;
-      margin-bottom: 28px;
-    }
+    .logo-row { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
     .logo-icon {
       width: 44px; height: 44px; border-radius: 12px;
       background: var(--grad);
       display: flex; align-items: center; justify-content: center;
       font-size: 22px;
-      box-shadow: 0 0 24px rgba(123,47,255,.45);
-      flex-shrink: 0;
+      box-shadow: 0 0 24px rgba(123,47,255,.45); flex-shrink: 0;
     }
     .logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; letter-spacing: .5px; }
     .logo-sub  { font-size: 11px; color: var(--muted); margin-top: 1px; }
 
-    /* ── TV badge ── */
     .tv-badge {
       display: inline-flex; align-items: center; gap: 8px;
       background: rgba(123,47,255,.12);
       border: 1px solid rgba(123,47,255,.25);
-      border-radius: 10px;
-      padding: 8px 14px;
+      border-radius: 10px; padding: 8px 14px;
       font-size: 12px; color: var(--violet);
-      margin-bottom: 24px;
-      font-weight: 500;
+      margin-bottom: 24px; font-weight: 500;
     }
-    .tv-badge svg { flex-shrink: 0; }
 
-    /* ── Titre ── */
     h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; margin-bottom: 6px; }
     .subtitle { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.5; }
 
-    /* ── Tabs ── */
     .tabs {
       display: flex; gap: 4px;
       background: var(--surfaceHi);
-      border-radius: 12px; padding: 4px;
-      margin-bottom: 24px;
+      border-radius: 12px; padding: 4px; margin-bottom: 24px;
     }
     .tab {
-      flex: 1; text-align: center;
-      padding: 8px 4px; border-radius: 9px;
-      font-size: 13px; font-weight: 500;
-      cursor: pointer; border: none;
-      transition: all .2s;
-      color: var(--muted); background: transparent;
+      flex: 1; text-align: center; padding: 8px 4px; border-radius: 9px;
+      font-size: 13px; font-weight: 500; cursor: pointer; border: none;
+      transition: all .2s; color: var(--muted); background: transparent;
     }
-    .tab.active {
-      background: var(--grad);
-      color: #fff;
-      box-shadow: 0 4px 12px rgba(123,47,255,.3);
-    }
+    .tab.active { background: var(--grad); color: #fff; box-shadow: 0 4px 12px rgba(123,47,255,.3); }
 
-    /* ── Form ── */
     .field { margin-bottom: 14px; }
     label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 6px; letter-spacing: .5px; text-transform: uppercase; }
     input[type=email], input[type=password], input[type=text] {
       width: 100%; padding: 12px 14px;
       background: var(--surfaceHi);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      color: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px;
+      border-radius: 12px; color: #fff;
+      font-family: 'DM Sans', sans-serif; font-size: 14px;
       outline: none; transition: border-color .2s, box-shadow .2s;
     }
-    input:focus {
-      border-color: rgba(123,47,255,.5);
-      box-shadow: 0 0 0 3px rgba(123,47,255,.12);
-    }
+    input:focus { border-color: rgba(123,47,255,.5); box-shadow: 0 0 0 3px rgba(123,47,255,.12); }
 
-    /* ── Divider ── */
-    .divider {
-      display: flex; align-items: center; gap: 12px;
-      margin: 18px 0; color: var(--muted); font-size: 12px;
-    }
-    .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px; background: var(--border);
-    }
-
-    /* ── Boutons ── */
     .btn-primary {
       width: 100%; padding: 14px;
-      background: var(--grad);
-      border: none; border-radius: 14px;
+      background: var(--grad); border: none; border-radius: 14px;
       color: #fff; font-family: 'DM Sans', sans-serif;
-      font-size: 15px; font-weight: 700;
-      cursor: pointer;
+      font-size: 15px; font-weight: 700; cursor: pointer;
       box-shadow: 0 8px 24px rgba(123,47,255,.35);
       transition: transform .15s, box-shadow .15s, opacity .15s;
       display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -182,97 +137,67 @@
     .btn-primary:active { transform: scale(.98); }
     .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
-    .btn-secondary {
-      width: 100%; padding: 12px;
-      background: var(--surfaceHi);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: #fff; font-family: 'DM Sans', sans-serif;
-      font-size: 14px; font-weight: 500;
-      cursor: pointer; transition: background .2s, border-color .2s;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
-    .btn-secondary:hover { background: #242424; border-color: rgba(255,255,255,.12); }
-
-    /* ── Spinner ── */
     .spinner {
       width: 18px; height: 18px;
-      border: 2px solid rgba(255,255,255,.3);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
+      border: 2px solid rgba(255,255,255,.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin .7s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── Error ── */
     .error-box {
-      background: rgba(255,45,85,.10);
-      border: 1px solid rgba(255,45,85,.3);
+      background: rgba(255,45,85,.10); border: 1px solid rgba(255,45,85,.3);
       border-radius: 10px; padding: 12px 14px;
-      font-size: 13px; color: #fff;
-      margin-bottom: 14px;
+      font-size: 13px; color: #fff; margin-bottom: 14px;
       display: none; align-items: center; gap: 8px;
     }
     .error-box.show { display: flex; animation: fadeUp .25s ease both; }
 
-    /* ── Forgot ── */
-    .forgot {
-      text-align: right; margin-top: -6px; margin-bottom: 14px;
-    }
+    .forgot { text-align: right; margin-top: -6px; margin-bottom: 14px; }
     .forgot a { font-size: 12px; color: var(--violet); text-decoration: none; }
     .forgot a:hover { text-decoration: underline; }
 
-    /* ── Toggle ── */
-    .toggle-link { text-align: center; margin-top: 20px; font-size: 13px; color: var(--muted); }
-    .toggle-link a { color: var(--violet); font-weight: 600; text-decoration: none; cursor: pointer; }
-    .toggle-link a:hover { text-decoration: underline; }
+    /* ── Session invalide ── */
+    #invalidPanel { text-align: center; padding: 8px 0; }
+    #invalidPanel .inv-icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: rgba(255,45,85,.10); border: 1px solid rgba(255,45,85,.25);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+    }
+    #invalidPanel h2 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; margin-bottom: 8px; }
+    #invalidPanel p  { font-size: 13px; color: var(--muted); line-height: 1.6; }
 
-    /* ── Success State ── */
+    /* ── Success ── */
     .success-panel {
       display: none; flex-direction: column; align-items: center;
       text-align: center; padding: 8px 0;
       animation: fadeUp .4s cubic-bezier(.22,1,.36,1) both;
     }
     .success-panel.show { display: flex; }
-
     .success-icon {
       width: 72px; height: 72px; border-radius: 50%;
-      background: rgba(48,209,88,.12);
-      border: 2px solid rgba(48,209,88,.35);
+      background: rgba(48,209,88,.12); border: 2px solid rgba(48,209,88,.35);
       display: flex; align-items: center; justify-content: center;
-      margin-bottom: 20px;
-      animation: popIn .5s cubic-bezier(.34,1.56,.64,1) both;
+      margin-bottom: 20px; animation: popIn .5s cubic-bezier(.34,1.56,.64,1) both;
     }
     @keyframes popIn {
       from { transform: scale(.4); opacity: 0; }
       to   { transform: scale(1);  opacity: 1; }
     }
-    .success-icon svg { animation: checkDraw .4s .3s ease both; }
-    @keyframes checkDraw {
-      from { stroke-dashoffset: 40; opacity: 0; }
-      to   { stroke-dashoffset: 0;  opacity: 1; }
-    }
-
-    .success-title {
-      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px;
-      margin-bottom: 8px;
-    }
-    .success-desc { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 28px; }
+    .success-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; margin-bottom: 8px; }
+    .success-desc  { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 28px; }
 
     .tv-connecting {
       display: flex; align-items: center; gap: 10px;
-      background: rgba(123,47,255,.10);
-      border: 1px solid rgba(123,47,255,.25);
+      background: rgba(123,47,255,.10); border: 1px solid rgba(123,47,255,.25);
       border-radius: 12px; padding: 12px 16px;
       font-size: 13px; color: var(--violet);
       margin-bottom: 24px; width: 100%;
     }
-
     .pulse-dot {
       width: 8px; height: 8px; border-radius: 50%;
       background: var(--green);
-      animation: pulse 1.4s ease-in-out infinite;
-      flex-shrink: 0;
+      animation: pulse 1.4s ease-in-out infinite; flex-shrink: 0;
     }
     @keyframes pulse {
       0%, 100% { transform: scale(1); opacity: 1; }
@@ -281,33 +206,23 @@
 
     .btn-manage {
       width: 100%; padding: 14px;
-      background: var(--surfaceHi);
-      border: 1px solid rgba(123,47,255,.3);
-      border-radius: 14px;
-      color: #fff; font-family: 'DM Sans', sans-serif;
-      font-size: 14px; font-weight: 600;
+      background: var(--surfaceHi); border: 1px solid rgba(123,47,255,.3);
+      border-radius: 14px; color: #fff;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
       cursor: pointer; text-decoration: none;
       display: flex; align-items: center; justify-content: center; gap: 8px;
       transition: background .2s, border-color .2s, transform .15s;
     }
-    .btn-manage:hover {
-      background: rgba(123,47,255,.12);
-      border-color: rgba(123,47,255,.5);
-      transform: translateY(-1px);
-    }
+    .btn-manage:hover { background: rgba(123,47,255,.12); border-color: rgba(123,47,255,.5); transform: translateY(-1px); }
 
-    /* ── Token info ── */
     .token-info {
       margin-top: 20px; padding: 10px 14px;
-      background: var(--surfaceHi);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      display: flex; align-items: center; gap: 8px;
+      background: var(--surfaceHi); border: 1px solid var(--border);
+      border-radius: 10px; display: flex; align-items: center; gap: 8px;
       font-size: 11px; color: var(--muted);
     }
     .token-info span { font-family: monospace; color: rgba(255,255,255,.4); font-size: 10px; }
 
-    /* ── Responsive ── */
     @media (max-width: 480px) {
       .card { padding: 28px 20px; border-radius: 20px; }
       h1 { font-size: 20px; }
@@ -322,7 +237,6 @@
   <div class="page">
     <div class="card">
 
-      <!-- Logo -->
       <div class="logo-row">
         <div class="logo-icon">▶</div>
         <div>
@@ -331,16 +245,26 @@
         </div>
       </div>
 
-      <!-- TV Badge -->
-      <div class="tv-badge">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
-        </svg>
-        Session TV détectée
+      <!-- Session invalide / expirée -->
+      <div id="invalidPanel" style="display:none">
+        <div class="inv-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF2D55" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+          </svg>
+        </div>
+        <h2>Session invalide</h2>
+        <p>Ce QR code est invalide ou a expiré.<br>Scannez à nouveau le code affiché sur votre TV.</p>
       </div>
 
-      <!-- PANEL LOGIN -->
-      <div id="loginPanel">
+      <!-- Panel login -->
+      <div id="loginPanel" style="display:none">
+        <div class="tv-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+          </svg>
+          Session TV détectée
+        </div>
+
         <h1>Connectez-vous</h1>
         <p class="subtitle">Scannez depuis votre TV, connectez-vous ici — votre TV se connecte automatiquement.</p>
 
@@ -356,7 +280,6 @@
           <span id="errorMsg"></span>
         </div>
 
-        <!-- LOGIN FORM -->
         <div id="loginForm">
           <div class="field">
             <label>Email</label>
@@ -372,7 +295,6 @@
           </button>
         </div>
 
-        <!-- REGISTER FORM -->
         <div id="registerForm" style="display:none">
           <div class="field">
             <label>Nom complet</label>
@@ -400,7 +322,7 @@
         </div>
       </div>
 
-      <!-- PANEL SUCCESS -->
+      <!-- Panel success -->
       <div id="successPanel" class="success-panel">
         <div class="success-icon">
           <svg width="36" height="36" viewBox="0 0 40 40" fill="none"
@@ -411,15 +333,11 @@
         </div>
         <h1 class="success-title">Connecté !</h1>
         <p class="success-desc">Votre TV va se connecter automatiquement dans quelques secondes.</p>
-
         <div class="tv-connecting">
           <div class="pulse-dot"></div>
           Connexion de la TV en cours…
         </div>
-
-        <a id="manageBtn"
-           href="https://arich.fr/manage-playlist.html"
-           class="btn-manage">
+        <a href="https://arich.fr/manage-playlist.html" class="btn-manage">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
           </svg>
@@ -431,31 +349,48 @@
   </div>
 
   <script>
-    // ── Cursor ──────────────────────────────────────────────────────────────
+    // Cursor
     const cur = document.getElementById('cursor');
     document.addEventListener('mousemove', e => {
       cur.style.left = e.clientX + 'px';
       cur.style.top  = e.clientY + 'px';
     });
 
-    // ── Supabase init ────────────────────────────────────────────────────────
+    // Supabase
     const SUPABASE_URL = 'https://aynucieohuowgkwyftiy.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk';
     const { createClient } = supabase;
     const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // ── Token from URL ───────────────────────────────────────────────────────
-    const params = new URLSearchParams(window.location.search);
-    const TOKEN  = params.get('token') || '';
+    // Lecture paramètre tv_pair
+    const params  = new URLSearchParams(window.location.search);
+    const SESSION = (params.get('tv_pair') || '').trim().toUpperCase();
 
-    if (!TOKEN) {
-      document.getElementById('errorMsg').textContent = 'Token de session manquant. Scannez à nouveau le QR code depuis votre TV.';
-      document.getElementById('errorBox').classList.add('show');
-    } else {
-      document.getElementById('tokenDisplay').textContent = TOKEN.slice(0, 8) + '…';
+    // Vérification session au chargement
+    async function init() {
+      if (!SESSION || SESSION.length !== 6) {
+        document.getElementById('invalidPanel').style.display = '';
+        return;
+      }
+      const { data, error } = await sb
+        .from('tv_sessions')
+        .select('status, expires_at')
+        .eq('session_code', SESSION)
+        .eq('status', 'pending')
+        .maybeSingle();
+
+      if (error || !data || new Date() >= new Date(data.expires_at)) {
+        document.getElementById('invalidPanel').style.display = '';
+        return;
+      }
+
+      document.getElementById('loginPanel').style.display = '';
+      document.getElementById('tokenDisplay').textContent = SESSION;
     }
 
-    // ── Tab switch ───────────────────────────────────────────────────────────
+    init();
+
+    // Tabs
     let currentTab = 'login';
     function switchTab(tab, btn) {
       currentTab = tab;
@@ -466,15 +401,12 @@
       hideError();
     }
 
-    // ── Error helpers ────────────────────────────────────────────────────────
+    // Erreurs
     function showError(msg) {
       document.getElementById('errorMsg').textContent = msg;
       document.getElementById('errorBox').classList.add('show');
     }
-    function hideError() {
-      document.getElementById('errorBox').classList.remove('show');
-    }
-
+    function hideError() { document.getElementById('errorBox').classList.remove('show'); }
     function friendlyError(msg) {
       if (msg.includes('Invalid login credentials')) return 'Email ou mot de passe incorrect.';
       if (msg.includes('Email not confirmed'))        return 'Confirmez votre email avant de vous connecter.';
@@ -483,55 +415,40 @@
       return msg;
     }
 
-    // ── Set button loading ───────────────────────────────────────────────────
     function setLoading(btnId, loading) {
-      const btn = document.getElementById(btnId);
-      if (loading) {
-        btn.disabled = true;
-        btn.innerHTML = '<div class="spinner"></div>';
-      } else {
-        btn.disabled = false;
-        btn.innerHTML = '<span>' + (btnId === 'loginBtn' ? 'Se connecter' : 'Créer mon compte') + '</span>';
-      }
+      const btn   = document.getElementById(btnId);
+      const label = btnId === 'loginBtn' ? 'Se connecter' : 'Créer mon compte';
+      btn.disabled  = loading;
+      btn.innerHTML = loading ? '<div class="spinner"></div>' : `<span>${label}</span>`;
     }
 
-    // ── Authenticate session in Supabase ─────────────────────────────────────
-    async function authenticateSession(userId, email) {
-      if (!TOKEN) {
-        console.error("[TV Auth] Aucun token trouvé dans l'URL");
-        return;
-      }
-      
-      // On fait l'UPDATE et on récupère l'éventuelle erreur
-      const { error } = await sb.from('tv_sessions')
-        .update({ 
-          status: 'authenticated', 
-          user_id: userId, 
-          email: email 
-        })
-        .eq('token', TOKEN);
-    
+    // Update Supabase — session_code + guard status pending
+    async function authenticateSession(userId) {
+      const { error } = await sb
+        .from('tv_sessions')
+        .update({ status: 'authenticated', user_id: userId })
+        .eq('session_code', SESSION)
+        .eq('status', 'pending');
+
       if (error) {
-        console.error("[TV Auth] L'UPDATE a échoué :", error.message);
-        alert("Erreur de liaison : " + error.message); // Une alerte temporaire pour le voir direct sur le phone
-      } else {
-        console.log("[TV Auth] Session mise à jour avec succès !");
-        showSuccess(); // La fonction qui affiche le message de succès sur le phone
+        console.error('[TV Auth] UPDATE échoué :', error.message);
+        showError('Erreur de liaison avec la TV. Réessayez.');
+        return false;
       }
+      return true;
     }
 
-    // ── Show success panel ───────────────────────────────────────────────────
     function showSuccess() {
-      document.getElementById('loginPanel').style.display  = 'none';
+      document.getElementById('loginPanel').style.display = 'none';
       document.getElementById('successPanel').classList.add('show');
     }
 
-    // ── Login ────────────────────────────────────────────────────────────────
+    // Login
     async function submitLogin() {
       hideError();
       const email = document.getElementById('loginEmail').value.trim();
       const pass  = document.getElementById('loginPass').value;
-      if (!email || !pass) { showError('Email et mot de passe requis.'); return; }
+      if (!email || !pass)      { showError('Email et mot de passe requis.'); return; }
       if (!email.includes('@')) { showError('Email invalide.'); return; }
 
       setLoading('loginBtn', true);
@@ -539,11 +456,11 @@
       setLoading('loginBtn', false);
 
       if (error) { showError(friendlyError(error.message)); return; }
-      await authenticateSession(data.user.id, data.user.email);
-      showSuccess();
+      const ok = await authenticateSession(data.user.id);
+      if (ok) showSuccess();
     }
 
-    // ── Register ─────────────────────────────────────────────────────────────
+    // Register
     async function submitRegister() {
       hideError();
       const name  = document.getElementById('regName').value.trim();
@@ -562,14 +479,14 @@
 
       if (error) { showError(friendlyError(error.message)); return; }
       if (data?.user) {
-        await authenticateSession(data.user.id, data.user.email);
-        showSuccess();
+        const ok = await authenticateSession(data.user.id);
+        if (ok) showSuccess();
       } else {
         showError('Un email de confirmation a été envoyé. Confirmez votre email puis reconnectez-vous.');
       }
     }
 
-    // ── Forgot password ──────────────────────────────────────────────────────
+    // Mot de passe oublié
     async function forgotPassword(e) {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value.trim();
@@ -581,18 +498,17 @@
         redirectTo: window.location.origin + '/arich_iptv/auth.html',
       });
       if (error) { showError(friendlyError(error.message)); return; }
-      hideError();
+      const box = document.getElementById('errorBox');
+      box.style.background  = 'rgba(48,209,88,.10)';
+      box.style.borderColor = 'rgba(48,209,88,.3)';
       showError('✓ Email de réinitialisation envoyé à ' + email);
-      document.getElementById('errorBox').style.background = 'rgba(48,209,88,.10)';
-      document.getElementById('errorBox').style.borderColor = 'rgba(48,209,88,.3)';
     }
 
-    // ── Enter key ────────────────────────────────────────────────────────────
+    // Enter
     document.addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
-        if (currentTab === 'login')    submitLogin();
-        else                           submitRegister();
-      }
+      if (e.key !== 'Enter') return;
+      if (currentTab === 'login') submitLogin();
+      else                        submitRegister();
     });
   </script>
 </body>

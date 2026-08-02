@@ -236,6 +236,12 @@
 
     <div id="errorBox" class="error-box"></div>
 
+    <!-- Loading -->
+    <div id="loadingPanel" class="card hidden">
+      <p class="title">Connexion à la salle…</p>
+      <p class="meta"><span class="spinner"></span> Authentification et synchronisation</p>
+    </div>
+
     <!-- Join by code (no ?code= in URL) -->
     <div id="joinPanel" class="card hidden">
       <p class="title">Rejoindre une salle</p>
@@ -306,7 +312,7 @@
     function hideError() { document.getElementById('errorBox').classList.remove('show'); }
 
     function showPanel(id) {
-      ['joinPanel', 'roomPanel', 'invalidPanel'].forEach(p => {
+      ['joinPanel', 'loadingPanel', 'roomPanel', 'invalidPanel'].forEach(p => {
         document.getElementById(p).classList.toggle('hidden', p !== id);
       });
     }
@@ -476,7 +482,7 @@
 
     async function enterRoom(code) {
       hideError();
-      showPanel(null);
+      showPanel('loadingPanel');
       await ensureAuth();
 
       const room = await fetchRoom(code);

@@ -302,6 +302,7 @@
     let membersChannel = null;
     let lastRemotePos = -1;
     let lastRemotePlaying = true;
+    let isLiveRoom = false;
     let displayName = 'Invité web';
 
     function showError(msg) {
@@ -410,8 +411,16 @@
     }
 
     function applyPlayback(posSec, playing) {
+      // Direct : pas de sync (position hôte ≠ position navigateur, provoque boucles)
+      if (isLiveRoom) {
+        document.getElementById('syncStatus').textContent = 'Direct · même chaîne';
+        document.getElementById('roomMeta').textContent =
+          'Lecture indépendante — ouvrez l\'app pour la meilleure expérience';
+        return;
+      }
+
       const drift = Math.abs(video.currentTime - posSec);
-      if (drift >= 2 && posSec >= 0) {
+      if (drift >= 4 && posSec >= 0) {
         try { video.currentTime = posSec; } catch (_) {}
       }
       if (playing && video.paused) video.play().catch(() => {});
@@ -488,11 +497,13 @@
 
       await joinAsMember(code);
       ROOM_CODE = code;
+      isLiveRoom = (room.tab_index ?? 1) === 1;
 
       document.getElementById('codeDisplay').textContent = code;
       document.getElementById('roomTitle').textContent = room.title || 'Sans titre';
-      document.getElementById('roomMeta').textContent =
-        room.is_playing ? 'Lecture synchronisée avec l\'hôte' : 'En pause';
+      document.getElementById('roomMeta').textContent = isLiveRoom
+        ? 'Direct — même chaîne (sync désactivée sur le web)'
+        : (room.is_playing ? 'Lecture synchronisée avec l\'hôte' : 'En pause');
 
       showPanel('roomPanel');
       attachStream(room.stream_url);

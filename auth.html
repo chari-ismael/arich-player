@@ -294,6 +294,19 @@ const THIS_PAGE_URL = 'https://arich.fr/auth.html';
 const APP_DEEP_LINK = 'com.arich.iptv://auth-callback';
 const WEB_REDIRECT  = 'https://arich.fr/manage-playlist.html';
 
+function getNextRedirectUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const next = params.get('next');
+  if (!next) return null;
+  try {
+    const url = new URL(next, window.location.origin);
+    if (url.origin !== window.location.origin) return null;
+    return url.href;
+  } catch (_) {
+    return null;
+  }
+}
+
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
 
@@ -350,8 +363,13 @@ function redirectAfterAuth() {
     }, 2800);
 
   } else {
-    if (sub) sub.textContent = "Redirection vers votre espace…";
-    setTimeout(() => { window.location.href = WEB_REDIRECT; }, 1500);
+    const nextUrl = getNextRedirectUrl();
+    if (sub) sub.textContent = nextUrl
+      ? 'Retour vers Watch Together…'
+      : "Redirection vers votre espace…";
+    setTimeout(() => {
+      window.location.href = nextUrl || WEB_REDIRECT;
+    }, 1500);
   }
 }
 

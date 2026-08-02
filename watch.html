@@ -322,17 +322,12 @@
       if (session) return session;
 
       const { data, error } = await sb.auth.signInAnonymously();
-      if (error) {
-        // Fallback : connexion email rapide
-        const email = prompt('Connexion requise. Entrez votre email Arich (ou créez un compte sur arich.fr/auth.html) :');
-        if (!email) throw new Error('Connexion annulée');
-        const pass = prompt('Mot de passe :');
-        if (!pass) throw new Error('Connexion annulée');
-        const res = await sb.auth.signInWithPassword({ email: email.trim(), password: pass });
-        if (res.error) throw res.error;
-        return res.data.session;
-      }
-      return data.session;
+      if (!error && data.session) return data.session;
+
+      // Auth anonyme désactivée → connexion Arich puis retour ici
+      const returnUrl = `${location.origin}${location.pathname}${location.search}`;
+      location.href = `auth.html?next=${encodeURIComponent(returnUrl)}`;
+      throw new Error('Redirection connexion…');
     }
 
     async function fetchRoom(code) {

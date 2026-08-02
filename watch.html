@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mpegts.js@1.7.3/dist/mpegts.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -304,6 +305,14 @@
     let lastRemotePlaying = true;
     let isLiveRoom = false;
     let displayName = 'Invité web';
+    let accessToken = '';
+    let mpegtsPlayer = null;
+
+    const PROXY_FN = `${SUPABASE_URL}/functions/v1/watch-stream`;
+
+    function proxyStreamUrl(code) {
+      return `${PROXY_FN}?code=${encodeURIComponent(code)}&access_token=${encodeURIComponent(accessToken)}`;
+    }
 
     function showError(msg) {
       const box = document.getElementById('errorBox');
@@ -316,19 +325,6 @@
       ['joinPanel', 'loadingPanel', 'roomPanel', 'invalidPanel'].forEach(p => {
         document.getElementById(p).classList.toggle('hidden', p !== id);
       });
-    }
-
-    async function ensureAuth() {
-      const { data: { session } } = await sb.auth.getSession();
-      if (session) return session;
-
-      const { data, error } = await sb.auth.signInAnonymously();
-      if (!error && data.session) return data.session;
-
-      // Auth anonyme désactivée → connexion Arich puis retour ici
-      const returnUrl = `${location.origin}${location.pathname}${location.search}`;
-      location.href = `auth.html?next=${encodeURIComponent(returnUrl)}`;
-      throw new Error('Redirection connexion…');
     }
 
     async function fetchRoom(code) {
@@ -373,41 +369,117 @@
       });
     }
 
-    function attachStream(url) {
-      placeholder.classList.remove('hidden');
-      placeholderMsg.textContent = 'Connexion au flux…';
+    async function ensureAuth() {
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) {
+        accessToken = session.access_token;
+        return session;
+      }
 
+      const { data, error } = await sb.auth.signInAnonymously();
+      if (!error && data.session) {
+        accessToken = data.session.access_token;
+        return data.session;
+      }
+
+      const returnUrl = `${location.origin}${location.pathname}${location.search}`;
+      location.href = `auth.html?next=${encodeURIComponent(returnUrl)}`;
+      throw new Error('Redirection connexion…');
+    }
+
+    function destroyPlayers() {
       if (hls) { hls.destroy(); hls = null; }
+      if (mpegtsPlayer) {
+        try { mpegtsPlayer.destroy(); } catch (_) {}
+        mpegtsPlayer = null;
+      }
+      video.removeAttribute('src');
+      video.load();
+    }
 
-      const isHls = /\.m3u8(\?|$)/i.test(url) || url.includes('m3u8');
+    function attachStream(code, rawUrl) {
+      placeholder.classList.remove('hidden');
+      placeholderMsg.textContent = 'Connexion au flux via proxy…';
+      destroyPlayers();
+
+      const proxied = proxyStreamUrl(code);
+      const authHeaders = {
+        Authorization: `Bearer ${accessToken}`,
+        apikey: SUPABASE_KEY,
+      };
 
       video.onerror = () => {
         placeholder.classList.remove('hidden');
-        placeholderMsg.textContent = 'Lecture impossible dans le navigateur — ouvrez l\'app Arich.';
+        placeholderMsg.textContent = 'Lecture impossible — essayez l\'app Arich.';
       };
 
-      if (isHls && window.Hls && Hls.isSupported()) {
-        hls = new Hls({ enableWorker: true, lowLatencyMode: true });
-        hls.loadSource(url);
+      const onPlaying = () => {
+        placeholder.classList.add('hidden');
+        placeholderMsg.textContent = '';
+      };
+
+      const onFatal = (msg) => {
+        placeholder.classList.remove('hidden');
+        placeholderMsg.textContent = msg || 'Flux inaccessible. Ouvrez l\'app Arich.';
+      };
+
+      // HLS (.m3u8 ou .ts converti en m3u8 côté proxy)
+      if (window.Hls && Hls.isSupported()) {
+        hls = new Hls({
+          enableWorker: true,
+          lowLatencyMode: true,
+          xhrSetup: (xhr) => {
+            xhr.setRequestHeader('Authorization', authHeaders.Authorization);
+            xhr.setRequestHeader('apikey', authHeaders.apikey);
+          },
+        });
+        hls.loadSource(proxied);
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          placeholder.classList.add('hidden');
+          onPlaying();
           video.play().catch(() => {});
         });
         hls.on(Hls.Events.ERROR, (_, data) => {
-          if (data.fatal) {
-            placeholder.classList.remove('hidden');
-            placeholderMsg.textContent = 'Flux HLS inaccessible (CORS ou réseau). Utilisez l\'app.';
+          if (!data.fatal) return;
+          // Fallback MPEG-TS si manifest HLS indisponible
+          if (/\.ts(\?|$)/i.test(rawUrl) && window.mpegts && mpegts.isSupported()) {
+            hls.destroy();
+            hls = null;
+            attachMpegTs(proxied, authHeaders, onPlaying, onFatal);
+            return;
           }
+          onFatal('Flux HLS inaccessible. Ouvrez l\'app Arich.');
         });
-      } else {
-        video.src = url;
-        video.onloadeddata = () => placeholder.classList.add('hidden');
-        video.play().catch(() => {
-          placeholder.classList.remove('hidden');
-          placeholderMsg.textContent = 'Lecture impossible — ouvrez l\'app Arich.';
-        });
+        return;
       }
+
+      // Safari natif HLS
+      if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = proxied;
+        video.onloadeddata = onPlaying;
+        video.play().catch(() => onFatal());
+        return;
+      }
+
+      attachMpegTs(proxied, authHeaders, onPlaying, onFatal);
+    }
+
+    function attachMpegTs(url, headers, onPlaying, onFatal) {
+      if (!window.mpegts || !mpegts.isSupported()) {
+        onFatal('Navigateur non compatible avec ce flux.');
+        return;
+      }
+      mpegtsPlayer = mpegts.createPlayer({
+        type: 'mpegts',
+        isLive: true,
+        url,
+        headers,
+      }, { enableWorker: true, liveBufferLatencyChasing: true });
+      mpegtsPlayer.attachMediaElement(video);
+      mpegtsPlayer.load();
+      mpegtsPlayer.play();
+      mpegtsPlayer.on(mpegts.Events.ERROR, () => onFatal('Flux TS inaccessible.'));
+      video.onplaying = onPlaying;
     }
 
     function applyPlayback(posSec, playing) {
@@ -506,7 +578,7 @@
         : (room.is_playing ? 'Lecture synchronisée avec l\'hôte' : 'En pause');
 
       showPanel('roomPanel');
-      attachStream(room.stream_url);
+      attachStream(code, room.stream_url);
       subscribeRoom(code, room);
       await refreshPeers(code);
 

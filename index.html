@@ -13,6 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
    <link rel="icon" type="image/x-icon" href="favicon.png">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="https://cloud.umami.is/script.js" data-website-id="VOTRE-UMAMI-ID" data-domains="arich-iptv.com"></script>
 
   <style>
@@ -924,17 +925,20 @@
   }
   window.addEventListener('pagehide', _sendSiteSession);
   window.addEventListener('beforeunload', _sendSiteSession);
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
   async function startCheckout(plan) {
   const btn = document.querySelector(`[data-plan="${plan}"]`)
+  const defaultLabel = plan === 'yearly' ? 'Activer pour 2,99€/an' : 'Acheter la licence à vie'
   btn.disabled = true
   btn.textContent = 'Chargement...'
 
   // Récupère la session Supabase si connecté
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { session } } = await sb.auth.getSession()
 
   // Demande la device_key si pas connecté
   const deviceKey = prompt('Entrez la clé de votre appareil\n(visible dans ARICH IPTV → Paramètres → Infos appareil)')
-  if (!deviceKey) { btn.disabled = false; btn.textContent = 'Acheter'; return }
+  if (!deviceKey) { btn.disabled = false; btn.textContent = defaultLabel; return }
 
   const res = await fetch('https://aynucieohuowgkwyftiy.supabase.co/functions/v1/create-checkout', {
     method: 'POST',
@@ -951,7 +955,7 @@
   if (data.error) {
     alert('❌ ' + data.error)
     btn.disabled = false
-    btn.textContent = 'Acheter'
+    btn.textContent = defaultLabel
     return
   }
 

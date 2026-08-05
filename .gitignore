@@ -1,0 +1,23 @@
+# Flutter SDK local install
+flutter-sdk/
+android-sdk/
+
+# Build artifacts
+mobile_app/build/
+mobile_app/.dart_tool/
+mobile_app/.flutter-plugins
+mobile_app/.flutter-plugins-dependencies
+
+# APK extraction temp
+apk-extract/
+apk-release/
+arich_iptv/
+arich-player/
+
+# IDE
+.idea/
+*.iml
+
+# OS
+.DS_Store
+releases/*.apk

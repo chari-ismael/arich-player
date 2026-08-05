@@ -743,14 +743,14 @@ textarea{resize:vertical;min-height:80px}
 
 <!-- ══════ CONFIG APP ══════ -->
 <section class="sec" id="sec-config">
-  <div class="ph"><div class="ph-left"><h1>Configuration app ⚙️</h1><p>Paramètres récupérés par l'app Flutter.</p></div>
-    <div class="ph-actions"><button class="btn btn-primary btn-sm" id="btn-save-config" onclick="saveConfig()"><span class="spin"></span><span class="blbl">💾 Sauvegarder</span></button></div>
+  <div class="ph"><div class="ph-left"><h1>Configuration app</h1><p>Contrôle remote lu par l'app au démarrage — versions, monétisation, trial.</p></div>
+    <div class="ph-actions"><button class="btn btn-primary btn-sm" id="btn-save-config" onclick="saveConfig()"><span class="spin"></span><span class="blbl">Sauvegarder</span></button></div>
   </div>
   <div id="config-loading" class="loading"><div class="big-spin"></div> Chargement…</div>
   <div id="config-wrap" style="display:none;">
     <div class="grid2" style="margin-bottom:18px;">
       <div class="card">
-        <div class="card-title">🔧 Mode maintenance</div>
+        <div class="card-title">Mode maintenance</div>
         <div class="flag-row">
           <div><div style="font-size:13px;font-weight:500;">Activer la maintenance</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px;">L'app affiche un écran bloquant</div></div>
           <label class="toggle"><input type="checkbox" id="cfg-maintenance" onchange="onMaintenanceToggle()"><div class="toggle-track"><div class="toggle-thumb"></div></div></label>
@@ -758,11 +758,52 @@ textarea{resize:vertical;min-height:80px}
         <div class="field" style="margin-top:14px;"><label>Message de maintenance</label><textarea id="cfg-maint-msg" rows="2" placeholder="Maintenance en cours…"></textarea></div>
       </div>
       <div class="card">
-        <div class="card-title">📱 Versions de l'app</div>
+        <div class="card-title">Versions & mise à jour forcée</div>
         <div style="display:flex;flex-direction:column;gap:13px;">
+          <div class="flag-row" style="padding:0;border:none;">
+            <div><div style="font-size:13px;font-weight:500;">Mise à jour obligatoire</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px;">Bloque l'app si version &lt; minimale (style Clash)</div></div>
+            <label class="toggle"><input type="checkbox" id="cfg-force-update"><div class="toggle-track"><div class="toggle-thumb"></div></div></label>
+          </div>
+          <div class="flag-row" style="padding:0;border:none;">
+            <div><div style="font-size:13px;font-weight:500;">Suggestion soft update</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px;">Popup dismissible si version &lt; latest</div></div>
+            <label class="toggle"><input type="checkbox" id="cfg-soft-update"><div class="toggle-track"><div class="toggle-thumb"></div></div></label>
+          </div>
           <div class="field"><label>Version minimale requise</label><input type="text" id="cfg-min-version" placeholder="1.0.0"></div>
           <div class="field"><label>Version actuelle (latest)</label><input type="text" id="cfg-latest-version" placeholder="1.1.0"></div>
-          <div class="field"><label>URL téléchargement APK</label><input type="url" id="cfg-apk-url" placeholder="https://…/arich.apk"></div>
+          <div class="field"><label>URL Play Store</label><input type="url" id="cfg-playstore-url" placeholder="https://play.google.com/store/apps/details?id=com.arich.iptv"></div>
+          <div class="field"><label>URL téléchargement APK (fallback)</label><input type="url" id="cfg-apk-url" placeholder="https://github.com/chari-ismael/arich-player/releases/latest/download/app-release.apk"></div>
+          <div class="field"><label>Message update forcée</label><textarea id="cfg-force-update-msg" rows="2" placeholder="Une mise à jour obligatoire est disponible. Merci de mettre à jour pour continuer."></textarea></div>
+        </div>
+      </div>
+    </div>
+    <div class="grid2" style="margin-bottom:18px;">
+      <div class="card">
+        <div class="card-title">Monétisation & essai</div>
+        <div style="display:flex;flex-direction:column;gap:13px;">
+          <div class="flag-row" style="padding:0;border:none;">
+            <div><div style="font-size:13px;font-weight:500;">Activer le mode paiement</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px;">Indépendant des mises à jour APK — contrôlé ici</div></div>
+            <label class="toggle"><input type="checkbox" id="cfg-monetization"><div class="toggle-track"><div class="toggle-thumb"></div></div></label>
+          </div>
+          <div class="flag-row" style="padding:0;border:none;">
+            <div><div style="font-size:13px;font-weight:500;">Compteur jours gratuits</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px;">Démarre le trial côté serveur à la 1ʳᵉ ouverture</div></div>
+            <label class="toggle"><input type="checkbox" id="cfg-trial-enabled"><div class="toggle-track"><div class="toggle-thumb"></div></div></label>
+          </div>
+          <div class="field"><label>Durée essai (jours)</label><input type="number" id="cfg-trial-days" min="0" max="365" placeholder="7"></div>
+          <div class="field"><label>Prix annuel (€)</label><input type="number" id="cfg-price-annual" min="0" step="0.01" placeholder="2.99"></div>
+          <div class="field"><label>Prix à vie (€)</label><input type="number" id="cfg-price-lifetime" min="0" step="0.01" placeholder="4.99"></div>
+          <div class="field"><label>URL paiement / checkout</label><input type="url" id="cfg-payment-url" placeholder="https://…"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Bypass développeur</div>
+        <div style="display:flex;flex-direction:column;gap:13px;">
+          <div class="flag-row" style="padding:0;border:none;">
+            <div><div style="font-size:13px;font-weight:500;">Mode dev global</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px;">Désactive paywall uniquement pour les clés listées</div></div>
+            <label class="toggle"><input type="checkbox" id="cfg-dev-bypass"><div class="toggle-track"><div class="toggle-thumb"></div></div></label>
+          </div>
+          <div class="field"><label>Device Keys bypass (une par ligne)</label><textarea id="cfg-dev-keys" rows="5" placeholder="ARICH-XXXX-XXXX-XXXX&#10;ARICH-YYYY-YYYY-YYYY"></textarea></div>
+          <div class="field"><label>Emails bypass (une par ligne)</label><textarea id="cfg-dev-emails" rows="3" placeholder="toi@exemple.com"></textarea></div>
+          <p style="font-size:11.5px;color:var(--muted);line-height:1.55;">Les builds debug locaux peuvent aussi bypasser via un flag build. Les APK test déjà distribués restent contrôlés par ces clés + le toggle « mode paiement ».</p>
         </div>
       </div>
     </div>
@@ -1029,13 +1070,15 @@ const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsIn
 const EDGE_BASE = 'https://aynucieohuowgkwyftiy.supabase.co/functions/v1';
 
 const FLAGS_DEF = [
-  { key:'flag_tmdb_posters',  label:'Posters TMDB',        desc:'Afficher les posters TMDB sur les chaînes' },
-  { key:'flag_epg_enabled',   label:'Guide EPG',            desc:'Activer le guide des programmes' },
-  { key:'flag_chromecast',    label:'Chromecast',           desc:'Support Chromecast dans le lecteur' },
-  { key:'flag_pip_mode',      label:'Picture-in-Picture',   desc:'Mode PiP Android' },
-  { key:'flag_auto_update',   label:'Mise à jour auto',     desc:'Vérifier les updates au démarrage' },
-  { key:'flag_analytics',     label:'Analytics in-app',     desc:'Collecter les données d\'usage (anonyme)' },
-  { key:'flag_beta_features', label:'Fonctions bêta',       desc:'Activer les fonctions en cours de test' },
+  { key:'flag_tmdb_posters',     label:'Posters TMDB',        desc:'Afficher les posters TMDB sur les chaînes' },
+  { key:'flag_epg_enabled',      label:'Guide EPG',            desc:'Activer le guide des programmes' },
+  { key:'flag_chromecast',       label:'Chromecast',           desc:'Support Chromecast dans le lecteur' },
+  { key:'flag_pip_mode',         label:'Picture-in-Picture',   desc:'Mode PiP Android' },
+  { key:'flag_watch_together',   label:'Watch Together',       desc:'Sessions de visionnage synchronisé' },
+  { key:'flag_captions',         label:'Sous-titres / Captions', desc:'Afficher et gérer les pistes de sous-titres' },
+  { key:'flag_auto_update',      label:'Mise à jour auto',     desc:'Vérifier les updates au démarrage' },
+  { key:'flag_analytics',        label:'Analytics in-app',     desc:'Collecter les données d\'usage (anonyme)' },
+  { key:'flag_beta_features',    label:'Fonctions bêta',       desc:'Activer les fonctions en cours de test' },
 ];
 
 const { createClient } = supabase;
@@ -2015,15 +2058,43 @@ async function loadConfig() {
   if (!data) return;
   const cfg = Object.fromEntries(data.map(r=>[r.key,r.value]));
   const fields = {
-    'cfg-maintenance':'maintenance', 'cfg-maint-msg':'maintenance_message',
-    'cfg-min-version':'min_version', 'cfg-latest-version':'latest_version',
+    'cfg-maintenance':'maintenance',
+    'cfg-maint-msg':'maintenance_message',
+    'cfg-force-update':'force_update',
+    'cfg-soft-update':'soft_update',
+    'cfg-min-version':'min_version',
+    'cfg-latest-version':'latest_version',
+    'cfg-playstore-url':'play_store_url',
     'cfg-apk-url':'apk_url',
+    'cfg-force-update-msg':'force_update_message',
+    'cfg-monetization':'monetization_enabled',
+    'cfg-trial-enabled':'trial_enabled',
+    'cfg-trial-days':'trial_days',
+    'cfg-price-annual':'price_annual_eur',
+    'cfg-price-lifetime':'price_lifetime_eur',
+    'cfg-payment-url':'payment_url',
+    'cfg-dev-bypass':'dev_bypass_enabled',
+    'cfg-dev-keys':'dev_bypass_keys',
+    'cfg-dev-emails':'dev_bypass_emails',
   };
   Object.entries(fields).forEach(([elId,key])=>{
     const el=document.getElementById(elId); if(!el) return;
     if (el.type==='checkbox') el.checked=cfg[key]==='true';
     else el.value=cfg[key]||'';
   });
+  // Defaults if keys never set yet
+  if (!cfg['trial_days']) {
+    const el = document.getElementById('cfg-trial-days');
+    if (el && !el.value) el.value = '7';
+  }
+  if (!cfg['play_store_url']) {
+    const el = document.getElementById('cfg-playstore-url');
+    if (el && !el.value) el.value = 'https://play.google.com/store/apps/details?id=com.arich.iptv';
+  }
+  if (!cfg['apk_url']) {
+    const el = document.getElementById('cfg-apk-url');
+    if (el && !el.value) el.value = 'https://github.com/chari-ismael/arich-player/releases/download/V_3.0.0/app-release.apk';
+  }
   if (cfg['maintenance']==='true') {
     document.getElementById('maintenance-banner').style.display = 'flex';
     document.getElementById('maint-msg-display').textContent = cfg['maintenance_message']||'';
@@ -2054,17 +2125,37 @@ async function toggleMaintenance(activate) {
 
 async function saveConfig() {
   setLoading('btn-save-config', true);
-  const fields = {
-    'cfg-maint-msg':'maintenance_message','cfg-min-version':'min_version',
-    'cfg-latest-version':'latest_version','cfg-apk-url':'apk_url',
+  const textFields = {
+    'cfg-maint-msg':'maintenance_message',
+    'cfg-min-version':'min_version',
+    'cfg-latest-version':'latest_version',
+    'cfg-playstore-url':'play_store_url',
+    'cfg-apk-url':'apk_url',
+    'cfg-force-update-msg':'force_update_message',
+    'cfg-trial-days':'trial_days',
+    'cfg-price-annual':'price_annual_eur',
+    'cfg-price-lifetime':'price_lifetime_eur',
+    'cfg-payment-url':'payment_url',
+    'cfg-dev-keys':'dev_bypass_keys',
+    'cfg-dev-emails':'dev_bypass_emails',
   };
-  for (const [elId,key] of Object.entries(fields)) {
+  const boolFields = {
+    'cfg-force-update':'force_update',
+    'cfg-soft-update':'soft_update',
+    'cfg-monetization':'monetization_enabled',
+    'cfg-trial-enabled':'trial_enabled',
+    'cfg-dev-bypass':'dev_bypass_enabled',
+  };
+  for (const [elId,key] of Object.entries(textFields)) {
     const el=document.getElementById(elId); if(el) await upsertConfig(key, el.value.trim());
   }
+  for (const [elId,key] of Object.entries(boolFields)) {
+    const el=document.getElementById(elId); if(el) await upsertConfig(key, el.checked?'true':'false');
+  }
   setLoading('btn-save-config', false);
-  await logAction('save_config','—');
-  showMsg('config-msg','✅ Configuration sauvegardée !','msg-success');
-  toast('⚙️ Config sauvegardée');
+  await logAction('save_config','monetization+force_update');
+  showMsg('config-msg','Configuration sauvegardée — l’app la lira au prochain lancement.','msg-success');
+  toast('Config sauvegardée');
 }
 
 async function upsertConfig(key, value) {

@@ -3,977 +3,950 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Arich IPTV — Le lecteur IPTV premium pour Android</title>
-  <meta name="description" content="Arich IPTV est un lecteur multimédia premium pour Android. Compatible Xtream Codes et playlists M3U. Apportez votre propre accès, profitez d'un player de qualité." />
-  <meta property="og:title" content="Arich IPTV — Le lecteur IPTV premium" />
-  <meta property="og:description" content="Player IPTV premium pour Android. Compatible Xtream Codes et M3U. Design premium, zapping ultra-rapide." />
-  <meta name="description" content="ARICH IPTV est un lecteur IPTV moderne, rapide et compatible Android TV et mobile. Interface fluide, lecture rapide et configuration simple.">
-  <meta name="keywords" content="iptv lecteur, iptv player, arich iptv, lecteur iptv android tv">
+  <title>ARICH — Lecteur IPTV premium pour Android</title>
+  <meta name="description" content="ARICH est un lecteur multimédia premium pour Android. Compatible Xtream Codes et playlists M3U. Apportez votre propre accès, profitez d'une expérience cinéma." />
+  <meta property="og:title" content="ARICH — Lecteur IPTV premium" />
+  <meta property="og:description" content="Player IPTV pour Android. Xtream Codes & M3U. Design cinéma, zapping fluide." />
+  <meta name="keywords" content="iptv lecteur, iptv player, arich, lecteur iptv android tv" />
   <meta name="google-site-verification" content="jirKy2q6VohRM8uXDo8NUFqDf-JzYBiEuX9nPXn4SoQ" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-   <link rel="icon" type="image/x-icon" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="favicon.png" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="https://cloud.umami.is/script.js" data-website-id="VOTRE-UMAMI-ID" data-domains="arich-iptv.com"></script>
-
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:        #000000;
-      --surface:   #111111;
-      --surface2:  #1a1a1a;
-      --surface3:  #242424;
-      --red:       #FF2D55;
-      --violet:    #7B2FFF;
-      --grad:      linear-gradient(135deg, #7B2FFF, #FF2D55);
-      --red-glow:  rgba(255,45,85,0.18);
-      --red-dim:   rgba(255,45,85,0.08);
-      --vio-dim:   rgba(123,47,255,0.10);
-      --blue:      #0A84FF;
-      --gold:      #FFD60A;
-      --green:     #30D158;
-      --text:      #ffffff;
-      --muted:     #8E8E93;
-      --faint:     #3a3a3c;
-      --border:    rgba(255,255,255,0.07);
-      --r:         18px;
+      --bg:        #0A0A0F;
+      --bg-elev:   #101018;
+      --surface:   #13131A;
+      --surface2:  #1C1C26;
+      --border:    rgba(255,255,255,0.08);
+      --border-strong: rgba(255,255,255,0.14);
+      --orange:    #FF9F43;
+      --orange-dim: rgba(255,159,67,0.14);
+      --orange-line: rgba(255,159,67,0.45);
+      --blue:      #3D8EFF;
+      --text:      #F5F5F7;
+      --text-sec:  #8E8EA0;
+      --text-mut:  #52526A;
+      --danger:    #EF4444;
+      --ok:        #22C55E;
+      --r:         14px;
+      --nav-h:     64px;
+      --pad:       clamp(20px, 4vw, 48px);
+      --max:       1120px;
+      --font-ui:   'Outfit', system-ui, sans-serif;
+      --font-display: 'Rajdhani', 'Outfit', sans-serif;
     }
 
     html { scroll-behavior: smooth; }
     body {
-      font-family: 'DM Sans', sans-serif;
+      font-family: var(--font-ui);
       background: var(--bg);
       color: var(--text);
       overflow-x: hidden;
-      cursor: none;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
     }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; }
+    img { display: block; max-width: 100%; }
 
-    /* ── CURSOR ─────────────────────────────────────── */
-    #cursor {
-      position: fixed; z-index: 9999; pointer-events: none;
-      width: 10px; height: 10px;
-      background: var(--red);
-      border-radius: 50%;
-      transform: translate(-50%,-50%);
-      transition: transform .12s ease, width .2s, height .2s, background .2s;
+    /* Atmosphere — soft cinematic wash, not neon grids */
+    .page-glow {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 70% -10%, rgba(255,159,67,0.09), transparent 55%),
+        radial-gradient(ellipse 60% 40% at 10% 30%, rgba(61,142,255,0.05), transparent 50%),
+        linear-gradient(180deg, #0A0A0F 0%, #0C0C14 40%, #0A0A0F 100%);
     }
-    #cursor-ring {
-      position: fixed; z-index: 9998; pointer-events: none;
-      width: 36px; height: 36px;
-      border: 1.5px solid rgba(255,45,85,0.5);
-      border-radius: 50%;
-      transform: translate(-50%,-50%);
-      transition: transform .3s ease, width .3s, height .3s, opacity .3s;
+    .noise {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
-    body.hovering #cursor { width: 16px; height: 16px; background: white; }
-    body.hovering #cursor-ring { width: 52px; height: 52px; border-color: rgba(123,47,255,0.4); }
+    .wrap { position: relative; z-index: 1; }
 
-    /* ── NAV ─────────────────────────────────────────── */
+    /* Nav — glass, sober */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: var(--nav-h);
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 48px; height: 68px;
-      background: rgba(0,0,0,0.75);
-      backdrop-filter: blur(24px) saturate(1.6);
+      padding: 0 var(--pad);
+      background: rgba(10,10,15,0.72);
+      backdrop-filter: blur(20px) saturate(1.2);
+      -webkit-backdrop-filter: blur(20px) saturate(1.2);
       border-bottom: 1px solid var(--border);
     }
-    .nav-logo {
-      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px;
-      letter-spacing: -0.5px;
+    .nav-brand {
       display: flex; align-items: center; gap: 10px;
-      text-decoration: none; color: white;
+      font-family: var(--font-display);
+      font-weight: 700; font-size: 22px; letter-spacing: 0.04em;
     }
-    .nav-logo-icon {
-      width: 34px; height: 34px;
-      background: var(--grad);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 15px;
-      box-shadow: 0 0 20px rgba(123,47,255,0.4);
+    .nav-brand img {
+      width: 30px; height: 30px; border-radius: 8px; object-fit: cover;
     }
+    .nav-brand em { font-style: normal; color: var(--orange); }
     .nav-links { display: flex; align-items: center; gap: 28px; }
-    .nav-links a { font-size: 14px; font-weight: 500; color: var(--muted); text-decoration: none; transition: color .2s; }
-    .nav-links a:hover { color: white; }
-    .nav-cta {
-      background: var(--grad) !important;
-      color: white !important;
-      padding: 9px 20px; border-radius: 100px;
-      font-weight: 600 !important; font-size: 13px !important;
-      transition: box-shadow .2s, transform .2s !important;
+    .nav-links a {
+      font-size: 13.5px; font-weight: 500; color: var(--text-sec);
+      transition: color .2s;
     }
-    .nav-cta:hover { box-shadow: 0 0 28px rgba(123,47,255,0.45); transform: scale(1.04); }
+    .nav-links a:hover { color: var(--text); }
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      height: 42px; padding: 0 18px;
+      border-radius: 10px; font-size: 13.5px; font-weight: 600;
+      border: 1px solid transparent; cursor: pointer;
+      transition: background .2s, border-color .2s, color .2s, transform .15s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-ghost {
+      background: rgba(255,255,255,0.04);
+      border-color: var(--border-strong);
+      color: var(--text);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.08); }
+    .btn-accent {
+      background: var(--orange);
+      color: #1A1008;
+      border-color: transparent;
+    }
+    .btn-accent:hover { filter: brightness(1.06); }
+    .btn-line {
+      background: transparent;
+      border-color: var(--border-strong);
+      color: var(--text);
+    }
+    .btn-line:hover { border-color: var(--orange-line); color: var(--orange); }
+    .btn-lg { height: 48px; padding: 0 22px; font-size: 14.5px; }
+    .btn:disabled { opacity: 0.55; cursor: wait; }
 
-    .nav-login {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 16px; border-radius: 100px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
-      color: rgba(255,255,255,0.8);
-      font-size: 13px; font-weight: 500;
-      text-decoration: none;
-      transition: background .2s, border-color .2s, color .2s, transform .2s;
-      white-space: nowrap;
+    /* Hero — one composition, brand first */
+    .hero {
+      min-height: 100svh;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: clamp(32px, 5vw, 72px);
+      align-items: end;
+      padding: calc(var(--nav-h) + 48px) var(--pad) 56px;
+      max-width: calc(var(--max) + 2 * var(--pad));
+      margin: 0 auto;
     }
-    .nav-login:hover {
-      background: rgba(255,255,255,0.10);
-      border-color: rgba(255,255,255,0.22);
-      color: white; transform: translateY(-1px);
+    .hero-copy { padding-bottom: 24px; }
+    .brand-mark {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: clamp(56px, 9vw, 104px);
+      line-height: 0.92;
+      letter-spacing: 0.02em;
+      margin-bottom: 18px;
+      animation: rise .7s ease both;
     }
-    .nav-login svg { opacity: 0.7; flex-shrink: 0; }
-    .nav-login:hover svg { opacity: 1; }
-    .nav-right { display: flex; align-items: center; gap: 10px; }
-
-    /* ── SECTIONS ──────────────────────────────────── */
-    section { padding: 120px 48px; max-width: 1200px; margin: 0 auto; }
-
-    /* ── HERO ─────────────────────────────────────── */
-    #hero {
-      min-height: 100vh;
-      display: flex; flex-direction: column; justify-content: center;
-      padding-top: 140px; position: relative; max-width: 100%;
+    .brand-mark span { color: var(--orange); }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: clamp(22px, 3.2vw, 34px);
+      letter-spacing: 0.01em;
+      line-height: 1.15;
+      color: var(--text);
+      max-width: 16ch;
+      animation: rise .7s .08s ease both;
     }
-    .hero-bg { position: absolute; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; }
-    .hero-glow {
-      position: absolute; width: 700px; height: 700px;
-      background: radial-gradient(circle, rgba(123,47,255,0.10) 0%, transparent 70%);
-      top: -100px; left: -150px;
-      animation: floatGlow 8s ease-in-out infinite alternate;
-    }
-    .hero-glow-2 {
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(255,45,85,0.08) 0%, transparent 70%);
-      bottom: 0; right: -100px; position: absolute;
-      animation: floatGlow 10s ease-in-out infinite alternate-reverse;
-    }
-    .hero-grid {
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-      background-size: 60px 60px;
-      mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 100%);
-    }
-    @keyframes floatGlow { from { transform: translateY(0) scale(1); } to { transform: translateY(30px) scale(1.1); } }
-
-    .hero-inner {
-      position: relative; z-index: 1;
-      max-width: 1200px; margin: 0 auto; padding: 0 48px;
-      display: grid; grid-template-columns: 1fr 1fr;
-      align-items: center; gap: 80px;
-    }
-    .hero-tag {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--vio-dim); border: 1px solid rgba(123,47,255,0.2);
-      border-radius: 100px; padding: 6px 14px;
-      font-size: 12px; font-weight: 500; color: var(--violet);
-      letter-spacing: 0.5px; margin-bottom: 28px;
-      animation: fadeUp .6s ease both;
-    }
-    .hero-tag-dot {
-      width: 6px; height: 6px; background: var(--violet); border-radius: 50%;
-      animation: pulse-dot 1.8s ease-in-out infinite;
-    }
-    @keyframes pulse-dot { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.5; transform:scale(0.7); } }
-
-    h1 {
-      font-family: 'Syne', sans-serif; font-weight: 800;
-      font-size: clamp(40px, 5vw, 68px);
-      line-height: 1.05; letter-spacing: -2px;
-      animation: fadeUp .7s .1s ease both;
-    }
-    h1 .accent { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    h1 .stroke { -webkit-text-stroke: 1.5px rgba(255,255,255,0.35); color: transparent; }
-
     .hero-sub {
-      margin-top: 20px; font-size: 16px; color: var(--muted); line-height: 1.7;
-      max-width: 440px; animation: fadeUp .7s .2s ease both;
+      margin-top: 16px;
+      font-size: 15.5px;
+      color: var(--text-sec);
+      max-width: 38ch;
+      line-height: 1.65;
+      animation: rise .7s .16s ease both;
     }
-    .hero-actions {
+    .hero-cta {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      margin-top: 32px;
+      animation: rise .7s .24s ease both;
+    }
+    .hero-visual {
+      position: relative;
+      min-height: 420px;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(160deg, rgba(255,159,67,0.12), transparent 40%),
+        linear-gradient(20deg, #12121A, #0E0E16 60%, #151520);
+      box-shadow: 0 40px 80px rgba(0,0,0,0.45);
+      animation: rise .8s .12s ease both;
+    }
+    .hero-visual::before {
+      content: "";
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 70% 20%, rgba(255,159,67,0.18), transparent 35%),
+        linear-gradient(180deg, transparent 40%, rgba(10,10,15,0.85) 100%);
+      pointer-events: none;
+    }
+    .hero-stage {
+      position: absolute; inset: 0;
+      display: flex; align-items: flex-end; justify-content: center;
+      padding: 28px 24px 32px;
+    }
+    .app-preview {
+      width: min(280px, 72%);
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(12,12,18,0.88);
+      backdrop-filter: blur(16px);
+      padding: 14px 12px 16px;
+      transform: translateY(8px);
+      animation: floatY 7s ease-in-out infinite;
+    }
+    .app-preview-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px; padding: 0 4px;
+    }
+    .app-preview-logo {
+      width: 22px; height: 22px; border-radius: 6px;
+      background: linear-gradient(135deg, var(--orange), #E07A20);
+      display: grid; place-items: center;
+      font-family: var(--font-display); font-weight: 700; font-size: 12px; color: #1A1008;
+    }
+    .app-preview-dots { display: flex; gap: 6px; }
+    .app-preview-dots i {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+      display: block;
+    }
+    .live-card {
+      border-radius: 12px; overflow: hidden;
+      border: 1px solid var(--border);
+      background: #1A1520;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .live-card-art {
+      height: 108px;
+      background:
+        linear-gradient(120deg, rgba(200,30,40,0.85), rgba(20,40,120,0.75)),
+        linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.55));
+      display: flex; align-items: flex-end; padding: 10px;
+    }
+    .live-badge {
+      position: absolute; top: 8px; left: 8px;
+      font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
+      background: var(--danger); color: white;
+      padding: 3px 7px; border-radius: 4px;
+    }
+    .live-card h4 {
+      font-size: 12px; font-weight: 600; padding: 8px 10px 2px;
+    }
+    .live-card p {
+      font-size: 11px; color: var(--text-sec); padding: 0 10px 10px;
+    }
+    .row-label {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 600; color: var(--text-sec);
+      margin: 4px 0 8px; padding: 0 2px;
+    }
+    .row-label::before {
+      content: ""; width: 3px; height: 12px; border-radius: 2px;
+      background: var(--orange);
+    }
+    .poster-row { display: flex; gap: 8px; }
+    .poster {
+      flex: 1; aspect-ratio: 2/3; border-radius: 8px;
+      background: linear-gradient(160deg, #222230, #14141C);
+      border: 1px solid var(--border);
+      position: relative; overflow: hidden;
+    }
+    .poster::after {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.06) 50%, transparent 70%);
+      animation: sheen 2.8s ease-in-out infinite;
+    }
+    .poster:nth-child(2) { background: linear-gradient(160deg, #2A2230, #16141C); }
+    .poster:nth-child(3) { background: linear-gradient(160deg, #1E2430, #12141A); }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes floatY {
+      0%, 100% { transform: translateY(8px); }
+      50% { transform: translateY(-6px); }
+    }
+    @keyframes sheen {
+      0%, 100% { transform: translateX(-120%); }
+      50% { transform: translateX(120%); }
+    }
+
+    /* Sections */
+    section {
+      max-width: calc(var(--max) + 2 * var(--pad));
+      margin: 0 auto;
+      padding: 88px var(--pad);
+    }
+    .sec-head { max-width: 560px; margin-bottom: 40px; }
+    .sec-head.center { margin-left: auto; margin-right: auto; text-align: center; }
+    .sec-kicker {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--orange);
+      margin-bottom: 12px;
+    }
+    .sec-kicker::before {
+      content: ""; width: 18px; height: 2px; background: var(--orange);
+      border-radius: 1px;
+    }
+    .sec-head h2 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: clamp(28px, 4vw, 40px);
+      letter-spacing: 0.01em;
+      line-height: 1.1;
+    }
+    .sec-head p {
+      margin-top: 12px; color: var(--text-sec); font-size: 15.5px; line-height: 1.65;
+    }
+
+    /* Legal strip */
+    .legal {
+      max-width: calc(var(--max) + 2 * var(--pad));
+      margin: 0 auto;
+      padding: 0 var(--pad);
+    }
+    .legal-inner {
+      display: flex; gap: 14px; align-items: flex-start;
+      padding: 16px 18px;
+      border-radius: var(--r);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(12px);
+      font-size: 13px; color: var(--text-sec); line-height: 1.6;
+    }
+    .legal-inner strong { color: var(--text); font-weight: 600; }
+    .legal-mark {
+      flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px;
+      background: var(--orange-dim); color: var(--orange);
+      display: grid; place-items: center; font-size: 13px; font-weight: 700;
+    }
+
+    /* Features — no emoji cards clutter */
+    .feat-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .feat {
+      background: var(--bg-elev);
+      padding: 28px 24px;
+      transition: background .2s;
+    }
+    .feat:hover { background: #14141E; }
+    .feat-num {
+      font-family: var(--font-display);
+      font-size: 13px; font-weight: 700; color: var(--orange);
+      letter-spacing: 0.08em; margin-bottom: 14px;
+    }
+    .feat h3 {
+      font-size: 17px; font-weight: 600; margin-bottom: 8px;
+    }
+    .feat p { font-size: 13.5px; color: var(--text-sec); line-height: 1.6; }
+
+    /* Pricing */
+    .pricing-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+      max-width: 820px; margin: 0 auto;
+    }
+    .plan {
+      position: relative;
+      padding: 28px 26px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(19,19,26,0.7);
+      backdrop-filter: blur(16px);
+    }
+    .plan.is-featured {
+      border-color: var(--orange-line);
+      background:
+        linear-gradient(165deg, rgba(255,159,67,0.10), transparent 42%),
+        rgba(19,19,26,0.85);
+    }
+    .plan-tag {
+      position: absolute; top: 16px; right: 16px;
+      font-size: 11px; font-weight: 600;
+      color: #1A1008; background: var(--orange);
+      padding: 4px 9px; border-radius: 6px;
+    }
+    .plan-name {
+      font-family: var(--font-display);
+      font-size: 20px; font-weight: 700; letter-spacing: 0.04em;
+    }
+    .plan-desc { font-size: 13px; color: var(--text-sec); margin-top: 4px; }
+    .plan-price {
+      display: flex; align-items: baseline; gap: 4px;
+      margin: 22px 0 18px;
+      font-family: var(--font-display);
+    }
+    .plan-price .amount { font-size: 48px; font-weight: 700; line-height: 1; }
+    .plan-price .cur { font-size: 20px; font-weight: 600; color: var(--text-sec); }
+    .plan-price .per { font-size: 14px; color: var(--text-sec); margin-left: 4px; }
+    .plan ul { list-style: none; margin-bottom: 22px; }
+    .plan li {
+      font-size: 13.5px; color: var(--text-sec);
+      padding: 7px 0; border-top: 1px solid var(--border);
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .plan li::before {
+      content: ""; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--orange); margin-top: 6px; flex-shrink: 0;
+    }
+    .plan li.off { opacity: 0.45; }
+    .plan li.off::before { background: var(--text-mut); }
+    .plan .btn { width: 100%; }
+    .pricing-note {
+      max-width: 820px; margin: 20px auto 0;
+      font-size: 12.5px; color: var(--text-mut); line-height: 1.65;
+      padding: 14px 16px; border-left: 2px solid var(--orange-line);
+      background: rgba(255,255,255,0.02);
+    }
+
+    /* Download */
+    .dl {
+      display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 28px; align-items: center;
+      padding: 36px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(120deg, rgba(255,159,67,0.08), transparent 45%),
+        rgba(16,16,24,0.9);
+      backdrop-filter: blur(18px);
+    }
+    .dl h2 {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 3.5vw, 36px);
+      font-weight: 700; line-height: 1.1; margin-bottom: 10px;
+    }
+    .dl p { color: var(--text-sec); font-size: 14.5px; margin-bottom: 22px; max-width: 42ch; }
+    .dl-actions { display: flex; flex-direction: column; gap: 10px; }
+    .dl-link {
       display: flex; align-items: center; gap: 14px;
-      margin-top: 40px; animation: fadeUp .7s .3s ease both;
-      flex-wrap: wrap;
+      padding: 14px 16px; border-radius: 12px;
+      border: 1px solid var(--border-strong);
+      background: rgba(255,255,255,0.03);
+      transition: border-color .2s, background .2s;
     }
-    .btn-primary {
-      background: var(--grad); color: white; border: none; cursor: pointer;
-      padding: 14px 28px; border-radius: 100px;
-      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
-      display: flex; align-items: center; gap: 8px; text-decoration: none;
-      transition: box-shadow .2s, transform .2s;
+    .dl-link:hover { border-color: var(--orange-line); background: var(--orange-dim); }
+    .dl-link strong { display: block; font-size: 14px; }
+    .dl-link span { font-size: 12px; color: var(--text-sec); }
+    .dl-ico {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: var(--surface2); display: grid; place-items: center;
+      font-size: 16px; flex-shrink: 0;
     }
-    .btn-primary:hover { box-shadow: 0 0 40px rgba(123,47,255,0.45); transform: translateY(-2px); }
-    .btn-secondary {
-      background: transparent; color: var(--muted); border: 1px solid var(--faint);
-      cursor: pointer; padding: 14px 28px; border-radius: 100px;
-      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
-      text-decoration: none; transition: border-color .2s, color .2s, transform .2s;
-    }
-    .btn-secondary:hover { border-color: rgba(255,255,255,0.25); color: white; transform: translateY(-2px); }
-
-    .hero-login-strip {
-      display: inline-flex; align-items: center; gap: 12px;
-      margin-top: 28px; padding: 12px 18px;
-      background: rgba(123,47,255,0.07);
-      border: 1px solid rgba(123,47,255,0.18);
-      border-radius: 14px; font-size: 14px; color: var(--muted);
-      animation: fadeUp .7s .45s ease both; width: fit-content;
-    }
-    .hero-login-strip a {
-      color: white; font-weight: 600; text-decoration: none;
-      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14);
-      padding: 6px 14px; border-radius: 100px; font-size: 13px;
-      transition: background .2s, border-color .2s, transform .2s;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .hero-login-strip a:hover { background: rgba(255,255,255,0.13); border-color: rgba(255,255,255,0.25); transform: translateY(-1px); }
-
-    .hero-stats { display: flex; gap: 32px; margin-top: 40px; animation: fadeUp .7s .4s ease both; }
-    .hero-stat span:first-child { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: white; }
-    .hero-stat span:last-child { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
-
-    /* Mock Phone */
-    .hero-phone { position: relative; animation: fadeUp .8s .2s ease both; display: flex; justify-content: center; }
-    .phone-wrap { position: relative; width: 260px; }
-    .phone-frame {
-      width: 260px; height: 520px; background: var(--surface2);
-      border-radius: 40px; border: 1.5px solid rgba(255,255,255,0.12);
-      overflow: hidden; position: relative;
-      box-shadow: 0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.1);
-    }
-    .phone-notch { width: 100px; height: 28px; background: var(--bg); border-radius: 0 0 20px 20px; margin: 0 auto; position: relative; z-index: 2; }
-    .phone-screen { padding: 12px 14px; }
-    .phone-channel {
-      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-      background: var(--surface3); border-radius: 12px; margin-bottom: 8px;
-      border: 1px solid var(--border); animation: channelIn 1s ease both;
-    }
-    .phone-channel:nth-child(2) { animation-delay: .15s; }
-    .phone-channel:nth-child(3) { animation-delay: .3s; }
-    .phone-channel:nth-child(4) { animation-delay: .45s; }
-    @keyframes channelIn { from { opacity:0; transform: translateX(-10px); } to { opacity:1; transform: translateX(0); } }
-    .ch-thumb { width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; }
-    .ch-info { flex: 1; min-width: 0; }
-    .ch-name { font-size: 11px; font-weight: 600; color: white; }
-    .ch-cat  { font-size: 9px; color: var(--muted); margin-top: 2px; }
-    .ch-live { font-size: 8px; font-weight: 700; color: var(--red); background: var(--red-dim); padding: 2px 7px; border-radius: 100px; letter-spacing: .5px; }
-    .phone-bar { height: 3px; background: var(--surface3); border-radius: 100px; margin: 10px 0 8px; overflow: hidden; }
-    .phone-bar-fill { height: 100%; background: var(--grad); border-radius: 100px; width: 65%; animation: loadBar 2.5s 1s ease both; }
-    @keyframes loadBar { from { width: 0; } to { width: 65%; } }
-    .phone-glow { position: absolute; left: 50%; bottom: -60px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(123,47,255,0.2) 0%, transparent 70%); transform: translateX(-50%); pointer-events: none; }
-    .phone-float { animation: phoneFloat 5s ease-in-out infinite; }
-    @keyframes phoneFloat { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-14px) rotate(0deg); } }
-    .phone-badge {
-      position: absolute; right: -28px; top: 80px;
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 14px; padding: 10px 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-      animation: fadeUp .8s .7s ease both;
-    }
-    .phone-badge-num { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .phone-badge-label { font-size: 10px; color: var(--muted); }
-    .phone-badge-2 {
-      position: absolute; left: -36px; bottom: 120px;
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 14px; padding: 10px 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-      animation: fadeUp .8s .9s ease both;
-    }
-    .rating { display: flex; align-items: center; gap: 5px; }
-    .stars { color: var(--gold); font-size: 12px; }
-
-    /* ── KEYFRAMES ─────────────────────────────────── */
-    @keyframes fadeUp   { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-    @keyframes aniUp    { from { opacity:0; transform:translateY(32px); } to { opacity:1; transform:translateY(0); } }
-    @keyframes aniLeft  { from { opacity:0; transform:translateX(-28px); } to { opacity:1; transform:translateX(0); } }
-    @keyframes aniRight { from { opacity:0; transform:translateX(28px);  } to { opacity:1; transform:translateX(0); } }
-    @keyframes aniScale { from { opacity:0; transform:scale(0.93); }      to { opacity:1; transform:scale(1); } }
-
-    /* ── SCROLL ANIMATION SYSTEM ───────────────────── */
-    /* État initial : invisible */
-    [data-ani] {
-      opacity: 0;
-    }
-    /* Quand l'élément est entré dans le viewport : on lance l'anim */
-    [data-ani].ani-go {
-      animation-fill-mode: both;
-      animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-      animation-duration: 0.7s;
-    }
-    [data-ani="up"].ani-go    { animation-name: aniUp; }
-    [data-ani="left"].ani-go  { animation-name: aniLeft; }
-    [data-ani="right"].ani-go { animation-name: aniRight; }
-    [data-ani="scale"].ani-go { animation-name: aniScale; }
-
-    /* Délais via data-delay (en ms, géré en JS inline style) */
-
-    /* plan-card featured garde son scale de base APRÈS l'anim */
-    .plan-card.featured[data-ani].ani-go {
-      animation-name: aniScale;
+    .dl-side {
+      font-size: 12.5px; color: var(--text-mut); line-height: 1.65;
+      padding: 18px; border-radius: 12px; border: 1px dashed var(--border);
     }
 
-    /* ── SECTION LABELS ────────────────────────────── */
-    .section-label { font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--violet); text-transform: uppercase; margin-bottom: 14px; }
-    h2 { font-family: 'Syne', sans-serif; font-size: clamp(30px, 4vw, 48px); font-weight: 800; letter-spacing: -1.5px; line-height: 1.1; }
-    .section-sub { font-size: 15px; color: var(--muted); line-height: 1.7; max-width: 500px; margin-top: 14px; }
+    /* FAQ */
+    .faq { max-width: 720px; }
+    .faq-item { border-bottom: 1px solid var(--border); }
+    .faq-q {
+      width: 100%; text-align: left;
+      display: flex; justify-content: space-between; align-items: center; gap: 16px;
+      padding: 18px 0; background: none; border: none; color: var(--text);
+      font-size: 15.5px; font-weight: 500; cursor: pointer;
+    }
+    .faq-q span {
+      width: 28px; height: 28px; border-radius: 8px;
+      border: 1px solid var(--border); color: var(--text-sec);
+      display: grid; place-items: center; font-size: 16px; flex-shrink: 0;
+      transition: transform .2s, color .2s, border-color .2s;
+    }
+    .faq-item.open .faq-q span {
+      transform: rotate(45deg); color: var(--orange); border-color: var(--orange-line);
+    }
+    .faq-a {
+      max-height: 0; overflow: hidden; opacity: 0;
+      transition: max-height .35s ease, opacity .25s ease, padding .25s ease;
+      color: var(--text-sec); font-size: 14px; line-height: 1.7;
+    }
+    .faq-item.open .faq-a { max-height: 240px; opacity: 1; padding-bottom: 18px; }
 
-    /* ── DISCLAIMER BANNER ─────────────────────────── */
-    .disclaimer-banner {
-      background: rgba(255,214,10,0.06); border: 1px solid rgba(255,214,10,0.2);
-      border-radius: 14px; padding: 16px 22px;
-      display: flex; align-items: flex-start; gap: 12px;
-      font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 20px;
+    /* Contact */
+    .contact-grid {
+      display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 28px;
     }
-    .disclaimer-banner .disc-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-    .disclaimer-banner strong { color: rgba(255,214,10,0.9); display: block; margin-bottom: 3px; font-size: 13px; }
-
-    /* ── FEATURES ──────────────────────────────────── */
-    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 60px; }
-    .feat-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--r); padding: 28px;
-      transition: border-color .25s, transform .25s, box-shadow .25s;
-      position: relative; overflow: hidden;
+    .contact-chips { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+    .chip {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px; border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      transition: border-color .2s;
     }
-    .feat-card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(123,47,255,0.5), rgba(255,45,85,0.4), transparent);
-      opacity: 0; transition: opacity .3s;
+    .chip:hover { border-color: var(--orange-line); }
+    .chip strong { display: block; font-size: 14px; }
+    .chip span { font-size: 12.5px; color: var(--text-sec); }
+    .form {
+      padding: 24px; border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(19,19,26,0.75);
+      backdrop-filter: blur(14px);
+      display: grid; gap: 12px;
     }
-    .feat-card:hover { border-color: rgba(123,47,255,0.25); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
-    .feat-card:hover::before { opacity: 1; }
-    .feat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 18px; }
-    .feat-card h3 { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; margin-bottom: 8px; }
-    .feat-card p { font-size: 13px; color: var(--muted); line-height: 1.65; }
-
-    /* ── PRICING ───────────────────────────────────── */
-    #pricing { text-align: center; }
-    .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 60px; text-align: left; align-items: center; max-width: 760px; margin-left: auto; margin-right: auto; }
-    .plan-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 24px; padding: 36px 32px;
-      position: relative; overflow: hidden;
-      transition: transform .25s, box-shadow .25s;
-    }
-    .plan-card:hover { transform: translateY(-6px); box-shadow: 0 30px 80px rgba(0,0,0,0.5); }
-    .plan-card.featured {
-      background: linear-gradient(160deg, #100820 0%, #0d0010 100%);
-      border-color: rgba(123,47,255,0.4);
-      transform: scale(1.03);
-      box-shadow: 0 0 0 1px rgba(123,47,255,0.15), 0 40px 80px rgba(123,47,255,0.12);
-    }
-    .plan-card.featured:hover { transform: scale(1.03) translateY(-6px); }
-    .plan-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: var(--grad); color: white;
-      font-size: 10px; font-weight: 700; letter-spacing: .5px;
-      padding: 4px 12px; border-radius: 100px; margin-bottom: 20px;
-    }
-    .plan-name { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 6px; }
-    .plan-desc { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
-    .plan-price { display: flex; align-items: baseline; gap: 4px; margin-bottom: 28px; }
-    .plan-price .amount { font-family: 'Syne', sans-serif; font-size: 48px; font-weight: 800; color: white; }
-    .plan-price .currency { font-size: 22px; color: var(--muted); margin-right: 2px; }
-    .plan-price .period { font-size: 14px; color: var(--muted); }
-    .plan-features { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
-    .plan-features li { font-size: 13px; display: flex; align-items: center; gap: 10px; }
-    .plan-features li .check { color: var(--green); font-size: 15px; }
-    .plan-features li .cross { color: var(--faint); font-size: 15px; }
-    .plan-features li.muted { color: var(--muted); }
-    .plan-btn {
-      width: 100%; padding: 14px; border-radius: 100px; border: none; cursor: pointer;
-      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; transition: all .2s;
-    }
-    .plan-btn.solid { background: var(--grad); color: white; }
-    .plan-btn.solid:hover { box-shadow: 0 0 30px rgba(123,47,255,0.4); transform: translateY(-1px); }
-    .plan-btn.outline { background: transparent; color: var(--muted); border: 1px solid var(--faint); }
-    .plan-btn.outline:hover { border-color: rgba(255,255,255,0.25); color: white; }
-
-    .pricing-disclaimer {
-      max-width: 760px; margin: 28px auto 0;
-      background: rgba(123,47,255,0.05); border: 1px solid rgba(123,47,255,0.15);
-      border-radius: 12px; padding: 16px 20px;
-      font-size: 12px; color: var(--muted); line-height: 1.7; text-align: left;
-    }
-
-    /* ── DOWNLOAD ──────────────────────────────────── */
-    .dl-wrapper { background: var(--surface); border: 1px solid var(--border); border-radius: 32px; padding: 72px 48px; position: relative; overflow: hidden; }
-    .dl-glow { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(123,47,255,0.08) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; }
-    .dl-buttons { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 40px; flex-wrap: wrap; }
-    .dl-btn { display: flex; align-items: center; gap: 12px; padding: 14px 28px; border-radius: 14px; text-decoration: none; font-size: 14px; font-weight: 500; transition: all .2s; }
-    .dl-btn.dark { background: white; color: black; }
-    .dl-btn.dark:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(255,255,255,0.15); }
-    .dl-btn.dark-outline { background: var(--surface2); color: white; border: 1px solid var(--border); }
-    .dl-btn.dark-outline:hover { border-color: rgba(255,255,255,0.25); transform: translateY(-2px); }
-    .dl-icon { font-size: 22px; }
-    .dl-text strong { display: block; font-size: 16px; font-weight: 700; }
-    .dl-text span { font-size: 11px; opacity: .6; }
-    .dl-note { font-size: 12px; color: var(--muted); margin-top: 20px; }
-
-    /* ── FAQ ───────────────────────────────────────── */
-    .faq-list { margin-top: 56px; display: flex; flex-direction: column; gap: 12px; }
-    .faq-item { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: border-color .2s; }
-    .faq-item.open { border-color: rgba(123,47,255,0.3); }
-    .faq-q { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; cursor: pointer; font-size: 15px; font-weight: 500; user-select: none; }
-    .faq-q:hover { color: white; }
-    .faq-arrow { width: 28px; height: 28px; border-radius: 50%; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; margin-left: 16px; transition: transform .3s, background .2s; }
-    .faq-item.open .faq-arrow { transform: rotate(45deg); background: var(--vio-dim); color: var(--violet); }
-    .faq-a { font-size: 14px; color: var(--muted); line-height: 1.75; max-height: 0; overflow: hidden; padding: 0 24px; transition: max-height .35s ease, padding .35s ease; }
-    .faq-item.open .faq-a { max-height: 300px; padding: 0 24px 20px; }
-
-    /* ── CONTACT ───────────────────────────────────── */
-    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-top: 56px; align-items: start; }
-    .contact-info { display: flex; flex-direction: column; gap: 20px; }
-    .contact-chip { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; text-decoration: none; color: white; transition: border-color .2s, transform .2s; }
-    .contact-chip:hover { border-color: rgba(123,47,255,0.3); transform: translateX(4px); }
-    .contact-chip-icon { width: 42px; height: 42px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-    .contact-chip-text strong { display: block; font-size: 14px; margin-bottom: 2px; }
-    .contact-chip-text span { font-size: 12px; color: var(--muted); }
-    .contact-form { display: flex; flex-direction: column; gap: 14px; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .form-input { width: 100%; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; color: white; font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; transition: border-color .2s; resize: none; }
-    .form-input::placeholder { color: var(--muted); }
-    .form-input:focus { border-color: rgba(123,47,255,0.5); }
-    .form-submit { padding: 14px; background: var(--grad); color: white; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: box-shadow .2s, transform .2s; }
-    .form-submit:hover { box-shadow: 0 0 30px rgba(123,47,255,0.4); transform: translateY(-1px); }
-
-    /* ── FOOTER ────────────────────────────────────── */
-    footer { border-top: 1px solid var(--border); padding: 48px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; }
-    .footer-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; display: flex; align-items: center; gap: 10px; }
-    .footer-links { display: flex; gap: 28px; flex-wrap: wrap; align-items: center; }
-    .footer-links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color .2s; }
-    .footer-links a:hover { color: white; }
-    .footer-login-link {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 13px; font-weight: 600;
-      background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text; text-decoration: none; padding: 0; transition: opacity .2s;
+    .field label {
+      display: block; font-size: 12px; color: var(--text-sec); margin-bottom: 6px;
     }
-    .footer-login-link:hover { opacity: 0.8; }
-    .footer-copy { font-size: 12px; color: var(--muted); }
+    .field input, .field textarea, .field select {
+      width: 100%; height: 44px; padding: 0 12px;
+      border-radius: 10px; border: 1px solid var(--border);
+      background: rgba(0,0,0,0.25); color: var(--text);
+      font-family: inherit; font-size: 14px; outline: none;
+      transition: border-color .2s;
+    }
+    .field textarea { height: auto; padding: 12px; resize: vertical; min-height: 110px; }
+    .field input:focus, .field textarea:focus, .field select:focus {
+      border-color: var(--orange-line);
+    }
 
-    /* ── TOAST ─────────────────────────────────────── */
-    #toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 24px; font-size: 14px; opacity: 0; transition: opacity .3s, transform .3s; z-index: 9999; pointer-events: none; white-space: nowrap; }
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 36px var(--pad) 48px;
+      max-width: calc(var(--max) + 2 * var(--pad));
+      margin: 0 auto;
+    }
+    .footer-top {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 20px; flex-wrap: wrap; margin-bottom: 24px;
+    }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 18px; }
+    .footer-links a { font-size: 13px; color: var(--text-sec); }
+    .footer-links a:hover { color: var(--text); }
+    .footer-copy { font-size: 12px; color: var(--text-mut); }
+
+    #toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--surface2); border: 1px solid var(--border-strong);
+      color: var(--text); padding: 12px 18px; border-radius: 10px;
+      font-size: 13.5px; opacity: 0; pointer-events: none; z-index: 200;
+      transition: opacity .25s, transform .25s;
+    }
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* ── RESPONSIVE ────────────────────────────────── */
+    [data-ani] { opacity: 0; transform: translateY(16px); transition: opacity .55s ease, transform .55s ease; }
+    [data-ani].ani-go { opacity: 1; transform: none; }
+
     @media (max-width: 900px) {
-      nav { padding: 0 20px; }
       .nav-links { display: none; }
-      .nav-right { gap: 8px; }
-      section { padding: 80px 24px; }
-      .hero-inner { grid-template-columns: 1fr; padding: 0 24px; }
-      .hero-phone { display: none; }
-      .features-grid { grid-template-columns: 1fr 1fr; }
-      .pricing-grid { grid-template-columns: 1fr; }
-      .plan-card.featured { transform: none; }
-      .plan-card.featured:hover { transform: translateY(-6px); }
-      .contact-grid { grid-template-columns: 1fr; }
-      footer { flex-direction: column; align-items: flex-start; gap: 20px; padding: 32px 24px; }
-      body { cursor: auto; }
-      #cursor, #cursor-ring { display: none; }
+      .hero { grid-template-columns: 1fr; align-items: start; min-height: auto; padding-bottom: 40px; }
+      .hero-visual { min-height: 360px; order: -1; }
+      .feat-list { grid-template-columns: 1fr; }
+      .pricing-grid, .dl, .contact-grid, .form-row { grid-template-columns: 1fr; }
+      .app-preview { width: min(260px, 78%); }
     }
-    @media (max-width: 600px) {
-      .features-grid { grid-template-columns: 1fr; }
-      .form-row { grid-template-columns: 1fr; }
-      .hero-stats { gap: 20px; }
-      .pricing-grid { grid-template-columns: 1fr; }
-      .nav-login span { display: none; }
-      .nav-login { padding: 8px 11px; }
-      footer { padding: 28px 16px; }
-      .footer-links { gap: 16px; }
+    @media (max-width: 520px) {
+      .hero-cta .btn { width: 100%; }
+      .nav-actions .btn-ghost span { display: none; }
     }
   </style>
 </head>
 <body>
+  <div class="page-glow" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+  <div id="toast">Message envoyé</div>
 
-<div id="cursor"></div>
-<div id="cursor-ring"></div>
-<div id="toast">✓ Message envoyé !</div>
-
-<!-- ── NAV ──────────────────────────────────────── -->
-<nav>
-  <a href="#" class="nav-logo">
-    <img href="logo.png" width="30px" height="auto">
-    ARICH IPTV
-  </a>
-  <div class="nav-links">
-    <a href="#features">Fonctionnalités</a>
-    <a href="#pricing">Tarifs</a>
-    <a href="#faq">FAQ</a>
-    <a href="#contact">Contact</a>
-  </div>
-  <div class="nav-right">
-    <a href="https://arich.fr/auth.html" class="nav-login" data-umami-event="nav-login">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-        <circle cx="12" cy="7" r="4"/>
-      </svg>
-      <span>Mon compte</span>
-    </a>
-    <a href="#download" class="nav-cta" data-umami-event="cta-download-nav">Télécharger</a>
-  </div>
-</nav>
-
-<!-- ── HERO ─────────────────────────────────────── -->
-<div id="hero">
-  <div class="hero-bg">
-    <div class="hero-glow"></div>
-    <div class="hero-glow-2"></div>
-    <div class="hero-grid"></div>
-  </div>
-  <div class="hero-inner">
-    <div>
-      <div class="hero-tag">
-        <div class="hero-tag-dot"></div>
-        Player IPTV · Android
+  <div class="wrap">
+    <nav>
+      <a href="#" class="nav-brand">
+        <img src="logo.png" alt="" width="30" height="30" />
+        ARICH<em>.</em>
+      </a>
+      <div class="nav-links">
+        <a href="#features">Fonctionnalités</a>
+        <a href="#pricing">Tarifs</a>
+        <a href="#download">Télécharger</a>
+        <a href="#faq">FAQ</a>
       </div>
-      <h1>
-        Le player<br>
-        <span class="accent">IPTV</span> qui<br>
-        <span class="stroke">déchire.</span>
-      </h1>
-      <p class="hero-sub">
-        Connectez votre propre accès IPTV (Xtream Codes ou M3U) et profitez d'une expérience de lecture premium. Design soigné, zapping rapide, multi-playlists.
-      </p>
-      <div class="hero-actions">
-        <a href="#download" class="btn-primary" data-umami-event="cta-download-hero">⬇ Télécharger l'app</a>
-        <a href="#pricing" class="btn-secondary" data-umami-event="cta-pricing-hero">Voir les offres →</a>
-      </div>
-      <div class="hero-login-strip">
-        <span>Déjà client ?</span>
-        <a href="https://arich.fr/auth.html" data-umami-event="hero-login-strip">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-          Se connecter / Gérer mes playlists
+      <div class="nav-actions">
+        <a href="https://arich.fr/auth.html" class="btn btn-ghost" data-umami-event="nav-login">
+          Compte
         </a>
+        <a href="#download" class="btn btn-accent" data-umami-event="cta-download-nav">Télécharger</a>
       </div>
-      <div class="hero-stats">
-        <div><span>Xtream</span><span>& M3U natif</span></div>
-        <div><span>4K / HD</span><span>Qualité max</span></div>
-        <div><span>Android</span><span>6.0+</span></div>
+    </nav>
+
+    <header class="hero">
+      <div class="hero-copy">
+        <div class="brand-mark">ARICH<span>.</span></div>
+        <h1>Le lecteur IPTV pensé comme un service cinéma.</h1>
+        <p class="hero-sub">
+          Branchez votre accès Xtream ou M3U. Interface sombre, zapping fluide, multi-playlists — sur Android et Android TV.
+        </p>
+        <div class="hero-cta">
+          <a href="#download" class="btn btn-accent btn-lg" data-umami-event="cta-download-hero">Télécharger l’app</a>
+          <a href="#pricing" class="btn btn-line btn-lg" data-umami-event="cta-pricing-hero">Voir les licences</a>
+        </div>
       </div>
-    </div>
-    <div class="hero-phone">
-      <div class="phone-wrap phone-float">
-        <div class="phone-frame">
-          <div class="phone-notch"></div>
-          <div class="phone-screen">
-            <div style="font-size:9px;color:var(--muted);margin-bottom:8px;font-weight:600;letter-spacing:1px;">EN DIRECT</div>
-            <div class="phone-channel">
-              <div class="ch-thumb" style="background:linear-gradient(135deg,#1a1a2e,#16213e);">📺</div>
-              <div class="ch-info"><div class="ch-name">Votre chaîne</div><div class="ch-cat">Votre accès IPTV</div></div>
-              <div class="ch-live">LIVE</div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="hero-stage">
+          <div class="app-preview">
+            <div class="app-preview-top">
+              <div class="app-preview-logo">A</div>
+              <div class="app-preview-dots"><i></i><i></i><i></i></div>
             </div>
-            <div class="phone-bar"><div class="phone-bar-fill"></div></div>
-            <div style="font-size:9px;color:var(--muted);margin-bottom:8px;font-weight:600;letter-spacing:1px;">PLAYLISTS</div>
-            <div class="phone-channel">
-              <div class="ch-thumb" style="background:linear-gradient(135deg,#0f2027,#203a43);">🎬</div>
-              <div class="ch-info"><div class="ch-name">Ma playlist M3U</div><div class="ch-cat">Films & Séries</div></div>
+            <div class="row-label">Ce soir</div>
+            <div class="live-card">
+              <div class="live-badge">LIVE</div>
+              <div class="live-card-art"></div>
+              <h4>FR — TF1 FHD</h4>
+              <p>En direct</p>
             </div>
-            <div class="phone-channel">
-              <div class="ch-thumb" style="background:linear-gradient(135deg,#1a0000,#3d0000);">⚡</div>
-              <div class="ch-info"><div class="ch-name">Accès Xtream</div><div class="ch-cat">Compte principal</div></div>
-            </div>
-            <div class="phone-channel">
-              <div class="ch-thumb" style="background:linear-gradient(135deg,#0a0a0a,#1a1a1a);">➕</div>
-              <div class="ch-info"><div class="ch-name">Ajouter...</div><div class="ch-cat">Nouvelle playlist</div></div>
+            <div class="row-label">Films</div>
+            <div class="poster-row">
+              <div class="poster"></div>
+              <div class="poster"></div>
+              <div class="poster"></div>
             </div>
           </div>
         </div>
-        <div class="phone-glow"></div>
-        <div class="phone-badge">
-          <div class="phone-badge-num">Multi</div>
-          <div class="phone-badge-label">Playlists</div>
+      </div>
+    </header>
+
+    <div class="legal">
+      <div class="legal-inner">
+        <div class="legal-mark">i</div>
+        <div>
+          <strong>ARICH est un lecteur multimédia — aucun contenu n’est fourni.</strong>
+          Vous connectez votre propre accès IPTV (Xtream Codes ou M3U). ARICH n’est pas responsable des flux diffusés via l’application.
         </div>
-        <div class="phone-badge-2">
-          <div class="rating"><span class="stars">★★★★★</span></div>
-          <div style="font-size:10px;color:var(--muted);margin-top:3px;">Top player</div>
+      </div>
+    </div>
+
+    <section id="features">
+      <div class="sec-head" data-ani="up">
+        <div class="sec-kicker">Produit</div>
+        <h2>Conçu pour regarder, pas pour bricoler.</h2>
+        <p>Les mêmes principes que l’app : sobriété, contraste OLED, accent ambre, navigation claire.</p>
+      </div>
+      <div class="feat-list">
+        <article class="feat" data-ani="up">
+          <div class="feat-num">01</div>
+          <h3>Xtream &amp; M3U</h3>
+          <p>Connectez n’importe quel accès : serveur Xtream (URL / login / mot de passe) ou playlist M3U locale ou distante.</p>
+        </article>
+        <article class="feat" data-ani="up">
+          <div class="feat-num">02</div>
+          <h3>Multi-playlists</h3>
+          <p>Plusieurs comptes en parallèle. Basculez d’un accès à l’autre sans tout reconfigurer.</p>
+        </article>
+        <article class="feat" data-ani="up">
+          <div class="feat-num">03</div>
+          <h3>Player fluide</h3>
+          <p>Décodage hardware, zapping rapide, PiP, reprise de lecture et contrôles pensés pour le tactile.</p>
+        </article>
+        <article class="feat" data-ani="up">
+          <div class="feat-num">04</div>
+          <h3>Favoris &amp; sync</h3>
+          <p>Historique, favoris et playlists synchronisés via votre compte — disponible aussi sur le web.</p>
+        </article>
+        <article class="feat" data-ani="up">
+          <div class="feat-num">05</div>
+          <h3>Android &amp; TV</h3>
+          <p>Interface adaptée téléphone, tablette et Android TV / Google TV (télécommande D-pad).</p>
+        </article>
+        <article class="feat" data-ani="up">
+          <div class="feat-num">06</div>
+          <h3>Licence appareil</h3>
+          <p>Une licence liée à votre Device Key. Essai, annuel ou à vie — activable à distance.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="pricing">
+      <div class="sec-head center" data-ani="up">
+        <div class="sec-kicker">Licences</div>
+        <h2>Accès au player. Votre contenu reste le vôtre.</h2>
+        <p>Tarifs simples. Aucune chaîne ni film inclus — uniquement le lecteur.</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="plan" data-ani="up">
+          <div class="plan-name">ANNUEL</div>
+          <div class="plan-desc">Pour démarrer sereinement</div>
+          <div class="plan-price">
+            <span class="cur">€</span>
+            <span class="amount">2,99</span>
+            <span class="per">/ an</span>
+          </div>
+          <ul>
+            <li>Player Xtream &amp; M3U</li>
+            <li>Multi-playlists</li>
+            <li>Favoris &amp; historique</li>
+            <li>1 appareil (Device Key)</li>
+            <li class="off">Mises à jour prioritaires</li>
+          </ul>
+          <button class="btn btn-line" onclick="startCheckout('yearly')" data-plan="yearly">Activer pour 2,99€/an</button>
+        </div>
+        <div class="plan is-featured" data-ani="up">
+          <div class="plan-tag">Recommandé</div>
+          <div class="plan-name">À VIE</div>
+          <div class="plan-desc">Un paiement, accès permanent</div>
+          <div class="plan-price">
+            <span class="cur">€</span>
+            <span class="amount">4,99</span>
+            <span class="per">une fois</span>
+          </div>
+          <ul>
+            <li>Player Xtream &amp; M3U</li>
+            <li>Multi-playlists</li>
+            <li>Favoris &amp; historique</li>
+            <li>1 appareil (Device Key)</li>
+            <li>Mises à jour à vie</li>
+          </ul>
+          <button class="btn btn-accent" data-plan="lifetime" onclick="startCheckout('lifetime')">Acheter la licence à vie</button>
         </div>
       </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── DISCLAIMER LÉGAL ──────────────────────────── -->
-<div style="max-width:900px;margin:0 auto;padding:0 48px;">
-  <div class="disclaimer-banner">
-    <span class="disc-icon">ℹ️</span>
-    <div>
-      <strong>Arich IPTV est un lecteur multimédia — nous ne fournissons aucun contenu.</strong>
-      Cette application est un outil technique permettant de lire des flux vidéo depuis vos propres accès IPTV (Xtream Codes, playlists M3U). Vous devez disposer de votre propre abonnement IPTV auprès du fournisseur de votre choix. Arich IPTV n'est pas responsable du contenu diffusé via l'application.
-    </div>
-  </div>
-</div>
-
-<!-- ── FEATURES ──────────────────────────────────── -->
-<section id="features">
-  <div class="section-label" data-ani="up" data-delay="0">Pourquoi Arich IPTV</div>
-  <h2 data-ani="up" data-delay="80">Conçu pour <span style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">l'expérience</span><br>ultime.</h2>
-  <p class="section-sub" data-ani="up" data-delay="160">Chaque détail est pensé pour que vous ne pensiez qu'à regarder.</p>
-
-  <div class="features-grid">
-    <div class="feat-card" data-ani="up" data-delay="0">
-      <div class="feat-icon" style="background:rgba(123,47,255,0.1);">🔌</div>
-      <h3>Compatible Xtream & M3U</h3>
-      <p>Connectez n'importe quel accès IPTV : URL Xtream Codes (login/mdp) ou lien M3U direct. Détection automatique du format.</p>
-    </div>
-    <div class="feat-card" data-ani="up" data-delay="80">
-      <div class="feat-icon" style="background:rgba(10,132,255,0.1);">📋</div>
-      <h3>Multi-playlists</h3>
-      <p>Gérez plusieurs comptes IPTV en parallèle. Basculez d'un accès à l'autre en un tap, sans vous déconnecter.</p>
-    </div>
-    <div class="feat-card" data-ani="up" data-delay="160">
-      <div class="feat-icon" style="background:rgba(48,209,88,0.1);">⚡</div>
-      <h3>Zapping instantané</h3>
-      <p>Player optimisé avec buffer réduit à 32 Mo. La vidéo démarre en quelques secondes, même en 4K.</p>
-    </div>
-    <div class="feat-card" data-ani="up" data-delay="0">
-      <div class="feat-icon" style="background:rgba(255,214,10,0.1);">⭐</div>
-      <h3>Favoris & Historique</h3>
-      <p>Retrouvez vos chaînes préférées et reprenez exactement où vous en étiez, avec mémorisation de la position.</p>
-    </div>
-    <div class="feat-card" data-ani="up" data-delay="80">
-      <div class="feat-icon" style="background:rgba(255,45,85,0.1);">📱</div>
-      <h3>Android TV & Mobile</h3>
-      <p>Interface adaptée au tactile et à la télécommande. Compatible Android TV, Google TV, Fire Stick avec sideload.</p>
-    </div>
-    <div class="feat-card" data-ani="up" data-delay="160">
-      <div class="feat-icon" style="background:rgba(10,132,255,0.1);">🔑</div>
-      <h3>Licence par appareil</h3>
-      <p>Une licence = un appareil identifié par sa Device Key unique. Transfert possible sur demande.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ── PRICING ───────────────────────────────────── -->
-<section id="pricing" style="max-width:1200px;margin:0 auto;padding:120px 48px;">
-  <div class="section-label" data-ani="up" data-delay="0" style="text-align:center;">Tarifs</div>
-  <h2 data-ani="up" data-delay="80" style="text-align:center;">Simple. Honnête.<br><span style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Sans surprise.</span></h2>
-  <p class="section-sub" data-ani="up" data-delay="160" style="text-align:center;margin:0 auto;">Accès au player uniquement — apportez votre propre source IPTV.</p>
-
-  <div class="pricing-grid">
-    <div class="plan-card" data-ani="left" data-delay="0">
-      <div class="plan-name">Annuel</div>
-      <div class="plan-desc">Idéal pour tester le player</div>
-      <div class="plan-price">
-        <span class="currency">€</span><span class="amount">2,99</span><span class="period">/ an</span>
+      <div class="pricing-note" data-ani="up">
+        <strong style="color:var(--text);">Avant d’acheter —</strong>
+        ARICH est un lecteur multimédia uniquement. Aucun contenu n’est inclus. Vous devez disposer de votre propre accès IPTV.
+        La licence est liée à l’appareil via la Device Key (Paramètres → Infos appareil). Activation sous 2h après paiement.
       </div>
-      <ul class="plan-features">
-        <li><span class="check">✓</span> Player Xtream Codes & M3U</li>
-        <li><span class="check">✓</span> Multi-playlists illimitées</li>
-        <li><span class="check">✓</span> Favoris & Historique</li>
-        <li><span class="check">✓</span> 1 appareil (Device Key)</li>
-        <li class="muted"><span class="cross">–</span> <span>Mises à jour prioritaires</span></li>
-      </ul>
-      <button class="plan-btn outline" onclick="startCheckout('yearly')" data-plan="yearly">Activer pour 2,99€/an</button>
-    </div>
+    </section>
 
-    <div class="plan-card featured" data-ani="scale" data-delay="120">
-      <div class="plan-badge">🔥 Meilleur choix</div>
-      <div class="plan-name">À vie</div>
-      <div class="plan-desc">Payez une fois, profitez toujours</div>
-      <div class="plan-price">
-        <span class="currency">€</span><span class="amount">4,99</span><span class="period">une seule fois</span>
+    <section id="download">
+      <div class="dl" data-ani="up">
+        <div>
+          <div class="sec-kicker">Install</div>
+          <h2>Sur votre téléphone en une minute.</h2>
+          <p>APK direct ou Google Play. Android 6.0+. Licence requise après essai (sauf mode dév).</p>
+          <div class="dl-actions">
+            <a class="dl-link" href="https://github.com/chari-ismael/arich-player/releases/download/V_3.0.0/app-release.apk" data-umami-event="download-apk">
+              <div class="dl-ico">↓</div>
+              <div>
+                <strong>Télécharger l’APK</strong>
+                <span>Android · v3.0.0 · ~113 Mo</span>
+              </div>
+            </a>
+            <a class="dl-link" href="https://play.google.com/store/apps/details?id=com.arich.iptv" target="_blank" rel="noopener" data-umami-event="download-playstore">
+              <div class="dl-ico">▶</div>
+              <div>
+                <strong>Google Play</strong>
+                <span>Boutique officielle</span>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="dl-side">
+          Pour l’APK : autorisez les sources inconnues dans les réglages Android.
+          Déjà client ? <a href="https://arich.fr/auth.html" style="color:var(--orange);">Connectez-vous</a> pour gérer playlists et licence.
+        </div>
       </div>
-      <ul class="plan-features">
-        <li><span class="check">✓</span> Player Xtream Codes & M3U</li>
-        <li><span class="check">✓</span> Multi-playlists illimitées</li>
-        <li><span class="check">✓</span> Favoris & Historique</li>
-        <li><span class="check">✓</span> 1 appareil (Device Key)</li>
-        <li><span class="check">✓</span> Mises à jour à vie</li>
-      </ul>
-      <button class="plan-btn solid" data-plan="lifetime" onclick="startCheckout('lifetime')">Acheter la licence à vie</button>
-    </div>
-  </div>
+    </section>
 
-  <div class="pricing-disclaimer" data-ani="up" data-delay="0">
-    <strong style="color:rgba(255,255,255,0.7);display:block;margin-bottom:6px;">⚠️ Important — À lire avant d'acheter</strong>
-    Arich IPTV est un <strong style="color:rgba(255,255,255,0.6)">lecteur multimédia</strong> uniquement. L'abonnement donne accès à l'application player.
-    <strong style="color:rgba(255,255,255,0.6)">Aucun contenu, aucune chaîne, aucun film ne sont inclus.</strong>
-    Vous devez posséder votre propre accès IPTV (Xtream Codes ou M3U) auprès d'un fournisseur tiers.
-    La licence est liée à votre appareil via sa Device Key (visible dans Paramètres → Appareil).
-    Paiement via PayPal ou carte bancaire. Activation sous 2h après réception de votre Device Key.
-  </div>
-  <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:16px;">
-    Satisfait ou remboursé sous 7 jours · Sans engagement pour le mensuel
-  </p>
-</section>
-
-<!-- ── DOWNLOAD ───────────────────────────────────── -->
-<section id="download" style="max-width:1200px;margin:0 auto;padding:0 48px 120px;">
-  <div class="dl-wrapper" data-ani="scale" data-delay="0">
-    <div class="dl-glow"></div>
-    <div style="position:relative;z-index:1;">
-      <div class="section-label" style="text-align:center;">Téléchargement</div>
-      <h2 style="text-align:center;margin-top:10px;">Installez le player<br><span style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">en 30 secondes.</span></h2>
-      <p style="text-align:center;color:var(--muted);font-size:15px;margin-top:14px;">Disponible sur Android. iOS bientôt.</p>
-      <div class="dl-buttons">
-        <a href="https://github.com/chari-ismael/arich-player/releases/download/V_3.0.0/app-release.apk" class="dl-btn dark" data-umami-event="download-apk">
-          <div class="dl-icon">⬇</div>
-          <div class="dl-text"><strong>Télécharger l'APK</strong><span>Android · v3.0.0 · ~113 Mo</span></div>
-        </a>
-        <a href="https://play.google.com/store/apps/details?id=com.arich.iptv" target="_blank" class="dl-btn dark-outline" data-umami-event="download-playstore">
-          <div class="dl-icon" style="font-size:26px;">▶</div>
-          <div class="dl-text"><strong>Google Play</strong><span> Lien</span></div>
-        </a>
+    <section id="faq">
+      <div class="sec-head" data-ani="up">
+        <div class="sec-kicker">FAQ</div>
+        <h2>Questions fréquentes</h2>
       </div>
-      <p class="dl-note">Android 6.0+ requis · Activer "Sources inconnues" pour l'APK · Gratuit à télécharger, licence requise ou Via Google PLay</p>
-    </div>
-  </div>
-</section>
-
-<!-- ── FAQ ────────────────────────────────────────── -->
-<section id="faq" style="max-width:800px;">
-  <div class="section-label" data-ani="up" data-delay="0">FAQ</div>
-  <h2 data-ani="up" data-delay="80">Questions <span style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">fréquentes.</span></h2>
-
-  <div class="faq-list">
-    <div class="faq-item" data-ani="up" data-delay="0">
-      <div class="faq-q" onclick="toggleFaq(this)">Qu'est-ce qu'Arich IPTV exactement ?<div class="faq-arrow">+</div></div>
-      <div class="faq-a">Arich IPTV est un <strong>lecteur multimédia</strong> pour Android, similaire à VLC ou TiviMate. Il ne fournit aucun contenu. Vous connectez votre propre accès IPTV (un lien M3U ou des identifiants Xtream Codes obtenus auprès d'un fournisseur tiers), et l'application vous permet de lire ces flux avec une interface premium.</div>
-    </div>
-    <div class="faq-item" data-ani="up" data-delay="60">
-      <div class="faq-q" onclick="toggleFaq(this)">Comment activer ma licence ?<div class="faq-arrow">+</div></div>
-      <div class="faq-a">Après téléchargement, ouvrez l'app → Paramètres → Appareil. Vous y trouverez votre <strong>Device Key</strong> unique (format ARICH-XXXX-XXXX-XXXX). Envoyez-la nous via le formulaire de contact ou WhatsApp avec votre preuve de paiement. L'activation est effectuée sous 2h.</div>
-    </div>
-    <div class="faq-item" data-ani="up" data-delay="120">
-      <div class="faq-q" onclick="toggleFaq(this)">Est-ce que vous fournissez les chaînes ou l'accès IPTV ?<div class="faq-arrow">+</div></div>
-      <div class="faq-a">Non, absolument pas. Nous ne fournissons aucun contenu, aucune chaîne, aucun film. Arich IPTV est uniquement un lecteur. Vous devez disposer de votre propre abonnement IPTV auprès du fournisseur de votre choix pour utiliser l'application.</div>
-    </div>
-    <div class="faq-item" data-ani="up" data-delay="0">
-      <div class="faq-q" onclick="toggleFaq(this)">Comment ajouter mon accès IPTV dans l'app ?<div class="faq-arrow">+</div></div>
-      <div class="faq-a">Au premier lancement, l'app vous propose 3 modes : Xtream Codes (URL serveur + login + mot de passe), URL M3U directe, ou flux direct. Vous pouvez ensuite ajouter plusieurs playlists depuis Paramètres → Playlists → Ajouter une playlist.</div>
-    </div>
-    <div class="faq-item" data-ani="up" data-delay="60">
-      <div class="faq-q" onclick="toggleFaq(this)">La licence est-elle liée à mon appareil ?<div class="faq-arrow">+</div></div>
-      <div class="faq-a">Oui. Chaque licence est liée à une Device Key unique générée par votre appareil Android. En cas de changement d'appareil (achat, factory reset), contactez le support pour transfert gratuit de la licence.</div>
-    </div>
-    <div class="faq-item" data-ani="up" data-delay="120">
-      <div class="faq-q" onclick="toggleFaq(this)">Est-ce compatible avec ma Smart TV ?<div class="faq-arrow">+</div></div>
-      <div class="faq-a">L'application est disponible en APK Android. Si votre TV tourne sous Android TV ou Google TV, vous pouvez l'installer via sideload. Pour les autres TV, utilisez un boîtier Android (Fire Stick, MiBox, Chromecast avec Google TV, etc.).</div>
-    </div>
-    <div class="faq-item" data-ani="up" data-delay="180">
-      <div class="faq-q" onclick="toggleFaq(this)">Puis-je essayer avant d'acheter ?<div class="faq-arrow">+</div></div>
-      <div class="faq-a">Oui. L'application est gratuite à télécharger et peut être utilisée en mode limité sans licence. Pour une expérience complète, une période d'essai de 48h peut être accordée sur demande via le formulaire contact en indiquant votre Device Key.</div>
-    </div>
-  </div>
-</section>
-
-<!-- ── CONTACT ────────────────────────────────────── -->
-<section id="contact" style="max-width:1100px;">
-  <div class="section-label" data-ani="up" data-delay="0">Contact</div>
-  <h2 data-ani="up" data-delay="80">On est là <span style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">pour vous.</span></h2>
-
-  <div class="contact-grid">
-    <div class="contact-info" data-ani="left" data-delay="0">
-      <p style="font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:8px;">
-        Support réactif, généralement sous 2h. Pensez à inclure votre Device Key pour toute demande d'activation ou de transfert de licence.
-      </p>
-      <a href="https://wa.me/212682375935" target="_blank" class="contact-chip" data-umami-event="contact-whatsapp">
-        <div class="contact-chip-icon" style="background:rgba(37,211,102,0.1);">💬</div>
-        <div class="contact-chip-text"><strong>WhatsApp</strong><span>Réponse rapide · +212 06 82 37 59 35</span></div>
-      </a>
-      <a href="mailto:contact@arich.fr" class="contact-chip" data-umami-event="contact-email">
-        <div class="contact-chip-icon" style="background:rgba(10,132,255,0.1);">✉️</div>
-        <div class="contact-chip-text"><strong>Email</strong><span>contact@arich.fr</span></div>
-      </a>
-      <a href="https://t.me/arichiptv" target="_blank" class="contact-chip" data-umami-event="contact-telegram">
-        <div class="contact-chip-icon" style="background:rgba(10,132,255,0.08);">🛫</div>
-        <div class="contact-chip-text"><strong>Telegram</strong><span>@arichiptv</span></div>
-      </a>
-    </div>
-
-    <form class="contact-form" data-ani="right" data-delay="100" onsubmit="sendForm(event)">
-      <div class="form-row">
-        <input class="form-input" id="fname" placeholder="Votre prénom" />
-        <input class="form-input" id="femail" type="email" placeholder="Email" />
+      <div class="faq">
+        <div class="faq-item" data-ani="up">
+          <button class="faq-q" type="button" onclick="toggleFaq(this)">Qu’est-ce qu’ARICH exactement ?<span>+</span></button>
+          <div class="faq-a">ARICH est un lecteur multimédia pour Android, comparable à VLC ou TiviMate. Il ne fournit aucun contenu. Vous connectez votre propre accès IPTV (M3U ou Xtream Codes).</div>
+        </div>
+        <div class="faq-item" data-ani="up">
+          <button class="faq-q" type="button" onclick="toggleFaq(this)">Comment activer ma licence ?<span>+</span></button>
+          <div class="faq-a">Dans l’app : Paramètres → Appareil → Device Key (format ARICH-XXXX-…). Utilisez-la au checkout ou envoyez-la avec votre preuve de paiement. Activation sous 2h.</div>
+        </div>
+        <div class="faq-item" data-ani="up">
+          <button class="faq-q" type="button" onclick="toggleFaq(this)">Fournissez-vous les chaînes ?<span>+</span></button>
+          <div class="faq-a">Non. Aucune chaîne, film ou série n’est inclus. Vous devez avoir votre propre abonnement IPTV chez un fournisseur tiers.</div>
+        </div>
+        <div class="faq-item" data-ani="up">
+          <button class="faq-q" type="button" onclick="toggleFaq(this)">Comment ajouter mon accès IPTV ?<span>+</span></button>
+          <div class="faq-a">Au premier lancement : Xtream Codes, URL M3U, ou flux direct. Vous pouvez ensuite ajouter d’autres playlists depuis Paramètres.</div>
+        </div>
+        <div class="faq-item" data-ani="up">
+          <button class="faq-q" type="button" onclick="toggleFaq(this)">La licence est-elle liée à l’appareil ?<span>+</span></button>
+          <div class="faq-a">Oui, via la Device Key. Un transfert vers un nouvel appareil est possible sur demande au support.</div>
+        </div>
       </div>
-      <input class="form-input" id="fsubject" placeholder="Sujet (ex: Activation licence à vie)" />
-      <input class="form-input" id="fdevicekey" placeholder="Votre Device Key (ex: ARICH-XXXX-XXXX-XXXX)" />
-      <textarea class="form-input" id="fmessage" rows="4" placeholder="Votre message..."></textarea>
-      <button type="submit" class="form-submit" data-umami-event="contact-form-submit">Envoyer le message →</button>
-    </form>
+    </section>
+
+    <section id="contact">
+      <div class="contact-grid">
+        <div data-ani="up">
+          <div class="sec-kicker">Contact</div>
+          <h2 style="font-family:var(--font-display);font-size:clamp(28px,4vw,36px);font-weight:700;line-height:1.1;margin-bottom:10px;">On vous répond.</h2>
+          <p style="color:var(--text-sec);font-size:15px;line-height:1.65;">Activation, transfert de licence, bug — écrivez-nous.</p>
+          <div class="contact-chips">
+            <a class="chip" href="mailto:contact@arich.fr" data-umami-event="contact-email">
+              <div>
+                <strong>Email</strong>
+                <span>contact@arich.fr</span>
+              </div>
+            </a>
+            <a class="chip" href="https://t.me/arichiptv" target="_blank" rel="noopener" data-umami-event="contact-telegram">
+              <div>
+                <strong>Telegram</strong>
+                <span>@arichiptv</span>
+              </div>
+            </a>
+          </div>
+        </div>
+        <form class="form" onsubmit="sendForm(event)" data-ani="up">
+          <div class="form-row">
+            <div class="field">
+              <label for="fname">Nom</label>
+              <input id="fname" name="name" required autocomplete="name" />
+            </div>
+            <div class="field">
+              <label for="femail">Email</label>
+              <input id="femail" type="email" name="email" required autocomplete="email" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="fsubject">Sujet</label>
+            <input id="fsubject" name="subject" placeholder="Activation licence, support…" />
+          </div>
+          <div class="field">
+            <label for="fdevicekey">Device Key (optionnel)</label>
+            <input id="fdevicekey" name="deviceKey" placeholder="ARICH-XXXX-XXXX-XXXX" />
+          </div>
+          <div class="field">
+            <label for="fmessage">Message</label>
+            <textarea id="fmessage" name="message" required rows="4"></textarea>
+          </div>
+          <button class="btn btn-accent" type="submit">Envoyer</button>
+        </form>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-top">
+        <a href="#" class="nav-brand">ARICH<em>.</em></a>
+        <div class="footer-links">
+          <a href="#features">Fonctionnalités</a>
+          <a href="#pricing">Tarifs</a>
+          <a href="#download">Télécharger</a>
+          <a href="privacy-policy.html">Confidentialité</a>
+          <a href="https://arich.fr/auth.html" class="footer-login-link" data-umami-event="footer-login">Mon compte</a>
+        </div>
+      </div>
+      <div class="footer-copy">© 2026 ARICH · Lecteur multimédia uniquement · Aucun contenu fourni</div>
+    </footer>
   </div>
-</section>
 
-<!-- ── FOOTER ─────────────────────────────────────── -->
-<footer>
-  <div class="footer-logo">
-    <div class="nav-logo-icon" style="width:28px;height:28px;font-size:13px;">▶</div>
-    ARICH IPTV
-  </div>
-  <div class="footer-links">
-    <a href="#features">Fonctionnalités</a>
-    <a href="#pricing">Tarifs</a>
-    <a href="#faq">FAQ</a>
-    <a href="#contact">Contact</a>
-    <a href="manage-playlist.html">Playlists</a>
-    <a href="privacy-policy.html">Confidentialité</a>
-    <a href="#">CGU</a>
-    <a href="https://arich.fr/auth.html" class="footer-login-link" data-umami-event="footer-login">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="-webkit-text-fill-color:initial;"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-      Mon compte →
-    </a>
-  </div>
-  <div class="footer-copy">© 2025 Arich IPTV · Lecteur multimédia uniquement · Aucun contenu fourni</div>
-</footer>
+  <script>
+    const aniEls = Array.from(document.querySelectorAll('[data-ani]'));
+    function checkAni() {
+      const wh = window.innerHeight;
+      aniEls.forEach(el => {
+        if (el.classList.contains('ani-go')) return;
+        const delay = Number(el.dataset.delay || 0);
+        if (el.getBoundingClientRect().top < wh - 40) {
+          el.style.transitionDelay = delay + 'ms';
+          el.classList.add('ani-go');
+        }
+      });
+    }
+    window.addEventListener('scroll', checkAni, { passive: true });
+    window.addEventListener('resize', checkAni, { passive: true });
+    setTimeout(checkAni, 40);
 
-<script>
-  // ── Custom cursor ────────────────────────────────────────────────────────
-  const cursor = document.getElementById('cursor');
-  const ring   = document.getElementById('cursor-ring');
-  let cx = 0, cy = 0, rx = 0, ry = 0;
-  document.addEventListener('mousemove', e => { cx = e.clientX; cy = e.clientY; });
-  document.querySelectorAll('a,button,.feat-card,.faq-q,.plan-card,.contact-chip,.phone-channel').forEach(el => {
-    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
-    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
-  });
-  (function animateCursor() {
-    rx += (cx - rx) * 0.12; ry += (cy - ry) * 0.12;
-    cursor.style.left = cx + 'px'; cursor.style.top = cy + 'px';
-    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
-    requestAnimationFrame(animateCursor);
-  })();
+    function toggleFaq(el) {
+      const item = el.parentElement;
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    }
 
-  // ── Scroll animation — système data-ani ─────────────────────────────────
-  // Principe : chaque élément [data-ani] démarre opacity:0 (CSS).
-  // Au scroll, dès qu'il entre dans le viewport, on lui ajoute .ani-go
-  // et on applique animation-delay via style inline (data-delay en ms).
-  // Aucun IntersectionObserver — on utilise getBoundingClientRect() sur scroll + load.
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
 
-  const aniEls = Array.from(document.querySelectorAll('[data-ani]'));
+    async function sendForm(e) {
+      e.preventDefault();
+      const name = document.getElementById('fname').value.trim();
+      const email = document.getElementById('femail').value.trim();
+      const subject = document.getElementById('fsubject').value.trim() || 'Contact';
+      const deviceKey = document.getElementById('fdevicekey').value.trim();
+      const message = document.getElementById('fmessage').value.trim();
+      if (!name || !email || !message) { showToast('Remplissez les champs obligatoires'); return; }
+      try {
+        const res = await fetch('https://formspree.io/f/xgolqeyj', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ name, email, subject, message, deviceKey: deviceKey || 'Non renseignée', _subject: `[ARICH] ${subject}` }),
+        });
+        if (res.ok) { showToast('Message envoyé'); e.target.reset(); }
+        else showToast('Erreur, réessayez');
+      } catch { showToast('Erreur réseau'); }
+    }
 
-  function checkAni() {
-    const wh = window.innerHeight;
-    aniEls.forEach(el => {
-      if (el.classList.contains('ani-go')) return; // déjà déclenché
-      const rect = el.getBoundingClientRect();
-      if (rect.top < wh - 40) {
-        const delay = el.dataset.delay || 0;
-        el.style.animationDelay = delay + 'ms';
-        el.classList.add('ani-go');
+    const SUPABASE_URL = 'https://aynucieohuowgkwyftiy.supabase.co';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk';
+    const _siteSession = { start: Date.now(), referrer: document.referrer || 'direct', path: location.pathname, country: null };
+    fetch('https://ipapi.co/json/').then(r => r.json()).then(d => { _siteSession.country = d.country_name || d.country; }).catch(() => {});
+
+    async function _sendSiteSession() {
+      const duration = Math.round((Date.now() - _siteSession.start) / 1000);
+      if (duration < 3) return;
+      try {
+        await fetch(`${SUPABASE_URL}/rest/v1/site_sessions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}`, 'Prefer': 'return=minimal' },
+          body: JSON.stringify({ duration_seconds: duration, country: _siteSession.country, referrer: _siteSession.referrer, path: _siteSession.path, user_agent: navigator.userAgent, created_at: new Date().toISOString() }),
+        });
+      } catch {}
+    }
+    window.addEventListener('pagehide', _sendSiteSession);
+    window.addEventListener('beforeunload', _sendSiteSession);
+
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    async function startCheckout(plan) {
+      const btn = document.querySelector(`[data-plan="${plan}"]`);
+      const defaultLabel = plan === 'yearly' ? 'Activer pour 2,99€/an' : 'Acheter la licence à vie';
+      btn.disabled = true;
+      btn.textContent = 'Chargement…';
+
+      const { data: { session } } = await sb.auth.getSession();
+      const deviceKey = prompt('Entrez la clé de votre appareil\n(visible dans ARICH → Paramètres → Infos appareil)');
+      if (!deviceKey) { btn.disabled = false; btn.textContent = defaultLabel; return; }
+
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan,
+          deviceKey: deviceKey.trim().toUpperCase(),
+          userId: session?.user?.id || null,
+          email: session?.user?.email || null,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.error) {
+        alert(data.error);
+        btn.disabled = false;
+        btn.textContent = defaultLabel;
+        return;
       }
-    });
-  }
-
-  // Lancement au scroll et au resize
-  window.addEventListener('scroll', checkAni, { passive: true });
-  window.addEventListener('resize', checkAni, { passive: true });
-
-  // Lancement immédiat au chargement (éléments déjà visibles dès le départ)
-  // On attend que le DOM soit prêt + un micro-délai pour les layouts
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => setTimeout(checkAni, 50));
-  } else {
-    setTimeout(checkAni, 50);
-  }
-
-  // ── FAQ accordion ────────────────────────────────────────────────────────
-  function toggleFaq(el) {
-    const item = el.parentElement;
-    const isOpen = item.classList.contains('open');
-    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-    if (!isOpen) item.classList.add('open');
-  }
-
-  // ── Contact avec plan pré-rempli ─────────────────────────────────────────
-  function openContact(plan) {
-    document.getElementById('fsubject').value = 'Activation licence — ' + plan;
-    document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
-    setTimeout(() => document.getElementById('fname').focus(), 800);
-  }
-
-  // ── Form submit → Formspree ──────────────────────────────────────────────
-  async function sendForm(e) {
-    e.preventDefault();
-    const name      = document.getElementById('fname').value.trim();
-    const email     = document.getElementById('femail').value.trim();
-    const subject   = document.getElementById('fsubject').value.trim() || 'Contact';
-    const deviceKey = document.getElementById('fdevicekey').value.trim();
-    const message   = document.getElementById('fmessage').value.trim();
-    if (!name || !email || !message) { showToast('⚠️ Remplissez tous les champs obligatoires'); return; }
-    try {
-      const res = await fetch('https://formspree.io/f/xgolqeyj', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ name, email, subject, message, deviceKey: deviceKey || 'Non renseignée', _subject: `[Arich IPTV] ${subject}` }),
-      });
-      if (res.ok) { showToast('✓ Message envoyé !'); e.target.reset(); }
-      else { showToast('✗ Erreur, réessayez'); }
-    } catch { showToast('✗ Erreur réseau'); }
-  }
-
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
-  }
-
-  // ── Tracking sessions site (Supabase) ───────────────────────────────────
-  const SUPABASE_URL  = 'https://aynucieohuowgkwyftiy.supabase.co';
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk';
-  const _siteSession = { start: Date.now(), referrer: document.referrer || 'direct', path: location.pathname, country: null };
-  fetch('https://ipapi.co/json/').then(r => r.json()).then(d => { _siteSession.country = d.country_name || d.country; }).catch(() => {});
-
-  async function _sendSiteSession() {
-    const duration = Math.round((Date.now() - _siteSession.start) / 1000);
-    if (duration < 3) return;
-    try {
-      await fetch(`${SUPABASE_URL}/rest/v1/site_sessions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}`, 'Prefer': 'return=minimal' },
-        body: JSON.stringify({ duration_seconds: duration, country: _siteSession.country, referrer: _siteSession.referrer, path: _siteSession.path, user_agent: navigator.userAgent, created_at: new Date().toISOString() }),
-      });
-    } catch {}
-  }
-  window.addEventListener('pagehide', _sendSiteSession);
-  window.addEventListener('beforeunload', _sendSiteSession);
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-
-  async function startCheckout(plan) {
-  const btn = document.querySelector(`[data-plan="${plan}"]`)
-  const defaultLabel = plan === 'yearly' ? 'Activer pour 2,99€/an' : 'Acheter la licence à vie'
-  btn.disabled = true
-  btn.textContent = 'Chargement...'
-
-  // Récupère la session Supabase si connecté
-  const { data: { session } } = await sb.auth.getSession()
-
-  // Demande la device_key si pas connecté
-  const deviceKey = prompt('Entrez la clé de votre appareil\n(visible dans ARICH IPTV → Paramètres → Infos appareil)')
-  if (!deviceKey) { btn.disabled = false; btn.textContent = defaultLabel; return }
-
-  const res = await fetch('https://aynucieohuowgkwyftiy.supabase.co/functions/v1/create-checkout', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      plan,
-      deviceKey: deviceKey.trim().toUpperCase(),
-      userId:  session?.user?.id  || null,
-      email:   session?.user?.email || null,
-    })
-  })
-
-  const data = await res.json()
-  if (data.error) {
-    alert('❌ ' + data.error)
-    btn.disabled = false
-    btn.textContent = defaultLabel
-    return
-  }
-
-  window.location.href = data.url
-}
-</script>
+      window.location.href = data.url;
+    }
+  </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-

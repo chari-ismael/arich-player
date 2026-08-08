@@ -1,10 +1,10 @@
-import { site } from './config.js'
+import { FORMSPREE_ENDPOINT } from './config.js'
 import { getLang, t } from './i18n.js'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 /**
- * Premium contact form — honest mailto delivery (no fake “sent” without a backend).
+ * Contact form — posts to the same Formspree endpoint as manage-playlist support.
  */
 export function initContact() {
   const form = document.getElementById('contactForm')
@@ -65,21 +65,31 @@ export function initContact() {
     setBusy(true)
     if (status) status.textContent = t('contact_loading')
 
-    // Brief intentional pause so the loading state is readable
-    await wait(reduced() ? 0 : 520)
-
-    const body = [
+    const composedSubject = `[ARICH] ${topicLabel} — ${subject}`
+    const composedMessage = [
       getLang() === 'fr' ? `Nom : ${name}` : `Name: ${name}`,
-      `Email: ${email}`,
       getLang() === 'fr' ? `Type : ${topicLabel}` : `Type: ${topicLabel}`,
       '',
       message,
     ].join('\n')
 
-    const mailto = `mailto:${site.email}?subject=${encodeURIComponent(`[ARICH] ${topicLabel} — ${subject}`)}&body=${encodeURIComponent(body)}`
-
     try {
-      window.location.href = mailto
+      const res = await fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          email,
+          name,
+          subject: composedSubject,
+          message: composedMessage,
+          topic: topicLabel,
+          _replyto: email,
+          _subject: composedSubject,
+        }),
+      })
+
+      if (!res.ok) throw new Error('formspree')
+
       form.classList.add('is-success')
       if (status) {
         status.textContent = t('contact_ok')
@@ -160,12 +170,4 @@ function topicLabelOf(value) {
     other: 'contact_topic_other',
   }
   return t(map[value] || 'contact_topic_other')
-}
-
-function wait(ms) {
-  return new Promise((r) => setTimeout(r, ms))
-}
-
-function reduced() {
-  return matchMedia('(prefers-reduced-motion: reduce)').matches
 }

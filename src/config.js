@@ -98,6 +98,9 @@ export const posters = {
 
 export const SUPABASE_URL = 'https://aynucieohuowgkwyftiy.supabase.co'
 
+/** Same Formspree inbox as manage-playlist support form */
+export const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xgolqeyj'
+
 export const PRICING = {
   yearly: {
     id: pricing.yearly.id,

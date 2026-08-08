@@ -1117,10 +1117,11 @@ em { font-style: italic; }
   width: min(920px, 100%);
 }
 
-/* Featflow — morph scroll */
+/* Featflow — gesture slides (sticky viewport, no tall scrub) */
 .featflow {
   position: relative;
-  height: 620vh;
+  height: 100vh;
+  height: 100dvh;
   width: 100%;
 }
 .featflow__sticky {
@@ -1170,11 +1171,29 @@ em { font-style: italic; }
   display: grid;
   place-items: center;
   opacity: 0;
-  transform: scale(0.28);
+  transform: translateY(28px) scale(0.92);
   transform-origin: center center;
   pointer-events: none;
   will-change: transform, opacity, filter;
   filter: blur(0px);
+  transition:
+    opacity 0.48s var(--ease-cinema),
+    transform 0.52s var(--ease-cinema),
+    filter 0.4s var(--ease);
+}
+.featflow__slide.is-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: none;
+  z-index: 3;
+}
+.featflow.is-instant .featflow__slide {
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .featflow__slide {
+    transition: none;
+  }
 }
 .featflow__slide .device {
   max-height: min(64vh, 560px);
@@ -1956,7 +1975,10 @@ em { font-style: italic; }
     text-align: center;
   }
   .feat-intro__copy h3 { margin-inline: auto; }
-  .featflow { height: 480vh; }
+  .featflow {
+    height: 100vh;
+    height: 100dvh;
+  }
   .featflow__float {
     width: min(300px, 92%);
     right: 50%;

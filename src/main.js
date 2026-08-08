@@ -213,7 +213,7 @@ browseLabels?.querySelectorAll('button').forEach((btn) => {
   })
 })
 
-/* ── Features morph scrub ──────────────────────────── */
+/* ── Features gesture carousel (one slide per impulse) ─ */
 const FEAT_KEYS = [
   { tag: 'feat_share_t', title: 'feat_share_t', body: 'feat_share_b' },
   { tag: 'feat_watch_t', title: 'feat_watch_t', body: 'feat_watch_b' },
@@ -222,6 +222,11 @@ const FEAT_KEYS = [
   { tag: 'feat_theme_t', title: 'feat_theme_t', body: 'feat_theme_b' },
   { tag: 'feat_hist_t', title: 'feat_hist_t', body: 'feat_hist_b' },
 ]
+
+const FEAT_LOCK_MS = 520
+const FEAT_WHEEL_THRESHOLD = 28
+const FEAT_TOUCH_THRESHOLD = 48
+const FEAT_GESTURE_IDLE_MS = 140
 
 const featPin = document.getElementById('featPin')
 const featStack = document.getElementById('featStack')
@@ -232,25 +237,22 @@ const featFloatTitle = document.getElementById('featFloatTitle')
 const featFloatBody = document.getElementById('featFloatBody')
 const featDots = document.getElementById('featDots')
 const FEAT_N = featSlides.length || FEAT_KEYS.length
-let featIdx = -1
 
-function buildFeatDots() {
-  if (!featDots) return
-  featDots.innerHTML = ''
-  for (let i = 0; i < FEAT_N; i++) {
-    const b = document.createElement('button')
-    b.type = 'button'
-    b.setAttribute('aria-label', `Feature ${i + 1}`)
-    b.addEventListener('click', () => {
-      if (!featPin) return
-      const total = featPin.offsetHeight - window.innerHeight
-      const target = featPin.offsetTop + (total * i) / Math.max(1, FEAT_N - 1)
-      if (lenis) lenis.scrollTo(target, { duration: 1 })
-      else window.scrollTo({ top: target, behavior: 'smooth' })
-    })
-    featDots.appendChild(b)
-  }
-}
+let featIdx = -1
+let featCurrent = 0
+let featLocked = false
+let featLastGestureAt = 0
+let featEngaged = false
+let featWasEngaged = false
+let featScrollY = window.scrollY
+let featScrollDir = 1
+let featWheelAcc = 0
+let featGestureUsed = false
+let featWheelIdleTimer = 0
+let featLockTimer = 0
+let featTouchStartY = 0
+let featTouchLastY = 0
+let featTouchActive = false
 
 function setFeatFloat(i, visible) {
   const keys = FEAT_KEYS[i]
@@ -268,76 +270,206 @@ function setFeatFloat(i, visible) {
   featFloat.classList.toggle('is-on', !!visible)
 }
 
-function updateFeatFlow() {
-  if (!featPin || !featSlides.length) return
+function applyFeatSlide(index, { instant = false } = {}) {
+  if (!featSlides.length) return
+  const i = Math.max(0, Math.min(FEAT_N - 1, index))
+  featCurrent = i
+
+  const useInstant = instant || reduced
+  featPin?.classList.toggle('is-instant', useInstant)
+  featPin?.classList.toggle('is-past-hint', i > 0)
+
+  featSlides.forEach((slide, si) => {
+    const on = si === i
+    const prev = si < i
+    slide.style.opacity = on ? '1' : '0'
+    slide.style.transform = on
+      ? 'translateY(0) scale(1)'
+      : prev
+        ? 'translateY(-26px) scale(1.05)'
+        : 'translateY(30px) scale(0.92)'
+    slide.style.filter = on || reduced ? 'none' : 'blur(2px)'
+    slide.style.zIndex = on ? '3' : String(Math.max(0, 2 - Math.abs(si - i)))
+    slide.classList.toggle('is-active', on)
+  })
+
+  setFeatFloat(i, true)
+
+  if (useInstant) {
+    // Force reflow then restore transitions for later gestures
+    void featPin?.offsetHeight
+    if (!reduced) featPin?.classList.remove('is-instant')
+  }
+}
+
+function goFeat(dir) {
+  if (featLocked) return false
+  const next = featCurrent + dir
+  if (next < 0 || next >= FEAT_N) return false
+
+  featLocked = true
+  featLastGestureAt = performance.now()
+  applyFeatSlide(next)
+
+  window.clearTimeout(featLockTimer)
+  featLockTimer = window.setTimeout(() => {
+    featLocked = false
+  }, reduced ? 0 : FEAT_LOCK_MS)
+  return true
+}
+
+function goFeatTo(index) {
+  if (featLocked && index !== featCurrent) return
+  if (index === featCurrent) return
+  featLocked = true
+  featLastGestureAt = performance.now()
+  applyFeatSlide(index)
+  window.clearTimeout(featLockTimer)
+  featLockTimer = window.setTimeout(() => {
+    featLocked = false
+  }, reduced ? 0 : FEAT_LOCK_MS)
+}
+
+function buildFeatDots() {
+  if (!featDots) return
+  featDots.innerHTML = ''
+  for (let i = 0; i < FEAT_N; i++) {
+    const b = document.createElement('button')
+    b.type = 'button'
+    b.setAttribute('aria-label', `Feature ${i + 1}`)
+    b.addEventListener('click', () => goFeatTo(i))
+    featDots.appendChild(b)
+  }
+}
+
+function isFeatEngaged() {
+  if (!featPin) return false
   const rect = featPin.getBoundingClientRect()
-  const total = featPin.offsetHeight - window.innerHeight
-  if (total <= 0) return
+  return rect.top <= 96 && rect.bottom >= window.innerHeight * 0.55
+}
 
-  const scrolled = Math.min(Math.max(-rect.top, 0), total)
-  const p = scrolled / total
-  featPin.classList.toggle('is-past-hint', p > 0.04)
+function syncFeatEngagement() {
+  if (!featPin || !featSlides.length) return
 
-  if (reduced) {
-    featSlides.forEach((slide, i) => {
-      slide.style.opacity = i === 0 ? '1' : '0'
-      slide.style.transform = i === 0 ? 'scale(1)' : 'scale(0.28)'
-      slide.style.zIndex = i === 0 ? '2' : '0'
-    })
-    setFeatFloat(0, true)
+  const y = window.scrollY
+  if (y !== featScrollY) {
+    featScrollDir = y > featScrollY ? 1 : -1
+    featScrollY = y
+  }
+
+  featEngaged = isFeatEngaged()
+  if (featEngaged && !featWasEngaged) {
+    // Enter from above → first; from below → last
+    const fromBelow = featScrollDir < 0
+    applyFeatSlide(fromBelow ? FEAT_N - 1 : 0, { instant: true })
+    featWheelAcc = 0
+    featGestureUsed = false
+  }
+  featWasEngaged = featEngaged
+}
+
+function featCanConsume(dir) {
+  if (dir > 0) return featCurrent < FEAT_N - 1
+  if (dir < 0) return featCurrent > 0
+  return false
+}
+
+function markFeatGestureIdle() {
+  window.clearTimeout(featWheelIdleTimer)
+  featWheelIdleTimer = window.setTimeout(() => {
+    featGestureUsed = false
+    featWheelAcc = 0
+  }, FEAT_GESTURE_IDLE_MS)
+}
+
+function onFeatWheel(e) {
+  if (!featPin || !featSlides.length || !isFeatEngaged()) return
+
+  const dy = e.deltaY
+  if (dy === 0) return
+  const dir = dy > 0 ? 1 : -1
+
+  // Boundaries: release page scroll (first+up / last+down)
+  if (!featCanConsume(dir)) {
+    featWheelAcc = 0
     return
   }
 
-  const raw = p * (FEAT_N - 1)
-  const i0 = Math.min(FEAT_N - 2, Math.floor(raw))
-  const blend = Math.min(1, Math.max(0, raw - i0))
-  const nearest = Math.min(FEAT_N - 1, Math.round(raw))
+  // Intercept so Lenis / native scroll cannot skip ahead
+  e.preventDefault()
+  e.stopImmediatePropagation()
 
-  featSlides.forEach((slide, i) => {
-    let opacity = 0
-    let scale = 0.28
-    let blur = 0
-    let z = 0
+  if (lenis) {
+    lenis.scrollTo(window.scrollY, { immediate: true })
+  }
 
-    if (i === i0) {
-      opacity = 1 - blend * 0.9
-      scale = 1 + blend * 0.22
-      blur = blend * 4
-      z = 2
-    } else if (i === i0 + 1) {
-      opacity = Math.min(1, blend * 1.15)
-      scale = 0.22 + blend * 0.78
-      blur = (1 - blend) * 3
-      z = 3
-    } else if (i < i0) {
-      opacity = 0
-      scale = 1.25
-      z = 0
-    } else {
-      opacity = 0
-      scale = 0.22
-      z = 0
-    }
+  markFeatGestureIdle()
 
-    if (p >= 0.995 && i === FEAT_N - 1) {
-      opacity = 1
-      scale = 1
-      blur = 0
-      z = 4
-    }
+  if (featLocked || featGestureUsed) return
 
-    slide.style.opacity = String(opacity)
-    slide.style.transform = `scale(${scale})`
-    slide.style.filter = blur > 0.2 ? `blur(${blur}px)` : 'none'
-    slide.style.zIndex = String(z)
-    slide.classList.toggle('is-active', i === nearest)
-  })
+  featWheelAcc += dy
+  if (Math.abs(featWheelAcc) < FEAT_WHEEL_THRESHOLD) return
 
-  const floatStrength = 1 - Math.min(1, Math.abs(raw - nearest) * 2.4)
-  setFeatFloat(nearest, floatStrength > 0.28)
+  featWheelAcc = 0
+  featGestureUsed = true
+  goFeat(dir)
 }
 
-buildFeatDots()
+function onFeatTouchStart(e) {
+  if (!featPin || !isFeatEngaged()) return
+  const t = e.changedTouches[0]
+  if (!t) return
+  featTouchActive = true
+  featTouchStartY = t.clientY
+  featTouchLastY = t.clientY
+}
+
+function onFeatTouchMove(e) {
+  if (!featTouchActive || !isFeatEngaged()) return
+  const t = e.touches[0]
+  if (!t) return
+  featTouchLastY = t.clientY
+  const dy = featTouchLastY - featTouchStartY
+  const dir = dy < 0 ? 1 : -1 // swipe up → next
+  if (Math.abs(dy) > 10 && featCanConsume(dir)) {
+    e.preventDefault()
+  }
+}
+
+function onFeatTouchEnd() {
+  if (!featTouchActive) return
+  featTouchActive = false
+  if (!isFeatEngaged()) return
+
+  const dy = featTouchLastY - featTouchStartY
+  if (Math.abs(dy) < FEAT_TOUCH_THRESHOLD) return
+
+  const dir = dy < 0 ? 1 : -1 // swipe up → next, swipe down → prev
+  if (!featCanConsume(dir)) return
+  if (featLocked) return
+  goFeat(dir)
+}
+
+function initFeatFlow() {
+  if (!featPin || !featSlides.length) return
+
+  buildFeatDots()
+  applyFeatSlide(0, { instant: true })
+
+  window.addEventListener('wheel', onFeatWheel, { passive: false, capture: true })
+  featPin.addEventListener('touchstart', onFeatTouchStart, { passive: true })
+  featPin.addEventListener('touchmove', onFeatTouchMove, { passive: false })
+  featPin.addEventListener('touchend', onFeatTouchEnd, { passive: true })
+  featPin.addEventListener('touchcancel', () => {
+    featTouchActive = false
+  }, { passive: true })
+}
+
+function updateFeatFlow() {
+  syncFeatEngagement()
+}
+
+initFeatFlow()
 
 /* ── Lazy videos (IntersectionObserver) ────────────── */
 function initLazyVideos() {
@@ -598,5 +730,6 @@ window.addEventListener('arich:lang', () => {
   applyI18n()
   applyConfigUI()
   featIdx = -1
+  applyFeatSlide(featCurrent, { instant: true })
   updateFeatFlow()
 })

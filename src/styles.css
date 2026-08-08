@@ -115,7 +115,7 @@ em { font-style: italic; }
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.4;
+  opacity: 0.72;
 }
 
 .app { position: relative; z-index: 1; }
@@ -2368,7 +2368,7 @@ em { font-style: italic; }
     animation: none !important;
   }
   .bg-halo { opacity: 0.2; }
-  .fx { display: none; }
+  .fx { opacity: 0.55; }
 }
 
 @media (max-width: 768px) {

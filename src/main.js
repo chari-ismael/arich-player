@@ -766,7 +766,7 @@ onScroll()
 
 runArichLoader({ reduced }).then(() => {
   initLazyVideos()
-  if (!reduced) initParticles(document.getElementById('fx'))
+  initParticles(document.getElementById('fx'))
   onScroll()
   // Layout may settle after boot handoff — re-measure browse rail
   requestAnimationFrame(() => {

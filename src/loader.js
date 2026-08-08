@@ -288,6 +288,28 @@ function drawAtmosphere(ctx, w, h, p) {
   g.addColorStop(1, 'rgba(5,7,11,0)')
   ctx.fillStyle = g
   ctx.fillRect(0, 0, w, h)
+
+  // A few fixed sparkles — same every boot, no extra allocations in hot path
+  const sparks = [
+    [0.18, 0.22, 1.1],
+    [0.82, 0.28, 0.8],
+    [0.12, 0.68, 0.7],
+    [0.88, 0.72, 1.0],
+    [0.72, 0.14, 0.6],
+    [0.28, 0.82, 0.75],
+  ]
+  for (let i = 0; i < sparks.length; i++) {
+    const [nx, ny, r] = sparks[i]
+    const tw = 0.25 + (Math.sin(p * Math.PI * 2 + i * 1.3) * 0.5 + 0.5) * 0.45
+    const x = w * nx
+    const y = h * ny
+    ctx.beginPath()
+    ctx.fillStyle = i % 2 === 0
+      ? `rgba(212,160,74,${tw * 0.55})`
+      : `rgba(240,239,236,${tw * 0.4})`
+    ctx.arc(x, y, r, 0, Math.PI * 2)
+    ctx.fill()
+  }
 }
 
 function drawEmber(ctx, x, y, s) {

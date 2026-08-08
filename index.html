@@ -224,7 +224,7 @@
   </div>
   <canvas id="fx" class="fx" aria-hidden="true"></canvas>
 
-  <div id="app" class="app">
+  <div id="app" class="app is-booting">
     <a class="skip-link" href="#main">Aller au contenu</a>
 
     <header class="nav" id="nav">
@@ -235,7 +235,7 @@
           <span>ARICH</span>
         </a>
 
-        <nav class="nav__links nav__links--desktop" aria-label="Navigation">
+        <nav class="nav__links" id="navLinks" aria-label="Navigation">
           <a href="#top" data-i18n="nav_home">Accueil</a>
           <a href="#features" data-i18n="nav_features">Fonctionnalités</a>
           <a href="#browse" data-i18n="nav_browse">Parcourir</a>
@@ -251,21 +251,11 @@
           </div>
           <a class="nav__account" href="/auth.html" data-i18n="nav_account">Compte</a>
           <a class="btn btn--copper nav__cta" href="#install" data-i18n="nav_download">Télécharger</a>
-          <button type="button" class="nav__burger" id="navBurger" aria-expanded="false" aria-controls="navDrawer" data-i18n-aria="nav_menu" aria-label="Menu">
+          <button type="button" class="nav__burger" id="navBurger" aria-expanded="false" aria-controls="navLinks" data-i18n-aria="nav_menu" aria-label="Menu">
             <span></span><span></span><span></span>
           </button>
         </div>
       </div>
-      <!-- Outside pill so fixed drawer is never clipped by overflow/backdrop-filter -->
-      <nav class="nav__drawer" id="navDrawer" aria-label="Menu" hidden>
-        <a href="#top" data-i18n="nav_home">Accueil</a>
-        <a href="#features" data-i18n="nav_features">Fonctionnalités</a>
-        <a href="#browse" data-i18n="nav_browse">Parcourir</a>
-        <a href="#faq" data-i18n="nav_faq">FAQ</a>
-        <a href="#contact" data-i18n="nav_contact">Contact</a>
-        <a href="#pricing" data-i18n="nav_pricing">Tarifs</a>
-        <a class="nav__drawer-cta" href="#install" data-i18n="nav_download">Télécharger</a>
-      </nav>
     </header>
 
     <main id="main">
@@ -302,13 +292,13 @@
               <div class="device__bezel">
                 <div class="device__screen">
                   <video
-                    class="lazy-video lazy-video--hero"
-                    data-src="/media/video/home-land.mp4?v=20260808b"
-                    poster="/media/home-land.png?v=20260808b"
+                    class="lazy-video"
+                    data-src="/media/video/home-land.mp4"
+                    poster="/media/home-land.png"
                     muted
                     playsinline
                     loop
-                    preload="auto"
+                    preload="none"
                     aria-hidden="true"
                   ></video>
                 </div>
@@ -323,13 +313,13 @@
                 <div class="device__notch"></div>
                 <div class="device__screen">
                   <video
-                    class="lazy-video lazy-video--hero"
-                    data-src="/media/video/home-port.mp4?v=20260808b"
-                    poster="/media/home-phone.png?v=20260808b"
+                    class="lazy-video"
+                    data-src="/media/video/home-port.mp4"
+                    poster="/media/home-phone.png"
                     muted
                     playsinline
                     loop
-                    preload="auto"
+                    preload="none"
                     aria-hidden="true"
                   ></video>
                 </div>
@@ -451,13 +441,13 @@
                 <div class="device__island" aria-hidden="true"></div>
                 <div class="device__screen">
                   <video
-                    class="lazy-video lazy-video--hero"
-                    data-src="/media/video/player-land.mp4?v=20260808b"
-                    poster="/media/player-land.png?v=20260808b"
+                    class="lazy-video"
+                    data-src="/media/video/player-land.mp4"
+                    poster="/media/player-land.png"
                     muted
                     playsinline
                     loop
-                    preload="metadata"
+                    preload="none"
                     aria-label="Démonstration du player"
                   ></video>
                 </div>
@@ -471,14 +461,13 @@
           <div class="featflow__sticky">
             <p class="featflow__hint" data-i18n="featflow_hint">Faites défiler pour explorer</p>
             <div class="featflow__stage">
-              <button type="button" class="featflow__nav featflow__nav--prev" id="featPrev" aria-label="Précédent">‹</button>
               <div class="featflow__stack" id="featStack">
                 <figure class="featflow__slide is-active" data-feat="0">
                   <div class="device device--phone device--phone-lg">
                     <div class="device__bezel">
                       <div class="device__notch"></div>
                       <div class="device__screen">
-                        <img src="/media/playlist-add-phone.png?v=20260808b" alt="" loading="lazy" />
+                        <img src="/media/playlist-add-phone.png?v=6" alt="" loading="lazy" />
                       </div>
                     </div>
                   </div>
@@ -487,7 +476,7 @@
                   <div class="device device--desktop device--sm">
                     <div class="device__bezel">
                       <div class="device__screen">
-                        <img src="/media/player-menu-land.png?v=20260808b" alt="" loading="lazy" />
+                        <img src="/media/player-menu-land.png?v=6" alt="" loading="lazy" />
                       </div>
                     </div>
                   </div>
@@ -497,7 +486,7 @@
                     <div class="device__bezel">
                       <div class="device__notch"></div>
                       <div class="device__screen">
-                        <img src="/media/download-phone.png?v=20260808b" alt="" loading="lazy" />
+                        <img src="/media/download-phone.png?v=6" alt="" loading="lazy" />
                       </div>
                     </div>
                   </div>
@@ -507,7 +496,7 @@
                     <div class="device__bezel">
                       <div class="device__notch"></div>
                       <div class="device__screen">
-                        <img src="/media/lang-phone.png?v=20260808b" alt="" loading="lazy" />
+                        <img src="/media/lang-phone.png?v=6" alt="" loading="lazy" />
                       </div>
                     </div>
                   </div>
@@ -517,7 +506,7 @@
                     <div class="device__bezel">
                       <div class="device__notch"></div>
                       <div class="device__screen">
-                        <img src="/media/theme-phone.png?v=20260808b" alt="" loading="lazy" />
+                        <img src="/media/theme-phone.png?v=6" alt="" loading="lazy" />
                       </div>
                     </div>
                   </div>
@@ -527,13 +516,12 @@
                     <div class="device__bezel">
                       <div class="device__notch"></div>
                       <div class="device__screen">
-                        <img src="/media/films-grid-phone.png?v=20260808b" alt="" loading="lazy" />
+                        <img src="/media/films-grid-phone.png?v=6" alt="" loading="lazy" />
                       </div>
                     </div>
                   </div>
                 </figure>
               </div>
-              <button type="button" class="featflow__nav featflow__nav--next" id="featNext" aria-label="Suivant">›</button>
 
               <aside class="featflow__float" id="featFloat" aria-live="polite">
                 <p class="featflow__float-tag" id="featFloatTag"></p>
@@ -541,9 +529,7 @@
                 <p class="featflow__float-body" id="featFloatBody"></p>
               </aside>
             </div>
-            <div class="featflow__controls">
-              <div class="featflow__dots" id="featDots" role="tablist" aria-label="Fonctionnalités"></div>
-            </div>
+            <div class="featflow__dots" id="featDots" role="tablist" aria-label="Fonctionnalités"></div>
           </div>
         </div>
       </section>
@@ -651,37 +637,16 @@
             <h3 class="install__dl-title" data-i18n="inst_dl_title">Téléchargez ARICH PLAYER</h3>
             <p class="install__dl-sub" data-i18n="inst_dl_sub">Installez l'application en quelques secondes et profitez de votre contenu sur Android.</p>
             <div class="install__buttons">
-              <a class="store-btn store-btn--play" id="dlPlay" href="#" target="_blank" rel="noopener">
-                <svg class="store-btn__mark" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
-                  <path fill="#EA4335" d="M3.6 2.2 13.2 12 3.6 21.8c-.5-.3-.9-.9-.9-1.6V3.8c0-.7.4-1.3.9-1.6z"/>
-                  <path fill="#FBBC04" d="m3.6 2.2 9.6 9.8 3.4-1.9L7.4.9C6.3.3 4.9.7 3.6 2.2z"/>
-                  <path fill="#4285F4" d="m16.6 10.1-3.4 1.9 3.4 1.9 3.7-2.1c.9-.5.9-1.9 0-2.4l-3.7-2.1z"/>
-                  <path fill="#34A853" d="m3.6 21.8 9.6-9.8 3.4 1.9-9.2 5.2c-1.1.6-2.5.2-3.8-1.3z"/>
-                </svg>
-                <span class="store-btn__txt">
-                  <small data-i18n="dl_play_over">Disponible sur</small>
-                  <strong data-i18n="dl_play">Google Play</strong>
-                </span>
+              <a class="btn btn--copper btn--lg btn--glow" id="dlApk" href="#">
+                <span class="btn__icon" aria-hidden="true">↓</span>
+                <span data-i18n="dl_apk">Télécharger l'APK</span>
               </a>
-              <a class="store-btn store-btn--apk" id="dlApk" href="#">
-                <span class="store-btn__mark store-btn__mark--apk" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" width="26" height="26" fill="none">
-                    <path d="M12 3v12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
-                    <path d="m7.5 11.5 4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M5 19h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
-                  </svg>
-                </span>
-                <span class="store-btn__txt">
-                  <small data-i18n="dl_apk_over">Téléchargement direct</small>
-                  <strong data-i18n="dl_apk">Télécharger l'APK</strong>
-                </span>
-              </a>
+              <a class="btn btn--ghost" id="dlPlay" href="#" target="_blank" rel="noopener" data-i18n="dl_play">Google Play</a>
             </div>
-            <p class="install__meta" data-i18n="inst_meta">Android 8+ · v3.0.5</p>
+            <p class="install__meta" data-i18n="inst_meta">Android 8+ · v3.0.4</p>
             <div class="install__qr" id="installQr">
               <div class="install__qr-frame">
-                <img id="qrImg" src="" alt="QR code download" width="120" height="120" loading="lazy" />
-                <img class="install__qr-logo" src="/logo-fg.png" alt="" width="28" height="28" />
+                <img id="qrImg" src="" alt="QR code download" width="96" height="96" loading="lazy" />
                 <span class="install__qr-scan" aria-hidden="true"></span>
               </div>
               <p data-i18n="inst_qr">Sur ordinateur ? Scannez pour télécharger</p>
@@ -693,7 +658,7 @@
               <div class="device__bezel">
                 <div class="device__notch"></div>
                 <div class="device__screen">
-                  <img src="/media/welcome-phone.png?v=20260808b" alt="" loading="lazy" width="540" height="1170" />
+                  <img src="/media/welcome-phone.png" alt="" loading="lazy" width="540" height="1170" />
                 </div>
               </div>
             </div>

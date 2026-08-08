@@ -414,22 +414,22 @@
           <p class="section-head__sub" data-i18n="inst_sub">Prêt en une minute.</p>
         </header>
 
-        <ol class="steps">
-          <li>
+        <ol class="steps" id="installSteps">
+          <li class="steps__item is-on" data-step="0">
             <span class="steps__n">01</span>
             <div>
               <h3 data-i18n="inst_1_t">Téléchargez</h3>
               <p data-i18n="inst_1_b">APK GitHub ou Google Play.</p>
             </div>
           </li>
-          <li>
+          <li class="steps__item" data-step="1">
             <span class="steps__n">02</span>
             <div>
               <h3 data-i18n="inst_2_t">Connectez</h3>
               <p data-i18n="inst_2_b">Xtream ou M3U.</p>
             </div>
           </li>
-          <li>
+          <li class="steps__item" data-step="2">
             <span class="steps__n">03</span>
             <div>
               <h3 data-i18n="inst_3_t">Regardez</h3>
@@ -437,18 +437,32 @@
             </div>
           </li>
         </ol>
+        <div class="steps__rail" aria-hidden="true"><span class="steps__fill" id="stepsFill"></span></div>
 
         <div class="install__cta">
+          <div class="install__product">
+            <div class="device device--phone install__phone">
+              <div class="device__bezel">
+                <div class="device__notch"></div>
+                <div class="device__screen">
+                  <img src="/media/welcome-phone.png" alt="" loading="lazy" width="540" height="1170" />
+                </div>
+              </div>
+            </div>
+            <div class="install__qr" id="installQr">
+              <div class="install__qr-frame">
+                <img id="qrImg" src="" alt="QR code download" width="148" height="148" loading="lazy" />
+                <span class="install__qr-scan" aria-hidden="true"></span>
+              </div>
+              <p data-i18n="inst_qr">Scannez pour télécharger</p>
+            </div>
+          </div>
           <div class="install__buttons">
             <a class="btn btn--copper btn--lg btn--glow" id="dlApk" href="#">
               <span class="btn__icon" aria-hidden="true">↓</span>
               <span data-i18n="dl_apk">Télécharger l'APK</span>
             </a>
             <a class="btn btn--ghost" id="dlPlay" href="#" target="_blank" rel="noopener" data-i18n="dl_play">Google Play</a>
-          </div>
-          <div class="install__qr">
-            <img id="qrImg" src="" alt="QR code download" width="132" height="132" loading="lazy" />
-            <p data-i18n="inst_qr">Scannez pour télécharger</p>
           </div>
         </div>
       </section>
@@ -561,6 +575,10 @@
 
       <!-- ═══ CTA FINAL ═══ -->
       <section class="final-cta" id="cta">
+        <div class="final-cta__glow" aria-hidden="true"></div>
+        <div class="final-cta__mark" aria-hidden="true">
+          <img src="/logo-fg.png" alt="" width="72" height="72" />
+        </div>
         <h2 data-i18n="cta_title">Prêt à regarder autrement ?</h2>
         <p data-i18n="cta_sub">Téléchargez ARICH Player et commencez votre essai gratuit.</p>
         <a class="btn btn--copper btn--lg btn--glow" href="#install">
@@ -573,7 +591,7 @@
     <footer class="footer">
       <div class="footer__grid">
         <div class="footer__brand">
-          <img src="/logo-launcher.png" alt="" width="40" height="40" />
+          <img src="/logo-fg.png" alt="" width="40" height="40" />
           <div>
             <strong>ARICH Player</strong>
             <p data-i18n="footer_tag">Streaming premium · Xtream & M3U</p>

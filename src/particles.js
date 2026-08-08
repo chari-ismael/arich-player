@@ -19,8 +19,8 @@ export function initParticles(canvas) {
 
   function count() {
     const area = window.innerWidth * window.innerHeight
-    if (mobile()) return Math.min(28, Math.floor(area / 38000))
-    return Math.min(56, Math.floor(area / 22000))
+    if (mobile()) return Math.min(16, Math.floor(area / 52000))
+    return Math.min(32, Math.floor(area / 36000))
   }
 
   function resize() {

@@ -120,8 +120,8 @@ const dict = {
     contact_err: 'Merci de remplir tous les champs.',
     contact_err_email: 'Adresse email invalide.',
 
-    cta_title: 'Prêt à regarder autrement ?',
-    cta_sub: 'Téléchargez ARICH Player et commencez votre essai gratuit.',
+    cta_title: 'À vous de regarder.',
+    cta_sub: 'Installez ARICH. 14 jours pour essayer, sans engagement.',
     cta_btn: "Télécharger l'app",
 
     footer_product: 'Produit',
@@ -262,8 +262,8 @@ const dict = {
     contact_err: 'Please fill in every field.',
     contact_err_email: 'Invalid email address.',
 
-    cta_title: 'Ready to watch differently?',
-    cta_sub: 'Download ARICH Player and start your free trial.',
+    cta_title: 'Your turn to watch.',
+    cta_sub: 'Install ARICH. 14 days to try it — no commitment.',
     cta_btn: 'Download the app',
 
     footer_product: 'Product',

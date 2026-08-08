@@ -183,8 +183,20 @@ function updateBrowse() {
 
   if (browseProgress) browseProgress.style.width = `${p * 100}%`
 
-  const idx = Math.min(BROWSE_N - 1, Math.floor(p * BROWSE_N + 0.01))
-  browseCards.forEach((card, i) => card.classList.toggle('is-active', i === idx))
+  const raw = p * (BROWSE_N - 1)
+  const idx = Math.min(BROWSE_N - 1, Math.round(raw))
+  browseCards.forEach((card, i) => {
+    const dist = Math.abs(raw - i)
+    card.classList.toggle('is-active', i === idx)
+    card.style.setProperty('--browse-dist', String(Math.min(2, dist)))
+    const scale = 1 - Math.min(0.14, dist * 0.08)
+    const blur = Math.min(3.5, dist * 1.6)
+    const opacity = 1 - Math.min(0.55, dist * 0.28)
+    const rot = (i - raw) * -7
+    card.style.transform = `scale(${scale}) rotateY(${rot}deg) translateZ(${(1 - Math.min(1, dist)) * 28}px)`
+    card.style.opacity = String(opacity)
+    card.style.filter = blur > 0.15 ? `blur(${blur}px) brightness(${1 - dist * 0.12})` : 'none'
+  })
   browseLabels?.querySelectorAll('button').forEach((btn, i) => {
     btn.classList.toggle('is-active', i === idx)
   })
@@ -472,6 +484,27 @@ function initReveals() {
   els.forEach((el) => io.observe(el))
 }
 
+/* ── Install steps progress ────────────────────────── */
+function updateInstallSteps() {
+  const section = document.getElementById('install')
+  const items = [...document.querySelectorAll('.steps__item')]
+  const fill = document.getElementById('stepsFill')
+  if (!section || !items.length) return
+  const rect = section.getBoundingClientRect()
+  const view = window.innerHeight || 1
+  const visible = clamp01((view - rect.top) / (view + rect.height * 0.35))
+  const idx = Math.min(2, Math.floor(visible * 3))
+  items.forEach((el, i) => {
+    el.classList.toggle('is-on', i === idx)
+    el.classList.toggle('is-done', i < idx)
+  })
+  if (fill) fill.style.width = `${((idx + 1) / 3) * 100}%`
+}
+
+function clamp01(v) {
+  return Math.min(1, Math.max(0, v))
+}
+
 /* ── FAQ accordion (one open) ──────────────────────── */
 function initFaq() {
   const list = document.getElementById('faqList')
@@ -533,6 +566,7 @@ function onScroll() {
   updateNav()
   updateBrowse()
   updateFeatFlow()
+  updateInstallSteps()
   scrollTop?.classList.toggle('is-on', window.scrollY > 480)
 }
 
@@ -548,7 +582,6 @@ initI18n()
 applyConfigUI()
 initHeroEnter({ reduced })
 initHeroTilt()
-initLazyVideos()
 initReveals()
 initFaq()
 initContact()
@@ -556,7 +589,9 @@ initCheckout()
 onScroll()
 
 runArichLoader({ reduced }).then(() => {
+  initLazyVideos()
   if (!reduced) initParticles(document.getElementById('fx'))
+  onScroll()
 })
 
 window.addEventListener('arich:lang', () => {

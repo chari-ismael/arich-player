@@ -13,9 +13,9 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 const isMobile = () => window.matchMedia('(max-width: 768px)').matches
 const app = document.getElementById('app')
 
-/* ── Smooth scroll (Lenis) ─────────────────────────── */
+/* ── Smooth scroll (Lenis) — desktop only; native scroll on phone ─ */
 let lenis = null
-if (!reduced) {
+if (!reduced && !isMobile()) {
   lenis = new Lenis({
     duration: 1.1,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -45,28 +45,42 @@ document.querySelectorAll('a[href^="#"]').forEach((a) => {
     if (!el) return
     e.preventDefault()
     scrollToEl(el)
-    document.getElementById('nav')?.classList.remove('is-open')
-    document.getElementById('navBurger')?.setAttribute('aria-expanded', 'false')
+    closeNavDrawer()
   })
 })
 
 /* ── Navbar scroll + hamburger + liquid glass ──────── */
 const nav = document.getElementById('nav')
 const navBurger = document.getElementById('navBurger')
-const navLinks = document.getElementById('navLinks')
+const navDrawer = document.getElementById('navDrawer')
 const navPill = document.getElementById('navPill')
 const navLiquid = document.getElementById('navLiquid')
 
+function closeNavDrawer() {
+  nav?.classList.remove('is-open')
+  navBurger?.setAttribute('aria-expanded', 'false')
+  if (navDrawer) navDrawer.hidden = true
+  document.body.classList.remove('nav-drawer-open')
+}
+
+function openNavDrawer() {
+  nav?.classList.add('is-open')
+  navBurger?.setAttribute('aria-expanded', 'true')
+  if (navDrawer) navDrawer.hidden = false
+  document.body.classList.add('nav-drawer-open')
+}
+
 navBurger?.addEventListener('click', () => {
-  const open = nav?.classList.toggle('is-open')
-  navBurger.setAttribute('aria-expanded', open ? 'true' : 'false')
+  if (nav?.classList.contains('is-open')) closeNavDrawer()
+  else openNavDrawer()
 })
 
-navLinks?.querySelectorAll('a').forEach((a) => {
-  a.addEventListener('click', () => {
-    nav?.classList.remove('is-open')
-    navBurger?.setAttribute('aria-expanded', 'false')
-  })
+navDrawer?.querySelectorAll('a').forEach((a) => {
+  a.addEventListener('click', () => closeNavDrawer())
+})
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeNavDrawer()
 })
 
 if (navPill && navLiquid && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -404,8 +418,8 @@ function syncFeatEngagement() {
   }
 
   featEngaged = isFeatEngaged()
-  if (featEngaged && !featWasEngaged) {
-    // Enter from above → first; from below → last
+  // Desktop gesture mode only — mobile uses free scroll + buttons
+  if (featEngaged && !featWasEngaged && !featPin?.classList.contains('is-touch-ui')) {
     const fromBelow = featScrollDir < 0
     applyFeatSlide(fromBelow ? FEAT_N - 1 : 0, { instant: true })
     featWheelAcc = 0
@@ -504,13 +518,50 @@ function initFeatFlow() {
   buildFeatDots()
   applyFeatSlide(0, { instant: true })
 
+  document.getElementById('featPrev')?.addEventListener('click', () => goFeat(-1))
+  document.getElementById('featNext')?.addEventListener('click', () => goFeat(1))
+
+  // Mobile: free page scroll + buttons / light horizontal swipe — no scroll trapping
+  if (isMobile()) {
+    featPin.classList.add('is-touch-ui')
+    let sx = 0
+    let sy = 0
+    featPin.addEventListener(
+      'touchstart',
+      (e) => {
+        const t = e.changedTouches[0]
+        if (!t) return
+        sx = t.clientX
+        sy = t.clientY
+      },
+      { passive: true },
+    )
+    featPin.addEventListener(
+      'touchend',
+      (e) => {
+        const t = e.changedTouches[0]
+        if (!t) return
+        const dx = t.clientX - sx
+        const dy = t.clientY - sy
+        if (Math.abs(dx) < 56 || Math.abs(dx) < Math.abs(dy)) return
+        goFeat(dx < 0 ? 1 : -1)
+      },
+      { passive: true },
+    )
+    return
+  }
+
   window.addEventListener('wheel', onFeatWheel, { passive: false, capture: true })
   featPin.addEventListener('touchstart', onFeatTouchStart, { passive: true })
   featPin.addEventListener('touchmove', onFeatTouchMove, { passive: false })
   featPin.addEventListener('touchend', onFeatTouchEnd, { passive: true })
-  featPin.addEventListener('touchcancel', () => {
-    featTouchActive = false
-  }, { passive: true })
+  featPin.addEventListener(
+    'touchcancel',
+    () => {
+      featTouchActive = false
+    },
+    { passive: true },
+  )
 }
 
 function updateFeatFlow() {
@@ -525,35 +576,51 @@ function initLazyVideos() {
   if (!videosEls.length) return
 
   const playSafe = (v) => {
+    v.muted = true
+    v.playsInline = true
     const p = v.play()
     if (p?.catch) p.catch(() => {})
   }
+
+  const arm = (v) => {
+    if (!v.dataset.src) return
+    if (!v.getAttribute('src')) {
+      v.src = v.dataset.src
+      v.load()
+    }
+    const kick = () => playSafe(v)
+    v.addEventListener('canplay', kick, { once: true })
+    v.addEventListener('loadeddata', kick, { once: true })
+    // Already buffered from a previous visit
+    if (v.readyState >= 2) kick()
+  }
+
+  // Hero / player: start download immediately (files are heavy)
+  document.querySelectorAll('video.lazy-video--hero').forEach(arm)
 
   const io = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         const v = entry.target
         if (entry.isIntersecting) {
-          if (v.dataset.src && !v.src) {
-            v.src = v.dataset.src
-            v.load()
-          }
+          arm(v)
           playSafe(v)
         } else {
           v.pause()
         }
       })
     },
-    { threshold: 0.25, rootMargin: '80px' },
+    { threshold: 0.12, rootMargin: '200px 0px' },
   )
 
   videosEls.forEach((v) => {
     v.muted = true
     v.playsInline = true
+    v.setAttribute('playsinline', '')
+    v.setAttribute('webkit-playsinline', '')
     io.observe(v)
   })
 
-  // Pause si onglet caché
   document.addEventListener('visibilitychange', () => {
     videosEls.forEach((v) => {
       if (document.hidden) v.pause()
@@ -573,11 +640,18 @@ function applyConfigUI() {
   const qr = document.getElementById('qrImg')
   if (qr && downloadLinks.qrTarget) {
     const target = encodeURIComponent(downloadLinks.qrTarget)
-    qr.src = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${target}`
+    // High-contrast QR; logo is overlaid in CSS (quiet zone preserved around mark)
+    qr.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&ecc=H&color=0D1017&bgcolor=FFFFFF&data=${target}`
     qr.alt = 'QR — ' + downloadLinks.qrTarget
   }
 
-  // Vidéos / posters (hero + player)
+  const meta = document.querySelector('.install__meta')
+  if (meta && downloadLinks.versionLabel) {
+    // Keep i18n base text in sync via data attr refresh after applyI18n
+    meta.dataset.version = downloadLinks.versionLabel
+  }
+
+  // Vidéos / posters (hero + player) — force fresh assets
   const map = [
     { sel: '.hero__desktop video.lazy-video', src: videos.homeLand, poster: posters.homeLand },
     { sel: '.hero__phone video.lazy-video', src: videos.homePort, poster: posters.homePort },
@@ -588,7 +662,18 @@ function applyConfigUI() {
     if (!v) return
     v.dataset.src = src
     if (poster) v.setAttribute('poster', poster)
+    // Reset any stale browser-resolved src from a previous deploy
+    if (v.getAttribute('src') && v.getAttribute('src') !== src) {
+      v.removeAttribute('src')
+      v.load()
+    }
   })
+
+  const welcome = document.querySelector('.install__phone .device__screen img')
+  if (welcome && posters.homePort) {
+    // Prefer welcome art when present in markup; bump cache via query if plain path
+    if (!welcome.src.includes('?v=')) welcome.src = welcome.getAttribute('src') || welcome.src
+  }
 
   const trial = document.getElementById('trialDays')
   if (trial) trial.textContent = String(pricing.trialDays)

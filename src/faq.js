@@ -1,5 +1,5 @@
 /**
- * FAQ categories + accessible one-open accordion.
+ * FAQ categories + smooth one-open accordion (class-driven, not native open jump).
  */
 export function initFaq() {
   const root = document.getElementById('faq')
@@ -9,12 +9,26 @@ export function initFaq() {
 
   const items = [...list.querySelectorAll('.faq__item')]
 
+  const setOpen = (item, open) => {
+    item.classList.toggle('is-open', open)
+    if (open) item.setAttribute('open', '')
+    else item.removeAttribute('open')
+    const summary = item.querySelector('summary')
+    summary?.setAttribute('aria-expanded', open ? 'true' : 'false')
+  }
+
   items.forEach((item) => {
-    item.addEventListener('toggle', () => {
-      if (!item.open) return
+    const summary = item.querySelector('summary')
+    if (!summary) return
+    summary.setAttribute('aria-expanded', item.classList.contains('is-open') ? 'true' : 'false')
+
+    summary.addEventListener('click', (e) => {
+      e.preventDefault()
+      const willOpen = !item.classList.contains('is-open')
       items.forEach((other) => {
-        if (other !== item) other.open = false
+        if (other !== item) setOpen(other, false)
       })
+      setOpen(item, willOpen)
     })
   })
 
@@ -29,7 +43,7 @@ export function initFaq() {
       items.forEach((item) => {
         const match = cat === 'all' || item.dataset.cat === cat
         item.hidden = !match
-        if (!match) item.open = false
+        if (!match) setOpen(item, false)
       })
     })
   })

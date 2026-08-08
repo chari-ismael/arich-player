@@ -53,8 +53,6 @@ const dict = {
     feat_hist_t: 'Favoris & historique',
     feat_hist_b:
       'Reprenez où vous étiez. Marquez ce qui compte. Votre parcours, mémorisé.',
-    featflow_hint: 'Faites défiler pour explorer',
-
     stage_over: 'Mise en scène',
     stage_films_t: 'Films & séries',
     stage_films_b: 'Affiches immersives, fiches détaillées, lecture en un geste.',
@@ -78,10 +76,13 @@ const dict = {
     inst_3_b: 'Vos contenus, dans une interface digne du salon.',
     inst_dl_title: 'Téléchargez ARICH PLAYER',
     inst_dl_sub: "Installez l'application en quelques secondes et profitez de votre contenu sur Android.",
-    inst_meta: 'Android 8+ · v3.0.4',
+    inst_meta: 'Android 8+ · v3.0.5',
     inst_qr: 'Sur ordinateur ? Scannez pour télécharger',
     dl_apk: "Télécharger l'APK",
+    dl_apk_over: 'Téléchargement direct',
     dl_play: 'Google Play',
+    dl_play_over: 'Disponible sur',
+    featflow_hint: 'Glissez ou utilisez les flèches',
 
     price_over: 'Tarifs',
     price_title: 'Deux offres. Zéro surprise.',
@@ -241,8 +242,6 @@ const dict = {
     feat_hist_t: 'Favorites & history',
     feat_hist_b:
       'Pick up where you left off. Mark what matters. Your journey, remembered.',
-    featflow_hint: 'Scroll to explore',
-
     stage_over: 'Showcase',
     stage_films_t: 'Movies & series',
     stage_films_b: 'Immersive posters, rich details, playback in one gesture.',
@@ -266,10 +265,13 @@ const dict = {
     inst_3_b: 'Your content, in a living-room worthy interface.',
     inst_dl_title: 'Download ARICH PLAYER',
     inst_dl_sub: 'Install the app in seconds and enjoy your content on Android.',
-    inst_meta: 'Android 8+ · v3.0.4',
+    inst_meta: 'Android 8+ · v3.0.5',
     inst_qr: 'On desktop? Scan to download',
     dl_apk: 'Download APK',
+    dl_apk_over: 'Direct download',
     dl_play: 'Google Play',
+    dl_play_over: 'Get it on',
+    featflow_hint: 'Swipe or use the arrows',
 
     price_over: 'Pricing',
     price_title: 'Two plans. No surprises.',

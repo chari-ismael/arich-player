@@ -15,10 +15,14 @@ export const site = {
 }
 
 export const downloadLinks = {
-  apk: 'https://github.com/chari-ismael/arich-player/releases/latest/download/ArichPlayer-v3.0.4.apk',
+  apk: 'https://github.com/chari-ismael/arich-player/releases/download/v3.0.5/ArichPlayer-v3.0.5.apk',
   googlePlay: 'https://play.google.com/store/apps/details?id=com.arich.iptv',
   qrTarget: 'https://github.com/chari-ismael/arich-player/releases/latest',
+  versionLabel: 'v3.0.5',
 }
+
+/** Cache-bust media after deploy so old posters/videos are not sticky */
+export const MEDIA_VER = '20260808b'
 
 export const pricing = {
   trialDays: 14,
@@ -47,34 +51,36 @@ export const nav = [
 ]
 
 export const videos = {
-  homeLand: '/media/video/home-land.mp4',
-  homePort: '/media/video/home-port.mp4',
-  playerLand: '/media/video/player-land.mp4',
+  homeLand: `/media/video/home-land.mp4?v=${MEDIA_VER}`,
+  homePort: `/media/video/home-port.mp4?v=${MEDIA_VER}`,
+  playerLand: `/media/video/player-land.mp4?v=${MEDIA_VER}`,
 }
+
+const asset = (path) => `${path}?v=${MEDIA_VER}`
 
 /** Captures réelles — ne pas mélanger les usages */
 export const media = {
-  homePhone: '/media/home-phone.png',
-  homeLand: '/media/home-land.png',
-  filmsGrid: '/media/films-grid-phone.png',
-  filmsList: '/media/films-list-phone.png',
-  seriesHome: '/media/series-phone.png',
-  liveLand: '/media/live-direct-land.png',
-  liveDirect: '/media/live-direct-land.png',
-  playlistAdd: '/media/playlist-add-phone.png',
-  detail: '/media/detail-phone.png',
-  download: '/media/download-phone.png',
-  playerLand: '/media/player-land.png',
-  playerMenu: '/media/player-menu-land.png',
-  experience: '/media/experience.png',
-  heroTv: '/media/hero-tv.png',
-  lang: '/media/lang-phone.png',
-  theme: '/media/theme-phone.png',
-  login: '/media/login-phone.png',
-  welcome: '/media/welcome-phone.png',
-  onboard1: '/media/onboard-1.png',
-  onboard2: '/media/onboard-2.png',
-  onboard3: '/media/onboard-3.png',
+  homePhone: asset('/media/home-phone.png'),
+  homeLand: asset('/media/home-land.png'),
+  filmsGrid: asset('/media/films-grid-phone.png'),
+  filmsList: asset('/media/films-list-phone.png'),
+  seriesHome: asset('/media/series-phone.png'),
+  liveLand: asset('/media/live-direct-land.png'),
+  liveDirect: asset('/media/live-direct-land.png'),
+  playlistAdd: asset('/media/playlist-add-phone.png'),
+  detail: asset('/media/detail-phone.png'),
+  download: asset('/media/download-phone.png'),
+  playerLand: asset('/media/player-land.png'),
+  playerMenu: asset('/media/player-menu-land.png'),
+  experience: asset('/media/experience.png'),
+  heroTv: asset('/media/hero-tv.png'),
+  lang: asset('/media/lang-phone.png'),
+  theme: asset('/media/theme-phone.png'),
+  login: asset('/media/login-phone.png'),
+  welcome: asset('/media/welcome-phone.png'),
+  onboard1: asset('/media/onboard-1.png'),
+  onboard2: asset('/media/onboard-2.png'),
+  onboard3: asset('/media/onboard-3.png'),
 }
 
 /** Alias historique */

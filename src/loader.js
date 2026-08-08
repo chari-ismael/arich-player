@@ -37,21 +37,19 @@ export function runArichLoader({ reduced } = {}) {
 
   const params = new URLSearchParams(location.search)
   const bootParam = params.has('boot') ? (params.get('boot') ?? '') : null
-  const forceFresh = bootParam !== null && bootParam !== '0'
+  // Explicit opt-out only
+  if (bootParam === '0') {
+    return settleInstant(boot, app, navMark, nav)
+  }
+
+  const forceFresh = bootParam === 'force' || bootParam === 'fresh' || bootParam === 'slow'
   if (forceFresh) sessionStorage.removeItem(STORAGE_KEY)
   const returning = !forceFresh && sessionStorage.getItem(STORAGE_KEY) === '1'
   const slowMo = bootParam === 'slow' ? 2.2 : 1
 
-  if (reduced && !forceFresh) {
-    if (typeof console !== 'undefined' && console.info) {
-      console.info(
-        '[arich] boot loader skipped (prefers-reduced-motion). Preview with ?boot=force',
-      )
-    }
-    return settleInstant(boot, app, navMark, nav)
-  }
-
-  if (reduced && forceFresh) {
+  // Windows often sets prefers-reduced-motion — still show the logo boot (no skip).
+  // CSS kill-switch is bypassed via .arich-boot-force for this sequence only.
+  if (reduced) {
     document.documentElement.classList.add('arich-boot-force')
   }
 

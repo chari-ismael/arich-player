@@ -16,8 +16,9 @@
 </head>
 <body>
   <div id="boot" class="boot" aria-hidden="true">
-    <div class="boot-stage">
-      <img class="boot-logo" src="/logo-launcher.png" alt="" width="96" height="96" />
+    <canvas id="bootCanvas" class="boot__canvas"></canvas>
+    <div class="boot-mark" id="bootMark">
+      <img id="bootMarkImg" class="boot-mark__img" src="/logo-fg.png" alt="" width="120" height="120" decoding="async" />
     </div>
   </div>
 
@@ -37,7 +38,7 @@
       <div class="nav__inner" id="navPill">
         <div class="nav__liquid" id="navLiquid" aria-hidden="true"></div>
         <a class="nav__brand" href="#top">
-          <img src="/logo-launcher.png" alt="" width="28" height="28" />
+          <img id="navBrandMark" src="/logo-fg.png" alt="" width="28" height="28" />
           <span>ARICH</span>
         </a>
 

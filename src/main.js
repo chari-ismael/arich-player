@@ -4,25 +4,12 @@ import { initI18n, getLang, applyI18n, t } from './i18n.js'
 import { initParticles } from './particles.js'
 import { pricing, downloadLinks, site, videos, posters } from './config.js'
 import { initCheckout } from './checkout.js'
+import { runArichLoader } from './loader.js'
+import { initHeroEnter } from './heroEnter.js'
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 const isMobile = () => window.matchMedia('(max-width: 768px)').matches
 const app = document.getElementById('app')
-const boot = document.getElementById('boot')
-
-/* ── Boot ──────────────────────────────────────────── */
-function runBoot() {
-  if (reduced || sessionStorage.getItem('arich_booted') === '1') {
-    boot?.classList.add('is-done')
-    app?.classList.remove('is-booting')
-    return
-  }
-  setTimeout(() => {
-    boot?.classList.add('is-done')
-    app?.classList.remove('is-booting')
-    sessionStorage.setItem('arich_booted', '1')
-  }, 1900)
-}
 
 /* ── Smooth scroll (Lenis) ─────────────────────────── */
 let lenis = null
@@ -111,108 +98,67 @@ function updateNav() {
   })
 }
 
-/* ── Typewriter SEO-friendly ───────────────────────── */
-function initTypewriter() {
-  const title = document.getElementById('heroTitle')
-  if (!title) return
+/* ── Hero tilt (after entrance settles) ─────────────── */
+function initHeroTilt() {
+  const compose = document.getElementById('heroCompose')
+  const heroPhone = document.getElementById('heroPhone')
+  if (!compose || reduced || isMobile()) return
 
-  const lines = [...title.querySelectorAll('.type-line')]
-  // Texte SEO déjà dans le DOM / aria-label — on anime visuellement seulement
-  if (reduced) {
-    title.classList.add('is-typed')
-    return
-  }
-
-  const fullTexts = lines.map((el) => el.textContent || '')
-  lines.forEach((el) => {
-    el.textContent = ''
-  })
-
-  let lineIdx = 0
-  let charIdx = 0
-  let cursor = document.createElement('span')
-  cursor.className = 'type-cursor'
-  cursor.setAttribute('aria-hidden', 'true')
-
-  function placeCursor(el) {
-    cursor.remove()
-    el.appendChild(cursor)
-  }
-
-  function tick() {
-    if (lineIdx >= lines.length) {
-      title.classList.add('is-typed')
-      cursor.remove()
-      return
-    }
-    const el = lines[lineIdx]
-    const full = fullTexts[lineIdx]
-    placeCursor(el)
-    if (charIdx < full.length) {
-      el.textContent = full.slice(0, charIdx + 1)
-      placeCursor(el)
-      charIdx++
-      setTimeout(tick, 38 + Math.random() * 28)
-    } else {
-      lineIdx++
-      charIdx = 0
-      setTimeout(tick, 280)
-    }
-  }
-
-  // Relancer après i18n
-  function restart() {
-    const lang = getLang()
-    const slogan = site.slogan[lang] || site.slogan.fr
-    lines.forEach((el, i) => {
-      fullTexts[i] = slogan[i] || el.getAttribute('data-i18n') || ''
-      el.textContent = ''
-    })
-    title.classList.remove('is-typed')
-    lineIdx = 0
-    charIdx = 0
-    // aria-label SEO
-    title.setAttribute('aria-label', slogan.join(' '))
-    setTimeout(tick, 400)
-  }
-
-  restart()
-  window.addEventListener('arich:lang', restart)
-}
-
-/* ── Hero tilt discret ─────────────────────────────── */
-const compose = document.getElementById('heroCompose')
-const heroPhone = document.getElementById('heroPhone')
-if (compose && !reduced && !isMobile()) {
   let tx = 0
   let ty = 0
   let cx = 0
   let cy = 0
+  let active = false
   const stage = document.getElementById('heroStage')
 
   window.addEventListener(
     'pointermove',
     (e) => {
-      if (!stage) return
+      if (!active || !stage) return
       const r = stage.getBoundingClientRect()
       const nx = (e.clientX - r.left) / r.width - 0.5
       const ny = (e.clientY - r.top) / r.height - 0.5
-      tx = nx * 8
-      ty = -ny * 6
+      tx = nx * 7
+      ty = -ny * 5
     },
     { passive: true },
   )
 
   const loop = () => {
-    cx += (tx - cx) * 0.06
-    cy += (ty - cy) * 0.06
-    compose.style.transform = `rotateY(${cx}deg) rotateX(${cy}deg)`
-    if (heroPhone) {
-      heroPhone.style.transform = `rotateY(${-12 + cx * 0.3}deg) rotateZ(${-6 + cy * 0.25}deg) translateZ(40px)`
+    if (active) {
+      cx += (tx - cx) * 0.06
+      cy += (ty - cy) * 0.06
+      compose.style.transform = `rotateY(${cx}deg) rotateX(${cy}deg)`
+      if (heroPhone) {
+        heroPhone.style.transform = `rotateY(${-12 + cx * 0.3}deg) rotateZ(${-6 + cy * 0.25}deg) translateZ(40px)`
+      }
     }
     requestAnimationFrame(loop)
   }
   loop()
+
+  const arm = () => {
+    const onEnd = (e) => {
+      if (e.animationName !== 'heroProductIn') return
+      compose.removeEventListener('animationend', onEnd)
+      compose.style.animation = 'none'
+      compose.style.opacity = '1'
+      compose.style.filter = 'none'
+      compose.style.transform = 'rotateY(0deg) rotateX(0deg)'
+      active = true
+    }
+    compose.addEventListener('animationend', onEnd)
+    window.setTimeout(() => {
+      if (!active) {
+        compose.style.animation = 'none'
+        compose.style.opacity = '1'
+        compose.style.filter = 'none'
+        active = true
+      }
+    }, 1600)
+  }
+  if (app?.classList.contains('is-ready')) arm()
+  else window.addEventListener('arich:ready', arm, { once: true })
 }
 
 /* ── Browse vertical → horizontal scrub ────────────── */
@@ -598,17 +544,20 @@ window.addEventListener('resize', () => {
 })
 
 /* ── Init ──────────────────────────────────────────── */
-initParticles(document.getElementById('fx'))
 initI18n()
 applyConfigUI()
-initTypewriter()
+initHeroEnter({ reduced })
+initHeroTilt()
 initLazyVideos()
 initReveals()
 initFaq()
 initContact()
 initCheckout()
-runBoot()
 onScroll()
+
+runArichLoader({ reduced }).then(() => {
+  if (!reduced) initParticles(document.getElementById('fx'))
+})
 
 window.addEventListener('arich:lang', () => {
   applyI18n()

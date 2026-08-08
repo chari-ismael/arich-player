@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ARICH IPTV — Mon espace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#050709;--bg2:#080b12;
+  --surface:rgba(255,255,255,0.035);--surface2:rgba(255,255,255,0.06);
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.16);
+  --v:#7B2FFF;--r:#FF2D55;--g:#30D158;--y:#FFD60A;--b:#0A84FF;--c:#38d9f5;
+  --grad:linear-gradient(135deg,#7B2FFF,#FF2D55);
+  --text:#f0f0f8;--sub:rgba(240,240,248,0.52);--muted:rgba(240,240,248,0.3);
+  --nav:64px;--side:252px;
+  --ez:cubic-bezier(0.22,1,0.36,1);--spring:cubic-bezier(0.34,1.56,0.64,1);
+}
+html{height:100%}
+body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.5}
+
+/* BG */
+.orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(130px);animation:drift var(--d,18s) ease-in-out infinite alternate}
+.o1{width:65vmax;height:65vmax;background:radial-gradient(circle,rgba(123,47,255,0.16),transparent 60%);top:-22vmax;left:-18vmax;--d:22s}
+.o2{width:48vmax;height:48vmax;background:radial-gradient(circle,rgba(255,45,85,0.11),transparent 60%);bottom:-14vmax;right:-10vmax;--d:17s;animation-delay:-8s}
+@keyframes drift{to{transform:translate(28px,32px) scale(1.06)}}
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.02;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav);background:rgba(5,7,9,0.88);backdrop-filter:blur(32px) saturate(200%);-webkit-backdrop-filter:blur(32px) saturate(200%);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+.nav-gem{width:36px;height:36px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#fff;box-shadow:0 4px 20px rgba(123,47,255,0.45);flex-shrink:0}
+.nav-brand{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;letter-spacing:-0.02em}
+.nav-brand em{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:normal}
+.nav-sp{flex:1}
+.sync-indicator{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);padding:5px 10px;background:var(--surface);border:1px solid var(--border);border-radius:20px;transition:all 0.3s}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--g);flex-shrink:0;animation:pulse 2s ease-in-out infinite}
+.sync-dot.syncing{background:var(--y);animation:spin 0.8s linear infinite}
+.sync-dot.error{background:var(--r);animation:none}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes spin{to{transform:rotate(360deg);border-radius:0}}
+.nav-user{display:flex;align-items:center;gap:8px;padding:5px 10px 5px 5px;background:var(--surface);border:1px solid var(--border);border-radius:999px;cursor:pointer;transition:all 0.2s;margin-left:8px}
+.nav-user:hover{background:var(--surface2);border-color:var(--border2)}
+.nav-av{width:28px;height:28px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.nav-em{font-size:12.5px;color:var(--sub);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hamburger{display:none;background:none;border:none;cursor:pointer;color:var(--text);padding:6px;border-radius:8px}
+.nav-dropdown{position:relative}
+.dropdown-menu{position:fixed;top:calc(var(--nav) + 8px);right:16px;background:rgba(6,8,12,0.98);border:1px solid var(--border2);border-radius:14px;padding:6px;min-width:200px;display:none;box-shadow:0 20px 60px rgba(0,0,0,0.7);animation:dropIn 0.2s var(--ez) both;z-index:500}
+.dropdown-menu.open{display:block}
+@keyframes dropIn{from{opacity:0;transform:translateY(-8px) scale(0.97)}to{opacity:1;transform:none}}
+.drop-header{padding:10px 12px 9px;border-bottom:1px solid var(--border);margin-bottom:4px}
+.drop-email{font-size:13px;color:var(--text);margin-top:2px;word-break:break-all}
+.drop-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--sub);transition:all 0.15s;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
+.drop-item:hover{color:var(--text);background:var(--surface2)}
+.drop-item.danger:hover{color:var(--r);background:rgba(255,45,85,0.1)}
+.drop-div{height:1px;background:var(--border);margin:4px 0}
+
+/* LAYOUT */
+.layout{position:relative;z-index:2;padding-top:var(--nav);min-height:100vh;display:flex}
+.sidebar{position:fixed;top:var(--nav);left:0;bottom:0;width:var(--side);background:rgba(5,7,9,0.82);border-right:1px solid var(--border);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);padding:16px 10px;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;gap:2px;z-index:100;transition:transform 0.3s var(--ez)}
+.s-group{font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);padding:10px 12px 5px;margin-top:4px}
+.s-group:first-child{margin-top:0}
+.s-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;font-size:13px;color:var(--sub);font-weight:500;transition:all 0.15s;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.s-item:hover{color:var(--text);background:var(--surface)}
+.s-item.on{color:#fff;background:rgba(123,47,255,0.2);border:1px solid rgba(123,47,255,0.15)}
+.s-item svg{opacity:0.55;flex-shrink:0}
+.s-item.on svg{opacity:1}
+.s-badge{margin-left:auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(123,47,255,0.2);color:rgba(168,85,247,0.9);flex-shrink:0}
+.s-div{height:1px;background:var(--border);margin:8px 12px}
+.sidebar-ov{position:fixed;inset:0;z-index:99;background:rgba(0,0,0,0.55);display:none;backdrop-filter:blur(4px)}
+.sidebar-ov.show{display:block}
+
+/* MAIN */
+.main{flex:1;margin-left:var(--side);padding:28px 28px;max-width:100%;overflow-x:hidden;min-width:0}
+
+/* RESPONSIVE */
+@media(max-width:900px){.sidebar{transform:translateX(-100%);z-index:150;width:270px}.sidebar.open{transform:none}.main{margin-left:0}.hamburger{display:flex}}
+@media(max-width:640px){.main{padding:14px 12px}.nav{padding:0 12px}.nav-em{display:none}}
+
+/* SECTIONS */
+.sec{display:none;animation:secIn 0.3s var(--ez) both}
+.sec.active{display:block}
+@keyframes secIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* PAGE HEADER */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+.ph h1{font-family:'Syne',sans-serif;font-size:clamp(19px,3vw,24px);font-weight:700;letter-spacing:-0.03em;line-height:1.2}
+.ph p{font-size:13px;color:var(--sub);margin-top:5px}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:0 4px 24px rgba(0,0,0,0.18)}
+.card-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:600;letter-spacing:-0.02em;margin-bottom:16px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:24px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 20px;position:relative;overflow:hidden;transition:border-color 0.2s,transform 0.22s var(--ez)}
+.kpi:hover{border-color:var(--border2);transform:translateY(-2px)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--kline,var(--grad));opacity:0.7}
+.kpi-icon{font-size:19px;margin-bottom:10px;display:block}
+.kpi-val{font-family:'Syne',sans-serif;font-size:clamp(20px,3.5vw,26px);font-weight:700;letter-spacing:-0.04em;line-height:1}
+.kpi-label{font-size:11.5px;color:var(--sub);margin-top:6px}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px}
+table{width:100%;border-collapse:collapse;min-width:420px}
+th{font-size:10px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--muted);padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:11px 14px;font-size:13px;color:var(--sub);border-bottom:1px solid rgba(255,255,255,0.03);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color 0.15s}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,0.02);color:var(--text)}
+.td-main{color:var(--text);font-weight:500}
+.td-mono{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted)}
+.td-actions{display:flex;gap:5px;max-width:none;overflow:visible;white-space:nowrap}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.b-green{background:rgba(48,209,88,0.12);color:var(--g)}
+.b-red{background:rgba(255,45,85,0.12);color:var(--r)}
+.b-yellow{background:rgba(255,214,10,0.12);color:var(--y)}
+.b-blue{background:rgba(10,132,255,0.12);color:var(--b)}
+.b-purple{background:rgba(123,47,255,0.12);color:#a78bfa}
+.b-cyan{background:rgba(56,217,245,0.12);color:var(--c)}
+.b-gray{background:rgba(255,255,255,0.07);color:var(--sub)}
+.b-dot::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+
+/* BUTTONS */
+.btn{border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:9px 16px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:transform 0.18s var(--spring),box-shadow 0.18s,background 0.18s;user-select:none;white-space:nowrap;position:relative}
+.btn:active{transform:scale(0.96)!important}
+.btn:disabled{opacity:0.45;cursor:not-allowed}
+.btn-primary{background:var(--grad);color:#fff;box-shadow:0 4px 18px rgba(123,47,255,0.35)}
+.btn-primary:not(:disabled):hover{box-shadow:0 6px 28px rgba(123,47,255,0.55);transform:translateY(-1px)}
+.btn-ghost{background:var(--surface);border:1px solid var(--border);color:var(--sub)}
+.btn-ghost:hover{color:var(--text);background:var(--surface2);border-color:var(--border2)}
+.btn-danger{background:rgba(255,45,85,0.1);border:1px solid rgba(255,45,85,0.2);color:var(--r)}
+.btn-danger:hover{background:rgba(255,45,85,0.22)}
+.btn-sm{padding:5px 11px;font-size:12px;border-radius:8px}
+.btn-xs{padding:4px 8px;font-size:11px;border-radius:6px}
+.spin{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.25);border-top-color:#fff;animation:spinA 0.6s linear infinite;display:none;flex-shrink:0}
+@keyframes spinA{to{transform:rotate(360deg)}}
+.btn.loading .spin{display:inline-block}
+.btn.loading .blbl{display:none}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:540px){.form-grid{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:7px}
+.field.full{grid-column:1/-1}
+label{font-size:11px;font-weight:700;color:rgba(240,240,248,0.5);letter-spacing:0.06em;text-transform:uppercase}
+input,select,textarea{width:100%;padding:11px 13px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13.5px;outline:none;transition:border-color 0.2s,box-shadow 0.2s,background 0.2s;-webkit-appearance:none}
+input::placeholder,textarea::placeholder{color:var(--muted)}
+input:focus,select:focus,textarea:focus{border-color:rgba(123,47,255,0.5);box-shadow:0 0 0 3px rgba(123,47,255,0.1);background:rgba(255,255,255,0.06)}
+select{cursor:pointer}
+select option{background:#0d1018}
+textarea{resize:vertical;min-height:80px}
+
+/* MSG */
+.msg{border-radius:12px;font-size:13px;line-height:1.55;padding:11px 14px;display:none;align-items:flex-start;gap:8px}
+.msg.show{display:flex;animation:msgIn 0.25s var(--ez) both}
+.msg-error{background:rgba(255,45,85,0.09);border:1px solid rgba(255,45,85,0.2);color:var(--r)}
+.msg-success{background:rgba(48,209,88,0.09);border:1px solid rgba(48,209,88,0.2);color:var(--g)}
+.msg-info{background:rgba(123,47,255,0.09);border:1px solid rgba(123,47,255,0.2);color:#a78bfa}
+@keyframes msgIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+
+/* MODAL */
+.modal-bd{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.72);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.modal-bd.open{opacity:1;pointer-events:all}
+.modal{background:rgba(6,8,12,0.98);border:1px solid var(--border2);border-radius:20px;padding:28px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 32px 100px rgba(0,0,0,0.75);transform:scale(0.94) translateY(20px);transition:transform 0.25s var(--ez)}
+.modal-bd.open .modal{transform:none}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;letter-spacing:-0.03em}
+.modal-close{width:32px;height:32px;border-radius:8px;background:var(--surface);border:1px solid var(--border);cursor:pointer;color:var(--sub);font-size:16px;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.modal-close:hover{color:var(--text);background:var(--surface2)}
+.modal-actions{display:flex;gap:10px;margin-top:22px;justify-content:flex-end;flex-wrap:wrap}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(6,8,12,0.97);border:1px solid var(--border2);border-radius:12px;padding:12px 22px;font-size:13.5px;color:var(--text);display:flex;align-items:center;gap:9px;opacity:0;transition:opacity 0.3s,transform 0.3s;z-index:999;pointer-events:none;white-space:nowrap;box-shadow:0 14px 48px rgba(0,0,0,0.6)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* LOADING */
+.loading{display:flex;align-items:center;justify-content:center;padding:48px;gap:12px;color:var(--muted);font-size:13.5px}
+.big-spin{width:22px;height:22px;border-radius:50%;border:2px solid rgba(123,47,255,0.25);border-top-color:var(--v);animation:spinA 0.7s linear infinite}
+
+/* EMPTY */
+.empty{text-align:center;padding:48px 20px;color:var(--muted)}
+.empty span{font-size:40px;margin-bottom:12px;opacity:0.4;display:block}
+.empty h3{font-family:'Syne',sans-serif;font-size:16px;color:var(--sub);margin-bottom:6px}
+.empty p{font-size:13px;line-height:1.6;max-width:280px;margin:0 auto}
+
+/* TOP BAR */
+.top-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.search-box{position:relative;flex:1;min-width:180px;max-width:280px}
+.search-box svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);opacity:0.35;pointer-events:none}
+.search-box input{padding:9px 13px 9px 36px;border-radius:10px;font-size:13px}
+
+/* CHIPS */
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--sub);transition:all 0.18s;user-select:none}
+.chip:hover{color:var(--text);border-color:var(--border2)}
+.chip.on{background:rgba(123,47,255,0.18);border-color:rgba(123,47,255,0.4);color:#c4b5fd}
+
+/* MROW */
+.mrow{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.mrow:last-child{border-bottom:none}
+.mrow-label{font-size:13px;color:var(--sub)}
+.mrow-val{font-family:'Syne',sans-serif;font-size:15px;font-weight:600}
+
+/* PROFILE CARD */
+.profile-hero{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;display:flex;align-items:center;gap:18px;margin-bottom:22px;position:relative;overflow:hidden}
+.profile-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);opacity:0.7}
+.profile-av{width:56px;height:56px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#fff;flex-shrink:0;box-shadow:0 6px 22px rgba(123,47,255,0.4)}
+
+/* LICENSE CARD */
+.license-card{background:rgba(123,47,255,0.06);border:1px solid rgba(123,47,255,0.2);border-radius:14px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+.license-card.expired{background:rgba(255,45,85,0.06);border-color:rgba(255,45,85,0.2)}
+.license-card.trial{background:rgba(255,214,10,0.06);border-color:rgba(255,214,10,0.2)}
+
+/* PLAYLIST CARD (mobile) */
+.pl-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;transition:border-color 0.2s,transform 0.2s var(--ez)}
+.pl-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px}
+
+/* MAINTENANCE SCREEN */
+.maintenance-screen{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px}
+.maintenance-screen h1{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;letter-spacing:-0.04em;margin:16px 0 10px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.maintenance-screen p{font-size:14px;color:var(--sub);max-width:380px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="orbs"><div class="orb o1"></div><div class="orb o2"></div></div>
+<div class="grain"></div>
+<div class="toast" id="toast"></div>
+<div class="sidebar-ov" id="sov" onclick="closeSB()"></div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="hamburger" onclick="toggleSB()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <a class="nav-logo" href="https://devhertox.github.io/arich_iptv/">
+    <div class="nav-gem">A</div>
+    <div class="nav-brand"><em>ARICH</em> IPTV</div>
+  </a>
+  <div class="nav-sp"></div>
+  <div class="sync-indicator" id="sync-status">
+    <div class="sync-dot" id="sync-dot"></div>
+    <span id="sync-label">Synchronisé</span>
+  </div>
+  <div class="nav-dropdown">
+    <div class="nav-user" onclick="toggleDrop(event)">
+      <div class="nav-av" id="nav-av">?</div>
+      <div class="nav-em" id="nav-em"></div>
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="dropdown-menu" id="dropdown">
+      <div class="drop-header">
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;">Connecté en tant que</div>
+        <div class="drop-email" id="drop-email"></div>
+        <div id="drop-admin-badge" style="display:none;margin-top:6px;"><span class="badge b-purple">⭐ Administrateur</span></div>
+      </div>
+      <button class="drop-item" onclick="show('profile');closeDrop()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Mon profil
+      </button>
+      <button class="drop-item" onclick="show('settings');closeDrop()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Paramètres
+      </button>
+      <div class="drop-div"></div>
+      <button class="drop-item danger" onclick="doLogout()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Se déconnecter
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="s-group">Mon espace</div>
+  <button class="s-item on" id="sl-playlists" onclick="show('playlists')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+    Mes playlists
+    <span class="s-badge" id="pl-count-badge">–</span>
+  </button>
+  <button class="s-item" id="sl-licence" onclick="show('licence')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    Ma licence
+  </button>
+  <button class="s-item" id="sl-devices" onclick="show('devices')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+    Mes appareils
+  </button>
+  <button class="s-item" id="sl-profile" onclick="show('profile')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Mon profil
+  </button>
+  <button class="s-item" id="sl-support" onclick="show('support')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    Support
+  </button>
+  <button class="s-item" id="sl-settings" onclick="show('settings')">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    Paramètres
+  </button>
+  <div id="admin-sb-section" style="display:none;">
+    <div class="s-div"></div>
+    <div class="s-group">Administration</div>
+    <a class="s-item" href="admin.html" style="text-decoration:none;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+      Panel Admin
+      <span class="s-badge" style="background:rgba(255,214,10,0.15);color:var(--y);">NEW</span>
+    </a>
+  </div>
+  <div style="flex:1"></div>
+</aside>
+
+<!-- LAYOUT -->
+<div class="layout">
+<main class="main">
+
+<!-- ══════ PLAYLISTS ══════ -->
+<section class="sec active" id="sec-playlists">
+  <div class="ph">
+    <div><h1>Mes playlists 📋</h1><p>Synchronisées en temps réel avec l'app ARICH IPTV.</p></div>
+    <button class="btn btn-primary" onclick="openAddModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Ajouter
+    </button>
+  </div>
+
+  <div id="pl-page-msg" class="msg" style="margin-bottom:16px;"></div>
+
+  <div class="top-bar">
+    <div class="search-box">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="pl-search" placeholder="Rechercher une playlist…" oninput="filterPL()">
+    </div>
+    <div class="chips">
+      <div class="chip on" id="pf-all" onclick="setPF('all')">Toutes</div>
+      <div class="chip" id="pf-m3u" onclick="setPF('m3u')">M3U</div>
+      <div class="chip" id="pf-xtream" onclick="setPF('xtream')">Xtream</div>
+      <div class="chip" id="pf-active" onclick="setPF('active')">Actives</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div id="pl-loading" class="loading"><div class="big-spin"></div> Chargement…</div>
+    <div id="pl-wrap" style="display:none;">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Nom</th><th>Type</th><th>Serveur / URL</th><th>Chaînes</th><th>Statut</th><th>Sync</th><th>Ajouté</th><th>Actions</th></tr></thead>
+          <tbody id="pl-tbody"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="pl-empty" style="display:none;">
+        <span>📭</span><h3>Aucune playlist</h3>
+        <p>Ajoutez votre première playlist depuis le bouton "Ajouter" ou depuis l'app Android.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ LICENCE ══════ -->
+<section class="sec" id="sec-licence">
+  <div class="ph"><div><h1>Ma licence 🎫</h1><p>Statut et détails de votre abonnement ARICH IPTV.</p></div></div>
+
+  <div class="license-card" id="lic-card">
+    <div>
+      <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;">Plan actuel</div>
+      <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;" id="lic-plan-display">Chargement…</div>
+      <div style="font-size:13px;color:var(--sub);margin-top:6px;" id="lic-expiry-display"></div>
+    </div>
+    <div style="text-align:right;">
+      <div id="lic-status-badge"></div>
+      <div style="font-size:12px;color:var(--muted);margin-top:8px;" id="lic-days-left"></div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Détails de la licence</div>
+      <div id="lic-details">
+        <div class="mrow"><span class="mrow-label">Plan</span><span class="mrow-val" id="ld-plan">—</span></div>
+        <div class="mrow"><span class="mrow-label">Début</span><span id="ld-start" style="font-size:13px;">—</span></div>
+        <div class="mrow"><span class="mrow-label">Expiration</span><span id="ld-expiry" style="font-size:13px;">—</span></div>
+        <div class="mrow"><span class="mrow-label">Statut</span><span id="ld-status"></span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Avantages du plan</div>
+      <div id="lic-perks" style="display:flex;flex-direction:column;gap:10px;">
+        <div style="color:var(--muted);font-size:13px;">Chargement…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div class="card-title">Mettre à niveau / Renouveler</div>
+    <div class="grid2">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px;">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;">Plan Annuel</div>
+        <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">2,99€<span style="font-size:14px;font-weight:400;-webkit-text-fill-color:var(--sub);color:var(--sub);">/an</span></div>
+        <div style="font-size:12.5px;color:var(--sub);line-height:1.6;">✅ Accès illimité · ✅ Toutes les fonctions · ✅ Support prioritaire</div>
+        <a href="https://devhertox.github.io/arich_iptv/#pricing" class="btn btn-ghost btn-sm" style="text-decoration:none;justify-content:center;">Choisir ce plan →</a>
+      </div>
+      <div style="background:rgba(123,47,255,0.08);border:1px solid rgba(123,47,255,0.25);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;align-items:center;gap:8px;"><span style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;">Plan À vie</span><span class="badge b-purple">Populaire</span></div>
+        <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">4,99€<span style="font-size:14px;font-weight:400;-webkit-text-fill-color:var(--sub);color:var(--sub);"> une fois</span></div>
+        <div style="font-size:12.5px;color:var(--sub);line-height:1.6;">✅ Accès à vie · ✅ Toutes les mises à jour · ✅ Support VIP</div>
+        <a href="https://devhertox.github.io/arich_iptv/#pricing" class="btn btn-primary btn-sm" style="text-decoration:none;justify-content:center;">Choisir ce plan →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ DEVICES ══════ -->
+<section class="sec" id="sec-devices">
+  <div class="ph"><div><h1>Mes appareils 📱</h1><p>Appareils enregistrés sur votre compte.</p></div></div>
+  <div class="card">
+    <div id="devices-loading" class="loading"><div class="big-spin"></div> Chargement…</div>
+    <div id="devices-list" style="display:none;"></div>
+    <div class="empty" id="devices-empty" style="display:none;">
+      <span>📱</span><h3>Aucun appareil enregistré</h3>
+      <p>Vos appareils apparaîtront ici après la première connexion dans l'app.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ PROFILE ══════ -->
+<section class="sec" id="sec-profile">
+  <div class="ph"><div><h1>Mon profil 👤</h1><p>Informations de votre compte ARICH IPTV.</p></div></div>
+  <div class="profile-hero">
+    <div class="profile-av" id="pf-av">?</div>
+    <div>
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;" id="pf-name">—</div>
+      <div style="font-size:13px;color:var(--sub);margin-top:3px;" id="pf-email">—</div>
+      <div id="pf-badge" style="margin-top:8px;"></div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Informations</div>
+      <div class="mrow"><span class="mrow-label">Email</span><span id="pi-email" style="font-size:12.5px;">—</span></div>
+      <div class="mrow"><span class="mrow-label">Membre depuis</span><span id="pi-created" style="font-size:12.5px;">—</span></div>
+      <div class="mrow"><span class="mrow-label">Dernière connexion</span><span id="pi-login" style="font-size:12.5px;">—</span></div>
+      <div class="mrow"><span class="mrow-label">Méthode</span><span id="pi-provider" style="font-size:12.5px;">—</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Mes stats</div>
+      <div class="mrow"><span class="mrow-label">Playlists</span><span class="mrow-val" id="ps-pl">–</span></div>
+      <div class="mrow"><span class="mrow-label">M3U</span><span class="mrow-val" id="ps-m3u">–</span></div>
+      <div class="mrow"><span class="mrow-label">Xtream</span><span class="mrow-val" id="ps-xt">–</span></div>
+      <div class="mrow"><span class="mrow-label">Appareils</span><span class="mrow-val" id="ps-dev">–</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SUPPORT ══════ -->
+<section class="sec" id="sec-support">
+  <div class="ph"><div><h1>Support 💬</h1><p>Besoin d'aide ? On vous répond rapidement.</p></div></div>
+  <div class="grid2" style="margin-bottom:22px;">
+    <a href="https://wa.me/33600000000" target="_blank" class="card" style="text-decoration:none;display:flex;align-items:center;gap:16px;transition:border-color 0.2s,transform 0.2s;" onmouseover="this.style.borderColor='rgba(37,211,102,0.4)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='';this.style.transform=''">
+      <div style="width:44px;height:44px;border-radius:12px;background:rgba(37,211,102,0.1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">💬</div>
+      <div><div style="font-weight:600;margin-bottom:3px;">WhatsApp</div><div style="font-size:13px;color:var(--sub);">Réponse rapide</div></div>
+    </a>
+    <a href="https://t.me/arichiptv" target="_blank" class="card" style="text-decoration:none;display:flex;align-items:center;gap:16px;transition:border-color 0.2s,transform 0.2s;" onmouseover="this.style.borderColor='rgba(10,132,255,0.4)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='';this.style.transform=''">
+      <div style="width:44px;height:44px;border-radius:12px;background:rgba(10,132,255,0.1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">✈️</div>
+      <div><div style="font-weight:600;margin-bottom:3px;">Telegram</div><div style="font-size:13px;color:var(--sub);">@arichiptv</div></div>
+    </a>
+  </div>
+  <div class="card">
+    <div class="card-title">Envoyer un message</div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="field"><label>Sujet</label><input type="text" id="sup-subject" placeholder="Problème de connexion · Activation…"></div>
+      <div class="field"><label>Message</label><textarea id="sup-body" rows="5" placeholder="Décrivez votre problème. Incluez votre Device Key si c'est lié à l'app."></textarea></div>
+      <div id="sup-msg" class="msg"></div>
+      <button class="btn btn-primary" style="width:fit-content;" id="btn-sup" onclick="sendSupport()">
+        <span class="spin"></span><span class="blbl">Envoyer →</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SETTINGS ══════ -->
+<section class="sec" id="sec-settings">
+  <div class="ph"><div><h1>Paramètres ⚙️</h1><p>Gérez votre compte et vos préférences.</p></div></div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Sécurité</div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="field"><label>Email actuel</label><input type="email" id="cfg-email" readonly style="opacity:0.6;cursor:not-allowed;"></div>
+        <div class="field"><label>Nouveau mot de passe</label><input type="password" id="cfg-pw" placeholder="Minimum 8 caractères"></div>
+        <div id="cfg-msg" class="msg"></div>
+        <button class="btn btn-primary" style="width:fit-content;" id="btn-cfg" onclick="saveSettings()">
+          <span class="spin"></span><span class="blbl">Mettre à jour</span>
+        </button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--r);">Zone de danger ⚠️</div>
+      <p style="font-size:13px;color:var(--sub);margin-bottom:18px;line-height:1.65;">Ces actions sont irréversibles. Réfléchissez avant de continuer.</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="btn btn-ghost" onclick="doLogout()" style="justify-content:flex-start;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Se déconnecter
+        </button>
+        <button class="btn btn-danger" onclick="toast('ℹ️ Contactez le support pour supprimer votre compte.')" style="justify-content:flex-start;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+          Supprimer mon compte
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<!-- ══════ MODALS ══════ -->
+
+<!-- ADD PLAYLIST -->
+<div class="modal-bd" id="modal-add">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title">Ajouter une playlist</div><button class="modal-close" onclick="closeModal('modal-add')">✕</button></div>
+    <div id="add-msg" class="msg" style="margin-bottom:14px;"></div>
+    <div class="form-grid">
+      <div class="field"><label>Nom *</label><input type="text" id="add-name" placeholder="Ma playlist IPTV"></div>
+      <div class="field"><label>Type *</label>
+        <select id="add-type" onchange="toggleAddType()">
+          <option value="m3u">M3U URL</option>
+          <option value="xtream">Xtream Codes</option>
+        </select>
+      </div>
+      <div class="field full" id="add-url-field">
+        <label>URL M3U *</label><input type="url" id="add-url" placeholder="http://exemple.com/playlist.m3u">
+      </div>
+      <div class="field full" id="add-xtream-fields" style="display:none;">
+        <div class="form-grid">
+          <div class="field"><label>Serveur *</label><input type="url" id="add-server" placeholder="http://serveur.com"></div>
+          <div class="field"><label>Nom d'utilisateur *</label><input type="text" id="add-user" placeholder="username"></div>
+          <div class="field full"><label>Mot de passe *</label><input type="password" id="add-pass" placeholder="password"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add')">Annuler</button>
+      <button class="btn btn-primary" id="btn-add-pl" onclick="addPlaylist()">
+        <span class="spin"></span><span class="blbl">Ajouter</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT PLAYLIST -->
+<div class="modal-bd" id="modal-edit">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title">Modifier la playlist</div><button class="modal-close" onclick="closeModal('modal-edit')">✕</button></div>
+    <div id="edit-msg" class="msg" style="margin-bottom:14px;"></div>
+    <input type="hidden" id="edit-id">
+    <div class="form-grid">
+      <div class="field full"><label>Nom *</label><input type="text" id="edit-name"></div>
+      <div class="field full"><label>URL M3U / Serveur</label><input type="url" id="edit-url"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-edit')">Annuler</button>
+      <button class="btn btn-primary" id="btn-edit-pl" onclick="saveEdit()">
+        <span class="spin"></span><span class="blbl">Sauvegarder</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════ CONFIG ══════════════ */
+const SB_URL  = 'https://aynucieohuowgkwyftiy.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk';
+const AUTH_URL = 'https://devhertox.github.io/arich_iptv/auth.html';
+const ADMIN_EMAILS = ['charibossollati.ismael@gmail.com','ismaelchari.pro@gmail.com'];
+const PLANS = { annual:{label:'Annuel',price:2.99}, lifetime:{label:'À vie',price:4.99}, trial:{label:'Trial',price:0}, none:{label:'Aucun',price:0} };
+const PERKS = {
+  annual:  ['✅ Accès illimité pendant 1 an','✅ Toutes les fonctions app','✅ Synchronisation multi-appareils','✅ Support par email','🔄 Renouvellement annuel requis'],
+  lifetime:['✅ Accès à vie, une seule fois','✅ Toutes les fonctions + futures','✅ Synchronisation multi-appareils','✅ Support VIP prioritaire','✅ Mises à jour à vie incluses'],
+  trial:   ['✅ Accès complet 7 jours','⚠️ Expiration automatique','ℹ️ Passez à un plan payant pour continuer'],
+  none:    ['❌ Aucun plan actif','👉 Choisissez un plan pour débloquer l\'app'],
+};
+
+const { createClient } = supabase;
+const sb = createClient(SB_URL, SB_ANON);
+
+let me = null, isAdmin = false, allPL = [], myLicense = null, plFilter = 'all';
+let realtimeSub = null;
+
+/* ══════════════ INIT ══════════════ */
+async function init() {
+  const { data:{ session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = AUTH_URL; return; }
+  me = session.user;
+  isAdmin = ADMIN_EMAILS.includes(me.email);
+
+  // Check maintenance mode
+  const { data: maint } = await sb.from('app_config').select('value').eq('key','maintenance').single();
+  if (!maint?.error && maint?.value === 'true' && !isAdmin) {
+    const { data: maintMsg } = await sb.from('app_config').select('value').eq('key','maintenance_message').single();
+    const msg = maintMsg?.value || 'L\'application est en maintenance. Revenez bientôt.';
+    document.body.innerHTML = `<div class="maintenance-screen">
+      <div style="font-size:52px;margin-bottom:8px;">🔧</div>
+      <h1>Maintenance en cours</h1>
+      <p>${msg}</p>
+    </div>`;
+    return;
+  }
+
+  // UI utilisateur
+  const email = me.email || '';
+  const initial = email[0]?.toUpperCase() || '?';
+  document.getElementById('nav-av').textContent = initial;
+  document.getElementById('nav-em').textContent = email;
+  document.getElementById('drop-email').textContent = email;
+  document.getElementById('cfg-email').value = email;
+  document.getElementById('pf-av').textContent = initial;
+  document.getElementById('pf-name').textContent = email.split('@')[0];
+  document.getElementById('pf-email').textContent = email;
+  document.getElementById('pi-email').textContent = email;
+  document.getElementById('pi-created').textContent = fmtDate(me.created_at);
+  document.getElementById('pi-login').textContent = fmtDate(me.last_sign_in_at);
+  const provider = me.app_metadata?.provider || 'email';
+  document.getElementById('pi-provider').textContent = provider === 'google' ? '🔵 Google' : '✉️ Email / Mot de passe';
+
+  if (isAdmin) {
+    document.getElementById('admin-sb-section').style.display = 'block';
+    document.getElementById('drop-admin-badge').style.display = 'block';
+    document.getElementById('pf-badge').innerHTML = '<span class="badge b-purple">⭐ Administrateur</span>';
+  }
+
+  // Charger les données
+  await Promise.all([loadPlaylists(), loadLicense(), loadDevices()]);
+
+  // Realtime sync playlists
+  setupRealtime();
+}
+
+/* ══════════════ REALTIME ══════════════ */
+function setupRealtime() {
+  if (realtimeSub) sb.removeChannel(realtimeSub);
+  realtimeSub = sb.channel('playlists-changes')
+    .on('postgres_changes', {
+      event: '*', schema: 'public', table: 'playlists',
+      filter: `user_id=eq.${me.id}`
+    }, () => {
+      setSyncStatus('syncing', 'Synchronisation…');
+      loadPlaylists().then(() => setSyncStatus('ok', 'Synchronisé'));
+    })
+    .subscribe();
+}
+
+function setSyncStatus(state, label) {
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
+  dot.className = 'sync-dot' + (state === 'syncing' ? ' syncing' : state === 'error' ? ' error' : '');
+  lbl.textContent = label;
+}
+
+/* ══════════════ PLAYLISTS ══════════════ */
+async function loadPlaylists() {
+  const { data, error } = await sb.from('playlists')
+    .select('*')
+    .eq('user_id', me.id)
+    .order('created_at', { ascending: false });
+
+  document.getElementById('pl-loading').style.display = 'none';
+  document.getElementById('pl-wrap').style.display = 'block';
+
+  if (error) { showPageMsg('pl-page-msg', 'error', '❌ Erreur chargement : ' + error.message); return; }
+
+  allPL = data || [];
+  document.getElementById('pl-count-badge').textContent = allPL.length;
+
+  // Stats profil
+  document.getElementById('ps-pl').textContent = allPL.length;
+  document.getElementById('ps-m3u').textContent = allPL.filter(p => p.type === 'm3u').length;
+  document.getElementById('ps-xt').textContent = allPL.filter(p => p.type === 'xtream').length;
+
+  renderPlaylists();
+}
+
+function renderPlaylists() {
+  const q = document.getElementById('pl-search').value.toLowerCase();
+  let list = allPL.filter(p => {
+    if (q && !p.name?.toLowerCase().includes(q) && !p.server_url?.toLowerCase().includes(q)) return false;
+    if (plFilter === 'm3u' && p.type !== 'm3u') return false;
+    if (plFilter === 'xtream' && p.type !== 'xtream') return false;
+    if (plFilter === 'active' && p.is_active === false) return false;
+    return true;
+  });
+
+  const tbody = document.getElementById('pl-tbody');
+  const empty = document.getElementById('pl-empty');
+
+  if (!list.length) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = list.map(p => {
+    const typeB = p.type === 'm3u'
+      ? '<span class="badge b-blue">M3U</span>'
+      : '<span class="badge b-purple">Xtream</span>';
+    const statusB = p.is_active !== false
+      ? '<span class="badge b-green b-dot">Active</span>'
+      : '<span class="badge b-red b-dot">Inactive</span>';
+    const syncB = p.last_synced_at
+      ? `<span class="badge b-gray">${timeAgo(p.last_synced_at)}</span>`
+      : '<span class="badge b-gray">Jamais</span>';
+    const server = p.type === 'xtream' ? (p.xtream_host || '—') : (p.m3u_url || '—');
+    const shortServer = server.length > 32 ? server.substring(0, 32) + '…' : server;
+    const channels = p.channel_count ? p.channel_count.toLocaleString() : '—';
+
+    return `<tr>
+      <td class="td-main">${esc(p.name || '—')}</td>
+      <td>${typeB}</td>
+      <td class="td-mono" title="${esc(server)}">${esc(shortServer)}</td>
+      <td>${channels}</td>
+      <td>${statusB}</td>
+      <td>${syncB}</td>
+      <td style="font-size:12px;color:var(--muted);">${fmtDate(p.created_at)}</td>
+      <td><div class="td-actions">
+        <button class="btn btn-ghost btn-xs" onclick="openEdit('${p.id}')">✏️ Modifier</button>
+        <button class="btn btn-danger btn-xs" onclick="deletePL('${p.id}','${esc(p.name)}')">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterPL() { renderPlaylists(); }
+function setPF(f) {
+  plFilter = f;
+  ['all','m3u','xtream','active'].forEach(k => {
+    document.getElementById('pf-' + k).classList.toggle('on', k === f);
+  });
+  renderPlaylists();
+}
+
+/* ══════════════ ADD PLAYLIST ══════════════ */
+function openAddModal() {
+  document.getElementById('add-name').value = '';
+  document.getElementById('add-url').value = '';
+  document.getElementById('add-server').value = '';
+  document.getElementById('add-user').value = '';
+  document.getElementById('add-pass').value = '';
+  document.getElementById('add-type').value = 'm3u';
+  toggleAddType();
+  hideMsg('add-msg');
+  openModal('modal-add');
+}
+
+function toggleAddType() {
+  const t = document.getElementById('add-type').value;
+  document.getElementById('add-url-field').style.display = t === 'm3u' ? 'flex' : 'none';
+  document.getElementById('add-xtream-fields').style.display = t === 'xtream' ? 'block' : 'none';
+}
+
+async function addPlaylist() {
+  const name = document.getElementById('add-name').value.trim();
+  const type = document.getElementById('add-type').value;
+  if (!name) { showMsg('add-msg', 'error', '⚠️ Le nom est requis.'); return; }
+
+  let row = { user_id: me.id, name, type, is_active: true, created_at: new Date().toISOString() };
+
+  if (type === 'm3u') {
+    const url = document.getElementById('add-url').value.trim();
+    if (!url) { showMsg('add-msg', 'error', '⚠️ L\'URL M3U est requise.'); return; }
+    row.m3u_url = url;
+  } else {
+    const server = document.getElementById('add-server').value.trim();
+    const user = document.getElementById('add-user').value.trim();
+    const pass = document.getElementById('add-pass').value.trim();
+    if (!server || !user) { showMsg('add-msg', 'error', '⚠️ Serveur et utilisateur sont requis.'); return; }
+    row.xtream_host = server;
+    row.xtream_username = user;
+    row.xtream_password = pass;
+  }
+
+  setBtnLoading('btn-add-pl', true);
+  const { error } = await sb.from('playlists').insert(row);
+  setBtnLoading('btn-add-pl', false);
+
+  if (error) { showMsg('add-msg', 'error', '❌ ' + error.message); return; }
+
+  closeModal('modal-add');
+  toast('✅ Playlist ajoutée avec succès !');
+  await loadPlaylists();
+}
+
+/* ══════════════ EDIT PLAYLIST ══════════════ */
+function openEdit(id) {
+  const p = allPL.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('edit-id').value = id;
+  document.getElementById('edit-name').value = p.name || '';
+  document.getElementById('edit-url').value = p.m3u_url || p.xtream_host || '';
+  hideMsg('edit-msg');
+  openModal('modal-edit');
+}
+
+async function saveEdit() {
+  const id = document.getElementById('edit-id').value;
+  const name = document.getElementById('edit-name').value.trim();
+  const url = document.getElementById('edit-url').value.trim();
+  if (!name) { showMsg('edit-msg', 'error', '⚠️ Le nom est requis.'); return; }
+
+  const p = allPL.find(x => x.id === id);
+  const upd = { name };
+  if (p?.type === 'm3u') upd.m3u_url = url;
+  else upd.xtream_host = url;
+
+  setBtnLoading('btn-edit-pl', true);
+  const { error } = await sb.from('playlists').update(upd).eq('id', id).eq('user_id', me.id);
+  setBtnLoading('btn-edit-pl', false);
+
+  if (error) { showMsg('edit-msg', 'error', '❌ ' + error.message); return; }
+  closeModal('modal-edit');
+  toast('✅ Playlist mise à jour !');
+  await loadPlaylists();
+}
+
+/* ══════════════ DELETE ══════════════ */
+async function deletePL(id, name) {
+  if (!confirm(`Supprimer la playlist "${name}" ?\nCette action est irréversible.`)) return;
+  const { error } = await sb.from('playlists').delete().eq('id', id).eq('user_id', me.id);
+  if (error) { toast('❌ Erreur : ' + error.message); return; }
+  toast('🗑️ Playlist supprimée.');
+  await loadPlaylists();
+}
+
+/* ══════════════ LICENCE ══════════════ */
+async function loadLicense() {
+  const { data, error } = await sb.from('licenses')
+    .select('*')
+    .eq('user_id', me.id)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  myLicense = data;
+
+  const plan = data?.plan || 'none';
+  const planInfo = PLANS[plan] || PLANS.none;
+  const isLifetime = plan === 'lifetime';
+  const expiry = data?.expires_at ? new Date(data.expires_at) : null;
+  const now = new Date();
+  const isExpired = !isLifetime && expiry && expiry < now;
+  const isActive = data?.is_active && !isExpired;
+
+  // Hero card
+  const licCard = document.getElementById('lic-card');
+  licCard.className = 'license-card' + (isExpired ? ' expired' : plan === 'trial' ? ' trial' : '');
+  document.getElementById('lic-plan-display').textContent = planInfo.label;
+  document.getElementById('lic-expiry-display').textContent = isLifetime
+    ? 'Accès permanent à vie'
+    : expiry ? 'Expire le ' + fmtDate(expiry.toISOString()) : 'Aucune expiration définie';
+
+  document.getElementById('lic-status-badge').innerHTML = isActive
+    ? '<span class="badge b-green b-dot">Active</span>'
+    : isExpired
+      ? '<span class="badge b-red b-dot">Expirée</span>'
+      : '<span class="badge b-gray b-dot">Inactive</span>';
+
+  if (!isLifetime && expiry && isActive) {
+    const days = Math.ceil((expiry - now) / 86400000);
+    document.getElementById('lic-days-left').textContent = days > 0 ? `J-${days} avant expiration` : '';
+  }
+
+  // Details
+  document.getElementById('ld-plan').textContent = planInfo.label;
+  document.getElementById('ld-start').textContent = data?.created_at ? fmtDate(data.created_at) : '—';
+  document.getElementById('ld-expiry').textContent = isLifetime ? 'À vie ♾️' : expiry ? fmtDate(expiry.toISOString()) : '—';
+  document.getElementById('ld-status').innerHTML = isActive
+    ? '<span class="badge b-green">Active</span>'
+    : '<span class="badge b-red">Inactive</span>';
+
+  // Perks
+  const perks = PERKS[plan] || PERKS.none;
+  document.getElementById('lic-perks').innerHTML = perks.map(p =>
+    `<div style="font-size:13px;color:var(--sub);line-height:1.5;">${p}</div>`
+  ).join('');
+}
+
+/* ══════════════ DEVICES ══════════════ */
+async function loadDevices() {
+  const { data, error } = await sb.from('devices')
+    .select('*')
+    .eq('user_id', me.id)
+    .order('last_seen_at', { ascending: false });
+
+  document.getElementById('devices-loading').style.display = 'none';
+
+  const devCount = data?.length || 0;
+  document.getElementById('ps-dev').textContent = devCount;
+
+  if (error || !data?.length) {
+    document.getElementById('devices-empty').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('devices-list').style.display = 'block';
+  document.getElementById('devices-list').innerHTML = data.map(d => {
+    const isOnline = d.last_seen_at && (new Date() - new Date(d.last_seen_at)) < 300000;
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px;">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div style="width:40px;height:40px;border-radius:10px;background:rgba(123,47,255,0.12);border:1px solid rgba(123,47,255,0.2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">📱</div>
+        <div>
+          <div style="font-weight:600;font-size:13.5px;">${esc(d.device_name || d.device_model || 'Appareil inconnu')}</div>
+          <div style="font-size:11.5px;color:var(--muted);margin-top:2px;">${esc(d.device_brand || '')} ${esc(d.android_version ? '· Android ' + d.android_version : '')}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);background:rgba(255,255,255,0.04);padding:4px 10px;border-radius:6px;">${esc(d.device_key || '—')}</div>
+        ${isOnline ? '<span class="badge b-green b-dot">En ligne</span>' : `<span style="font-size:11.5px;color:var(--muted);">Vu ${timeAgo(d.last_seen_at)}</span>`}
+      </div>
+    </div>`;
+  }).join('') + (data.length ? '<div style="height:4px;"></div>' : '');
+}
+
+/* ══════════════ SUPPORT ══════════════ */
+async function sendSupport() {
+  const subject = document.getElementById('sup-subject').value.trim();
+  const body = document.getElementById('sup-body').value.trim();
+  if (!subject || !body) { showMsg('sup-msg', 'error', '⚠️ Sujet et message sont requis.'); return; }
+
+  setBtnLoading('btn-sup', true);
+  try {
+    const res = await fetch('https://formspree.io/f/xgolqeyj', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ email: me.email, subject, message: body })
+    });
+    if (res.ok) {
+      showMsg('sup-msg', 'success', '✅ Message envoyé ! Nous vous répondrons rapidement.');
+      document.getElementById('sup-subject').value = '';
+      document.getElementById('sup-body').value = '';
+    } else {
+      showMsg('sup-msg', 'error', '❌ Erreur envoi. Réessayez ou contactez-nous directement.');
+    }
+  } catch {
+    showMsg('sup-msg', 'error', '❌ Erreur réseau.');
+  }
+  setBtnLoading('btn-sup', false);
+}
+
+/* ══════════════ SETTINGS ══════════════ */
+async function saveSettings() {
+  const pw = document.getElementById('cfg-pw').value.trim();
+  if (!pw) { showMsg('cfg-msg', 'error', '⚠️ Entrez un nouveau mot de passe.'); return; }
+  if (pw.length < 8) { showMsg('cfg-msg', 'error', '⚠️ Minimum 8 caractères.'); return; }
+
+  setBtnLoading('btn-cfg', true);
+  const { error } = await sb.auth.updateUser({ password: pw });
+  setBtnLoading('btn-cfg', false);
+
+  if (error) { showMsg('cfg-msg', 'error', '❌ ' + error.message); return; }
+  showMsg('cfg-msg', 'success', '✅ Mot de passe mis à jour !');
+  document.getElementById('cfg-pw').value = '';
+}
+
+/* ══════════════ AUTH ══════════════ */
+async function doLogout() {
+  await sb.auth.signOut();
+  window.location.href = AUTH_URL;
+}
+
+/* ══════════════ NAVIGATION ══════════════ */
+function show(sec) {
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.s-item').forEach(s => s.classList.remove('on'));
+  document.getElementById('sec-' + sec).classList.add('active');
+  const btn = document.getElementById('sl-' + sec);
+  if (btn) btn.classList.add('on');
+  closeSB();
+}
+
+/* ══════════════ SIDEBAR ══════════════ */
+function toggleSB() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sov').classList.toggle('show');
+}
+function closeSB() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sov').classList.remove('show');
+}
+
+/* ══════════════ DROPDOWN ══════════════ */
+function toggleDrop(e) {
+  e.stopPropagation();
+  document.getElementById('dropdown').classList.toggle('open');
+}
+function closeDrop() { document.getElementById('dropdown').classList.remove('open'); }
+document.addEventListener('click', () => closeDrop());
+
+/* ══════════════ MODALS ══════════════ */
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-bd').forEach(bd => {
+  bd.addEventListener('click', e => { if (e.target === bd) bd.classList.remove('open'); });
+});
+
+/* ══════════════ TOAST ══════════════ */
+let _toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+/* ══════════════ MSG ══════════════ */
+function showMsg(id, type, text) {
+  const el = document.getElementById(id);
+  el.className = `msg msg-${type} show`;
+  el.textContent = text;
+}
+function hideMsg(id) {
+  const el = document.getElementById(id);
+  el.className = 'msg';
+  el.textContent = '';
+}
+function showPageMsg(id, type, text) { showMsg(id, type, text); }
+
+/* ══════════════ BTN LOADING ══════════════ */
+function setBtnLoading(id, loading) {
+  const btn = document.getElementById(id);
+  btn.classList.toggle('loading', loading);
+  btn.disabled = loading;
+}
+
+/* ══════════════ UTILS ══════════════ */
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtDate(iso) {
+  if (!iso) return '—';
+  try {
+    return new Date(iso).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' });
+  } catch { return '—'; }
+}
+function timeAgo(iso) {
+  if (!iso) return '—';
+  const d = Math.floor((Date.now() - new Date(iso)) / 1000);
+  if (d < 60) return 'À l\'instant';
+  if (d < 3600) return `Il y a ${Math.floor(d/60)} min`;
+  if (d < 86400) return `Il y a ${Math.floor(d/3600)} h`;
+  if (d < 604800) return `Il y a ${Math.floor(d/86400)} j`;
+  return fmtDate(iso);
+}
+
+/* ══════════════ START ══════════════ */
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

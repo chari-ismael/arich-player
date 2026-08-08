@@ -1,0 +1,17 @@
+{
+  "name": "arich-fr",
+  "private": true,
+  "version": "3.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lenis": "^1.2.3"
+  },
+  "devDependencies": {
+    "vite": "^6.2.0"
+  }
+}

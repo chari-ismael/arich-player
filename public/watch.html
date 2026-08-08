@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>ARICH — Watch Together</title>
+  <link rel="icon" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mpegts.js@1.7.3/dist/mpegts.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0D1017;
+      --surface: #141A24;
+      --surfaceHi: #1C2432;
+      --border: rgba(255,255,255,0.08);
+      --accent: #C58A2A;
+      --accentSoft: #D4A04A;
+      --green: #3D8B6E;
+      --red: #B54A4A;
+      --muted: #7A8699;
+      --text: #F0EFEC;
+    }
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 16px 32px;
+    }
+    .glow {
+      position: fixed;
+      width: 360px; height: 360px;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(80px);
+      opacity: 0.35;
+    }
+    .glow-a { top: -80px; left: -60px; background: var(--accent); }
+    .glow-b { bottom: -60px; right: -40px; background: #243040; }
+
+    .wrap { width: 100%; max-width: 720px; z-index: 1; }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .logo {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accentSoft), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 0 24px rgba(197,138,42,0.35);
+    }
+    .header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .header p { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.45);
+    }
+
+    .code-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(197,138,42,0.12);
+      border: 1px solid rgba(197,138,42,0.35);
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 12px;
+      color: var(--accentSoft);
+      margin-bottom: 14px;
+    }
+    .code-pill strong {
+      font-family: 'Syne', sans-serif;
+      letter-spacing: 3px;
+      font-size: 16px;
+      color: var(--accent);
+    }
+
+    .video-shell {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #000;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 14px;
+    }
+    video { width: 100%; height: 100%; object-fit: contain; background: #000; }
+    .video-placeholder {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 10px; padding: 20px; text-align: center;
+      color: var(--muted); font-size: 13px;
+    }
+
+    .title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+    .meta { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+    .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .btn {
+      flex: 1; min-width: 140px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: none;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .15s, opacity .15s;
+    }
+    .btn:active { transform: scale(.98); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accentSoft), var(--accent));
+      color: #0D1017;
+      box-shadow: 0 8px 20px rgba(197,138,42,0.3);
+    }
+    .btn-ghost {
+      background: var(--surfaceHi);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .peers {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      margin-top: 12px;
+    }
+    .peer {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: var(--surfaceHi);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .status {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: var(--muted);
+      margin-top: 10px;
+    }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green);
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .5; transform: scale(1.3); }
+    }
+
+    .error-box {
+      display: none;
+      background: rgba(181,74,74,0.12);
+      border: 1px solid rgba(181,74,74,0.35);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+    .error-box.show { display: block; }
+
+    #joinPanel input {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--surfaceHi);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 18px;
+      letter-spacing: 4px;
+      text-align: center;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    #joinPanel input:focus {
+      border-color: rgba(197,138,42,0.5);
+      box-shadow: 0 0 0 3px rgba(197,138,42,0.12);
+    }
+
+    .hidden { display: none !important; }
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,.25);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 480px) {
+      .card { padding: 16px; border-radius: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="glow glow-a"></div>
+  <div class="glow glow-b"></div>
+
+  <div class="wrap">
+    <div class="header">
+      <div class="logo">▶</div>
+      <div>
+        <h1>Watch Together</h1>
+        <p>Regardez en synchronisé avec l'app Arich</p>
+      </div>
+    </div>
+
+    <div id="errorBox" class="error-box"></div>
+
+    <!-- Loading -->
+    <div id="loadingPanel" class="card hidden">
+      <p class="title">Connexion à la salle…</p>
+      <p class="meta"><span class="spinner"></span> Authentification et synchronisation</p>
+    </div>
+
+    <!-- Join by code (no ?code= in URL) -->
+    <div id="joinPanel" class="card hidden">
+      <p class="title">Rejoindre une salle</p>
+      <p class="meta" style="margin-bottom:14px">Entrez le code à 6 caractères partagé par l'hôte.</p>
+      <input id="codeInput" maxlength="6" placeholder="ABCDEF" autocomplete="off" />
+      <button class="btn btn-primary" id="joinBtn" style="width:100%">Rejoindre</button>
+    </div>
+
+    <!-- Room / player -->
+    <div id="roomPanel" class="card hidden">
+      <div class="code-pill">Salle <strong id="codeDisplay">------</strong></div>
+      <div class="video-shell">
+        <video id="player" playsinline controls></video>
+        <div id="videoPlaceholder" class="video-placeholder hidden">
+          <div class="spinner"></div>
+          <p id="placeholderMsg">Chargement du flux…</p>
+          <p style="font-size:11px;max-width:280px">Chargement via proxy sécurisé…</p>
+        </div>
+      </div>
+      <p class="title" id="roomTitle">—</p>
+      <p class="meta" id="roomMeta">Synchronisation en cours…</p>
+      <div class="status"><span class="dot"></span><span id="syncStatus">Connecté</span></div>
+      <div class="peers" id="peersList"></div>
+      <div class="row">
+        <button class="btn btn-primary" id="openAppBtn">Ouvrir dans l'app</button>
+        <button class="btn btn-ghost" id="copyLinkBtn">Copier le lien</button>
+      </div>
+    </div>
+
+    <!-- Invalid -->
+    <div id="invalidPanel" class="card hidden">
+      <p class="title">Salle introuvable</p>
+      <p class="meta">Ce code est invalide ou la session a expiré. Demandez un nouveau lien à l'hôte.</p>
+      <div class="row" style="margin-top:16px">
+        <a href="index.html" class="btn btn-ghost" style="text-decoration:none;text-align:center">Retour au site</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://aynucieohuowgkwyftiy.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk';
+    const MAX_PARTICIPANTS = 8;
+    const APP_SCHEME = 'com.arich.iptv://watch';
+    const APP_INTENT = (code) =>
+      `intent://watch?code=${encodeURIComponent(code)}#Intent;scheme=com.arich.iptv;package=com.arich.iptv;end`;
+
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const params = new URLSearchParams(window.location.search);
+    let ROOM_CODE = (params.get('code') || '').trim().toUpperCase();
+
+    const video = document.getElementById('player');
+    const placeholder = document.getElementById('videoPlaceholder');
+    const placeholderMsg = document.getElementById('placeholderMsg');
+    let hls = null;
+    let realtimeChannel = null;
+    let membersChannel = null;
+    let lastRemotePos = -1;
+    let lastRemotePlaying = true;
+    let isLiveRoom = false;
+    let displayName = 'Invité web';
+    let accessToken = '';
+    let mpegtsPlayer = null;
+
+    const PROXY_FN = `${SUPABASE_URL}/functions/v1/watch-stream`;
+
+    function proxyStreamUrl(code) {
+      return `${PROXY_FN}?code=${encodeURIComponent(code)}&access_token=${encodeURIComponent(accessToken)}`;
+    }
+
+    function showError(msg) {
+      const box = document.getElementById('errorBox');
+      box.textContent = msg;
+      box.classList.add('show');
+    }
+    function hideError() { document.getElementById('errorBox').classList.remove('show'); }
+
+    function showPanel(id) {
+      ['joinPanel', 'loadingPanel', 'roomPanel', 'invalidPanel'].forEach(p => {
+        document.getElementById(p).classList.toggle('hidden', p !== id);
+      });
+    }
+
+    async function fetchRoom(code) {
+      const { data, error } = await sb
+        .from('watch_together_rooms')
+        .select('*')
+        .eq('code', code)
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) return null;
+      if (new Date(data.expires_at) <= new Date()) return null;
+      return data;
+    }
+
+    async function countMembers(code) {
+      const { data, error } = await sb
+        .from('watch_together_members')
+        .select('user_id')
+        .eq('room_code', code);
+      if (error) return 0;
+      return (data || []).length;
+    }
+
+    async function joinAsMember(code) {
+      const uid = (await sb.auth.getUser()).data.user?.id;
+      if (!uid) throw new Error('Non authentifié');
+      const count = await countMembers(code);
+      const already = await sb
+        .from('watch_together_members')
+        .select('user_id')
+        .eq('room_code', code)
+        .eq('user_id', uid)
+        .maybeSingle();
+      if (!already.data && count >= MAX_PARTICIPANTS) {
+        throw new Error(`Salle pleine (max ${MAX_PARTICIPANTS} participants)`);
+      }
+      await sb.from('watch_together_members').upsert({
+        room_code: code,
+        user_id: uid,
+        display_name: displayName,
+        last_seen: new Date().toISOString(),
+      });
+    }
+
+    async function ensureAuth() {
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) {
+        accessToken = session.access_token;
+        return session;
+      }
+
+      const { data, error } = await sb.auth.signInAnonymously();
+      if (!error && data.session) {
+        accessToken = data.session.access_token;
+        return data.session;
+      }
+
+      const returnUrl = `${location.origin}${location.pathname}${location.search}`;
+      location.href = `auth.html?next=${encodeURIComponent(returnUrl)}`;
+      throw new Error('Redirection connexion…');
+    }
+
+    function destroyPlayers() {
+      if (hls) { hls.destroy(); hls = null; }
+      if (mpegtsPlayer) {
+        try { mpegtsPlayer.destroy(); } catch (_) {}
+        mpegtsPlayer = null;
+      }
+      video.removeAttribute('src');
+      video.load();
+    }
+
+    function attachStream(code, rawUrl) {
+      placeholder.classList.remove('hidden');
+      placeholderMsg.textContent = 'Connexion au flux via proxy…';
+      destroyPlayers();
+
+      const proxied = proxyStreamUrl(code);
+      const authHeaders = {
+        Authorization: `Bearer ${accessToken}`,
+        apikey: SUPABASE_KEY,
+      };
+
+      video.onerror = () => {
+        placeholder.classList.remove('hidden');
+        placeholderMsg.textContent = 'Lecture impossible — essayez l\'app Arich.';
+      };
+
+      const onPlaying = () => {
+        placeholder.classList.add('hidden');
+        placeholderMsg.textContent = '';
+      };
+
+      const onFatal = (msg) => {
+        placeholder.classList.remove('hidden');
+        placeholderMsg.textContent = msg || 'Flux inaccessible. Ouvrez l\'app Arich.';
+      };
+
+      // HLS (.m3u8 ou .ts converti en m3u8 côté proxy)
+      if (window.Hls && Hls.isSupported()) {
+        hls = new Hls({
+          enableWorker: true,
+          lowLatencyMode: true,
+          xhrSetup: (xhr) => {
+            xhr.setRequestHeader('Authorization', authHeaders.Authorization);
+            xhr.setRequestHeader('apikey', authHeaders.apikey);
+          },
+        });
+        hls.loadSource(proxied);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          onPlaying();
+          video.play().catch(() => {});
+        });
+        hls.on(Hls.Events.ERROR, (_, data) => {
+          if (!data.fatal) return;
+          // Fallback MPEG-TS si manifest HLS indisponible
+          if (/\.ts(\?|$)/i.test(rawUrl) && window.mpegts && mpegts.isSupported()) {
+            hls.destroy();
+            hls = null;
+            attachMpegTs(proxied, authHeaders, onPlaying, onFatal);
+            return;
+          }
+          onFatal('Flux HLS inaccessible. Ouvrez l\'app Arich.');
+        });
+        return;
+      }
+
+      // Safari natif HLS
+      if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = proxied;
+        video.onloadeddata = onPlaying;
+        video.play().catch(() => onFatal());
+        return;
+      }
+
+      attachMpegTs(proxied, authHeaders, onPlaying, onFatal);
+    }
+
+    function attachMpegTs(url, headers, onPlaying, onFatal) {
+      if (!window.mpegts || !mpegts.isSupported()) {
+        onFatal('Navigateur non compatible avec ce flux.');
+        return;
+      }
+      mpegtsPlayer = mpegts.createPlayer({
+        type: 'mpegts',
+        isLive: true,
+        url,
+        headers,
+      }, { enableWorker: true, liveBufferLatencyChasing: true });
+      mpegtsPlayer.attachMediaElement(video);
+      mpegtsPlayer.load();
+      mpegtsPlayer.play();
+      mpegtsPlayer.on(mpegts.Events.ERROR, () => onFatal('Flux TS inaccessible.'));
+      video.onplaying = onPlaying;
+    }
+
+    function applyPlayback(posSec, playing) {
+      // Direct : pas de sync (position hôte ≠ position navigateur, provoque boucles)
+      if (isLiveRoom) {
+        document.getElementById('syncStatus').textContent = 'Direct · même chaîne';
+        document.getElementById('roomMeta').textContent =
+          'Lecture via proxy — même chaîne en direct';
+        return;
+      }
+
+      const drift = Math.abs(video.currentTime - posSec);
+      if (drift >= 4 && posSec >= 0) {
+        try { video.currentTime = posSec; } catch (_) {}
+      }
+      if (playing && video.paused) video.play().catch(() => {});
+      if (!playing && !video.paused) video.pause();
+      document.getElementById('syncStatus').textContent =
+        playing ? `Sync · ${formatTime(posSec)}` : 'Pause · sync';
+    }
+
+    function formatTime(s) {
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60);
+      return `${m}:${sec.toString().padStart(2, '0')}`;
+    }
+
+    function subscribeRoom(code, room) {
+      if (realtimeChannel) sb.removeChannel(realtimeChannel);
+      realtimeChannel = sb.channel('wt-web-' + code);
+      realtimeChannel.on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'watch_together_rooms',
+        filter: `code=eq.${code}`,
+      }, (payload) => {
+        const row = payload.new;
+        if (!row) return;
+        const pos = row.position_seconds ?? 0;
+        const playing = row.is_playing ?? true;
+        if (pos !== lastRemotePos || playing !== lastRemotePlaying) {
+          lastRemotePos = pos;
+          lastRemotePlaying = playing;
+          applyPlayback(pos, playing);
+        }
+      }).subscribe();
+
+      if (membersChannel) sb.removeChannel(membersChannel);
+      membersChannel = sb.channel('wt-members-web-' + code);
+      membersChannel.on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'watch_together_members',
+        filter: `room_code=eq.${code}`,
+      }, () => refreshPeers(code)).subscribe();
+
+      lastRemotePos = room.position_seconds ?? 0;
+      lastRemotePlaying = room.is_playing ?? true;
+      applyPlayback(lastRemotePos, lastRemotePlaying);
+    }
+
+    async function refreshPeers(code) {
+      const { data } = await sb
+        .from('watch_together_members')
+        .select('display_name, user_id')
+        .eq('room_code', code);
+      const el = document.getElementById('peersList');
+      el.innerHTML = '';
+      (data || []).forEach(m => {
+        const span = document.createElement('span');
+        span.className = 'peer';
+        span.textContent = m.display_name || 'Viewer';
+        el.appendChild(span);
+      });
+    }
+
+    async function enterRoom(code) {
+      hideError();
+      showPanel('loadingPanel');
+      await ensureAuth();
+
+      const room = await fetchRoom(code);
+      if (!room) {
+        showPanel('invalidPanel');
+        return;
+      }
+
+      await joinAsMember(code);
+      ROOM_CODE = code;
+      isLiveRoom = (room.tab_index ?? 1) === 1;
+
+      document.getElementById('codeDisplay').textContent = code;
+      document.getElementById('roomTitle').textContent = room.title || 'Sans titre';
+      document.getElementById('roomMeta').textContent = isLiveRoom
+        ? 'Direct — même chaîne (sync désactivée sur le web)'
+        : (room.is_playing ? 'Lecture synchronisée avec l\'hôte' : 'En pause');
+
+      showPanel('roomPanel');
+      attachStream(code, room.stream_url);
+      subscribeRoom(code, room);
+      await refreshPeers(code);
+
+      document.getElementById('openAppBtn').onclick = () => {
+        window.location.href = APP_INTENT(code);
+        setTimeout(() => { window.location.href = `${APP_SCHEME}?code=${encodeURIComponent(code)}`; }, 800);
+      };
+      document.getElementById('copyLinkBtn').onclick = async () => {
+        const url = `${location.origin}${location.pathname}?code=${encodeURIComponent(code)}`;
+        await navigator.clipboard.writeText(url);
+        document.getElementById('copyLinkBtn').textContent = 'Copié !';
+        setTimeout(() => { document.getElementById('copyLinkBtn').textContent = 'Copier le lien'; }, 2000);
+      };
+
+      // Heartbeat présence
+      setInterval(async () => {
+        const uid = (await sb.auth.getUser()).data.user?.id;
+        if (!uid) return;
+        await sb.from('watch_together_members').upsert({
+          room_code: code,
+          user_id: uid,
+          display_name: displayName,
+          last_seen: new Date().toISOString(),
+        });
+      }, 30000);
+    }
+
+    async function init() {
+      if (!ROOM_CODE || ROOM_CODE.length !== 6) {
+        showPanel('joinPanel');
+        document.getElementById('joinBtn').onclick = async () => {
+          const c = document.getElementById('codeInput').value.trim().toUpperCase();
+          if (c.length !== 6) { showError('Code invalide (6 caractères).'); return; }
+          ROOM_CODE = c;
+          history.replaceState({}, '', `?code=${encodeURIComponent(c)}`);
+          try {
+            await enterRoom(c);
+          } catch (e) {
+            showError(e.message || String(e));
+            showPanel('joinPanel');
+          }
+        };
+        document.getElementById('codeInput').addEventListener('keydown', e => {
+          if (e.key === 'Enter') document.getElementById('joinBtn').click();
+        });
+        return;
+      }
+
+      try {
+        await enterRoom(ROOM_CODE);
+      } catch (e) {
+        showError(e.message || String(e));
+        showPanel('invalidPanel');
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

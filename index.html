@@ -3,973 +3,621 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Arich IPTV — Le lecteur IPTV premium pour Android</title>
-  <meta name="description" content="Arich IPTV est un lecteur multimédia premium pour Android. Compatible Xtream Codes et playlists M3U. Apportez votre propre accès, profitez d'un player de qualité." />
-  <meta property="og:title" content="Arich IPTV — Le lecteur IPTV premium" />
-  <meta property="og:description" content="Player IPTV premium pour Android. Compatible Xtream Codes et M3U. Design premium, zapping ultra-rapide." />
-  <meta name="description" content="ARICH IPTV est un lecteur IPTV moderne, rapide et compatible Android TV et mobile. Interface fluide, lecture rapide et configuration simple.">
-  <meta name="keywords" content="iptv lecteur, iptv player, arich iptv, lecteur iptv android tv">
+  <title>ARICH Player — Le cinéma, chez vous</title>
+  <meta name="description" content="ARICH Player — streaming premium Xtream & M3U. Films, séries, live TV. Android & TV. 14 jours gratuits." />
   <meta name="google-site-verification" content="jirKy2q6VohRM8uXDo8NUFqDf-JzYBiEuX9nPXn4SoQ" />
+  <meta property="og:title" content="ARICH Player" />
+  <meta property="og:description" content="Le cinéma, chez vous. Sans le bruit." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-   <link rel="icon" type="image/x-icon" href="favicon.png">
-  <script defer src="https://cloud.umami.is/script.js" data-website-id="VOTRE-UMAMI-ID" data-domains="arich-iptv.com"></script>
-
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:        #000000;
-      --surface:   #111111;
-      --surface2:  #1a1a1a;
-      --surface3:  #242424;
-      --red:       #FF2D55;
-      --violet:    #7B2FFF;
-      --grad:      linear-gradient(135deg, #7B2FFF, #FF2D55);
-      --red-glow:  rgba(255,45,85,0.18);
-      --red-dim:   rgba(255,45,85,0.08);
-      --vio-dim:   rgba(123,47,255,0.10);
-      --blue:      #0A84FF;
-      --gold:      #FFD60A;
-      --green:     #30D158;
-      --text:      #ffffff;
-      --muted:     #8E8E93;
-      --faint:     #3a3a3c;
-      --border:    rgba(255,255,255,0.07);
-      --r:         18px;
-    }
-
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      overflow-x: hidden;
-      cursor: none;
-    }
-
-    /* ── CURSOR ─────────────────────────────────────── */
-    #cursor {
-      position: fixed; z-index: 9999; pointer-events: none;
-      width: 10px; height: 10px;
-      background: var(--red);
-      border-radius: 50%;
-      transform: translate(-50%,-50%);
-      transition: transform .12s ease, width .2s, height .2s, background .2s;
-    }
-    #cursor-ring {
-      position: fixed; z-index: 9998; pointer-events: none;
-      width: 36px; height: 36px;
-      border: 1.5px solid rgba(255,45,85,0.5);
-      border-radius: 50%;
-      transform: translate(-50%,-50%);
-      transition: transform .3s ease, width .3s, height .3s, opacity .3s;
-    }
-    body.hovering #cursor { width: 16px; height: 16px; background: white; }
-    body.hovering #cursor-ring { width: 52px; height: 52px; border-color: rgba(123,47,255,0.4); }
-
-    /* ── NAV ─────────────────────────────────────────── */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 48px; height: 68px;
-      background: rgba(0,0,0,0.75);
-      backdrop-filter: blur(24px) saturate(1.6);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-logo {
-      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px;
-      letter-spacing: -0.5px;
-      display: flex; align-items: center; gap: 10px;
-      text-decoration: none; color: white;
-    }
-    .nav-logo-icon {
-      width: 34px; height: 34px;
-      background: var(--grad);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 15px;
-      box-shadow: 0 0 20px rgba(123,47,255,0.4);
-    }
-    .nav-links { display: flex; align-items: center; gap: 28px; }
-    .nav-links a { font-size: 14px; font-weight: 500; color: var(--muted); text-decoration: none; transition: color .2s; }
-    .nav-links a:hover { color: white; }
-    .nav-cta {
-      background: var(--grad) !important;
-      color: white !important;
-      padding: 9px 20px; border-radius: 100px;
-      font-weight: 600 !important; font-size: 13px !important;
-      transition: box-shadow .2s, transform .2s !important;
-    }
-    .nav-cta:hover { box-shadow: 0 0 28px rgba(123,47,255,0.45); transform: scale(1.04); }
-
-    .nav-login {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 16px; border-radius: 100px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
-      color: rgba(255,255,255,0.8);
-      font-size: 13px; font-weight: 500;
-      text-decoration: none;
-      transition: background .2s, border-color .2s, color .2s, transform .2s;
-      white-space: nowrap;
-    }
-    .nav-login:hover {
-      background: rgba(255,255,255,0.10);
-      border-color: rgba(255,255,255,0.22);
-      color: white; transform: translateY(-1px);
-    }
-    .nav-login svg { opacity: 0.7; flex-shrink: 0; }
-    .nav-login:hover svg { opacity: 1; }
-    .nav-right { display: flex; align-items: center; gap: 10px; }
-
-    /* ── SECTIONS ──────────────────────────────────── */
-    section { padding: 120px 48px; max-width: 1200px; margin: 0 auto; }
-
-    /* ── HERO ─────────────────────────────────────── */
-    #hero {
-      min-height: 100vh;
-      display: flex; flex-direction: column; justify-content: center;
-      padding-top: 140px; position: relative; max-width: 100%;
-    }
-    .hero-bg { position: absolute; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; }
-    .hero-glow {
-      position: absolute; width: 700px; height: 700px;
-      background: radial-gradient(circle, rgba(123,47,255,0.10) 0%, transparent 70%);
-      top: -100px; left: -150px;
-      animation: floatGlow 8s ease-in-out infinite alternate;
-    }
-    .hero-glow-2 {
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(255,45,85,0.08) 0%, transparent 70%);
-      bottom: 0; right: -100px; position: absolute;
-      animation: floatGlow 10s ease-in-out infinite alternate-reverse;
-    }
-    .hero-grid {
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-      background-size: 60px 60px;
-      mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 100%);
-    }
-    @keyframes floatGlow { from { transform: translateY(0) scale(1); } to { transform: translateY(30px) scale(1.1); } }
-
-    .hero-inner {
-      position: relative; z-index: 1;
-      max-width: 1200px; margin: 0 auto; padding: 0 48px;
-      display: grid; grid-template-columns: 1fr 1fr;
-      align-items: center; gap: 80px;
-    }
-    .hero-tag {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--vio-dim); border: 1px solid rgba(123,47,255,0.2);
-      border-radius: 100px; padding: 6px 14px;
-      font-size: 12px; font-weight: 500; color: var(--violet);
-      letter-spacing: 0.5px; margin-bottom: 28px;
-      animation: fadeUp .6s ease both;
-    }
-    .hero-tag-dot {
-      width: 6px; height: 6px; background: var(--violet); border-radius: 50%;
-      animation: pulse-dot 1.8s ease-in-out infinite;
-    }
-    @keyframes pulse-dot { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.5; transform:scale(0.7); } }
-
-    h1 {
-      font-family: 'Syne', sans-serif; font-weight: 800;
-      font-size: clamp(40px, 5vw, 68px);
-      line-height: 1.05; letter-spacing: -2px;
-      animation: fadeUp .7s .1s ease both;
-    }
-    h1 .accent { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    h1 .stroke { -webkit-text-stroke: 1.5px rgba(255,255,255,0.35); color: transparent; }
-
-    .hero-sub {
-      margin-top: 20px; font-size: 16px; color: var(--muted); line-height: 1.7;
-      max-width: 440px; animation: fadeUp .7s .2s ease both;
-    }
-    .hero-actions {
-      display: flex; align-items: center; gap: 14px;
-      margin-top: 40px; animation: fadeUp .7s .3s ease both;
-      flex-wrap: wrap;
-    }
-    .btn-primary {
-      background: var(--grad); color: white; border: none; cursor: pointer;
-      padding: 14px 28px; border-radius: 100px;
-      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
-      display: flex; align-items: center; gap: 8px; text-decoration: none;
-      transition: box-shadow .2s, transform .2s;
-    }
-    .btn-primary:hover { box-shadow: 0 0 40px rgba(123,47,255,0.45); transform: translateY(-2px); }
-    .btn-secondary {
-      background: transparent; color: var(--muted); border: 1px solid var(--faint);
-      cursor: pointer; padding: 14px 28px; border-radius: 100px;
-      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
-      text-decoration: none; transition: border-color .2s, color .2s, transform .2s;
-    }
-    .btn-secondary:hover { border-color: rgba(255,255,255,0.25); color: white; transform: translateY(-2px); }
-
-    .hero-login-strip {
-      display: inline-flex; align-items: center; gap: 12px;
-      margin-top: 28px; padding: 12px 18px;
-      background: rgba(123,47,255,0.07);
-      border: 1px solid rgba(123,47,255,0.18);
-      border-radius: 14px; font-size: 14px; color: var(--muted);
-      animation: fadeUp .7s .45s ease both; width: fit-content;
-    }
-    .hero-login-strip a {
-      color: white; font-weight: 600; text-decoration: none;
-      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14);
-      padding: 6px 14px; border-radius: 100px; font-size: 13px;
-      transition: background .2s, border-color .2s, transform .2s;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .hero-login-strip a:hover { background: rgba(255,255,255,0.13); border-color: rgba(255,255,255,0.25); transform: translateY(-1px); }
-
-    .hero-stats { display: flex; gap: 32px; margin-top: 40px; animation: fadeUp .7s .4s ease both; }
-    .hero-stat span:first-child { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: white; }
-    .hero-stat span:last-child { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
-
-    /* Mock Phone */
-    .hero-phone { position: relative; animation: fadeUp .8s .2s ease both; display: flex; justify-content: center; }
-    .phone-wrap { position: relative; width: 260px; }
-    .phone-frame {
-      width: 260px; height: 520px; background: var(--surface2);
-      border-radius: 40px; border: 1.5px solid rgba(255,255,255,0.12);
-      overflow: hidden; position: relative;
-      box-shadow: 0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.1);
-    }
-    .phone-notch { width: 100px; height: 28px; background: var(--bg); border-radius: 0 0 20px 20px; margin: 0 auto; position: relative; z-index: 2; }
-    .phone-screen { padding: 12px 14px; }
-    .phone-channel {
-      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-      background: var(--surface3); border-radius: 12px; margin-bottom: 8px;
-      border: 1px solid var(--border); animation: channelIn 1s ease both;
-    }
-    .phone-channel:nth-child(2) { animation-delay: .15s; }
-    .phone-channel:nth-child(3) { animation-delay: .3s; }
-    .phone-channel:nth-child(4) { animation-delay: .45s; }
-    @keyframes channelIn { from { opacity:0; transform: translateX(-10px); } to { opacity:1; transform: translateX(0); } }
-    .ch-thumb { width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; }
-    .ch-info { flex: 1; min-width: 0; }
-    .ch-name { font-size: 11px; font-weight: 600; color: white; }
-    .ch-cat  { font-size: 9px; color: var(--muted); margin-top: 2px; }
-    .ch-live { font-size: 8px; font-weight: 700; color: var(--red); background: var(--red-dim); padding: 2px 7px; border-radius: 100px; letter-spacing: .5px; }
-    .phone-bar { height: 3px; background: var(--surface3); border-radius: 100px; margin: 10px 0 8px; overflow: hidden; }
-    .phone-bar-fill { height: 100%; background: var(--grad); border-radius: 100px; width: 65%; animation: loadBar 2.5s 1s ease both; }
-    @keyframes loadBar { from { width: 0; } to { width: 65%; } }
-    .phone-glow { position: absolute; left: 50%; bottom: -60px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(123,47,255,0.2) 0%, transparent 70%); transform: translateX(-50%); pointer-events: none; }
-    .phone-float { animation: phoneFloat 5s ease-in-out infinite; }
-    @keyframes phoneFloat { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-14px) rotate(0deg); } }
-    .phone-badge {
-      position: absolute; right: -28px; top: 80px;
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 14px; padding: 10px 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-      animation: fadeUp .8s .7s ease both;
-    }
-    .phone-badge-num { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .phone-badge-label { font-size: 10px; color: var(--muted); }
-    .phone-badge-2 {
-      position: absolute; left: -36px; bottom: 120px;
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 14px; padding: 10px 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-      animation: fadeUp .8s .9s ease both;
-    }
-    .rating { display: flex; align-items: center; gap: 5px; }
-    .stars { color: var(--gold); font-size: 12px; }
-
-    /* ── KEYFRAMES ─────────────────────────────────── */
-    @keyframes fadeUp   { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-    @keyframes aniUp    { from { opacity:0; transform:translateY(32px); } to { opacity:1; transform:translateY(0); } }
-    @keyframes aniLeft  { from { opacity:0; transform:translateX(-28px); } to { opacity:1; transform:translateX(0); } }
-    @keyframes aniRight { from { opacity:0; transform:translateX(28px);  } to { opacity:1; transform:translateX(0); } }
-    @keyframes aniScale { from { opacity:0; transform:scale(0.93); }      to { opacity:1; transform:scale(1); } }
-
-    /* ── SCROLL ANIMATION SYSTEM ───────────────────── */
-    /* État initial : invisible */
-    [data-ani] {
-      opacity: 0;
-    }
-    /* Quand l'élément est entré dans le viewport : on lance l'anim */
-    [data-ani].ani-go {
-      animation-fill-mode: both;
-      animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-      animation-duration: 0.7s;
-    }
-    [data-ani="up"].ani-go    { animation-name: aniUp; }
-    [data-ani="left"].ani-go  { animation-name: aniLeft; }
-    [data-ani="right"].ani-go { animation-name: aniRight; }
-    [data-ani="scale"].ani-go { animation-name: aniScale; }
-
-    /* Délais via data-delay (en ms, géré en JS inline style) */
-
-    /* plan-card featured garde son scale de base APRÈS l'anim */
-    .plan-card.featured[data-ani].ani-go {
-      animation-name: aniScale;
-    }
-
-    /* ── SECTION LABELS ────────────────────────────── */
-    .section-label { font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--violet); text-transform: uppercase; margin-bottom: 14px; }
-    h2 { font-family: 'Syne', sans-serif; font-size: clamp(30px, 4vw, 48px); font-weight: 800; letter-spacing: -1.5px; line-height: 1.1; }
-    .section-sub { font-size: 15px; color: var(--muted); line-height: 1.7; max-width: 500px; margin-top: 14px; }
-
-    /* ── DISCLAIMER BANNER ─────────────────────────── */
-    .disclaimer-banner {
-      background: rgba(255,214,10,0.06); border: 1px solid rgba(255,214,10,0.2);
-      border-radius: 14px; padding: 16px 22px;
-      display: flex; align-items: flex-start; gap: 12px;
-      font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 20px;
-    }
-    .disclaimer-banner .disc-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-    .disclaimer-banner strong { color: rgba(255,214,10,0.9); display: block; margin-bottom: 3px; font-size: 13px; }
-
-    /* ── FEATURES ──────────────────────────────────── */
-    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 60px; }
-    .feat-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--r); padding: 28px;
-      transition: border-color .25s, transform .25s, box-shadow .25s;
-      position: relative; overflow: hidden;
-    }
-    .feat-card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(123,47,255,0.5), rgba(255,45,85,0.4), transparent);
-      opacity: 0; transition: opacity .3s;
-    }
-    .feat-card:hover { border-color: rgba(123,47,255,0.25); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
-    .feat-card:hover::before { opacity: 1; }
-    .feat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 18px; }
-    .feat-card h3 { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; margin-bottom: 8px; }
-    .feat-card p { font-size: 13px; color: var(--muted); line-height: 1.65; }
-
-    /* ── PRICING ───────────────────────────────────── */
-    #pricing { text-align: center; }
-    .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 60px; text-align: left; align-items: center; max-width: 760px; margin-left: auto; margin-right: auto; }
-    .plan-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 24px; padding: 36px 32px;
-      position: relative; overflow: hidden;
-      transition: transform .25s, box-shadow .25s;
-    }
-    .plan-card:hover { transform: translateY(-6px); box-shadow: 0 30px 80px rgba(0,0,0,0.5); }
-    .plan-card.featured {
-      background: linear-gradient(160deg, #100820 0%, #0d0010 100%);
-      border-color: rgba(123,47,255,0.4);
-      transform: scale(1.03);
-      box-shadow: 0 0 0 1px rgba(123,47,255,0.15), 0 40px 80px rgba(123,47,255,0.12);
-    }
-    .plan-card.featured:hover { transform: scale(1.03) translateY(-6px); }
-    .plan-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: var(--grad); color: white;
-      font-size: 10px; font-weight: 700; letter-spacing: .5px;
-      padding: 4px 12px; border-radius: 100px; margin-bottom: 20px;
-    }
-    .plan-name { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 6px; }
-    .plan-desc { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
-    .plan-price { display: flex; align-items: baseline; gap: 4px; margin-bottom: 28px; }
-    .plan-price .amount { font-family: 'Syne', sans-serif; font-size: 48px; font-weight: 800; color: white; }
-    .plan-price .currency { font-size: 22px; color: var(--muted); margin-right: 2px; }
-    .plan-price .period { font-size: 14px; color: var(--muted); }
-    .plan-features { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
-    .plan-features li { font-size: 13px; display: flex; align-items: center; gap: 10px; }
-    .plan-features li .check { color: var(--green); font-size: 15px; }
-    .plan-features li .cross { color: var(--faint); font-size: 15px; }
-    .plan-features li.muted { color: var(--muted); }
-    .plan-btn {
-      width: 100%; padding: 14px; border-radius: 100px; border: none; cursor: pointer;
-      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; transition: all .2s;
-    }
-    .plan-btn.solid { background: var(--grad); color: white; }
-    .plan-btn.solid:hover { box-shadow: 0 0 30px rgba(123,47,255,0.4); transform: translateY(-1px); }
-    .plan-btn.outline { background: transparent; color: var(--muted); border: 1px solid var(--faint); }
-    .plan-btn.outline:hover { border-color: rgba(255,255,255,0.25); color: white; }
-
-    .pricing-disclaimer {
-      max-width: 760px; margin: 28px auto 0;
-      background: rgba(123,47,255,0.05); border: 1px solid rgba(123,47,255,0.15);
-      border-radius: 12px; padding: 16px 20px;
-      font-size: 12px; color: var(--muted); line-height: 1.7; text-align: left;
-    }
-
-    /* ── DOWNLOAD ──────────────────────────────────── */
-    .dl-wrapper { background: var(--surface); border: 1px solid var(--border); border-radius: 32px; padding: 72px 48px; position: relative; overflow: hidden; }
-    .dl-glow { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(123,47,255,0.08) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; }
-    .dl-buttons { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 40px; flex-wrap: wrap; }
-    .dl-btn { display: flex; align-items: center; gap: 12px; padding: 14px 28px; border-radius: 14px; text-decoration: none; font-size: 14px; font-weight: 500; transition: all .2s; }
-    .dl-btn.dark { background: white; color: black; }
-    .dl-btn.dark:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(255,255,255,0.15); }
-    .dl-btn.dark-outline { background: var(--surface2); color: white; border: 1px solid var(--border); }
-    .dl-btn.dark-outline:hover { border-color: rgba(255,255,255,0.25); transform: translateY(-2px); }
-    .dl-icon { font-size: 22px; }
-    .dl-text strong { display: block; font-size: 16px; font-weight: 700; }
-    .dl-text span { font-size: 11px; opacity: .6; }
-    .dl-note { font-size: 12px; color: var(--muted); margin-top: 20px; }
-
-    /* ── FAQ ───────────────────────────────────────── */
-    .faq-list { margin-top: 56px; display: flex; flex-direction: column; gap: 12px; }
-    .faq-item { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: border-color .2s; }
-    .faq-item.open { border-color: rgba(123,47,255,0.3); }
-    .faq-q { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; cursor: pointer; font-size: 15px; font-weight: 500; user-select: none; }
-    .faq-q:hover { color: white; }
-    .faq-arrow { width: 28px; height: 28px; border-radius: 50%; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; margin-left: 16px; transition: transform .3s, background .2s; }
-    .faq-item.open .faq-arrow { transform: rotate(45deg); background: var(--vio-dim); color: var(--violet); }
-    .faq-a { font-size: 14px; color: var(--muted); line-height: 1.75; max-height: 0; overflow: hidden; padding: 0 24px; transition: max-height .35s ease, padding .35s ease; }
-    .faq-item.open .faq-a { max-height: 300px; padding: 0 24px 20px; }
-
-    /* ── CONTACT ───────────────────────────────────── */
-    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-top: 56px; align-items: start; }
-    .contact-info { display: flex; flex-direction: column; gap: 20px; }
-    .contact-chip { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; text-decoration: none; color: white; transition: border-color .2s, transform .2s; }
-    .contact-chip:hover { border-color: rgba(123,47,255,0.3); transform: translateX(4px); }
-    .contact-chip-icon { width: 42px; height: 42px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-    .contact-chip-text strong { display: block; font-size: 14px; margin-bottom: 2px; }
-    .contact-chip-text span { font-size: 12px; color: var(--muted); }
-    .contact-form { display: flex; flex-direction: column; gap: 14px; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .form-input { width: 100%; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; color: white; font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; transition: border-color .2s; resize: none; }
-    .form-input::placeholder { color: var(--muted); }
-    .form-input:focus { border-color: rgba(123,47,255,0.5); }
-    .form-submit { padding: 14px; background: var(--grad); color: white; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: box-shadow .2s, transform .2s; }
-    .form-submit:hover { box-shadow: 0 0 30px rgba(123,47,255,0.4); transform: translateY(-1px); }
-
-    /* ── FOOTER ────────────────────────────────────── */
-    footer { border-top: 1px solid var(--border); padding: 48px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; }
-    .footer-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; display: flex; align-items: center; gap: 10px; }
-    .footer-links { display: flex; gap: 28px; flex-wrap: wrap; align-items: center; }
-    .footer-links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color .2s; }
-    .footer-links a:hover { color: white; }
-    .footer-login-link {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 13px; font-weight: 600;
-      background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text; text-decoration: none; padding: 0; transition: opacity .2s;
-    }
-    .footer-login-link:hover { opacity: 0.8; }
-    .footer-copy { font-size: 12px; color: var(--muted); }
-
-    /* ── TOAST ─────────────────────────────────────── */
-    #toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 24px; font-size: 14px; opacity: 0; transition: opacity .3s, transform .3s; z-index: 9999; pointer-events: none; white-space: nowrap; }
-    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    /* ── RESPONSIVE ────────────────────────────────── */
-    @media (max-width: 900px) {
-      nav { padding: 0 20px; }
-      .nav-links { display: none; }
-      .nav-right { gap: 8px; }
-      section { padding: 80px 24px; }
-      .hero-inner { grid-template-columns: 1fr; padding: 0 24px; }
-      .hero-phone { display: none; }
-      .features-grid { grid-template-columns: 1fr 1fr; }
-      .pricing-grid { grid-template-columns: 1fr; }
-      .plan-card.featured { transform: none; }
-      .plan-card.featured:hover { transform: translateY(-6px); }
-      .contact-grid { grid-template-columns: 1fr; }
-      footer { flex-direction: column; align-items: flex-start; gap: 20px; padding: 32px 24px; }
-      body { cursor: auto; }
-      #cursor, #cursor-ring { display: none; }
-    }
-    @media (max-width: 600px) {
-      .features-grid { grid-template-columns: 1fr; }
-      .form-row { grid-template-columns: 1fr; }
-      .hero-stats { gap: 20px; }
-      .pricing-grid { grid-template-columns: 1fr; }
-      .nav-login span { display: none; }
-      .nav-login { padding: 8px 11px; }
-      footer { padding: 28px 16px; }
-      .footer-links { gap: 16px; }
-    }
-  </style>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet" />
 </head>
 <body>
-
-<div id="cursor"></div>
-<div id="cursor-ring"></div>
-<div id="toast">✓ Message envoyé !</div>
-
-<!-- ── NAV ──────────────────────────────────────── -->
-<nav>
-  <a href="#" class="nav-logo">
-    <img href="logo.png" width="30px" height="auto">
-    ARICH IPTV
-  </a>
-  <div class="nav-links">
-    <a href="#features">Fonctionnalités</a>
-    <a href="#pricing">Tarifs</a>
-    <a href="#faq">FAQ</a>
-    <a href="#contact">Contact</a>
-  </div>
-  <div class="nav-right">
-    <a href="https://arich.fr/auth.html" class="nav-login" data-umami-event="nav-login">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-        <circle cx="12" cy="7" r="4"/>
-      </svg>
-      <span>Mon compte</span>
-    </a>
-    <a href="#download" class="nav-cta" data-umami-event="cta-download-nav">Télécharger</a>
-  </div>
-</nav>
-
-<!-- ── HERO ─────────────────────────────────────── -->
-<div id="hero">
-  <div class="hero-bg">
-    <div class="hero-glow"></div>
-    <div class="hero-glow-2"></div>
-    <div class="hero-grid"></div>
-  </div>
-  <div class="hero-inner">
-    <div>
-      <div class="hero-tag">
-        <div class="hero-tag-dot"></div>
-        Player IPTV · Android
-      </div>
-      <h1>
-        Le player<br>
-        <span class="accent">IPTV</span> qui<br>
-        <span class="stroke">déchire.</span>
-      </h1>
-      <p class="hero-sub">
-        Connectez votre propre accès IPTV (Xtream Codes ou M3U) et profitez d'une expérience de lecture premium. Design soigné, zapping rapide, multi-playlists.
-      </p>
-      <div class="hero-actions">
-        <a href="#download" class="btn-primary" data-umami-event="cta-download-hero">⬇ Télécharger l'app</a>
-        <a href="#pricing" class="btn-secondary" data-umami-event="cta-pricing-hero">Voir les offres →</a>
-      </div>
-      <div class="hero-login-strip">
-        <span>Déjà client ?</span>
-        <a href="https://arich.fr/auth.html" data-umami-event="hero-login-strip">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-          Se connecter / Gérer mes playlists
-        </a>
-      </div>
-      <div class="hero-stats">
-        <div><span>Xtream</span><span>& M3U natif</span></div>
-        <div><span>4K / HD</span><span>Qualité max</span></div>
-        <div><span>Android</span><span>6.0+</span></div>
-      </div>
+  <div id="boot" class="boot" aria-hidden="true">
+    <div class="boot-stage">
+      <img class="boot-logo" src="/logo-launcher.png" alt="" width="96" height="96" />
     </div>
-    <div class="hero-phone">
-      <div class="phone-wrap phone-float">
-        <div class="phone-frame">
-          <div class="phone-notch"></div>
-          <div class="phone-screen">
-            <div style="font-size:9px;color:var(--muted);margin-bottom:8px;font-weight:600;letter-spacing:1px;">EN DIRECT</div>
-            <div class="phone-channel">
-              <div class="ch-thumb" style="background:linear-gradient(135deg,#1a1a2e,#16213e);">📺</div>
-              <div class="ch-info"><div class="ch-name">Votre chaîne</div><div class="ch-cat">Votre accès IPTV</div></div>
-              <div class="ch-live">LIVE</div>
+  </div>
+
+  <!-- Couches d’ambiance -->
+  <div class="bg-layers" aria-hidden="true">
+    <div class="bg-halo bg-halo--1"></div>
+    <div class="bg-halo bg-halo--2"></div>
+    <div class="bg-halo bg-halo--3"></div>
+    <div class="bg-grain"></div>
+  </div>
+  <canvas id="fx" class="fx" aria-hidden="true"></canvas>
+
+  <div id="app" class="app is-booting">
+    <a class="skip-link" href="#main">Aller au contenu</a>
+
+    <header class="nav" id="nav">
+      <div class="nav__inner" id="navPill">
+        <div class="nav__liquid" id="navLiquid" aria-hidden="true"></div>
+        <a class="nav__brand" href="#top">
+          <img src="/logo-launcher.png" alt="" width="28" height="28" />
+          <span>ARICH</span>
+        </a>
+
+        <nav class="nav__links" id="navLinks" aria-label="Navigation">
+          <a href="#top" data-i18n="nav_home">Accueil</a>
+          <a href="#features" data-i18n="nav_features">Fonctionnalités</a>
+          <a href="#browse" data-i18n="nav_browse">Parcourir</a>
+          <a href="#faq" data-i18n="nav_faq">FAQ</a>
+          <a href="#contact" data-i18n="nav_contact">Contact</a>
+          <a href="#pricing" data-i18n="nav_pricing">Tarifs</a>
+        </nav>
+
+        <div class="nav__end">
+          <div class="lang" role="group" aria-label="Language">
+            <button type="button" data-lang-btn="fr">FR</button>
+            <button type="button" data-lang-btn="en">EN</button>
+          </div>
+          <a class="nav__account" href="/auth.html" data-i18n="nav_account">Compte</a>
+          <a class="btn btn--copper nav__cta" href="#install" data-i18n="nav_download">Télécharger</a>
+          <button type="button" class="nav__burger" id="navBurger" aria-expanded="false" aria-controls="navLinks" data-i18n-aria="nav_menu" aria-label="Menu">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- ═══ HERO ═══ -->
+      <section class="hero" id="top">
+        <div class="hero__copy">
+          <p class="eyebrow" data-i18n="hero_over">Lecteur média premium</p>
+          <h1 class="hero__title" id="heroTitle" aria-label="Le cinéma, chez vous. Sans le bruit.">
+            <span class="type-line" data-type="0" data-i18n="hero_title_1">Le cinéma,</span>
+            <span class="type-line" data-type="1" data-i18n="hero_title_2">chez vous.</span>
+            <em class="type-line type-line--accent" data-type="2" data-i18n="hero_title_3">Sans le bruit.</em>
+          </h1>
+          <noscript>
+            <h1>Le cinéma, chez vous. Sans le bruit.</h1>
+          </noscript>
+          <p class="hero__lede" data-i18n="hero_lede">
+            Votre bibliothèque, vos chaînes, vos films et séries.
+          </p>
+          <div class="hero__actions">
+            <a class="btn btn--copper btn--lg btn--glow" href="#install">
+              <span class="btn__icon" aria-hidden="true">↓</span>
+              <span data-i18n="hero_cta">Télécharger l'app</span>
+            </a>
+            <a class="btn btn--ghost" href="#browse" data-i18n="hero_secondary">Découvrir</a>
+          </div>
+          <p class="hero__trial" data-i18n="hero_trial">14 jours gratuits · sans engagement</p>
+        </div>
+
+        <div class="hero__stage" id="heroStage">
+          <div class="hero__compose" id="heroCompose">
+            <!-- Desktop mockup -->
+            <div class="device device--desktop hero__desktop">
+              <div class="device__glow"></div>
+              <div class="device__bezel">
+                <div class="device__screen">
+                  <video
+                    class="lazy-video"
+                    data-src="/media/video/home-land.mp4"
+                    poster="/media/home-land.png"
+                    muted
+                    playsinline
+                    loop
+                    preload="none"
+                    aria-hidden="true"
+                  ></video>
+                </div>
+              </div>
+              <div class="device__stand"></div>
+              <div class="device__base"></div>
             </div>
-            <div class="phone-bar"><div class="phone-bar-fill"></div></div>
-            <div style="font-size:9px;color:var(--muted);margin-bottom:8px;font-weight:600;letter-spacing:1px;">PLAYLISTS</div>
-            <div class="phone-channel">
-              <div class="ch-thumb" style="background:linear-gradient(135deg,#0f2027,#203a43);">🎬</div>
-              <div class="ch-info"><div class="ch-name">Ma playlist M3U</div><div class="ch-cat">Films & Séries</div></div>
-            </div>
-            <div class="phone-channel">
-              <div class="ch-thumb" style="background:linear-gradient(135deg,#1a0000,#3d0000);">⚡</div>
-              <div class="ch-info"><div class="ch-name">Accès Xtream</div><div class="ch-cat">Compte principal</div></div>
-            </div>
-            <div class="phone-channel">
-              <div class="ch-thumb" style="background:linear-gradient(135deg,#0a0a0a,#1a1a1a);">➕</div>
-              <div class="ch-info"><div class="ch-name">Ajouter...</div><div class="ch-cat">Nouvelle playlist</div></div>
+            <!-- Phone superposé -->
+            <div class="device device--phone hero__phone" id="heroPhone">
+              <div class="device__glow device__glow--phone"></div>
+              <div class="device__bezel">
+                <div class="device__notch"></div>
+                <div class="device__screen">
+                  <video
+                    class="lazy-video"
+                    data-src="/media/video/home-port.mp4"
+                    poster="/media/home-phone.png"
+                    muted
+                    playsinline
+                    loop
+                    preload="none"
+                    aria-hidden="true"
+                  ></video>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div class="phone-glow"></div>
-        <div class="phone-badge">
-          <div class="phone-badge-num">Multi</div>
-          <div class="phone-badge-label">Playlists</div>
+      </section>
+
+      <!-- ═══ PARCOURIR — scrub ═══ -->
+      <section class="browse" id="browse">
+        <div class="browse__pin" id="browsePin">
+          <div class="browse__sticky">
+            <header class="section-head section-head--compact">
+              <p class="eyebrow" data-i18n="browse_over">Parcourir</p>
+              <h2 data-i18n="browse_title">Naviguez. Explorez. Regardez.</h2>
+              <p class="section-head__sub" data-i18n="browse_sub">Faites défiler pour parcourir l’expérience.</p>
+            </header>
+            <div class="browse__track" aria-hidden="true">
+              <div class="browse__progress" id="browseProgress"></div>
+            </div>
+            <div class="browse__labels" id="browseLabels" role="tablist">
+              <button type="button" class="is-active" data-browse="0" data-i18n="browse_home">Accueil</button>
+              <button type="button" data-browse="1" data-i18n="browse_films">Films</button>
+              <button type="button" data-browse="2" data-i18n="browse_series">Séries</button>
+              <button type="button" data-browse="3" data-i18n="browse_live">Live</button>
+              <button type="button" data-browse="4" data-i18n="browse_playlists">Playlists</button>
+            </div>
+            <div class="browse__viewport">
+              <div class="browse__rail" id="browseRail">
+                <figure class="browse__card">
+                  <div class="device device--phone device--phone-lg">
+                    <div class="device__bezel">
+                      <div class="device__notch"></div>
+                      <div class="device__screen">
+                        <img src="/media/home-phone.png" alt="Accueil ARICH" loading="lazy" width="540" height="1170" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+                <figure class="browse__card">
+                  <div class="device device--phone device--phone-lg">
+                    <div class="device__bezel">
+                      <div class="device__notch"></div>
+                      <div class="device__screen">
+                        <img src="/media/films-grid-phone.png" alt="Grille Films" loading="lazy" width="540" height="1170" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+                <figure class="browse__card">
+                  <div class="device device--phone device--phone-lg">
+                    <div class="device__bezel">
+                      <div class="device__notch"></div>
+                      <div class="device__screen">
+                        <img src="/media/series-phone.png" alt="Séries sur l’accueil" loading="lazy" width="540" height="1170" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+                <figure class="browse__card browse__card--land">
+                  <div class="device device--desktop device--sm">
+                    <div class="device__bezel">
+                      <div class="device__screen">
+                        <img src="/media/live-direct-land.png?v=6" alt="Live TV Direct" loading="lazy" width="1170" height="520" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+                <figure class="browse__card">
+                  <div class="device device--phone device--phone-lg">
+                    <div class="device__bezel">
+                      <div class="device__notch"></div>
+                      <div class="device__screen">
+                        <img src="/media/playlist-add-phone.png" alt="Ajouter une playlist" loading="lazy" width="540" height="1170" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="phone-badge-2">
-          <div class="rating"><span class="stars">★★★★★</span></div>
-          <div style="font-size:10px;color:var(--muted);margin-top:3px;">Top player</div>
+      </section>
+
+      <!-- ═══ FEATURES — intro + player + scroll morph ═══ -->
+      <section class="features" id="features">
+        <header class="section-head">
+          <p class="eyebrow" data-i18n="feat_over">Fonctionnalités</p>
+          <h2 data-i18n="feat_title">Conçu pour regarder. Pas pour gérer.</h2>
+          <p class="section-head__sub" data-i18n="feat_sub">Une seule expérience. Plusieurs gestes.</p>
+        </header>
+
+        <!-- Fluidité + Player en avant -->
+        <div class="feat-intro">
+          <article class="feat-intro__fluid">
+            <div class="feat-intro__copy">
+              <p class="feat-intro__tag" data-i18n="feat_fluid_t">Fluidité absolue</p>
+              <h3 data-i18n="feat_fluid_b">Transitions sobres, zapping immédiat, interface qui s’efface.</h3>
+            </div>
+            <div class="device device--desktop device--sm">
+              <div class="device__glow"></div>
+              <div class="device__bezel">
+                <div class="device__screen">
+                  <img src="/media/home-land.png?v=6" alt="Navigation fluide" loading="lazy" />
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="feat-intro__player" id="player">
+            <div class="feat-intro__copy feat-intro__copy--center">
+              <p class="feat-intro__tag" data-i18n="stage_player_t">Le player</p>
+              <p data-i18n="stage_player_b">Contrôles discrets. Focus sur l’image.</p>
+            </div>
+            <div class="device device--phone-land">
+              <div class="device__glow device__glow--land" aria-hidden="true"></div>
+              <div class="device__bezel">
+                <div class="device__island" aria-hidden="true"></div>
+                <div class="device__screen">
+                  <video
+                    class="lazy-video"
+                    data-src="/media/video/player-land.mp4"
+                    poster="/media/player-land.png"
+                    muted
+                    playsinline
+                    loop
+                    preload="none"
+                    aria-label="Démonstration du player"
+                  ></video>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- Scroll morph : fonctionnalités -->
+        <div class="featflow" id="featPin">
+          <div class="featflow__sticky">
+            <p class="featflow__hint" data-i18n="featflow_hint">Faites défiler pour explorer</p>
+            <div class="featflow__stage">
+              <div class="featflow__stack" id="featStack">
+                <figure class="featflow__slide is-active" data-feat="0">
+                  <div class="device device--phone device--phone-lg">
+                    <div class="device__bezel">
+                      <div class="device__notch"></div>
+                      <div class="device__screen">
+                        <img src="/media/playlist-add-phone.png?v=6" alt="" loading="lazy" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+                <figure class="featflow__slide" data-feat="1">
+                  <div class="device device--desktop device--sm">
+                    <div class="device__bezel">
+                      <div class="device__screen">
+                        <img src="/media/player-menu-land.png?v=6" alt="" loading="lazy" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+                <figure class="featflow__slide" data-feat="2">
+                  <div class="device device--phone device--phone-lg">
+                    <div class="device__bezel">
+                      <div class="device__notch"></div>
+                      <div class="device__screen">
+                        <img src="/media/download-phone.png?v=6" alt="" loading="lazy" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+                <figure class="featflow__slide" data-feat="3">
+                  <div class="device device--phone device--phone-lg">
+                    <div class="device__bezel">
+                      <div class="device__notch"></div>
+                      <div class="device__screen">
+                        <img src="/media/lang-phone.png?v=6" alt="" loading="lazy" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+                <figure class="featflow__slide" data-feat="4">
+                  <div class="device device--phone device--phone-lg">
+                    <div class="device__bezel">
+                      <div class="device__notch"></div>
+                      <div class="device__screen">
+                        <img src="/media/theme-phone.png?v=6" alt="" loading="lazy" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+                <figure class="featflow__slide" data-feat="5">
+                  <div class="device device--phone device--phone-lg">
+                    <div class="device__bezel">
+                      <div class="device__notch"></div>
+                      <div class="device__screen">
+                        <img src="/media/films-grid-phone.png?v=6" alt="" loading="lazy" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+              </div>
+
+              <aside class="featflow__float" id="featFloat" aria-live="polite">
+                <p class="featflow__float-tag" id="featFloatTag"></p>
+                <h3 class="featflow__float-title" id="featFloatTitle"></h3>
+                <p class="featflow__float-body" id="featFloatBody"></p>
+              </aside>
+            </div>
+            <div class="featflow__dots" id="featDots" role="tablist" aria-label="Fonctionnalités"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ STAGE Films / Live ═══ -->
+      <section class="stage" id="showcase">
+        <p class="eyebrow stage__eyebrow" data-i18n="stage_over">Mise en scène</p>
+
+        <article class="stage__block stage__block--films">
+          <div class="stage__copy">
+            <h2 data-i18n="stage_films_t">Films & séries</h2>
+            <p data-i18n="stage_films_b">Affiches immersives, fiches détaillées.</p>
+          </div>
+          <div class="stage__visual">
+            <div class="device device--desktop">
+              <div class="device__glow"></div>
+              <div class="device__bezel">
+                <div class="device__screen">
+                  <img src="/media/home-land.png?v=5" alt="Accueil films et séries" loading="lazy" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="stage__block stage__block--live">
+          <div class="stage__visual">
+            <div class="device device--desktop">
+              <div class="device__glow"></div>
+              <div class="device__bezel">
+                <div class="device__screen">
+                  <img src="/media/live-direct-land.png?v=6" alt="Live TV — grilles chaînes Direct" width="2340" height="1041" loading="lazy" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="stage__copy">
+            <h2 data-i18n="stage_live_t">Live TV</h2>
+            <p data-i18n="stage_live_b">Guide EPG, zapping, favoris.</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- ═══ NEED ═══ -->
+      <section class="need" id="product">
+        <header class="section-head section-head--center">
+          <p class="eyebrow" data-i18n="need_over">Produit</p>
+          <h2 data-i18n="need_title">Tout ce dont vous avez besoin. Rien de plus.</h2>
+          <p class="section-head__sub" data-i18n="need_sub">Xtream · M3U · multi-playlists · 4K · Android & TV</p>
+        </header>
+        <div class="need__compose">
+          <div class="device device--desktop">
+            <div class="device__bezel">
+              <div class="device__screen">
+                <img src="/media/hero-tv.png" alt="" loading="lazy" />
+              </div>
+            </div>
+          </div>
+          <div class="device device--phone need__phone">
+            <div class="device__bezel">
+              <div class="device__notch"></div>
+              <div class="device__screen">
+                <img src="/media/home-phone.png" alt="" loading="lazy" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ INSTALL ═══ -->
+      <section class="install" id="install">
+        <header class="section-head">
+          <p class="eyebrow" data-i18n="inst_over">Installation</p>
+          <h2 data-i18n="inst_title">Trois étapes.</h2>
+          <p class="section-head__sub" data-i18n="inst_sub">Prêt en une minute.</p>
+        </header>
+
+        <ol class="steps">
+          <li>
+            <span class="steps__n">01</span>
+            <div>
+              <h3 data-i18n="inst_1_t">Téléchargez</h3>
+              <p data-i18n="inst_1_b">APK GitHub ou Google Play.</p>
+            </div>
+          </li>
+          <li>
+            <span class="steps__n">02</span>
+            <div>
+              <h3 data-i18n="inst_2_t">Connectez</h3>
+              <p data-i18n="inst_2_b">Xtream ou M3U.</p>
+            </div>
+          </li>
+          <li>
+            <span class="steps__n">03</span>
+            <div>
+              <h3 data-i18n="inst_3_t">Regardez</h3>
+              <p data-i18n="inst_3_b">Vos contenus.</p>
+            </div>
+          </li>
+        </ol>
+
+        <div class="install__cta">
+          <div class="install__buttons">
+            <a class="btn btn--copper btn--lg btn--glow" id="dlApk" href="#">
+              <span class="btn__icon" aria-hidden="true">↓</span>
+              <span data-i18n="dl_apk">Télécharger l'APK</span>
+            </a>
+            <a class="btn btn--ghost" id="dlPlay" href="#" target="_blank" rel="noopener" data-i18n="dl_play">Google Play</a>
+          </div>
+          <div class="install__qr">
+            <img id="qrImg" src="" alt="QR code download" width="132" height="132" loading="lazy" />
+            <p data-i18n="inst_qr">Scannez pour télécharger</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ PRICING ═══ -->
+      <section class="pricing" id="pricing">
+        <header class="section-head section-head--center">
+          <p class="eyebrow" data-i18n="price_over">Tarifs</p>
+          <h2 data-i18n="price_title">Simple. Transparent.</h2>
+          <p class="section-head__sub" data-i18n="price_sub">14 jours gratuits. Aucun contenu fourni.</p>
+        </header>
+
+        <div class="pricing__trial">
+          <strong id="trialDays">14</strong>
+          <span data-i18n="price_trial">jours gratuits</span>
+        </div>
+
+        <div class="pricing__cards">
+          <article class="price-card" data-plan-card="yearly">
+            <h3 data-i18n="price_year_t">Annuel</h3>
+            <p class="price-card__amount">
+              <span id="priceYearAmt">3</span><span class="price-card__cur" id="priceCur">€</span>
+              <span class="price-card__per" id="priceYearPer">/ an</span>
+            </p>
+            <p class="price-card__desc" data-i18n="price_year_b">Renouvellement simple.</p>
+            <button type="button" class="btn btn--ghost" data-plan="yearly" data-i18n="price_cta">Activer</button>
+          </article>
+
+          <article class="price-card price-card--reco" data-plan-card="lifetime">
+            <span class="price-card__badge" data-i18n="price_reco">Recommandé</span>
+            <h3 data-i18n="price_life_t">À vie</h3>
+            <p class="price-card__amount">
+              <span id="priceLifeAmt">5</span><span class="price-card__cur">€</span>
+              <span class="price-card__per" id="priceLifePer">à vie</span>
+            </p>
+            <p class="price-card__desc" data-i18n="price_life_b">Un paiement. Pour toujours.</p>
+            <button type="button" class="btn btn--copper" data-plan="lifetime" data-i18n="price_cta">Activer</button>
+          </article>
+        </div>
+        <p class="pricing__note" data-i18n="price_note">Licence app · aucun contenu fourni.</p>
+      </section>
+
+      <!-- ═══ FAQ ═══ -->
+      <section class="faq" id="faq">
+        <header class="section-head section-head--center">
+          <p class="eyebrow" data-i18n="faq_over">FAQ</p>
+          <h2 data-i18n="faq_title">Questions fréquentes</h2>
+          <p class="section-head__sub" data-i18n="faq_sub">Les réponses essentielles, sans jargon.</p>
+        </header>
+        <div class="faq__list" id="faqList">
+          <details class="faq__item">
+            <summary><span data-i18n="faq_1_q">ARICH fournit-il des contenus ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_1_a">Non. ARICH est un lecteur. Vous connectez vos propres accès Xtream ou playlists M3U.</div></div>
+          </details>
+          <details class="faq__item">
+            <summary><span data-i18n="faq_2_q">Comment fonctionne l’essai gratuit ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_2_a">14 jours pour tester l’application. Ensuite, choisissez l’offre annuelle ou à vie.</div></div>
+          </details>
+          <details class="faq__item">
+            <summary><span data-i18n="faq_3_q">Sur quels appareils ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_3_a">Android et Android TV. Téléchargez l’APK ou via Google Play lorsque disponible.</div></div>
+          </details>
+          <details class="faq__item">
+            <summary><span data-i18n="faq_4_q">Puis-je regarder hors ligne ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_4_a">Oui, via le téléchargement local sur l’appareil — selon les contenus de votre playlist.</div></div>
+          </details>
+          <details class="faq__item">
+            <summary><span data-i18n="faq_5_q">C’est quoi Watch Together ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_5_a">Une lecture synchronisée à distance : vous regardez le même flux, au même moment.</div></div>
+          </details>
+          <details class="faq__item">
+            <summary><span data-i18n="faq_6_q">Comment vous contacter ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_6_a">Utilisez le formulaire ci-dessous, ou écrivez à contact@arich.fr.</div></div>
+          </details>
+        </div>
+      </section>
+
+      <!-- ═══ CONTACT ═══ -->
+      <section class="contact" id="contact">
+        <header class="section-head section-head--center">
+          <p class="eyebrow" data-i18n="contact_over">Contact</p>
+          <h2 data-i18n="contact_title">Écrivez-nous</h2>
+          <p class="section-head__sub" data-i18n="contact_sub">Une question, un bug, un retour — on lit tout.</p>
+        </header>
+        <form class="contact__form" id="contactForm" novalidate>
+          <div class="contact__row">
+            <label class="contact__field">
+              <span data-i18n="contact_name">Nom</span>
+              <input type="text" name="name" id="contactName" required autocomplete="name" maxlength="80" />
+            </label>
+            <label class="contact__field">
+              <span data-i18n="contact_email">Email</span>
+              <input type="email" name="email" id="contactEmail" required autocomplete="email" maxlength="120" />
+            </label>
+          </div>
+          <label class="contact__field">
+            <span data-i18n="contact_subject">Sujet</span>
+            <input type="text" name="subject" id="contactSubject" required maxlength="120" />
+          </label>
+          <label class="contact__field">
+            <span data-i18n="contact_message">Message</span>
+            <textarea name="message" id="contactMessage" rows="5" required maxlength="2000"></textarea>
+          </label>
+          <p class="contact__status" id="contactStatus" role="status" aria-live="polite"></p>
+          <button type="submit" class="btn btn--copper btn--lg btn--glow">
+            <span data-i18n="contact_send">Envoyer</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- ═══ CTA FINAL ═══ -->
+      <section class="final-cta" id="cta">
+        <h2 data-i18n="cta_title">Prêt à regarder autrement ?</h2>
+        <p data-i18n="cta_sub">Téléchargez ARICH Player et commencez votre essai gratuit.</p>
+        <a class="btn btn--copper btn--lg btn--glow" href="#install">
+          <span class="btn__icon" aria-hidden="true">↓</span>
+          <span data-i18n="cta_btn">Télécharger l'app</span>
+        </a>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <img src="/logo-launcher.png" alt="" width="40" height="40" />
+          <div>
+            <strong>ARICH Player</strong>
+            <p data-i18n="footer_tag">Streaming premium · Xtream & M3U</p>
+          </div>
+        </div>
+        <div>
+          <h4 data-i18n="footer_product">Produit</h4>
+          <a href="#features" data-i18n="nav_features">Fonctionnalités</a>
+          <a href="#faq" data-i18n="nav_faq">FAQ</a>
+          <a href="#contact" data-i18n="nav_contact">Contact</a>
+          <a href="#pricing" data-i18n="nav_pricing">Tarifs</a>
+          <a href="/auth.html" data-i18n="nav_account">Compte</a>
+        </div>
+        <div>
+          <h4 data-i18n="footer_legal">Légal</h4>
+          <a href="/privacy-policy.html" data-i18n="footer_privacy">Confidentialité</a>
+          <a href="#contact" data-i18n="footer_contact">Contact</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span data-i18n="footer_copy">© 2026 ARICH Player</span>
+      </div>
+    </footer>
+
+    <button type="button" class="scroll-top" id="scrollTop" aria-label="Haut de page">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+        <path d="M12 19V5M5 12l7-7 7 7"/>
+      </svg>
+    </button>
+
+    <div class="modal" id="modal" hidden>
+      <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <p class="eyebrow" id="modalPlan">Licence</p>
+        <h3 id="modalTitle" data-i18n="modal_title">Activer sur cet appareil</h3>
+        <p class="modal-copy" data-i18n="modal_copy">Device Key</p>
+        <input id="modalKey" type="text" autocomplete="off" spellcheck="false" placeholder="ARICH-XXXX-XXXX-XXXX" />
+        <p class="modal-err" id="modalErr" role="alert"></p>
+        <div class="modal-actions">
+          <button type="button" class="btn btn--ghost" id="modalCancel" data-i18n="modal_cancel">Annuler</button>
+          <button type="button" class="btn btn--copper" id="modalOk" data-i18n="modal_ok">Continuer</button>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- ── DISCLAIMER LÉGAL ──────────────────────────── -->
-<div style="max-width:900px;margin:0 auto;padding:0 48px;">
-  <div class="disclaimer-banner">
-    <span class="disc-icon">ℹ️</span>
-    <div>
-      <strong>Arich IPTV est un lecteur multimédia — nous ne fournissons aucun contenu.</strong>
-      Cette application est un outil technique permettant de lire des flux vidéo depuis vos propres accès IPTV (Xtream Codes, playlists M3U). Vous devez disposer de votre propre abonnement IPTV auprès du fournisseur de votre choix. Arich IPTV n'est pas responsable du contenu diffusé via l'application.
-    </div>
-  </div>
-</div>
-
-<!-- ── FEATURES ──────────────────────────────────── -->
-<section id="features">
-  <div class="section-label" data-ani="up" data-delay="0">Pourquoi Arich IPTV</div>
-  <h2 data-ani="up" data-delay="80">Conçu pour <span style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">l'expérience</span><br>ultime.</h2>
-  <p class="section-sub" data-ani="up" data-delay="160">Chaque détail est pensé pour que vous ne pensiez qu'à regarder.</p>
-
-  <div class="features-grid">
-    <div class="feat-card" data-ani="up" data-delay="0">
-      <div class="feat-icon" style="background:rgba(123,47,255,0.1);">🔌</div>
-      <h3>Compatible Xtream & M3U</h3>
-      <p>Connectez n'importe quel accès IPTV : URL Xtream Codes (login/mdp) ou lien M3U direct. Détection automatique du format.</p>
-    </div>
-    <div class="feat-card" data-ani="up" data-delay="80">
-      <div class="feat-icon" style="background:rgba(10,132,255,0.1);">📋</div>
-      <h3>Multi-playlists</h3>
-      <p>Gérez plusieurs comptes IPTV en parallèle. Basculez d'un accès à l'autre en un tap, sans vous déconnecter.</p>
-    </div>
-    <div class="feat-card" data-ani="up" data-delay="160">
-      <div class="feat-icon" style="background:rgba(48,209,88,0.1);">⚡</div>
-      <h3>Zapping instantané</h3>
-      <p>Player optimisé avec buffer réduit à 32 Mo. La vidéo démarre en quelques secondes, même en 4K.</p>
-    </div>
-    <div class="feat-card" data-ani="up" data-delay="0">
-      <div class="feat-icon" style="background:rgba(255,214,10,0.1);">⭐</div>
-      <h3>Favoris & Historique</h3>
-      <p>Retrouvez vos chaînes préférées et reprenez exactement où vous en étiez, avec mémorisation de la position.</p>
-    </div>
-    <div class="feat-card" data-ani="up" data-delay="80">
-      <div class="feat-icon" style="background:rgba(255,45,85,0.1);">📱</div>
-      <h3>Android TV & Mobile</h3>
-      <p>Interface adaptée au tactile et à la télécommande. Compatible Android TV, Google TV, Fire Stick avec sideload.</p>
-    </div>
-    <div class="feat-card" data-ani="up" data-delay="160">
-      <div class="feat-icon" style="background:rgba(10,132,255,0.1);">🔑</div>
-      <h3>Licence par appareil</h3>
-      <p>Une licence = un appareil identifié par sa Device Key unique. Transfert possible sur demande.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ── PRICING ───────────────────────────────────── -->
-<section id="pricing" style="max-width:1200px;margin:0 auto;padding:120px 48px;">
-  <div class="section-label" data-ani="up" data-delay="0" style="text-align:center;">Tarifs</div>
-  <h2 data-ani="up" data-delay="80" style="text-align:center;">Simple. Honnête.<br><span style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Sans surprise.</span></h2>
-  <p class="section-sub" data-ani="up" data-delay="160" style="text-align:center;margin:0 auto;">Accès au player uniquement — apportez votre propre source IPTV.</p>
-
-  <div class="pricing-grid">
-    <div class="plan-card" data-ani="left" data-delay="0">
-      <div class="plan-name">Annuel</div>
-      <div class="plan-desc">Idéal pour tester le player</div>
-      <div class="plan-price">
-        <span class="currency">€</span><span class="amount">2,99</span><span class="period">/ an</span>
-      </div>
-      <ul class="plan-features">
-        <li><span class="check">✓</span> Player Xtream Codes & M3U</li>
-        <li><span class="check">✓</span> Multi-playlists illimitées</li>
-        <li><span class="check">✓</span> Favoris & Historique</li>
-        <li><span class="check">✓</span> 1 appareil (Device Key)</li>
-        <li class="muted"><span class="cross">–</span> <span>Mises à jour prioritaires</span></li>
-      </ul>
-      <button class="plan-btn outline" onclick="startCheckout('yearly')" data-plan="yearly">Activer pour 2,99€/an</button>
-    </div>
-
-    <div class="plan-card featured" data-ani="scale" data-delay="120">
-      <div class="plan-badge">🔥 Meilleur choix</div>
-      <div class="plan-name">À vie</div>
-      <div class="plan-desc">Payez une fois, profitez toujours</div>
-      <div class="plan-price">
-        <span class="currency">€</span><span class="amount">4,99</span><span class="period">une seule fois</span>
-      </div>
-      <ul class="plan-features">
-        <li><span class="check">✓</span> Player Xtream Codes & M3U</li>
-        <li><span class="check">✓</span> Multi-playlists illimitées</li>
-        <li><span class="check">✓</span> Favoris & Historique</li>
-        <li><span class="check">✓</span> 1 appareil (Device Key)</li>
-        <li><span class="check">✓</span> Mises à jour à vie</li>
-      </ul>
-      <button class="plan-btn solid" data-plan="lifetime" onclick="startCheckout('lifetime')">Acheter la licence à vie</button>
-    </div>
-  </div>
-
-  <div class="pricing-disclaimer" data-ani="up" data-delay="0">
-    <strong style="color:rgba(255,255,255,0.7);display:block;margin-bottom:6px;">⚠️ Important — À lire avant d'acheter</strong>
-    Arich IPTV est un <strong style="color:rgba(255,255,255,0.6)">lecteur multimédia</strong> uniquement. L'abonnement donne accès à l'application player.
-    <strong style="color:rgba(255,255,255,0.6)">Aucun contenu, aucune chaîne, aucun film ne sont inclus.</strong>
-    Vous devez posséder votre propre accès IPTV (Xtream Codes ou M3U) auprès d'un fournisseur tiers.
-    La licence est liée à votre appareil via sa Device Key (visible dans Paramètres → Appareil).
-    Paiement via PayPal ou carte bancaire. Activation sous 2h après réception de votre Device Key.
-  </div>
-  <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:16px;">
-    Satisfait ou remboursé sous 7 jours · Sans engagement pour le mensuel
-  </p>
-</section>
-
-<!-- ── DOWNLOAD ───────────────────────────────────── -->
-<section id="download" style="max-width:1200px;margin:0 auto;padding:0 48px 120px;">
-  <div class="dl-wrapper" data-ani="scale" data-delay="0">
-    <div class="dl-glow"></div>
-    <div style="position:relative;z-index:1;">
-      <div class="section-label" style="text-align:center;">Téléchargement</div>
-      <h2 style="text-align:center;margin-top:10px;">Installez le player<br><span style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">en 30 secondes.</span></h2>
-      <p style="text-align:center;color:var(--muted);font-size:15px;margin-top:14px;">Disponible sur Android. iOS bientôt.</p>
-      <div class="dl-buttons">
-        <a href="https://github.com/chari-ismael/arich_iptv/releases/latest/download/app-release.apk" class="dl-btn dark" data-umami-event="download-apk">
-          <div class="dl-icon">⬇</div>
-          <div class="dl-text"><strong>Télécharger l'APK</strong><span>Android · v1.2.0 · 100 Mo</span></div>
-        </a>
-        <a href="https://play.google.com/store/apps/details?id=com.arich.iptv" target="_blank" class="dl-btn dark-outline" data-umami-event="download-playstore">
-          <div class="dl-icon" style="font-size:26px;">▶</div>
-          <div class="dl-text"><strong>Google Play</strong><span> Lien</span></div>
-        </a>
-      </div>
-      <p class="dl-note">Android 6.0+ requis · Activer "Sources inconnues" pour l'APK · Gratuit à télécharger, licence requise ou Via Google PLay</p>
-    </div>
-  </div>
-</section>
-
-<!-- ── FAQ ────────────────────────────────────────── -->
-<section id="faq" style="max-width:800px;">
-  <div class="section-label" data-ani="up" data-delay="0">FAQ</div>
-  <h2 data-ani="up" data-delay="80">Questions <span style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">fréquentes.</span></h2>
-
-  <div class="faq-list">
-    <div class="faq-item" data-ani="up" data-delay="0">
-      <div class="faq-q" onclick="toggleFaq(this)">Qu'est-ce qu'Arich IPTV exactement ?<div class="faq-arrow">+</div></div>
-      <div class="faq-a">Arich IPTV est un <strong>lecteur multimédia</strong> pour Android, similaire à VLC ou TiviMate. Il ne fournit aucun contenu. Vous connectez votre propre accès IPTV (un lien M3U ou des identifiants Xtream Codes obtenus auprès d'un fournisseur tiers), et l'application vous permet de lire ces flux avec une interface premium.</div>
-    </div>
-    <div class="faq-item" data-ani="up" data-delay="60">
-      <div class="faq-q" onclick="toggleFaq(this)">Comment activer ma licence ?<div class="faq-arrow">+</div></div>
-      <div class="faq-a">Après téléchargement, ouvrez l'app → Paramètres → Appareil. Vous y trouverez votre <strong>Device Key</strong> unique (format ARICH-XXXX-XXXX-XXXX). Envoyez-la nous via le formulaire de contact ou WhatsApp avec votre preuve de paiement. L'activation est effectuée sous 2h.</div>
-    </div>
-    <div class="faq-item" data-ani="up" data-delay="120">
-      <div class="faq-q" onclick="toggleFaq(this)">Est-ce que vous fournissez les chaînes ou l'accès IPTV ?<div class="faq-arrow">+</div></div>
-      <div class="faq-a">Non, absolument pas. Nous ne fournissons aucun contenu, aucune chaîne, aucun film. Arich IPTV est uniquement un lecteur. Vous devez disposer de votre propre abonnement IPTV auprès du fournisseur de votre choix pour utiliser l'application.</div>
-    </div>
-    <div class="faq-item" data-ani="up" data-delay="0">
-      <div class="faq-q" onclick="toggleFaq(this)">Comment ajouter mon accès IPTV dans l'app ?<div class="faq-arrow">+</div></div>
-      <div class="faq-a">Au premier lancement, l'app vous propose 3 modes : Xtream Codes (URL serveur + login + mot de passe), URL M3U directe, ou flux direct. Vous pouvez ensuite ajouter plusieurs playlists depuis Paramètres → Playlists → Ajouter une playlist.</div>
-    </div>
-    <div class="faq-item" data-ani="up" data-delay="60">
-      <div class="faq-q" onclick="toggleFaq(this)">La licence est-elle liée à mon appareil ?<div class="faq-arrow">+</div></div>
-      <div class="faq-a">Oui. Chaque licence est liée à une Device Key unique générée par votre appareil Android. En cas de changement d'appareil (achat, factory reset), contactez le support pour transfert gratuit de la licence.</div>
-    </div>
-    <div class="faq-item" data-ani="up" data-delay="120">
-      <div class="faq-q" onclick="toggleFaq(this)">Est-ce compatible avec ma Smart TV ?<div class="faq-arrow">+</div></div>
-      <div class="faq-a">L'application est disponible en APK Android. Si votre TV tourne sous Android TV ou Google TV, vous pouvez l'installer via sideload. Pour les autres TV, utilisez un boîtier Android (Fire Stick, MiBox, Chromecast avec Google TV, etc.).</div>
-    </div>
-    <div class="faq-item" data-ani="up" data-delay="180">
-      <div class="faq-q" onclick="toggleFaq(this)">Puis-je essayer avant d'acheter ?<div class="faq-arrow">+</div></div>
-      <div class="faq-a">Oui. L'application est gratuite à télécharger et peut être utilisée en mode limité sans licence. Pour une expérience complète, une période d'essai de 48h peut être accordée sur demande via le formulaire contact en indiquant votre Device Key.</div>
-    </div>
-  </div>
-</section>
-
-<!-- ── CONTACT ────────────────────────────────────── -->
-<section id="contact" style="max-width:1100px;">
-  <div class="section-label" data-ani="up" data-delay="0">Contact</div>
-  <h2 data-ani="up" data-delay="80">On est là <span style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">pour vous.</span></h2>
-
-  <div class="contact-grid">
-    <div class="contact-info" data-ani="left" data-delay="0">
-      <p style="font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:8px;">
-        Support réactif, généralement sous 2h. Pensez à inclure votre Device Key pour toute demande d'activation ou de transfert de licence.
-      </p>
-      <a href="https://wa.me/212682375935" target="_blank" class="contact-chip" data-umami-event="contact-whatsapp">
-        <div class="contact-chip-icon" style="background:rgba(37,211,102,0.1);">💬</div>
-        <div class="contact-chip-text"><strong>WhatsApp</strong><span>Réponse rapide · +212 06 82 37 59 35</span></div>
-      </a>
-      <a href="mailto:contact@arich.fr" class="contact-chip" data-umami-event="contact-email">
-        <div class="contact-chip-icon" style="background:rgba(10,132,255,0.1);">✉️</div>
-        <div class="contact-chip-text"><strong>Email</strong><span>contact@arich.fr</span></div>
-      </a>
-      <a href="https://t.me/arichiptv" target="_blank" class="contact-chip" data-umami-event="contact-telegram">
-        <div class="contact-chip-icon" style="background:rgba(10,132,255,0.08);">🛫</div>
-        <div class="contact-chip-text"><strong>Telegram</strong><span>@arichiptv</span></div>
-      </a>
-    </div>
-
-    <form class="contact-form" data-ani="right" data-delay="100" onsubmit="sendForm(event)">
-      <div class="form-row">
-        <input class="form-input" id="fname" placeholder="Votre prénom" />
-        <input class="form-input" id="femail" type="email" placeholder="Email" />
-      </div>
-      <input class="form-input" id="fsubject" placeholder="Sujet (ex: Activation licence à vie)" />
-      <input class="form-input" id="fdevicekey" placeholder="Votre Device Key (ex: ARICH-XXXX-XXXX-XXXX)" />
-      <textarea class="form-input" id="fmessage" rows="4" placeholder="Votre message..."></textarea>
-      <button type="submit" class="form-submit" data-umami-event="contact-form-submit">Envoyer le message →</button>
-    </form>
-  </div>
-</section>
-
-<!-- ── FOOTER ─────────────────────────────────────── -->
-<footer>
-  <div class="footer-logo">
-    <div class="nav-logo-icon" style="width:28px;height:28px;font-size:13px;">▶</div>
-    ARICH IPTV
-  </div>
-  <div class="footer-links">
-    <a href="#features">Fonctionnalités</a>
-    <a href="#pricing">Tarifs</a>
-    <a href="#faq">FAQ</a>
-    <a href="#contact">Contact</a>
-    <a href="manage-playlist.html">Playlists</a>
-    <a href="privacy-policy.html">Confidentialité</a>
-    <a href="#">CGU</a>
-    <a href="https://arich.fr/auth.html" class="footer-login-link" data-umami-event="footer-login">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="-webkit-text-fill-color:initial;"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-      Mon compte →
-    </a>
-  </div>
-  <div class="footer-copy">© 2025 Arich IPTV · Lecteur multimédia uniquement · Aucun contenu fourni</div>
-</footer>
-
-<script>
-  // ── Custom cursor ────────────────────────────────────────────────────────
-  const cursor = document.getElementById('cursor');
-  const ring   = document.getElementById('cursor-ring');
-  let cx = 0, cy = 0, rx = 0, ry = 0;
-  document.addEventListener('mousemove', e => { cx = e.clientX; cy = e.clientY; });
-  document.querySelectorAll('a,button,.feat-card,.faq-q,.plan-card,.contact-chip,.phone-channel').forEach(el => {
-    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
-    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
-  });
-  (function animateCursor() {
-    rx += (cx - rx) * 0.12; ry += (cy - ry) * 0.12;
-    cursor.style.left = cx + 'px'; cursor.style.top = cy + 'px';
-    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
-    requestAnimationFrame(animateCursor);
-  })();
-
-  // ── Scroll animation — système data-ani ─────────────────────────────────
-  // Principe : chaque élément [data-ani] démarre opacity:0 (CSS).
-  // Au scroll, dès qu'il entre dans le viewport, on lui ajoute .ani-go
-  // et on applique animation-delay via style inline (data-delay en ms).
-  // Aucun IntersectionObserver — on utilise getBoundingClientRect() sur scroll + load.
-
-  const aniEls = Array.from(document.querySelectorAll('[data-ani]'));
-
-  function checkAni() {
-    const wh = window.innerHeight;
-    aniEls.forEach(el => {
-      if (el.classList.contains('ani-go')) return; // déjà déclenché
-      const rect = el.getBoundingClientRect();
-      if (rect.top < wh - 40) {
-        const delay = el.dataset.delay || 0;
-        el.style.animationDelay = delay + 'ms';
-        el.classList.add('ani-go');
-      }
-    });
-  }
-
-  // Lancement au scroll et au resize
-  window.addEventListener('scroll', checkAni, { passive: true });
-  window.addEventListener('resize', checkAni, { passive: true });
-
-  // Lancement immédiat au chargement (éléments déjà visibles dès le départ)
-  // On attend que le DOM soit prêt + un micro-délai pour les layouts
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => setTimeout(checkAni, 50));
-  } else {
-    setTimeout(checkAni, 50);
-  }
-
-  // ── FAQ accordion ────────────────────────────────────────────────────────
-  function toggleFaq(el) {
-    const item = el.parentElement;
-    const isOpen = item.classList.contains('open');
-    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-    if (!isOpen) item.classList.add('open');
-  }
-
-  // ── Contact avec plan pré-rempli ─────────────────────────────────────────
-  function openContact(plan) {
-    document.getElementById('fsubject').value = 'Activation licence — ' + plan;
-    document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
-    setTimeout(() => document.getElementById('fname').focus(), 800);
-  }
-
-  // ── Form submit → Formspree ──────────────────────────────────────────────
-  async function sendForm(e) {
-    e.preventDefault();
-    const name      = document.getElementById('fname').value.trim();
-    const email     = document.getElementById('femail').value.trim();
-    const subject   = document.getElementById('fsubject').value.trim() || 'Contact';
-    const deviceKey = document.getElementById('fdevicekey').value.trim();
-    const message   = document.getElementById('fmessage').value.trim();
-    if (!name || !email || !message) { showToast('⚠️ Remplissez tous les champs obligatoires'); return; }
-    try {
-      const res = await fetch('https://formspree.io/f/xgolqeyj', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ name, email, subject, message, deviceKey: deviceKey || 'Non renseignée', _subject: `[Arich IPTV] ${subject}` }),
-      });
-      if (res.ok) { showToast('✓ Message envoyé !'); e.target.reset(); }
-      else { showToast('✗ Erreur, réessayez'); }
-    } catch { showToast('✗ Erreur réseau'); }
-  }
-
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
-  }
-
-  // ── Tracking sessions site (Supabase) ───────────────────────────────────
-  const SUPABASE_URL  = 'https://aynucieohuowgkwyftiy.supabase.co';
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk';
-  const _siteSession = { start: Date.now(), referrer: document.referrer || 'direct', path: location.pathname, country: null };
-  fetch('https://ipapi.co/json/').then(r => r.json()).then(d => { _siteSession.country = d.country_name || d.country; }).catch(() => {});
-
-  async function _sendSiteSession() {
-    const duration = Math.round((Date.now() - _siteSession.start) / 1000);
-    if (duration < 3) return;
-    try {
-      await fetch(`${SUPABASE_URL}/rest/v1/site_sessions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}`, 'Prefer': 'return=minimal' },
-        body: JSON.stringify({ duration_seconds: duration, country: _siteSession.country, referrer: _siteSession.referrer, path: _siteSession.path, user_agent: navigator.userAgent, created_at: new Date().toISOString() }),
-      });
-    } catch {}
-  }
-  window.addEventListener('pagehide', _sendSiteSession);
-  window.addEventListener('beforeunload', _sendSiteSession);
-  async function startCheckout(plan) {
-  const btn = document.querySelector(`[data-plan="${plan}"]`)
-  btn.disabled = true
-  btn.textContent = 'Chargement...'
-
-  // Récupère la session Supabase si connecté
-  const { data: { session } } = await supabase.auth.getSession()
-
-  // Demande la device_key si pas connecté
-  const deviceKey = prompt('Entrez la clé de votre appareil\n(visible dans ARICH IPTV → Paramètres → Infos appareil)')
-  if (!deviceKey) { btn.disabled = false; btn.textContent = 'Acheter'; return }
-
-  const res = await fetch('https://aynucieohuowgkwyftiy.supabase.co/functions/v1/create-checkout', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      plan,
-      deviceKey: deviceKey.trim().toUpperCase(),
-      userId:  session?.user?.id  || null,
-      email:   session?.user?.email || null,
-    })
-  })
-
-  const data = await res.json()
-  if (data.error) {
-    alert('❌ ' + data.error)
-    btn.disabled = false
-    btn.textContent = 'Acheter'
-    return
-  }
-
-  window.location.href = data.url
-}
-</script>
+  <script type="module" src="/src/main.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-

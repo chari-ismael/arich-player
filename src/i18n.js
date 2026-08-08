@@ -373,6 +373,12 @@ const dict = {
 }
 
 function detectLang() {
+  try {
+    const q = new URLSearchParams(window.location.search).get('lang')
+    if (q === 'fr' || q === 'en') return q
+  } catch {
+    /* ignore */
+  }
   const saved = localStorage.getItem('arich_lang')
   if (saved === 'fr' || saved === 'en') return saved
   const nav = (navigator.language || 'en').toLowerCase()

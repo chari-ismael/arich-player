@@ -1,0 +1,38 @@
+# ARICH Player
+
+> Lecteur IPTV premium pour Android et Android TV. Connectez vos propres accès Xtream Codes ou playlists M3U. ARICH ne fournit aucun contenu média.
+
+Site: https://arich.fr/
+Contact: contact@arich.fr
+App Android / Android TV: package `com.arich.iptv`
+Google Play: https://play.google.com/store/apps/details?id=com.arich.iptv
+APK: https://github.com/chari-ismael/arich-player/releases/latest
+
+## Produit
+
+- Nom: ARICH Player
+- Type: application lecteur IPTV / média (pas un fournisseur de chaînes)
+- Plateformes: Android, Android TV
+- Sources supportées: Xtream Codes, M3U
+- Langues UI: français, anglais
+- Essai: 14 jours
+- Tarifs: 3 € / an, ou 5 € à vie
+- Fonctions clés: live TV, VOD films & séries, EPG, favoris, téléchargement local, Watch Together (lecture synchronisée), gestion cloud des playlists
+
+## Pages
+
+- [Accueil](https://arich.fr/): présentation produit, fonctionnalités, tarifs, FAQ, contact
+- [Compte / authentification](https://arich.fr/auth.html): connexion et compte
+- [Politique de confidentialité](https://arich.fr/privacy-policy.html)
+
+## Faits importants
+
+- ARICH est un lecteur: l’utilisateur apporte ses propres playlists / identifiants.
+- Aucun film, série ou chaîne n’est vendu avec l’application.
+- Support: contact@arich.fr (réponse typique 24–48 h ouvrées).
+- Marque / domaine: arich.fr
+
+## Optional
+
+- [Privacy policy](https://arich.fr/privacy-policy.html)
+- [Sitemap](https://arich.fr/sitemap.xml)

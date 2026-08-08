@@ -3,16 +3,208 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ARICH Player — Le cinéma, chez vous</title>
-  <meta name="description" content="ARICH Player — streaming premium Xtream & M3U. Films, séries, live TV. Android & TV. 14 jours gratuits." />
+  <title>ARICH Player — Lecteur IPTV Android &amp; TV | Xtream &amp; M3U</title>
+  <meta name="description" content="ARICH Player : lecteur IPTV premium pour Android et Android TV. Xtream Codes &amp; M3U, films, séries, live TV. Essai 14 jours — dès 3 €/an. Aucun contenu fourni." />
+  <meta name="keywords" content="ARICH Player, lecteur IPTV, Xtream Codes, M3U, Android TV, lecteur Android IPTV, Watch Together, playlist IPTV" />
+  <meta name="author" content="ARICH" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="bingbot" content="index, follow" />
+  <meta name="theme-color" content="#0D1017" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="application-name" content="ARICH Player" />
+  <meta name="apple-mobile-web-app-title" content="ARICH" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="format-detection" content="telephone=no" />
   <meta name="google-site-verification" content="jirKy2q6VohRM8uXDo8NUFqDf-JzYBiEuX9nPXn4SoQ" />
-  <meta property="og:title" content="ARICH Player" />
-  <meta property="og:description" content="Le cinéma, chez vous. Sans le bruit." />
+  <link rel="canonical" href="https://arich.fr/" />
+  <link rel="alternate" hreflang="fr" href="https://arich.fr/" />
+  <link rel="alternate" hreflang="en" href="https://arich.fr/?lang=en" />
+  <link rel="alternate" hreflang="x-default" href="https://arich.fr/" />
+
+  <!-- Favicon / app icons -->
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- Open Graph (Google / social preview) -->
   <meta property="og:type" content="website" />
-  <link rel="icon" type="image/png" href="/favicon.png" />
+  <meta property="og:site_name" content="ARICH Player" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:url" content="https://arich.fr/" />
+  <meta property="og:title" content="ARICH Player — Le cinéma, chez vous. Sans le bruit." />
+  <meta property="og:description" content="Lecteur IPTV premium pour Android &amp; Android TV. Xtream Codes et M3U. Essai 14 jours. Dès 3 €/an." />
+  <meta property="og:image" content="https://arich.fr/og-image.jpg" />
+  <meta property="og:image:secure_url" content="https://arich.fr/og-image.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="ARICH Player — lecteur IPTV Android et Android TV" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ARICH Player — Lecteur IPTV Android &amp; TV" />
+  <meta name="twitter:description" content="Xtream Codes &amp; M3U. Films, séries, live TV. Essai 14 jours — dès 3 €/an." />
+  <meta name="twitter:image" content="https://arich.fr/og-image.jpg" />
+  <meta name="twitter:image:alt" content="ARICH Player" />
+
+  <!-- AI / answer-engine discovery -->
+  <link rel="alternate" type="text/plain" href="/llms.txt" title="LLMs" />
+  <meta name="ai-content-declaration" content="human-authored product website" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://arich.fr/#organization",
+        "name": "ARICH",
+        "url": "https://arich.fr/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://arich.fr/logo-fg.png",
+          "width": 1024,
+          "height": 1024
+        },
+        "email": "contact@arich.fr",
+        "sameAs": [
+          "https://play.google.com/store/apps/details?id=com.arich.iptv",
+          "https://github.com/chari-ismael/arich-player"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://arich.fr/#website",
+        "url": "https://arich.fr/",
+        "name": "ARICH Player",
+        "description": "Lecteur IPTV premium pour Android et Android TV. Xtream Codes et M3U.",
+        "publisher": { "@id": "https://arich.fr/#organization" },
+        "inLanguage": ["fr", "en"],
+        "image": "https://arich.fr/og-image.jpg"
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://arich.fr/#webpage",
+        "url": "https://arich.fr/",
+        "name": "ARICH Player — Lecteur IPTV Android & TV",
+        "isPartOf": { "@id": "https://arich.fr/#website" },
+        "about": { "@id": "https://arich.fr/#app" },
+        "description": "ARICH Player : lecteur IPTV premium pour Android et Android TV. Xtream Codes & M3U. Essai 14 jours.",
+        "inLanguage": "fr",
+        "primaryImageOfPage": {
+          "@type": "ImageObject",
+          "url": "https://arich.fr/og-image.jpg",
+          "width": 1200,
+          "height": 630
+        }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://arich.fr/#app",
+        "name": "ARICH Player",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Android, Android TV",
+        "description": "Lecteur IPTV pour Android et Android TV. Connectez vos accès Xtream Codes ou playlists M3U. ARICH ne fournit aucun contenu.",
+        "url": "https://arich.fr/",
+        "image": "https://arich.fr/og-image.jpg",
+        "screenshot": "https://arich.fr/media/home-phone.png",
+        "author": { "@id": "https://arich.fr/#organization" },
+        "publisher": { "@id": "https://arich.fr/#organization" },
+        "offers": [
+          {
+            "@type": "Offer",
+            "name": "Essai",
+            "price": "0",
+            "priceCurrency": "EUR",
+            "description": "Essai gratuit 14 jours"
+          },
+          {
+            "@type": "Offer",
+            "name": "Annuel",
+            "price": "3",
+            "priceCurrency": "EUR",
+            "description": "Licence annuelle"
+          },
+          {
+            "@type": "Offer",
+            "name": "À vie",
+            "price": "5",
+            "priceCurrency": "EUR",
+            "description": "Licence à vie"
+          }
+        ],
+        "downloadUrl": "https://github.com/chari-ismael/arich-player/releases/latest",
+        "installUrl": "https://play.google.com/store/apps/details?id=com.arich.iptv",
+        "softwareVersion": "3.0.4",
+        "inLanguage": ["fr", "en"],
+        "featureList": [
+          "Xtream Codes",
+          "Playlists M3U",
+          "Live TV",
+          "Films et séries",
+          "EPG",
+          "Watch Together",
+          "Android TV"
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://arich.fr/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "ARICH fournit-il des films ou des chaînes ?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Non. ARICH est un lecteur. Vous connectez vos propres accès Xtream ou playlists M3U."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Comment fonctionne l’essai de 14 jours ?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Vous testez l’app librement. Ensuite, choisissez l’offre annuelle (3 €) ou à vie (5 €)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Sur quels appareils ça marche ?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Android et Android TV. APK via GitHub, ou Google Play lorsque disponible."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "C’est quoi Watch Together ?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Une lecture synchronisée à distance : le même flux, au même moment."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Comment vous joindre ?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Via le formulaire sur arich.fr, ou contact@arich.fr. Réponse sous 24–48 h ouvrées."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
   <div id="boot" class="boot" aria-hidden="true">
@@ -39,7 +231,7 @@
       <div class="nav__inner" id="navPill">
         <div class="nav__liquid" id="navLiquid" aria-hidden="true"></div>
         <a class="nav__brand" href="#top">
-          <img id="navBrandMark" src="/logo-fg.png" alt="" width="28" height="28" />
+          <img id="navBrandMark" src="/logo-fg.png" alt="ARICH" width="28" height="28" />
           <span>ARICH</span>
         </a>
 

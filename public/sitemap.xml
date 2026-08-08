@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://arich.fr/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://arich.fr/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://arich.fr/?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://arich.fr/" />
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://arich.fr/privacy-policy.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://arich.fr/auth.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+</urlset>

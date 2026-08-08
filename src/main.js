@@ -253,11 +253,17 @@ let featLockTimer = 0
 let featTouchStartY = 0
 let featTouchLastY = 0
 let featTouchActive = false
+let featFloatTimer = 0
 
-function setFeatFloat(i, visible) {
+const FEAT_FLOAT_SWAP_MS = 210
+
+function setFeatFloat(i, visible, { instant = false } = {}) {
   const keys = FEAT_KEYS[i]
   if (!keys || !featFloat) return
-  if (i !== featIdx) {
+
+  window.clearTimeout(featFloatTimer)
+
+  const applyContent = () => {
     featIdx = i
     if (featFloatTag) featFloatTag.textContent = t(keys.tag)
     if (featFloatTitle) featFloatTitle.textContent = t(keys.title)
@@ -267,7 +273,23 @@ function setFeatFloat(i, visible) {
       btn.classList.toggle('is-active', di === i)
     })
   }
-  featFloat.classList.toggle('is-on', !!visible)
+
+  const show = !!visible
+  const useInstant = instant || reduced
+  const contentChanged = i !== featIdx
+
+  if (contentChanged && show && !useInstant && featFloat.classList.contains('is-on')) {
+    featFloat.classList.remove('is-on')
+    featFloatTimer = window.setTimeout(() => {
+      applyContent()
+      requestAnimationFrame(() => {
+        featFloat.classList.add('is-on')
+      })
+    }, FEAT_FLOAT_SWAP_MS)
+  } else {
+    applyContent()
+    featFloat.classList.toggle('is-on', show)
+  }
 }
 
 function applyFeatSlide(index, { instant = false } = {}) {
@@ -280,23 +302,19 @@ function applyFeatSlide(index, { instant = false } = {}) {
   featPin?.classList.toggle('is-past-hint', i > 0)
 
   featSlides.forEach((slide, si) => {
-    const on = si === i
-    const prev = si < i
-    slide.style.opacity = on ? '1' : '0'
-    slide.style.transform = on
-      ? 'translateY(0) scale(1)'
-      : prev
-        ? 'translateY(-26px) scale(1.05)'
-        : 'translateY(30px) scale(0.92)'
-    slide.style.filter = on || reduced ? 'none' : 'blur(2px)'
-    slide.style.zIndex = on ? '3' : String(Math.max(0, 2 - Math.abs(si - i)))
-    slide.classList.toggle('is-active', on)
+    slide.classList.remove('is-active', 'is-before', 'is-after')
+    if (si === i) slide.classList.add('is-active')
+    else if (si < i) slide.classList.add('is-before')
+    else slide.classList.add('is-after')
+    slide.style.opacity = ''
+    slide.style.transform = ''
+    slide.style.filter = ''
+    slide.style.zIndex = ''
   })
 
-  setFeatFloat(i, true)
+  setFeatFloat(i, true, { instant: useInstant })
 
   if (useInstant) {
-    // Force reflow then restore transitions for later gestures
     void featPin?.offsetHeight
     if (!reduced) featPin?.classList.remove('is-instant')
   }

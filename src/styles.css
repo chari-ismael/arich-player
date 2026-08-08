@@ -1171,27 +1171,37 @@ em { font-style: italic; }
   display: grid;
   place-items: center;
   opacity: 0;
-  transform: translateY(28px) scale(0.92);
+  transform: translateY(14px) scale(0.98);
   transform-origin: center center;
   pointer-events: none;
-  will-change: transform, opacity, filter;
-  filter: blur(0px);
+  z-index: 1;
+  will-change: opacity, transform;
   transition:
     opacity 0.48s var(--ease-cinema),
-    transform 0.52s var(--ease-cinema),
-    filter 0.4s var(--ease);
+    transform 0.52s var(--ease-cinema);
+}
+.featflow__slide.is-before {
+  opacity: 0;
+  transform: translateY(-14px) scale(0.98);
+  z-index: 2;
+}
+.featflow__slide.is-after {
+  opacity: 0;
+  transform: translateY(14px) scale(0.98);
+  z-index: 1;
 }
 .featflow__slide.is-active {
   opacity: 1;
   transform: translateY(0) scale(1);
-  filter: none;
   z-index: 3;
 }
-.featflow.is-instant .featflow__slide {
-  transition: none;
+.featflow.is-instant .featflow__slide,
+.featflow.is-instant .featflow__float {
+  transition: none !important;
 }
 @media (prefers-reduced-motion: reduce) {
-  .featflow__slide {
+  .featflow__slide,
+  .featflow__float {
     transition: none;
   }
 }
@@ -1225,8 +1235,10 @@ em { font-style: italic; }
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.35);
   opacity: 0;
-  transform: translateY(12px) scale(0.96);
-  transition: opacity 0.35s var(--ease), transform 0.45s var(--ease);
+  transform: translateY(10px) scale(0.98);
+  transition:
+    opacity 0.42s var(--ease-cinema),
+    transform 0.48s var(--ease-cinema);
   pointer-events: none;
   right: 2%;
   top: 18%;
@@ -1985,7 +1997,7 @@ em { font-style: italic; }
     left: auto;
     top: auto;
     bottom: 6%;
-    transform: translate(50%, 10px) scale(0.96);
+    transform: translate(50%, 10px) scale(0.98);
   }
   .featflow__float.is-on {
     transform: translate(50%, 0) scale(1);

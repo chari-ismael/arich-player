@@ -937,7 +937,8 @@ em { font-style: italic; }
   padding: 0;
 }
 .browse__pin {
-  height: 280vh;
+  /* Tall runway: vertical scroll drives horizontal phone focus */
+  height: 320vh;
   position: relative;
 }
 .browse__sticky {
@@ -949,7 +950,7 @@ em { font-style: italic; }
   flex-direction: column;
   justify-content: flex-start;
   padding: calc(var(--nav-h) + 8px) var(--pad) 20px;
-  overflow: hidden;
+  /* overflow stays on viewport so titles aren't clipped */
   background: linear-gradient(180deg, transparent, rgba(8,10,15,0.4) 20%, rgba(8,10,15,0.5) 80%, transparent);
 }
 .browse__sticky .section-head--compact {
@@ -977,7 +978,6 @@ em { font-style: italic; }
   width: 0%;
   background: linear-gradient(90deg, var(--copper), var(--copper-2));
   border-radius: 2px;
-  transition: width .05s linear;
 }
 .browse__labels {
   display: flex;
@@ -1013,6 +1013,7 @@ em { font-style: italic; }
   display: flex;
   align-items: center;
   gap: clamp(24px, 4vw, 48px);
+  width: max-content;
   will-change: transform;
   transform-style: preserve-3d;
   padding: 8px 0 12px;
@@ -1044,6 +1045,7 @@ em { font-style: italic; }
 }
 .browse__card--land {
   width: min(420px, 86vw, calc(var(--browse-phone-h) * 1.55));
+  max-width: min(420px, 86vw);
 }
 .browse__card--land .device--desktop {
   width: 100%;
@@ -2089,7 +2091,7 @@ em { font-style: italic; }
   }
   .nav__links a:hover { transform: none; }
   .nav__cta { display: none; }
-  .browse__pin { height: 220vh; }
+  .browse__pin { height: 260vh; }
   .browse__rail {
     --browse-phone-h: min(520px, calc(100dvh - var(--nav-h) - 180px));
   }

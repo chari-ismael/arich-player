@@ -164,13 +164,26 @@ function initHeroTilt() {
 /* ── Browse vertical → horizontal scrub ────────────── */
 const browsePin = document.getElementById('browsePin')
 const browseRail = document.getElementById('browseRail')
+const browseViewport = browseRail?.parentElement || null
 const browseProgress = document.getElementById('browseProgress')
 const browseLabels = document.getElementById('browseLabels')
 const browseCards = browseRail ? [...browseRail.querySelectorAll('.browse__card')] : []
 const BROWSE_N = browseCards.length || 5
 
+/** True while the browse pin owns the viewport (sticky scrub range). */
+function isBrowseEngaged() {
+  if (!browsePin) return false
+  const rect = browsePin.getBoundingClientRect()
+  // Pin top above/at viewport top, and pin still covers most of the screen
+  return rect.top <= 1 && rect.bottom >= window.innerHeight * 0.55
+}
+
+function browseCardMid(card) {
+  return card.offsetLeft + card.offsetWidth / 2
+}
+
 function updateBrowse() {
-  if (!browsePin || !browseRail) return
+  if (!browsePin || !browseRail || !browseViewport) return
   const rect = browsePin.getBoundingClientRect()
   const total = browsePin.offsetHeight - window.innerHeight
   if (total <= 0) return
@@ -178,12 +191,24 @@ function updateBrowse() {
   const scrolled = Math.min(Math.max(-rect.top, 0), total)
   const p = scrolled / total
 
-  const maxX = Math.max(0, browseRail.scrollWidth - browseRail.parentElement.clientWidth)
-  browseRail.style.transform = `translate3d(${-maxX * p}px, 0, 0)`
+  // Focus progress across phones (0 → first, 1 → last)
+  const raw = p * (BROWSE_N - 1)
+  const i0 = Math.floor(raw)
+  const i1 = Math.min(BROWSE_N - 1, i0 + 1)
+  const localT = raw - i0
+  const c0 = browseCards[i0]
+  const c1 = browseCards[i1]
+  if (!c0) return
+
+  // Center the focused phone in the viewport (not leftover-overflow slide)
+  const mid0 = browseCardMid(c0)
+  const mid1 = c1 ? browseCardMid(c1) : mid0
+  const focusMid = mid0 + (mid1 - mid0) * localT
+  const x = browseViewport.clientWidth / 2 - focusMid
+  browseRail.style.transform = `translate3d(${x}px, 0, 0)`
 
   if (browseProgress) browseProgress.style.width = `${p * 100}%`
 
-  const raw = p * (BROWSE_N - 1)
   const idx = Math.min(BROWSE_N - 1, Math.round(raw))
   browseCards.forEach((card, i) => {
     const dist = Math.abs(raw - i)
@@ -206,8 +231,9 @@ browseLabels?.querySelectorAll('button').forEach((btn) => {
   btn.addEventListener('click', () => {
     if (!browsePin) return
     const i = Number(btn.dataset.browse) || 0
-    const total = browsePin.offsetHeight - window.innerHeight
-    const target = browsePin.offsetTop + (total * i) / Math.max(1, BROWSE_N - 1)
+    const total = Math.max(0, browsePin.offsetHeight - window.innerHeight)
+    const pinTop = browsePin.getBoundingClientRect().top + window.scrollY
+    const target = pinTop + (total * i) / Math.max(1, BROWSE_N - 1)
     if (lenis) lenis.scrollTo(target, { duration: 1 })
     else window.scrollTo({ top: target, behavior: 'smooth' })
   })
@@ -402,6 +428,8 @@ function markFeatGestureIdle() {
 
 function onFeatWheel(e) {
   if (!featPin || !featSlides.length || !isFeatEngaged()) return
+  // Never trap wheel while browse scrub owns the viewport
+  if (isBrowseEngaged()) return
 
   const dy = e.deltaY
   if (dy === 0) return
@@ -434,7 +462,7 @@ function onFeatWheel(e) {
 }
 
 function onFeatTouchStart(e) {
-  if (!featPin || !isFeatEngaged()) return
+  if (!featPin || !isFeatEngaged() || isBrowseEngaged()) return
   const t = e.changedTouches[0]
   if (!t) return
   featTouchActive = true
@@ -443,7 +471,7 @@ function onFeatTouchStart(e) {
 }
 
 function onFeatTouchMove(e) {
-  if (!featTouchActive || !isFeatEngaged()) return
+  if (!featTouchActive || !isFeatEngaged() || isBrowseEngaged()) return
   const t = e.touches[0]
   if (!t) return
   featTouchLastY = t.clientY
@@ -457,7 +485,7 @@ function onFeatTouchMove(e) {
 function onFeatTouchEnd() {
   if (!featTouchActive) return
   featTouchActive = false
-  if (!isFeatEngaged()) return
+  if (!isFeatEngaged() || isBrowseEngaged()) return
 
   const dy = featTouchLastY - featTouchStartY
   if (Math.abs(dy) < FEAT_TOUCH_THRESHOLD) return
@@ -721,6 +749,8 @@ function onScroll() {
 }
 
 window.addEventListener('scroll', onScroll, { passive: true })
+// Lenis emits on its own raf while smoothing — keep both so scrub stays 1:1
+if (lenis) lenis.on('scroll', onScroll)
 window.addEventListener('resize', () => {
   updateBrowse()
   updateFeatFlow()

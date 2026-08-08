@@ -478,120 +478,211 @@
       <section class="pricing" id="pricing">
         <header class="section-head section-head--center">
           <p class="eyebrow" data-i18n="price_over">Tarifs</p>
-          <h2 data-i18n="price_title">Simple. Transparent.</h2>
-          <p class="section-head__sub" data-i18n="price_sub">14 jours gratuits. Aucun contenu fourni.</p>
+          <h2 data-i18n="price_title">Deux offres. Zéro surprise.</h2>
+          <p class="section-head__sub" data-i18n="price_sub">Licence application uniquement — aucun contenu fourni.</p>
         </header>
 
         <div class="pricing__trial">
-          <strong id="trialDays">14</strong>
-          <span data-i18n="price_trial">jours gratuits</span>
+          <div class="pricing__trial-card">
+            <strong id="trialDays">14</strong>
+            <div>
+              <p data-i18n="price_trial">jours d’essai</p>
+              <span data-i18n="price_trial_hint">Sans engagement. Testez avant de choisir.</span>
+            </div>
+          </div>
         </div>
 
         <div class="pricing__cards">
           <article class="price-card" data-plan-card="yearly">
-            <h3 data-i18n="price_year_t">Annuel</h3>
+            <header class="price-card__head">
+              <h3 data-i18n="price_year_t">Annuel</h3>
+              <p class="price-card__desc" data-i18n="price_year_b">Accès complet, renouvellement simple.</p>
+            </header>
             <p class="price-card__amount">
-              <span id="priceYearAmt">3</span><span class="price-card__cur" id="priceCur">€</span>
+              <span id="priceYearAmt">3</span><span class="price-card__cur">€</span>
               <span class="price-card__per" id="priceYearPer">/ an</span>
             </p>
-            <p class="price-card__desc" data-i18n="price_year_b">Renouvellement simple.</p>
+            <ul class="price-card__feats">
+              <li data-i18n="price_f_app">Application Android &amp; Android TV</li>
+              <li data-i18n="price_f_xtream">Xtream Codes &amp; M3U</li>
+              <li data-i18n="price_f_updates">Mises à jour incluses</li>
+              <li data-i18n="price_f_support">Support par email</li>
+            </ul>
             <button type="button" class="btn btn--ghost" data-plan="yearly" data-i18n="price_cta">Activer</button>
           </article>
 
           <article class="price-card price-card--reco" data-plan-card="lifetime">
-            <span class="price-card__badge" data-i18n="price_reco">Recommandé</span>
-            <h3 data-i18n="price_life_t">À vie</h3>
+            <span class="price-card__badge" data-i18n="price_reco">Meilleur choix</span>
+            <header class="price-card__head">
+              <h3 data-i18n="price_life_t">À vie</h3>
+              <p class="price-card__desc" data-i18n="price_life_b">Un paiement. Accès pour toujours.</p>
+            </header>
             <p class="price-card__amount">
               <span id="priceLifeAmt">5</span><span class="price-card__cur">€</span>
               <span class="price-card__per" id="priceLifePer">à vie</span>
             </p>
-            <p class="price-card__desc" data-i18n="price_life_b">Un paiement. Pour toujours.</p>
+            <ul class="price-card__feats">
+              <li data-i18n="price_f_app">Application Android &amp; Android TV</li>
+              <li data-i18n="price_f_xtream">Xtream Codes &amp; M3U</li>
+              <li data-i18n="price_f_updates">Mises à jour incluses</li>
+              <li data-i18n="price_f_support">Support par email</li>
+              <li data-i18n="price_f_once">Aucun renouvellement</li>
+            </ul>
             <button type="button" class="btn btn--copper" data-plan="lifetime" data-i18n="price_cta">Activer</button>
           </article>
         </div>
-        <p class="pricing__note" data-i18n="price_note">Licence app · aucun contenu fourni.</p>
+        <p class="pricing__note" data-i18n="price_note">Vous apportez vos propres playlists. ARICH ne vend aucun contenu.</p>
       </section>
 
       <!-- ═══ FAQ ═══ -->
       <section class="faq" id="faq">
         <header class="section-head section-head--center">
           <p class="eyebrow" data-i18n="faq_over">FAQ</p>
-          <h2 data-i18n="faq_title">Questions fréquentes</h2>
-          <p class="section-head__sub" data-i18n="faq_sub">Les réponses essentielles, sans jargon.</p>
+          <h2 data-i18n="faq_title">Les vraies questions</h2>
+          <p class="section-head__sub" data-i18n="faq_sub">Réponses courtes. Sans jargon.</p>
         </header>
+
+        <div class="faq__tabs" id="faqTabs" role="tablist" aria-label="FAQ">
+          <button type="button" class="is-active" role="tab" aria-selected="true" data-faq-cat="all" data-i18n="faq_cat_all">Tout</button>
+          <button type="button" role="tab" aria-selected="false" data-faq-cat="app" data-i18n="faq_cat_app">Application</button>
+          <button type="button" role="tab" aria-selected="false" data-faq-cat="install" data-i18n="faq_cat_install">Installation</button>
+          <button type="button" role="tab" aria-selected="false" data-faq-cat="billing" data-i18n="faq_cat_billing">Tarifs</button>
+          <button type="button" role="tab" aria-selected="false" data-faq-cat="support" data-i18n="faq_cat_support">Support</button>
+        </div>
+
         <div class="faq__list" id="faqList">
-          <details class="faq__item">
-            <summary><span data-i18n="faq_1_q">ARICH fournit-il des contenus ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
+          <details class="faq__item" data-cat="app">
+            <summary><span data-i18n="faq_1_q">ARICH fournit-il des films ou des chaînes ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
             <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_1_a">Non. ARICH est un lecteur. Vous connectez vos propres accès Xtream ou playlists M3U.</div></div>
           </details>
-          <details class="faq__item">
-            <summary><span data-i18n="faq_2_q">Comment fonctionne l’essai gratuit ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
-            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_2_a">14 jours pour tester l’application. Ensuite, choisissez l’offre annuelle ou à vie.</div></div>
+          <details class="faq__item" data-cat="billing">
+            <summary><span data-i18n="faq_2_q">Comment fonctionne l’essai de 14 jours ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_2_a">Vous testez l’app librement. Ensuite, choisissez l’offre annuelle (3 €) ou à vie (5 €).</div></div>
           </details>
-          <details class="faq__item">
-            <summary><span data-i18n="faq_3_q">Sur quels appareils ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
-            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_3_a">Android et Android TV. Téléchargez l’APK ou via Google Play lorsque disponible.</div></div>
+          <details class="faq__item" data-cat="install">
+            <summary><span data-i18n="faq_3_q">Sur quels appareils ça marche ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_3_a">Android et Android TV. APK via GitHub, ou Google Play lorsque disponible.</div></div>
           </details>
-          <details class="faq__item">
+          <details class="faq__item" data-cat="install">
+            <summary><span data-i18n="faq_7_q">Comment installer sur Android TV ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_7_a">Téléchargez l’APK, transférez-le sur la TV (clé USB ou Downloader), puis autorisez l’installation depuis des sources inconnues.</div></div>
+          </details>
+          <details class="faq__item" data-cat="app">
             <summary><span data-i18n="faq_4_q">Puis-je regarder hors ligne ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
-            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_4_a">Oui, via le téléchargement local sur l’appareil — selon les contenus de votre playlist.</div></div>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_4_a">Oui, via le téléchargement local — selon ce que votre playlist autorise.</div></div>
           </details>
-          <details class="faq__item">
+          <details class="faq__item" data-cat="app">
             <summary><span data-i18n="faq_5_q">C’est quoi Watch Together ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
-            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_5_a">Une lecture synchronisée à distance : vous regardez le même flux, au même moment.</div></div>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_5_a">Une lecture synchronisée à distance : le même flux, au même moment.</div></div>
           </details>
-          <details class="faq__item">
-            <summary><span data-i18n="faq_6_q">Comment vous contacter ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
-            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_6_a">Utilisez le formulaire ci-dessous, ou écrivez à contact@arich.fr.</div></div>
+          <details class="faq__item" data-cat="billing">
+            <summary><span data-i18n="faq_8_q">Que se passe-t-il après l’achat ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_8_a">Vous activez la licence sur l’appareil via la Device Key (Paramètres → Appareil). Aucun contenu n’est livré avec l’achat.</div></div>
+          </details>
+          <details class="faq__item" data-cat="support">
+            <summary><span data-i18n="faq_6_q">Comment vous joindre ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_6_a">Le formulaire ci-dessous, ou contact@arich.fr. On répond sous 24–48 h ouvrées.</div></div>
           </details>
         </div>
       </section>
 
       <!-- ═══ CONTACT ═══ -->
       <section class="contact" id="contact">
-        <header class="section-head section-head--center">
-          <p class="eyebrow" data-i18n="contact_over">Contact</p>
-          <h2 data-i18n="contact_title">Écrivez-nous</h2>
-          <p class="section-head__sub" data-i18n="contact_sub">Une question, un bug, un retour — on lit tout.</p>
-        </header>
-        <form class="contact__form" id="contactForm" novalidate>
-          <div class="contact__row">
-            <label class="contact__field">
-              <span data-i18n="contact_name">Nom</span>
-              <input type="text" name="name" id="contactName" required autocomplete="name" maxlength="80" />
-            </label>
-            <label class="contact__field">
-              <span data-i18n="contact_email">Email</span>
-              <input type="email" name="email" id="contactEmail" required autocomplete="email" maxlength="120" />
-            </label>
-          </div>
-          <label class="contact__field">
-            <span data-i18n="contact_subject">Sujet</span>
-            <input type="text" name="subject" id="contactSubject" required maxlength="120" />
-          </label>
-          <label class="contact__field">
-            <span data-i18n="contact_message">Message</span>
-            <textarea name="message" id="contactMessage" rows="5" required maxlength="2000"></textarea>
-          </label>
-          <p class="contact__status" id="contactStatus" role="status" aria-live="polite"></p>
-          <button type="submit" class="btn btn--copper btn--lg btn--glow">
-            <span data-i18n="contact_send">Envoyer</span>
-          </button>
-        </form>
+        <div class="contact__layout">
+          <header class="contact__intro">
+            <p class="eyebrow" data-i18n="contact_over">Contact</p>
+            <h2 data-i18n="contact_title">On est là.</h2>
+            <p class="contact__lede" data-i18n="contact_sub">Bug, question, idée — écrivez. On lit chaque message.</p>
+            <ul class="contact__trust">
+              <li>
+                <strong data-i18n="contact_trust_1_t">24–48 h</strong>
+                <span data-i18n="contact_trust_1_b">Délai de réponse moyen</span>
+              </li>
+              <li>
+                <strong>contact@arich.fr</strong>
+                <span data-i18n="contact_trust_2_b">Aussi par email direct</span>
+              </li>
+              <li>
+                <strong data-i18n="contact_trust_3_t">FR · EN</strong>
+                <span data-i18n="contact_trust_3_b">Support bilingue</span>
+              </li>
+            </ul>
+          </header>
+
+          <form class="contact__form" id="contactForm" novalidate>
+            <div class="contact__row">
+              <div class="contact__field" data-field>
+                <label for="contactName"><span data-i18n="contact_name">Nom</span></label>
+                <input type="text" name="name" id="contactName" required autocomplete="name" maxlength="80" data-i18n-placeholder="contact_ph_name" placeholder="Votre prénom ou nom" />
+                <span class="contact__err" aria-live="polite"></span>
+              </div>
+              <div class="contact__field" data-field>
+                <label for="contactEmail"><span data-i18n="contact_email">Email</span></label>
+                <input type="email" name="email" id="contactEmail" required autocomplete="email" maxlength="120" data-i18n-placeholder="contact_ph_email" placeholder="vous@exemple.com" />
+                <span class="contact__err" aria-live="polite"></span>
+              </div>
+            </div>
+
+            <div class="contact__field" data-field>
+              <label for="contactTopic"><span data-i18n="contact_topic">Type de demande</span></label>
+              <select name="topic" id="contactTopic" required>
+                <option value="" disabled selected data-i18n="contact_topic_placeholder">Choisissez un sujet…</option>
+                <option value="app" data-i18n="contact_topic_app">Question sur l’application</option>
+                <option value="install" data-i18n="contact_topic_install">Installation / Android TV</option>
+                <option value="billing" data-i18n="contact_topic_billing">Abonnement / paiement</option>
+                <option value="bug" data-i18n="contact_topic_bug">Problème technique</option>
+                <option value="partner" data-i18n="contact_topic_partner">Partenariat</option>
+                <option value="other" data-i18n="contact_topic_other">Autre</option>
+              </select>
+              <span class="contact__err" aria-live="polite"></span>
+            </div>
+
+            <div class="contact__field" data-field>
+              <label for="contactSubject"><span data-i18n="contact_subject">Sujet</span></label>
+              <input type="text" name="subject" id="contactSubject" required maxlength="120" data-i18n-placeholder="contact_ph_subject" placeholder="En une ligne…" />
+              <span class="contact__err" aria-live="polite"></span>
+            </div>
+
+            <div class="contact__field" data-field>
+              <label for="contactMessage"><span data-i18n="contact_message">Message</span></label>
+              <textarea name="message" id="contactMessage" rows="6" required maxlength="2000" data-i18n-placeholder="contact_ph_message" placeholder="Expliquez ce qui vous amène…"></textarea>
+              <span class="contact__err" aria-live="polite"></span>
+            </div>
+
+            <p class="contact__hint" data-i18n="contact_hint">L’envoi ouvre votre messagerie vers contact@arich.fr — rien n’est stocké ici sans votre email.</p>
+            <p class="contact__status" id="contactStatus" role="status" aria-live="polite"></p>
+
+            <button type="submit" class="btn btn--copper btn--lg contact__submit" id="contactSubmit">
+              <span class="contact__submit-spin" aria-hidden="true"></span>
+              <span data-contact-label data-i18n="contact_send">Envoyer le message</span>
+            </button>
+          </form>
+        </div>
       </section>
 
-      <!-- ═══ CTA FINAL ═══ -->
+      <!-- ═══ AFTER CONTACT / CTA ═══ -->
       <section class="final-cta" id="cta">
         <div class="final-cta__glow" aria-hidden="true"></div>
-        <div class="final-cta__mark" aria-hidden="true">
-          <img src="/logo-fg.png" alt="" width="72" height="72" />
+        <div class="final-cta__inner">
+          <div class="final-cta__mark" aria-hidden="true">
+            <img src="/logo-fg.png" alt="" width="64" height="64" />
+          </div>
+          <p class="eyebrow" data-i18n="cta_over">Ensuite</p>
+          <h2 data-i18n="cta_title">À vous de regarder.</h2>
+          <p data-i18n="cta_sub">Installez ARICH. 14 jours pour essayer, sans engagement.</p>
+          <div class="final-cta__actions">
+            <a class="btn btn--copper btn--lg" href="#install">
+              <span class="btn__icon" aria-hidden="true">↓</span>
+              <span data-i18n="cta_btn">Télécharger l'app</span>
+            </a>
+            <a class="btn btn--ghost" href="#pricing" data-i18n="cta_secondary">Voir les tarifs</a>
+          </div>
+          <ul class="final-cta__meta">
+            <li data-i18n="cta_m1">Android 8+</li>
+            <li data-i18n="cta_m2">Licence app seule</li>
+            <li data-i18n="cta_m3">Vos playlists</li>
+          </ul>
         </div>
-        <h2 data-i18n="cta_title">Prêt à regarder autrement ?</h2>
-        <p data-i18n="cta_sub">Téléchargez ARICH Player et commencez votre essai gratuit.</p>
-        <a class="btn btn--copper btn--lg btn--glow" href="#install">
-          <span class="btn__icon" aria-hidden="true">↓</span>
-          <span data-i18n="cta_btn">Télécharger l'app</span>
-        </a>
       </section>
     </main>
 

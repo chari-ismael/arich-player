@@ -6,6 +6,8 @@ import { pricing, downloadLinks, site, videos, posters } from './config.js'
 import { initCheckout } from './checkout.js'
 import { runArichLoader } from './loader.js'
 import { initHeroEnter } from './heroEnter.js'
+import { initContact } from './contact.js'
+import { initFaq } from './faq.js'
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 const isMobile = () => window.matchMedia('(max-width: 768px)').matches
@@ -624,9 +626,9 @@ function initReveals() {
     { sel: '.steps', kind: 'rise' },
     { sel: '.install__compose', kind: 'wipe-left' },
     { sel: '.pricing__cards', kind: 'scale' },
-    { sel: '.faq__list', kind: 'rise' },
-    { sel: '.contact__form', kind: 'wipe-left' },
-    { sel: '.final-cta', kind: 'rise' },
+    { sel: '.faq__tabs', kind: 'rise' },
+    { sel: '.contact__layout', kind: 'wipe-left' },
+    { sel: '.final-cta__inner', kind: 'rise' },
     { sel: '.hero__copy', kind: 'wipe-left' },
   ]
 
@@ -681,62 +683,6 @@ function updateInstallSteps() {
 
 function clamp01(v) {
   return Math.min(1, Math.max(0, v))
-}
-
-/* ── FAQ accordion (one open) ──────────────────────── */
-function initFaq() {
-  const list = document.getElementById('faqList')
-  if (!list) return
-  list.querySelectorAll('details.faq__item').forEach((item) => {
-    item.addEventListener('toggle', () => {
-      if (!item.open) return
-      list.querySelectorAll('details.faq__item').forEach((other) => {
-        if (other !== item) other.open = false
-      })
-    })
-  })
-}
-
-/* ── Contact form → mailto ─────────────────────────── */
-function initContact() {
-  const form = document.getElementById('contactForm')
-  if (!form) return
-  const status = document.getElementById('contactStatus')
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault()
-    const name = /** @type {HTMLInputElement} */ (document.getElementById('contactName'))?.value.trim()
-    const email = /** @type {HTMLInputElement} */ (document.getElementById('contactEmail'))?.value.trim()
-    const subject = /** @type {HTMLInputElement} */ (document.getElementById('contactSubject'))?.value.trim()
-    const message = /** @type {HTMLTextAreaElement} */ (document.getElementById('contactMessage'))?.value.trim()
-
-    status?.classList.remove('is-error')
-    if (!name || !email || !subject || !message) {
-      if (status) {
-        status.textContent = t('contact_err')
-        status.classList.add('is-error')
-      }
-      return
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      if (status) {
-        status.textContent = t('contact_err_email')
-        status.classList.add('is-error')
-      }
-      return
-    }
-
-    const body = [
-      `Nom: ${name}`,
-      `Email: ${email}`,
-      '',
-      message,
-    ].join('\n')
-    const mailto = `mailto:${site.email}?subject=${encodeURIComponent(`[ARICH] ${subject}`)}&body=${encodeURIComponent(body)}`
-    if (status) status.textContent = t('contact_ok')
-    window.location.href = mailto
-    form.reset()
-  })
 }
 
 /* ── Scroll handler ────────────────────────────────── */

@@ -1,10 +1,18 @@
 import { clamp, dur, easeInOutCubic, easeOutCubic, easeOutQuint, lerp } from './motion.js'
 
 const LOGO_SRC = '/logo-fg.png'
+const LOGO_SVG = '/logo-mark.svg'
 const STORAGE_KEY = 'arich_booted'
 
+/** Construction order matches the real mark: main A → inner bar → copper play. */
+const PATH_ORDER = [
+  { id: 'arich-main', kind: 'cream', start: 0, end: 0.42 },
+  { id: 'arich-inner', kind: 'cream', start: 0.32, end: 0.72 },
+  { id: 'arich-play', kind: 'play', start: 0.62, end: 1 },
+]
+
 /**
- * Signature boot: copper ember draws depth trails → exact logo mark → FLIP into nav.
+ * Signature boot: luminous tip traces REAL SVG geometry → exact logo mark → FLIP into nav.
  * First visit ~2.3s · return ~0.7s · prefers-reduced-motion: instant settle.
  *
  * Preview / debug (overrides reduced-motion):
@@ -19,6 +27,7 @@ export function runArichLoader({ reduced } = {}) {
   const canvas = document.getElementById('bootCanvas')
   const mark = document.getElementById('bootMark')
   const markImg = document.getElementById('bootMarkImg')
+  const construct = document.getElementById('bootConstruct')
   const navMark = document.getElementById('navBrandMark')
   const nav = document.getElementById('nav')
 
@@ -28,13 +37,11 @@ export function runArichLoader({ reduced } = {}) {
 
   const params = new URLSearchParams(location.search)
   const bootParam = params.has('boot') ? (params.get('boot') ?? '') : null
-  // Any ?boot=… except ?boot=0 forces a fresh first-visit path + cinematic preview
   const forceFresh = bootParam !== null && bootParam !== '0'
   if (forceFresh) sessionStorage.removeItem(STORAGE_KEY)
   const returning = !forceFresh && sessionStorage.getItem(STORAGE_KEY) === '1'
   const slowMo = bootParam === 'slow' ? 2.2 : 1
 
-  // a11y: skip cinematic when OS asks for reduced motion — unless explicitly forced
   if (reduced && !forceFresh) {
     if (typeof console !== 'undefined' && console.info) {
       console.info(
@@ -45,7 +52,6 @@ export function runArichLoader({ reduced } = {}) {
   }
 
   if (reduced && forceFresh) {
-    // Exempt boot CSS transitions from the global reduced-motion kill-switch
     document.documentElement.classList.add('arich-boot-force')
   }
 
@@ -62,14 +68,10 @@ export function runArichLoader({ reduced } = {}) {
     let start = 0
     let phase = 'draw'
     let handoffStart = 0
-
-    const trails = []
-    const paths = buildPaths()
-    let ember = { x: 0, y: 0, z: 0 }
     let logoOpacity = 0
-    let trailFade = 1
-    let camPull = 0
-    let lastTrailAt = 0
+    let tip = null
+    /** @type {{ el: SVGPathElement, len: number, kind: string, start: number, end: number }[]} */
+    let tracks = []
 
     markImg.src = LOGO_SRC
     if (navMark) {
@@ -91,39 +93,42 @@ export function runArichLoader({ reduced } = {}) {
     window.addEventListener('resize', resize, { passive: true })
 
     const totalMs = (returning ? dur.bootReturn : dur.bootFirst) * slowMo
-    const drawEnd = returning ? 0.18 : 0.58
-    const revealEnd = returning ? 0.4 : 0.78
+    const drawEnd = returning ? 0.12 : 0.56
+    const revealEnd = returning ? 0.38 : 0.78
 
     boot.classList.add('is-live')
     app.classList.add('is-booting')
 
-    function project(x, y, z) {
-      const camZ = 3.4 - camPull * 0.55
-      const f = 2.35 / (camZ - z)
-      const scale = Math.min(w, h) * 0.22
+    function svgPointToScreen(svg, pt) {
+      const rect = mark.getBoundingClientRect()
+      const vb = svg.viewBox.baseVal
+      const sx = rect.width / vb.width
+      const sy = rect.height / vb.height
       return {
-        x: w * 0.5 + x * f * scale,
-        y: h * 0.48 + y * f * scale,
-        s: f,
-        depth: clamp((z + 1) / 2, 0, 1),
+        x: rect.left + pt.x * sx,
+        y: rect.top + pt.y * sy,
       }
     }
 
-    function samplePath(path, t) {
-      const p = path.points
-      if (p.length === 2) {
-        return {
-          x: lerp(p[0].x, p[1].x, t),
-          y: lerp(p[0].y, p[1].y, t),
-          z: lerp(p[0].z, p[1].z, t),
+    function applyDraw(drawP) {
+      tip = null
+      for (const track of tracks) {
+        const local = clamp((drawP - track.start) / (track.end - track.start), 0, 1)
+        const eased = easeInOutCubic(local)
+        track.el.style.strokeDashoffset = String(track.len * (1 - eased))
+
+        // Fill blooms once the silhouette is mostly traced
+        const fillT = clamp((eased - 0.55) / 0.45, 0, 1)
+        track.el.style.fillOpacity = String(easeOutQuint(fillT))
+        track.el.style.strokeOpacity = String(1 - fillT * 0.85)
+
+        if (local > 0 && local < 1) {
+          const pt = track.el.getPointAtLength(track.len * eased)
+          tip = { track, pt, eased }
+        } else if (local >= 1 && !tip) {
+          const pt = track.el.getPointAtLength(track.len)
+          tip = { track, pt, eased: 1 }
         }
-      }
-      // quadratic through mid control
-      const u = 1 - t
-      return {
-        x: u * u * p[0].x + 2 * u * t * p[1].x + t * t * p[2].x,
-        y: u * u * p[0].y + 2 * u * t * p[1].y + t * t * p[2].y,
-        z: u * u * p[0].z + 2 * u * t * p[1].z + t * t * p[2].z,
       }
     }
 
@@ -136,48 +141,41 @@ export function runArichLoader({ reduced } = {}) {
       drawAtmosphere(ctx, w, h, p)
 
       if (phase === 'draw' || phase === 'reveal') {
-        if (!returning) {
+        if (!returning && tracks.length) {
           const drawP = clamp(p / drawEnd, 0, 1)
-          camPull = easeOutCubic(drawP) * 0.9
-          const pathProgress = drawP * paths.length * 0.999
-          const pathIdx = Math.min(paths.length - 1, Math.floor(pathProgress))
-          const pathT = pathProgress - pathIdx
-          ember = samplePath(paths[pathIdx], easeInOutCubic(clamp(pathT, 0, 1)))
+          applyDraw(drawP)
 
-          // denser ribbon along the stroke
-          if (now - lastTrailAt > 10) {
-            trails.push({ ...ember, life: 1 })
-            lastTrailAt = now
-            if (trails.length > 220) trails.shift()
+          if (phase === 'draw' && tip) {
+            const svg = construct?.querySelector('svg')
+            if (svg) {
+              const screen = svgPointToScreen(svg, tip.pt)
+              const glow = tip.track.kind === 'play' ? 1.15 : 1
+              drawEmber(ctx, screen.x, screen.y, glow)
+            }
           }
-        } else {
-          camPull = easeOutCubic(clamp(p / 0.3, 0, 1))
-        }
-
-        for (const tr of trails) tr.life *= 0.978
-        while (trails.length && trails[0].life < 0.05) trails.shift()
-
-        trailFade = phase === 'reveal' ? 1 - clamp((p - drawEnd) / ((revealEnd - drawEnd) * 0.85), 0, 1) : 1
-        drawTrails(ctx, trails, trailFade, project)
-
-        if (!returning && phase === 'draw') {
-          const pe = project(ember.x, ember.y, ember.z)
-          drawEmber(ctx, pe.x, pe.y, pe.s)
         }
 
         if (p >= drawEnd) {
           phase = 'reveal'
           const rp = clamp((p - drawEnd) / (revealEnd - drawEnd), 0, 1)
           logoOpacity = easeOutQuint(rp)
-          mark.style.opacity = String(logoOpacity)
-          mark.style.transform = `translate(-50%, -50%) scale(${lerp(0.92, 1, logoOpacity)})`
+          mark.style.opacity = '1'
           mark.classList.add('is-visible')
+          mark.style.transform = `translate(-50%, -50%) scale(${lerp(0.94, 1, logoOpacity)})`
+          markImg.style.opacity = String(logoOpacity)
+          if (construct) {
+            construct.style.opacity = String(1 - logoOpacity)
+          }
+          // Ensure geometry is fully settled under the asset
+          if (tracks.length) applyDraw(1)
         }
       }
 
       if (p >= revealEnd && phase !== 'handoff' && phase !== 'done') {
         phase = 'handoff'
         handoffStart = now
+        markImg.style.opacity = '1'
+        if (construct) construct.style.opacity = '0'
         beginHandoff(mark, navMark, nav, boot, app).then(() => {
           phase = 'done'
           sessionStorage.setItem(STORAGE_KEY, '1')
@@ -195,7 +193,7 @@ export function runArichLoader({ reduced } = {}) {
       }
 
       if (params.has('boot')) {
-        window.__bootDebug = { p, phase, trails: trails.length, ember, logoOpacity, w, h }
+        window.__bootDebug = { p, phase, tracks: tracks.length, logoOpacity, tip, w, h }
       }
     }
 
@@ -209,101 +207,96 @@ export function runArichLoader({ reduced } = {}) {
     const kick = () => {
       if (kicked) return
       kicked = true
-      mark.style.opacity = '0'
-      mark.style.transform = 'translate(-50%, -50%) scale(0.88)'
+      mark.classList.add('is-visible')
+      mark.style.opacity = '1'
       if (returning) {
-        mark.classList.add('is-visible')
-        logoOpacity = 1
-        mark.style.opacity = '1'
         mark.style.transform = 'translate(-50%, -50%) scale(1)'
+        markImg.style.opacity = '1'
+        if (construct) construct.style.opacity = '0'
+        logoOpacity = 1
+      } else {
+        // Construct SVG must be visible while geometry draws; PNG stays hidden until reveal
+        mark.style.transform = 'translate(-50%, -50%) scale(0.94)'
+        markImg.style.opacity = '0'
+        if (construct) construct.style.opacity = '1'
       }
-      // Wall-clock ticker (more reliable than rAF in background tabs)
       tickTimer = window.setInterval(() => frame(performance.now()), 1000 / 60)
       frame(performance.now())
     }
 
-    markImg.addEventListener('load', kick, { once: true })
-    markImg.addEventListener('error', kick, { once: true })
-    if (markImg.complete) kick()
-    window.setTimeout(kick, 80)
+    prepareGeometry(construct, returning)
+      .then((prepared) => {
+        tracks = prepared
+        markImg.addEventListener('load', kick, { once: true })
+        markImg.addEventListener('error', kick, { once: true })
+        if (markImg.complete) kick()
+        window.setTimeout(kick, 120)
+      })
+      .catch(() => {
+        // Geometry unavailable — still hand off the exact PNG mark (no fake paths)
+        if (construct) construct.style.opacity = '0'
+        markImg.style.opacity = '1'
+        mark.classList.add('is-visible')
+        mark.style.opacity = '1'
+        kick()
+      })
   })
 }
 
-function buildPaths() {
-  // Construction strokes in local space — final mark is the real logo asset.
-  return [
-    {
-      points: [
-        { x: -0.95, y: 0.95, z: -0.55 },
-        { x: -0.55, y: -0.05, z: 0.05 },
-        { x: -0.12, y: -0.98, z: 0.4 },
-      ],
-    },
-    {
-      points: [
-        { x: -0.12, y: -0.98, z: 0.4 },
-        { x: 0.42, y: -0.55, z: 0.25 },
-        { x: 0.62, y: 0.35, z: -0.05 },
-      ],
-    },
-    {
-      points: [
-        { x: 0.22, y: -0.2, z: 0.55 },
-        { x: 0.3, y: 0.15, z: 0.35 },
-        { x: 0.34, y: 0.72, z: 0.05 },
-      ],
-    },
-    {
-      points: [
-        { x: 0.55, y: -0.02, z: 0.65 },
-        { x: 0.82, y: 0.08, z: 0.2 },
-        { x: 1.05, y: 0.18, z: -0.25 },
-      ],
-    },
-  ]
+/**
+ * Load real logo SVG into the construct layer and prep stroke lengths.
+ * @returns {Promise<{ el: SVGPathElement, len: number, kind: string, start: number, end: number }[]>}
+ */
+async function prepareGeometry(construct, returning) {
+  if (!construct) return []
+  if (returning) {
+    construct.innerHTML = ''
+    return []
+  }
+
+  const res = await fetch(LOGO_SVG, { cache: 'force-cache' })
+  if (!res.ok) throw new Error(`logo svg ${res.status}`)
+  const text = await res.text()
+  construct.innerHTML = text
+  const svg = construct.querySelector('svg')
+  if (!svg) throw new Error('logo svg missing root')
+
+  svg.setAttribute('aria-hidden', 'true')
+  // Tighten framing around the mark (content lives mid-viewBox)
+  svg.setAttribute('viewBox', '48 100 400 320')
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet')
+
+  const tracks = []
+  for (const spec of PATH_ORDER) {
+    const el = /** @type {SVGPathElement | null} */ (svg.querySelector(`#${spec.id}`))
+    if (!el) continue
+    const len = el.getTotalLength()
+    el.classList.add(spec.kind === 'play' ? 'is-play' : 'is-cream')
+    el.style.strokeDasharray = String(len)
+    el.style.strokeDashoffset = String(len)
+    el.style.fillOpacity = '0'
+    el.style.strokeOpacity = '1'
+    tracks.push({ el, len, kind: spec.kind, start: spec.start, end: spec.end })
+  }
+
+  if (!tracks.length) throw new Error('logo svg paths missing')
+  return tracks
 }
 
 function drawAtmosphere(ctx, w, h, p) {
   const g = ctx.createRadialGradient(w * 0.5, h * 0.45, 0, w * 0.5, h * 0.45, Math.max(w, h) * 0.55)
-  g.addColorStop(0, `rgba(197,138,42,${0.06 + p * 0.04})`)
+  g.addColorStop(0, `rgba(197,138,42,${0.05 + p * 0.035})`)
   g.addColorStop(0.45, 'rgba(13,16,23,0)')
   g.addColorStop(1, 'rgba(5,7,11,0)')
   ctx.fillStyle = g
   ctx.fillRect(0, 0, w, h)
 }
 
-function drawTrails(ctx, trails, fade, project) {
-  if (fade <= 0.01) return
-  ctx.save()
-  ctx.globalCompositeOperation = 'lighter'
-  for (let i = 1; i < trails.length; i++) {
-    const a = project(trails[i - 1].x, trails[i - 1].y, trails[i - 1].z)
-    const b = project(trails[i].x, trails[i].y, trails[i].z)
-    const life = trails[i].life * fade
-    const width = lerp(1.2, 5.5, b.depth) * (0.55 + life * 0.7)
-    ctx.beginPath()
-    ctx.strokeStyle = `rgba(212,160,74,${0.16 + life * 0.55})`
-    ctx.lineWidth = width
-    ctx.lineCap = 'round'
-    ctx.moveTo(a.x, a.y)
-    ctx.lineTo(b.x, b.y)
-    ctx.stroke()
-
-    ctx.beginPath()
-    ctx.strokeStyle = `rgba(240,239,236,${0.05 + life * 0.22 * b.depth})`
-    ctx.lineWidth = width * 0.4
-    ctx.moveTo(a.x, a.y)
-    ctx.lineTo(b.x, b.y)
-    ctx.stroke()
-  }
-  ctx.restore()
-}
-
 function drawEmber(ctx, x, y, s) {
-  const r = 3.2 * s
+  const r = 2.6 * s
   const g = ctx.createRadialGradient(x, y, 0, x, y, r * 7)
-  g.addColorStop(0, 'rgba(255,220,150,0.95)')
-  g.addColorStop(0.2, 'rgba(197,138,42,0.55)')
+  g.addColorStop(0, 'rgba(255,220,150,0.9)')
+  g.addColorStop(0.22, 'rgba(197,138,42,0.45)')
   g.addColorStop(1, 'rgba(197,138,42,0)')
   ctx.fillStyle = g
   ctx.beginPath()
@@ -311,7 +304,7 @@ function drawEmber(ctx, x, y, s) {
   ctx.fill()
   ctx.fillStyle = '#F0EFEC'
   ctx.beginPath()
-  ctx.arc(x, y, r * 0.55, 0, Math.PI * 2)
+  ctx.arc(x, y, r * 0.5, 0, Math.PI * 2)
   ctx.fill()
 }
 

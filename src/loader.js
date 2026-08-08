@@ -2,7 +2,7 @@ import { clamp, dur, easeInOutCubic, easeOutCubic, easeOutQuint, lerp } from './
 
 const LOGO_SRC = '/logo-fg.png'
 const LOGO_SVG = '/logo-mark.svg'
-const STORAGE_KEY = 'arich_booted'
+const STORAGE_KEY = 'arich_booted_v2'
 
 /** Construction order matches the real mark: main A → inner bar → copper play. */
 const PATH_ORDER = [

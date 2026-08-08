@@ -525,8 +525,25 @@ function initLazyVideos() {
   if (!videosEls.length) return
 
   const playSafe = (v) => {
+    v.muted = true
+    v.defaultMuted = true
+    v.playsInline = true
+    v.setAttribute('muted', '')
+    v.setAttribute('playsinline', '')
+    v.setAttribute('webkit-playsinline', '')
     const p = v.play()
     if (p?.catch) p.catch(() => {})
+  }
+
+  const armSource = (v) => {
+    const want = v.dataset.src
+    if (!want) return
+    // IMPORTANT: HTMLMediaElement.src is never empty (resolves to page URL).
+    // Use getAttribute — otherwise videos never start on production.
+    if (v.getAttribute('src') !== want) {
+      v.setAttribute('src', want)
+      v.load()
+    }
   }
 
   const io = new IntersectionObserver(
@@ -534,30 +551,36 @@ function initLazyVideos() {
       entries.forEach((entry) => {
         const v = entry.target
         if (entry.isIntersecting) {
-          if (v.dataset.src && !v.src) {
-            v.src = v.dataset.src
-            v.load()
-          }
+          armSource(v)
           playSafe(v)
         } else {
           v.pause()
         }
       })
     },
-    { threshold: 0.25, rootMargin: '80px' },
+    { threshold: 0.12, rootMargin: '200px 0px' },
   )
 
   videosEls.forEach((v) => {
     v.muted = true
+    v.defaultMuted = true
     v.playsInline = true
+    v.loop = true
+    // Hero videos: start download immediately (files are large)
+    if (v.closest('.hero') || v.closest('.feat-intro__player')) {
+      armSource(v)
+      const kick = () => playSafe(v)
+      v.addEventListener('canplay', kick, { once: true })
+      v.addEventListener('loadeddata', kick, { once: true })
+      if (v.readyState >= 2) kick()
+    }
     io.observe(v)
   })
 
-  // Pause si onglet caché
   document.addEventListener('visibilitychange', () => {
     videosEls.forEach((v) => {
       if (document.hidden) v.pause()
-      else if (v.src && v.getBoundingClientRect().top < window.innerHeight) playSafe(v)
+      else if (v.getAttribute('src') && v.getBoundingClientRect().top < window.innerHeight) playSafe(v)
     })
   })
 }
@@ -718,6 +741,11 @@ runArichLoader({ reduced }).then(() => {
   initLazyVideos()
   if (!reduced) initParticles(document.getElementById('fx'))
   onScroll()
+  // Layout may settle after boot handoff — re-measure browse rail
+  requestAnimationFrame(() => {
+    updateBrowse()
+    requestAnimationFrame(updateBrowse)
+  })
 })
 
 window.addEventListener('arich:lang', () => {

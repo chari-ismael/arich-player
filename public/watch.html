@@ -4,289 +4,560 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>ARICH — Watch Together</title>
-<meta name="description" content="Watch Together — ARICH Player." />
-<meta name="robots" content="noindex, nofollow" />
-<link rel="icon" href="/favicon.ico" sizes="any" />
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-<meta name="theme-color" content="#0D1017" />
-<link rel="stylesheet" href="/arich-theme.css" />
-  <link rel="icon" href="favicon.png" />
+  <meta name="description" content="Watch Together — regardez en synchronisé avec ARICH Player." />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <meta name="theme-color" content="#0D1017" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mpegts.js@1.7.3/dist/mpegts.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #0D1017;
-      --surface: #141A24;
-      --surfaceHi: #1C2432;
-      --border: rgba(255,255,255,0.08);
+      --bg: #080a0f;
+      --bg2: #0d1017;
+      --surface: rgba(240, 239, 236, 0.035);
+      --surfaceHi: rgba(240, 239, 236, 0.06);
+      --border: rgba(240, 239, 236, 0.1);
+      --border2: rgba(240, 239, 236, 0.16);
       --accent: #C58A2A;
       --accentSoft: #D4A04A;
-      --green: #3D8B6E;
-      --red: #B54A4A;
-      --muted: #7A8699;
+      --grad: linear-gradient(165deg, #D4A04A, #C58A2A);
+      --ink: #0a0c10;
+      --green: #5a9a72;
+      --red: #e07a6a;
+      --muted: rgba(240, 239, 236, 0.52);
+      --faint: rgba(240, 239, 236, 0.32);
       --text: #F0EFEC;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --font: 'Figtree', system-ui, sans-serif;
+      --display: 'Syne', system-ui, sans-serif;
     }
     html, body {
       min-height: 100%;
       background: var(--bg);
       color: var(--text);
-      font-family: 'Figtree', sans-serif;
+      font-family: var(--font);
       -webkit-font-smoothing: antialiased;
     }
     body {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px 16px 32px;
+      padding: 0 16px 40px;
+      position: relative;
+      overflow-x: hidden;
     }
-    .glow {
+
+    .bg {
       position: fixed;
-      width: 360px; height: 360px;
-      border-radius: 50%;
+      inset: 0;
       pointer-events: none;
-      filter: blur(80px);
-      opacity: 0.35;
+      z-index: 0;
     }
-    .glow-a { top: -80px; left: -60px; background: var(--accent); }
-    .glow-b { bottom: -60px; right: -40px; background: #243040; }
+    .bg__halo {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.4;
+    }
+    .bg__halo--a {
+      width: min(70vw, 480px);
+      height: min(70vw, 480px);
+      top: -12%;
+      left: -10%;
+      background: radial-gradient(circle, rgba(197,138,42,0.28), transparent 70%);
+    }
+    .bg__halo--b {
+      width: min(55vw, 400px);
+      height: min(55vw, 400px);
+      bottom: -8%;
+      right: -12%;
+      background: radial-gradient(circle, rgba(60,90,140,0.18), transparent 70%);
+    }
+    .bg__grain {
+      position: absolute;
+      inset: 0;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px;
+      mix-blend-mode: overlay;
+    }
 
-    .wrap { width: 100%; max-width: 720px; z-index: 1; }
+    .wrap {
+      width: 100%;
+      max-width: 760px;
+      z-index: 1;
+      padding-top: 18px;
+    }
 
-    .header {
+    /* Top bar */
+    .topbar {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 12px;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
+      padding: 10px 12px 10px 10px;
+      border-radius: 999px;
+      background: rgba(14, 17, 24, 0.55);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(18px) saturate(1.3);
+      -webkit-backdrop-filter: blur(18px) saturate(1.3);
     }
-    .logo {
-      width: 42px; height: 42px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--accentSoft), var(--accent));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px;
-      box-shadow: 0 0 24px rgba(197,138,42,0.35);
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: inherit;
+      min-width: 0;
     }
-    .header h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: 18px;
+    .brand img {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      flex-shrink: 0;
+    }
+    .brand__text {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+    .brand__name {
+      font-family: var(--display);
       font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0.04em;
     }
-    .header p { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .brand__sub {
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .topbar__link {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 999px;
+      transition: color .2s, background .2s;
+    }
+    .topbar__link:hover {
+      color: var(--text);
+      background: var(--surfaceHi);
+    }
+
+    /* Hero strip */
+    .hero {
+      margin-bottom: 18px;
+      padding: 4px 4px 0;
+    }
+    .hero__eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accentSoft);
+      margin-bottom: 8px;
+    }
+    .hero h1 {
+      font-family: var(--display);
+      font-size: clamp(26px, 5vw, 34px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+    .hero p {
+      font-size: 14.5px;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 42ch;
+    }
 
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 20px;
-      margin-bottom: 16px;
-      box-shadow: 0 24px 48px rgba(0,0,0,0.45);
+      border-radius: 22px;
+      padding: 22px;
+      margin-bottom: 14px;
+      box-shadow:
+        0 24px 56px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(8px);
     }
 
     .code-pill {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      background: rgba(197,138,42,0.12);
-      border: 1px solid rgba(197,138,42,0.35);
-      border-radius: 10px;
+      gap: 10px;
+      background: rgba(197, 138, 42, 0.1);
+      border: 1px solid rgba(197, 138, 42, 0.32);
+      border-radius: 12px;
       padding: 8px 14px;
       font-size: 12px;
-      color: var(--accentSoft);
-      margin-bottom: 14px;
+      color: var(--muted);
+      margin-bottom: 16px;
     }
     .code-pill strong {
-      font-family: 'Syne', sans-serif;
-      letter-spacing: 3px;
-      font-size: 16px;
-      color: var(--accent);
+      font-family: var(--display);
+      letter-spacing: 0.22em;
+      font-size: 15px;
+      color: var(--accentSoft);
+      font-weight: 700;
     }
 
     .video-shell {
       position: relative;
       width: 100%;
       aspect-ratio: 16/9;
-      background: #000;
-      border-radius: 14px;
+      background: #05070b;
+      border-radius: 16px;
       overflow: hidden;
-      border: 1px solid var(--border);
-      margin-bottom: 14px;
+      border: 1px solid var(--border2);
+      margin-bottom: 16px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
     }
-    video { width: 100%; height: 100%; object-fit: contain; background: #000; }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #000;
+      display: block;
+    }
     .video-placeholder {
-      position: absolute; inset: 0;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 10px; padding: 20px; text-align: center;
-      color: var(--muted); font-size: 13px;
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13.5px;
+      background: linear-gradient(180deg, rgba(8,10,15,0.2), rgba(8,10,15,0.85));
+    }
+    .video-placeholder p:last-child {
+      font-size: 11.5px;
+      color: var(--faint);
+      max-width: 280px;
+      line-height: 1.4;
     }
 
-    .title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
-    .meta { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .room-head {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+    .title {
+      font-family: var(--display);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .meta {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
 
-    .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
-    .btn {
-      flex: 1; min-width: 140px;
-      padding: 12px 16px;
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      padding: 10px 12px;
       border-radius: 12px;
+      background: var(--surfaceHi);
+      border: 1px solid var(--border);
+    }
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 3px rgba(90, 154, 114, 0.2);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.45; }
+    }
+
+    .peers {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+    .peer {
+      font-size: 11.5px;
+      font-weight: 500;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: rgba(197, 138, 42, 0.08);
+      border: 1px solid rgba(197, 138, 42, 0.2);
+      color: var(--accentSoft);
+    }
+    .peer:first-child {
+      background: rgba(90, 154, 114, 0.12);
+      border-color: rgba(90, 154, 114, 0.28);
+      color: #8fbf9e;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .btn {
+      flex: 1;
+      min-width: 140px;
+      padding: 13px 16px;
+      border-radius: 14px;
       border: none;
       font-family: inherit;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      transition: transform .15s, opacity .15s;
+      transition: transform 0.18s var(--ease), opacity 0.18s, box-shadow 0.18s, background 0.18s;
+      text-decoration: none;
+      text-align: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
-    .btn:active { transform: scale(.98); }
-    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     .btn-primary {
-      background: linear-gradient(135deg, var(--accentSoft), var(--accent));
-      color: #0D1017;
-      box-shadow: 0 8px 20px rgba(197,138,42,0.3);
+      background: var(--grad);
+      color: var(--ink);
+      box-shadow: 0 10px 28px rgba(197, 138, 42, 0.28);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 14px 34px rgba(197, 138, 42, 0.36);
     }
     .btn-ghost {
       background: var(--surfaceHi);
       color: var(--text);
-      border: 1px solid var(--border);
-    }
-
-    .peers {
-      display: flex; flex-wrap: wrap; gap: 6px;
-      margin-top: 12px;
-    }
-    .peer {
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      background: var(--surfaceHi);
-      border: 1px solid var(--border);
-      color: var(--muted);
-    }
-
-    .status {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 12px; color: var(--muted);
-      margin-top: 10px;
-    }
-    .dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--green);
-      animation: pulse 1.4s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: .5; transform: scale(1.3); }
+      border: 1px solid var(--border2);
     }
 
     .error-box {
       display: none;
-      background: rgba(181,74,74,0.12);
-      border: 1px solid rgba(181,74,74,0.35);
-      border-radius: 10px;
+      background: rgba(224, 122, 106, 0.1);
+      border: 1px solid rgba(224, 122, 106, 0.35);
+      border-radius: 14px;
       padding: 12px 14px;
       font-size: 13px;
+      color: #f0b4aa;
       margin-bottom: 14px;
     }
     .error-box.show { display: block; }
 
     #joinPanel input {
       width: 100%;
-      padding: 12px 14px;
-      background: var(--surfaceHi);
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      padding: 14px 16px;
+      background: rgba(240, 239, 236, 0.04);
+      border: 1px solid var(--border2);
+      border-radius: 14px;
       color: var(--text);
-      font-size: 18px;
-      letter-spacing: 4px;
+      font-family: var(--display);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.28em;
       text-align: center;
       text-transform: uppercase;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    #joinPanel input::placeholder {
+      letter-spacing: 0.18em;
+      color: var(--faint);
+      font-weight: 600;
     }
     #joinPanel input:focus {
-      border-color: rgba(197,138,42,0.5);
-      box-shadow: 0 0 0 3px rgba(197,138,42,0.12);
+      border-color: rgba(197, 138, 42, 0.55);
+      box-shadow: 0 0 0 4px rgba(197, 138, 42, 0.12);
     }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 16px 0 4px;
+    }
+    .step {
+      padding: 10px;
+      border-radius: 12px;
+      background: var(--surfaceHi);
+      border: 1px solid transparent;
+      text-align: center;
+    }
+    .step strong {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accentSoft);
+      margin-bottom: 4px;
+    }
+    .step span {
+      font-size: 11.5px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .footer {
+      margin-top: 8px;
+      padding: 8px 4px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--faint);
+    }
+    .footer a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .footer a:hover { color: var(--accentSoft); }
 
     .hidden { display: none !important; }
     .spinner {
-      width: 18px; height: 18px;
-      border: 2px solid rgba(255,255,255,.25);
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(240, 239, 236, 0.18);
       border-top-color: var(--accent);
       border-radius: 50%;
-      animation: spin .7s linear infinite;
+      animation: spin 0.7s linear infinite;
       display: inline-block;
       vertical-align: middle;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    @media (max-width: 480px) {
-      .card { padding: 16px; border-radius: 16px; }
+    .loading-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 520px) {
+      .card { padding: 18px; border-radius: 18px; }
+      .steps { grid-template-columns: 1fr; }
+      .brand__sub { display: none; }
+      .hero h1 { font-size: 26px; }
     }
   </style>
 </head>
 <body>
-  <div class="glow glow-a"></div>
-  <div class="glow glow-b"></div>
+  <div class="bg" aria-hidden="true">
+    <div class="bg__halo bg__halo--a"></div>
+    <div class="bg__halo bg__halo--b"></div>
+    <div class="bg__grain"></div>
+  </div>
 
   <div class="wrap">
-    <div class="header">
-      <div class="logo">▶</div>
-      <div>
-        <h1>Watch Together</h1>
-        <p>Regardez en synchronisé avec l'app Arich</p>
+    <header class="topbar">
+      <a class="brand" href="/">
+        <img src="/logo-fg.png" alt="ARICH" width="32" height="32" />
+        <span class="brand__text">
+          <span class="brand__name">ARICH</span>
+          <span class="brand__sub">Watch Together</span>
+        </span>
+      </a>
+      <a class="topbar__link" href="/">Site</a>
+    </header>
+
+    <div class="hero">
+      <p class="hero__eyebrow">Session partagée</p>
+      <h1>Watch Together</h1>
+      <p>Même flux, même moment — synchronisé avec l’app ARICH Player.</p>
+    </div>
+
+    <div id="errorBox" class="error-box" role="alert"></div>
+
+    <div id="loadingPanel" class="card hidden">
+      <p class="title">Connexion à la salle…</p>
+      <p class="loading-row"><span class="spinner" aria-hidden="true"></span> Authentification et synchronisation</p>
+    </div>
+
+    <div id="joinPanel" class="card hidden">
+      <p class="title">Rejoindre une salle</p>
+      <p class="meta" style="margin-bottom:14px">Entrez le code à 6 caractères partagé par l’hôte.</p>
+      <input id="codeInput" maxlength="6" placeholder="ABCDEF" autocomplete="off" inputmode="text" spellcheck="false" />
+      <button class="btn btn-primary" id="joinBtn" style="width:100%">Rejoindre la session</button>
+      <div class="steps" aria-hidden="true">
+        <div class="step"><strong>01</strong><span>Code salle</span></div>
+        <div class="step"><strong>02</strong><span>Connexion</span></div>
+        <div class="step"><strong>03</strong><span>Lecture sync</span></div>
       </div>
     </div>
 
-    <div id="errorBox" class="error-box"></div>
-
-    <!-- Loading -->
-    <div id="loadingPanel" class="card hidden">
-      <p class="title">Connexion à la salle…</p>
-      <p class="meta"><span class="spinner"></span> Authentification et synchronisation</p>
-    </div>
-
-    <!-- Join by code (no ?code= in URL) -->
-    <div id="joinPanel" class="card hidden">
-      <p class="title">Rejoindre une salle</p>
-      <p class="meta" style="margin-bottom:14px">Entrez le code à 6 caractères partagé par l'hôte.</p>
-      <input id="codeInput" maxlength="6" placeholder="ABCDEF" autocomplete="off" />
-      <button class="btn btn-primary" id="joinBtn" style="width:100%">Rejoindre</button>
-    </div>
-
-    <!-- Room / player -->
     <div id="roomPanel" class="card hidden">
       <div class="code-pill">Salle <strong id="codeDisplay">------</strong></div>
       <div class="video-shell">
         <video id="player" playsinline controls></video>
         <div id="videoPlaceholder" class="video-placeholder hidden">
-          <div class="spinner"></div>
+          <div class="spinner" aria-hidden="true"></div>
           <p id="placeholderMsg">Chargement du flux…</p>
-          <p style="font-size:11px;max-width:280px">Chargement via proxy sécurisé…</p>
+          <p>Chargement via proxy sécurisé…</p>
         </div>
       </div>
-      <p class="title" id="roomTitle">—</p>
-      <p class="meta" id="roomMeta">Synchronisation en cours…</p>
-      <div class="status"><span class="dot"></span><span id="syncStatus">Connecté</span></div>
-      <div class="peers" id="peersList"></div>
+      <div class="room-head">
+        <p class="title" id="roomTitle">—</p>
+        <p class="meta" id="roomMeta">Synchronisation en cours…</p>
+      </div>
+      <div class="status-bar">
+        <div class="status"><span class="dot" aria-hidden="true"></span><span id="syncStatus">Connecté</span></div>
+      </div>
+      <div class="peers" id="peersList" aria-label="Participants"></div>
       <div class="row">
-        <button class="btn btn-primary" id="openAppBtn">Ouvrir dans l'app</button>
+        <button class="btn btn-primary" id="openAppBtn">Ouvrir dans l’app</button>
         <button class="btn btn-ghost" id="copyLinkBtn">Copier le lien</button>
       </div>
     </div>
 
-    <!-- Invalid -->
     <div id="invalidPanel" class="card hidden">
       <p class="title">Salle introuvable</p>
-      <p class="meta">Ce code est invalide ou la session a expiré. Demandez un nouveau lien à l'hôte.</p>
+      <p class="meta">Ce code est invalide ou la session a expiré. Demandez un nouveau lien à l’hôte.</p>
       <div class="row" style="margin-top:16px">
-        <a href="index.html" class="btn btn-ghost" style="text-decoration:none;text-align:center">Retour au site</a>
+        <a href="/" class="btn btn-ghost">Retour au site</a>
+        <button type="button" class="btn btn-primary" id="retryJoinBtn">Entrer un code</button>
       </div>
     </div>
+
+    <p class="footer">
+      <a href="/">arich.fr</a> · Lecture partagée · Aucun contenu fourni
+    </p>
   </div>
 
   <script>
@@ -430,7 +701,6 @@
         placeholderMsg.textContent = msg || 'Flux inaccessible. Ouvrez l\'app Arich.';
       };
 
-      // HLS (.m3u8 ou .ts converti en m3u8 côté proxy)
       if (window.Hls && Hls.isSupported()) {
         hls = new Hls({
           enableWorker: true,
@@ -448,7 +718,6 @@
         });
         hls.on(Hls.Events.ERROR, (_, data) => {
           if (!data.fatal) return;
-          // Fallback MPEG-TS si manifest HLS indisponible
           if (/\.ts(\?|$)/i.test(rawUrl) && window.mpegts && mpegts.isSupported()) {
             hls.destroy();
             hls = null;
@@ -460,7 +729,6 @@
         return;
       }
 
-      // Safari natif HLS
       if (video.canPlayType('application/vnd.apple.mpegurl')) {
         video.src = proxied;
         video.onloadeddata = onPlaying;
@@ -490,7 +758,6 @@
     }
 
     function applyPlayback(posSec, playing) {
-      // Direct : pas de sync (position hôte ≠ position navigateur, provoque boucles)
       if (isLiveRoom) {
         document.getElementById('syncStatus').textContent = 'Direct · même chaîne';
         document.getElementById('roomMeta').textContent =
@@ -600,7 +867,6 @@
         setTimeout(() => { document.getElementById('copyLinkBtn').textContent = 'Copier le lien'; }, 2000);
       };
 
-      // Heartbeat présence
       setInterval(async () => {
         const uid = (await sb.auth.getUser()).data.user?.id;
         if (!uid) return;
@@ -614,6 +880,12 @@
     }
 
     async function init() {
+      document.getElementById('retryJoinBtn')?.addEventListener('click', () => {
+        hideError();
+        showPanel('joinPanel');
+        history.replaceState({}, '', location.pathname);
+      });
+
       if (!ROOM_CODE || ROOM_CODE.length !== 6) {
         showPanel('joinPanel');
         document.getElementById('joinBtn').onclick = async () => {

@@ -138,13 +138,21 @@ em { font-style: italic; }
   z-index: 100;
   background: #05070b;
   pointer-events: none;
+  /* Hidden until JS starts the sequence — avoids stuck black page if modules fail */
+  opacity: 0;
+  visibility: hidden;
+}
+.boot.is-live {
+  opacity: 1;
+  visibility: visible;
 }
 .boot.is-handoff {
   background: transparent;
 }
 .boot.is-done {
-  opacity: 0;
-  visibility: hidden;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
   transition: opacity var(--motion-med) var(--ease), visibility var(--motion-med);
 }
 .boot__canvas {

@@ -3,6 +3,7 @@ import { clamp, dur, easeInOutCubic, easeOutCubic, easeOutQuint, lerp } from './
 const LOGO_SRC = '/logo-fg.png'
 const LOGO_SVG = '/logo-mark.svg'
 const STORAGE_KEY = 'arich_booted'
+const BOOT_FAILSAFE_MS = 4200
 
 /** Construction order matches the real mark: main A → inner bar → copper play. */
 const PATH_ORDER = [
@@ -13,13 +14,11 @@ const PATH_ORDER = [
 
 /**
  * Signature boot: luminous tip traces REAL SVG geometry → exact logo mark → FLIP into nav.
- * First visit ~2.3s · return ~0.7s · prefers-reduced-motion: instant settle.
  *
- * Preview / debug (overrides reduced-motion):
- *   ?boot=force  — full first-visit cinematic
- *   ?boot=fresh  — same, clears arich_booted
- *   ?boot=slow   — full cinematic at 2.2× duration
- *   ?boot=0      — do not force (respect reduced-motion + storage)
+ * Preview / debug:
+ *   ?boot=force|fresh — full first-visit cinematic (ignores reduced-motion)
+ *   ?boot=slow        — full cinematic at 2.2× duration
+ *   ?boot=0           — skip loader entirely
  */
 export function runArichLoader({ reduced } = {}) {
   const boot = document.getElementById('boot')
@@ -44,20 +43,37 @@ export function runArichLoader({ reduced } = {}) {
   const forceFresh = bootParam === 'force' || bootParam === 'fresh' || bootParam === 'slow'
   if (forceFresh) sessionStorage.removeItem(STORAGE_KEY)
 
-  // Windows often sets prefers-reduced-motion — keep a short branded boot instead of skipping
-  if (reduced) {
+  // Reduced-motion (common on Windows): short branded handoff — never canvas loop
+  if (reduced && !forceFresh) {
+    return settleBranded(boot, app, mark, markImg, navMark, nav)
+  }
+
+  if (reduced && forceFresh) {
     document.documentElement.classList.add('arich-boot-force')
   }
 
-  const returning =
-    (!forceFresh && sessionStorage.getItem(STORAGE_KEY) === '1') ||
-    (reduced && !forceFresh)
+  const returning = !forceFresh && sessionStorage.getItem(STORAGE_KEY) === '1'
   const slowMo = bootParam === 'slow' ? 2.2 : 1
 
   return new Promise((resolve) => {
+    let settled = false
+    const finishAll = () => {
+      if (settled) return
+      settled = true
+      document.documentElement.classList.remove('arich-boot-force')
+      sessionStorage.setItem(STORAGE_KEY, '1')
+      window.dispatchEvent(new CustomEvent('arich:ready'))
+      resolve()
+    }
+
+    const failsafe = window.setTimeout(() => {
+      settleInstant(boot, app, navMark, nav).then(finishAll)
+    }, BOOT_FAILSAFE_MS)
+
     const ctx = canvas?.getContext('2d')
     if (!ctx || !mark || !markImg) {
-      settleInstant(boot, app, navMark, nav).then(resolve)
+      window.clearTimeout(failsafe)
+      settleInstant(boot, app, navMark, nav).then(finishAll)
       return
     }
 
@@ -71,6 +87,8 @@ export function runArichLoader({ reduced } = {}) {
     let tip = null
     /** @type {{ el: SVGPathElement, len: number, kind: string, start: number, end: number }[]} */
     let tracks = []
+    let tickTimer = 0
+    let kicked = false
 
     markImg.src = LOGO_SRC
     if (navMark) {
@@ -101,8 +119,8 @@ export function runArichLoader({ reduced } = {}) {
     function svgPointToScreen(svg, pt) {
       const rect = mark.getBoundingClientRect()
       const vb = svg.viewBox.baseVal
-      const sx = rect.width / vb.width
-      const sy = rect.height / vb.height
+      const sx = rect.width / (vb.width || 1)
+      const sy = rect.height / (vb.height || 1)
       return {
         x: rect.left + pt.x * sx,
         y: rect.top + pt.y * sy,
@@ -116,7 +134,6 @@ export function runArichLoader({ reduced } = {}) {
         const eased = easeInOutCubic(local)
         track.el.style.strokeDashoffset = String(track.len * (1 - eased))
 
-        // Fill blooms once the silhouette is mostly traced
         const fillT = clamp((eased - 0.55) / 0.45, 0, 1)
         track.el.style.fillOpacity = String(easeOutQuint(fillT))
         track.el.style.strokeOpacity = String(1 - fillT * 0.85)
@@ -131,7 +148,13 @@ export function runArichLoader({ reduced } = {}) {
       }
     }
 
+    function stopTicks() {
+      if (tickTimer) window.clearInterval(tickTimer)
+      tickTimer = 0
+    }
+
     function frame(now) {
+      if (settled) return
       if (!start) start = now
       const elapsed = now - start
       const p = clamp(elapsed / totalMs, 0, 1)
@@ -156,16 +179,13 @@ export function runArichLoader({ reduced } = {}) {
 
         if (p >= drawEnd) {
           phase = 'reveal'
-          const rp = clamp((p - drawEnd) / (revealEnd - drawEnd), 0, 1)
+          const rp = clamp((p - drawEnd) / Math.max(0.001, revealEnd - drawEnd), 0, 1)
           logoOpacity = easeOutQuint(rp)
           mark.style.opacity = '1'
           mark.classList.add('is-visible')
           mark.style.transform = `translate(-50%, -50%) scale(${lerp(0.94, 1, logoOpacity)})`
           markImg.style.opacity = String(logoOpacity)
-          if (construct) {
-            construct.style.opacity = String(1 - logoOpacity)
-          }
-          // Ensure geometry is fully settled under the asset
+          if (construct) construct.style.opacity = String(1 - logoOpacity)
           if (tracks.length) applyDraw(1)
         }
       }
@@ -175,15 +195,18 @@ export function runArichLoader({ reduced } = {}) {
         handoffStart = now
         markImg.style.opacity = '1'
         if (construct) construct.style.opacity = '0'
-        beginHandoff(mark, navMark, nav, boot, app).then(() => {
-          phase = 'done'
-          sessionStorage.setItem(STORAGE_KEY, '1')
-          window.removeEventListener('resize', resize)
-          stopTicks()
-          document.documentElement.classList.remove('arich-boot-force')
-          window.dispatchEvent(new CustomEvent('arich:ready'))
-          resolve()
-        })
+        beginHandoff(mark, navMark, nav, boot, app)
+          .then(() => {
+            phase = 'done'
+            window.clearTimeout(failsafe)
+            window.removeEventListener('resize', resize)
+            stopTicks()
+            finishAll()
+          })
+          .catch(() => {
+            window.clearTimeout(failsafe)
+            settleInstant(boot, app, navMark, nav).then(finishAll)
+          })
       }
 
       if (phase === 'handoff') {
@@ -196,15 +219,8 @@ export function runArichLoader({ reduced } = {}) {
       }
     }
 
-    let kicked = false
-    let tickTimer = 0
-    const stopTicks = () => {
-      if (tickTimer) window.clearInterval(tickTimer)
-      tickTimer = 0
-    }
-
     const kick = () => {
-      if (kicked) return
+      if (kicked || settled) return
       kicked = true
       mark.classList.add('is-visible')
       mark.style.opacity = '1'
@@ -214,7 +230,6 @@ export function runArichLoader({ reduced } = {}) {
         if (construct) construct.style.opacity = '0'
         logoOpacity = 1
       } else {
-        // Construct SVG must be visible while geometry draws; PNG stays hidden until reveal
         mark.style.transform = 'translate(-50%, -50%) scale(0.94)'
         markImg.style.opacity = '0'
         if (construct) construct.style.opacity = '1'
@@ -232,7 +247,6 @@ export function runArichLoader({ reduced } = {}) {
         window.setTimeout(kick, 120)
       })
       .catch(() => {
-        // Geometry unavailable — still hand off the exact PNG mark (no fake paths)
         if (construct) construct.style.opacity = '0'
         markImg.style.opacity = '1'
         mark.classList.add('is-visible')
@@ -243,8 +257,55 @@ export function runArichLoader({ reduced } = {}) {
 }
 
 /**
+ * Short logo pulse + handoff for prefers-reduced-motion (no canvas dependency).
+ */
+function settleBranded(boot, app, mark, markImg, navMark, nav) {
+  return new Promise((resolve) => {
+    document.documentElement.classList.add('arich-boot-force')
+    boot.classList.add('is-live')
+    app.classList.add('is-booting')
+
+    if (markImg) {
+      markImg.src = LOGO_SRC
+      markImg.style.opacity = '1'
+    }
+    if (navMark) {
+      navMark.src = LOGO_SRC
+      navMark.style.opacity = '0'
+    }
+    if (mark) {
+      mark.classList.add('is-visible')
+      mark.style.opacity = '1'
+      mark.style.transform = 'translate(-50%, -50%) scale(1)'
+    }
+
+    const done = () => {
+      document.documentElement.classList.remove('arich-boot-force')
+      sessionStorage.setItem(STORAGE_KEY, '1')
+      window.dispatchEvent(new CustomEvent('arich:ready'))
+      resolve()
+    }
+
+    const failsafe = window.setTimeout(() => {
+      settleInstant(boot, app, navMark, nav).then(done)
+    }, 2200)
+
+    window.setTimeout(() => {
+      beginHandoff(mark, navMark, nav, boot, app)
+        .then(() => {
+          window.clearTimeout(failsafe)
+          done()
+        })
+        .catch(() => {
+          window.clearTimeout(failsafe)
+          settleInstant(boot, app, navMark, nav).then(done)
+        })
+    }, 420)
+  })
+}
+
+/**
  * Load real logo SVG into the construct layer and prep stroke lengths.
- * @returns {Promise<{ el: SVGPathElement, len: number, kind: string, start: number, end: number }[]>}
  */
 async function prepareGeometry(construct, returning) {
   if (!construct) return []
@@ -261,7 +322,6 @@ async function prepareGeometry(construct, returning) {
   if (!svg) throw new Error('logo svg missing root')
 
   svg.setAttribute('aria-hidden', 'true')
-  // Tighten framing around the mark (content lives mid-viewBox)
   svg.setAttribute('viewBox', '48 100 400 320')
   svg.setAttribute('preserveAspectRatio', 'xMidYMid meet')
 
@@ -309,14 +369,14 @@ function drawEmber(ctx, x, y, s) {
 
 function beginHandoff(mark, navMark, nav, boot, app) {
   return new Promise((resolve) => {
-    const from = mark.getBoundingClientRect()
+    const from = mark?.getBoundingClientRect()
     const to = navMark?.getBoundingClientRect()
 
-    app.classList.remove('is-booting')
-    app.classList.add('is-entering')
+    app?.classList.remove('is-booting')
+    app?.classList.add('is-entering')
     nav?.classList.add('is-receiving')
 
-    if (!to || !navMark) {
+    if (!mark || !to || !navMark || !from?.width || !to.width) {
       finish()
       return
     }
@@ -331,19 +391,24 @@ function beginHandoff(mark, navMark, nav, boot, app) {
     mark.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(${scale})`
     mark.style.opacity = '0'
 
-    boot.style.transition = `opacity ${dur.handoff}ms cubic-bezier(0.22, 1, 0.36, 1), background ${dur.handoff}ms`
-    boot.classList.add('is-handoff')
+    if (boot) {
+      boot.style.transition = `opacity ${dur.handoff}ms cubic-bezier(0.22, 1, 0.36, 1), background ${dur.handoff}ms`
+      boot.classList.add('is-handoff')
+    }
 
     window.setTimeout(finish, dur.handoff + 40)
 
     function finish() {
-      navMark.style.opacity = '1'
-      navMark.style.transition = 'opacity 180ms ease'
-      boot.classList.add('is-done')
-      mark.classList.remove('is-flying', 'is-visible')
+      if (navMark) {
+        navMark.style.opacity = '1'
+        navMark.style.transition = 'opacity 180ms ease'
+      }
+      boot?.classList.add('is-done')
+      boot?.classList.remove('is-live')
+      mark?.classList.remove('is-flying', 'is-visible')
       nav?.classList.remove('is-receiving')
-      app.classList.remove('is-entering')
-      app.classList.add('is-ready')
+      app?.classList.remove('is-entering')
+      app?.classList.add('is-ready')
       resolve()
     }
   })
@@ -353,6 +418,7 @@ function settleInstant(boot, app, navMark, nav) {
   return new Promise((resolve) => {
     document.documentElement.classList.remove('arich-boot-force')
     if (navMark) navMark.style.opacity = '1'
+    boot?.classList.remove('is-live')
     boot?.classList.add('is-done')
     app?.classList.remove('is-booting')
     app?.classList.add('is-ready')

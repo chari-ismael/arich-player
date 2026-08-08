@@ -4,9 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>ARICH IPTV — Mon espace</title>
+<link rel="stylesheet" href="/arich-theme.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -14,27 +15,28 @@
   --bg:#050709;--bg2:#080b12;
   --surface:rgba(255,255,255,0.035);--surface2:rgba(255,255,255,0.06);
   --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.16);
-  --v:#7B2FFF;--r:#FF2D55;--g:#30D158;--y:#FFD60A;--b:#0A84FF;--c:#38d9f5;
-  --grad:linear-gradient(135deg,#7B2FFF,#FF2D55);
-  --text:#f0f0f8;--sub:rgba(240,240,248,0.52);--muted:rgba(240,240,248,0.3);
+  --v:#C58A2A;--r:#FF2D55;--g:#30D158;--y:#FFD60A;--b:#0A84FF;--c:#38d9f5;
+  --grad:linear-gradient(165deg,#D4A04A,#C58A2A);
+  --text:#F0EFEC;--sub:rgba(240,239,236,0.55);--muted:rgba(240,239,236,0.32);
   --nav:64px;--side:252px;
   --ez:cubic-bezier(0.22,1,0.36,1);--spring:cubic-bezier(0.34,1.56,0.64,1);
 }
 html{height:100%}
-body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.5}
+body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Figtree',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.5}
 
 /* BG */
 .orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 .orb{position:absolute;border-radius:50%;filter:blur(130px);animation:drift var(--d,18s) ease-in-out infinite alternate}
-.o1{width:65vmax;height:65vmax;background:radial-gradient(circle,rgba(123,47,255,0.16),transparent 60%);top:-22vmax;left:-18vmax;--d:22s}
-.o2{width:48vmax;height:48vmax;background:radial-gradient(circle,rgba(255,45,85,0.11),transparent 60%);bottom:-14vmax;right:-10vmax;--d:17s;animation-delay:-8s}
+.o1{width:65vmax;height:65vmax;background:radial-gradient(circle,rgba(197,138,42,0.16),transparent 60%);top:-22vmax;left:-18vmax;--d:22s}
+.o2{width:48vmax;height:48vmax;background:radial-gradient(circle,rgba(197,138,42,0.11),transparent 60%);bottom:-14vmax;right:-10vmax;--d:17s;animation-delay:-8s}
 @keyframes drift{to{transform:translate(28px,32px) scale(1.06)}}
 .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.02;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
 
 /* NAV */
 .nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav);background:rgba(5,7,9,0.88);backdrop-filter:blur(32px) saturate(200%);-webkit-backdrop-filter:blur(32px) saturate(200%);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px}
 .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
-.nav-gem{width:36px;height:36px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#fff;box-shadow:0 4px 20px rgba(123,47,255,0.45);flex-shrink:0}
+.nav-gem{width:36px;height:36px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#0a0c10;box-shadow:0 4px 20px rgba(197,138,42,0.45);flex-shrink:0;overflow:hidden}
+.nav-gem img{width:100%;height:100%;object-fit:cover}
 .nav-brand{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;letter-spacing:-0.02em}
 .nav-brand em{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:normal}
 .nav-sp{flex:1}
@@ -46,7 +48,7 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans
 @keyframes spin{to{transform:rotate(360deg);border-radius:0}}
 .nav-user{display:flex;align-items:center;gap:8px;padding:5px 10px 5px 5px;background:var(--surface);border:1px solid var(--border);border-radius:999px;cursor:pointer;transition:all 0.2s;margin-left:8px}
 .nav-user:hover{background:var(--surface2);border-color:var(--border2)}
-.nav-av{width:28px;height:28px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.nav-av{width:28px;height:28px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#0a0c10;flex-shrink:0}
 .nav-em{font-size:12.5px;color:var(--sub);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hamburger{display:none;background:none;border:none;cursor:pointer;color:var(--text);padding:6px;border-radius:8px}
 .nav-dropdown{position:relative}
@@ -55,7 +57,7 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans
 @keyframes dropIn{from{opacity:0;transform:translateY(-8px) scale(0.97)}to{opacity:1;transform:none}}
 .drop-header{padding:10px 12px 9px;border-bottom:1px solid var(--border);margin-bottom:4px}
 .drop-email{font-size:13px;color:var(--text);margin-top:2px;word-break:break-all}
-.drop-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--sub);transition:all 0.15s;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
+.drop-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--sub);transition:all 0.15s;border:none;background:none;width:100%;text-align:left;font-family:'Figtree',sans-serif}
 .drop-item:hover{color:var(--text);background:var(--surface2)}
 .drop-item.danger:hover{color:var(--r);background:rgba(255,45,85,0.1)}
 .drop-div{height:1px;background:var(--border);margin:4px 0}
@@ -65,12 +67,12 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans
 .sidebar{position:fixed;top:var(--nav);left:0;bottom:0;width:var(--side);background:rgba(5,7,9,0.82);border-right:1px solid var(--border);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);padding:16px 10px;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;gap:2px;z-index:100;transition:transform 0.3s var(--ez)}
 .s-group{font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);padding:10px 12px 5px;margin-top:4px}
 .s-group:first-child{margin-top:0}
-.s-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;font-size:13px;color:var(--sub);font-weight:500;transition:all 0.15s;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.s-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;font-size:13px;color:var(--sub);font-weight:500;transition:all 0.15s;border:none;background:none;width:100%;text-align:left;font-family:'Figtree',sans-serif;white-space:nowrap}
 .s-item:hover{color:var(--text);background:var(--surface)}
-.s-item.on{color:#fff;background:rgba(123,47,255,0.2);border:1px solid rgba(123,47,255,0.15)}
+.s-item.on{color:#fff;background:rgba(197,138,42,0.2);border:1px solid rgba(197,138,42,0.15)}
 .s-item svg{opacity:0.55;flex-shrink:0}
 .s-item.on svg{opacity:1}
-.s-badge{margin-left:auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(123,47,255,0.2);color:rgba(168,85,247,0.9);flex-shrink:0}
+.s-badge{margin-left:auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(197,138,42,0.2);color:rgba(212,160,74,0.9);flex-shrink:0}
 .s-div{height:1px;background:var(--border);margin:8px 12px}
 .sidebar-ov{position:fixed;inset:0;z-index:99;background:rgba(0,0,0,0.55);display:none;backdrop-filter:blur(4px)}
 .sidebar-ov.show{display:block}
@@ -124,17 +126,17 @@ tr:hover td{background:rgba(255,255,255,0.02);color:var(--text)}
 .b-red{background:rgba(255,45,85,0.12);color:var(--r)}
 .b-yellow{background:rgba(255,214,10,0.12);color:var(--y)}
 .b-blue{background:rgba(10,132,255,0.12);color:var(--b)}
-.b-purple{background:rgba(123,47,255,0.12);color:#a78bfa}
+.b-purple{background:rgba(197,138,42,0.12);color:#D4A04A}
 .b-cyan{background:rgba(56,217,245,0.12);color:var(--c)}
 .b-gray{background:rgba(255,255,255,0.07);color:var(--sub)}
 .b-dot::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
 
 /* BUTTONS */
-.btn{border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:9px 16px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:transform 0.18s var(--spring),box-shadow 0.18s,background 0.18s;user-select:none;white-space:nowrap;position:relative}
+.btn{border:none;border-radius:12px;font-family:'Figtree',sans-serif;font-size:13px;font-weight:500;padding:9px 16px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:transform 0.18s var(--spring),box-shadow 0.18s,background 0.18s;user-select:none;white-space:nowrap;position:relative}
 .btn:active{transform:scale(0.96)!important}
 .btn:disabled{opacity:0.45;cursor:not-allowed}
-.btn-primary{background:var(--grad);color:#fff;box-shadow:0 4px 18px rgba(123,47,255,0.35)}
-.btn-primary:not(:disabled):hover{box-shadow:0 6px 28px rgba(123,47,255,0.55);transform:translateY(-1px)}
+.btn-primary{background:var(--grad);color:#0a0c10;box-shadow:0 4px 18px rgba(197,138,42,0.35)}
+.btn-primary:not(:disabled):hover{box-shadow:0 6px 28px rgba(197,138,42,0.55);transform:translateY(-1px)}
 .btn-ghost{background:var(--surface);border:1px solid var(--border);color:var(--sub)}
 .btn-ghost:hover{color:var(--text);background:var(--surface2);border-color:var(--border2)}
 .btn-danger{background:rgba(255,45,85,0.1);border:1px solid rgba(255,45,85,0.2);color:var(--r)}
@@ -152,9 +154,9 @@ tr:hover td{background:rgba(255,255,255,0.02);color:var(--text)}
 .field{display:flex;flex-direction:column;gap:7px}
 .field.full{grid-column:1/-1}
 label{font-size:11px;font-weight:700;color:rgba(240,240,248,0.5);letter-spacing:0.06em;text-transform:uppercase}
-input,select,textarea{width:100%;padding:11px 13px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13.5px;outline:none;transition:border-color 0.2s,box-shadow 0.2s,background 0.2s;-webkit-appearance:none}
+input,select,textarea{width:100%;padding:11px 13px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'Figtree',sans-serif;font-size:13.5px;outline:none;transition:border-color 0.2s,box-shadow 0.2s,background 0.2s;-webkit-appearance:none}
 input::placeholder,textarea::placeholder{color:var(--muted)}
-input:focus,select:focus,textarea:focus{border-color:rgba(123,47,255,0.5);box-shadow:0 0 0 3px rgba(123,47,255,0.1);background:rgba(255,255,255,0.06)}
+input:focus,select:focus,textarea:focus{border-color:rgba(197,138,42,0.5);box-shadow:0 0 0 3px rgba(197,138,42,0.1);background:rgba(255,255,255,0.06)}
 select{cursor:pointer}
 select option{background:#0d1018}
 textarea{resize:vertical;min-height:80px}
@@ -164,7 +166,7 @@ textarea{resize:vertical;min-height:80px}
 .msg.show{display:flex;animation:msgIn 0.25s var(--ez) both}
 .msg-error{background:rgba(255,45,85,0.09);border:1px solid rgba(255,45,85,0.2);color:var(--r)}
 .msg-success{background:rgba(48,209,88,0.09);border:1px solid rgba(48,209,88,0.2);color:var(--g)}
-.msg-info{background:rgba(123,47,255,0.09);border:1px solid rgba(123,47,255,0.2);color:#a78bfa}
+.msg-info{background:rgba(197,138,42,0.09);border:1px solid rgba(197,138,42,0.2);color:#D4A04A}
 @keyframes msgIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
 
 /* MODAL */
@@ -184,7 +186,7 @@ textarea{resize:vertical;min-height:80px}
 
 /* LOADING */
 .loading{display:flex;align-items:center;justify-content:center;padding:48px;gap:12px;color:var(--muted);font-size:13.5px}
-.big-spin{width:22px;height:22px;border-radius:50%;border:2px solid rgba(123,47,255,0.25);border-top-color:var(--v);animation:spinA 0.7s linear infinite}
+.big-spin{width:22px;height:22px;border-radius:50%;border:2px solid rgba(197,138,42,0.25);border-top-color:var(--v);animation:spinA 0.7s linear infinite}
 
 /* EMPTY */
 .empty{text-align:center;padding:48px 20px;color:var(--muted)}
@@ -202,7 +204,7 @@ textarea{resize:vertical;min-height:80px}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--sub);transition:all 0.18s;user-select:none}
 .chip:hover{color:var(--text);border-color:var(--border2)}
-.chip.on{background:rgba(123,47,255,0.18);border-color:rgba(123,47,255,0.4);color:#c4b5fd}
+.chip.on{background:rgba(197,138,42,0.18);border-color:rgba(197,138,42,0.4);color:#D4A04A}
 
 /* MROW */
 .mrow{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
@@ -213,10 +215,10 @@ textarea{resize:vertical;min-height:80px}
 /* PROFILE CARD */
 .profile-hero{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;display:flex;align-items:center;gap:18px;margin-bottom:22px;position:relative;overflow:hidden}
 .profile-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);opacity:0.7}
-.profile-av{width:56px;height:56px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#fff;flex-shrink:0;box-shadow:0 6px 22px rgba(123,47,255,0.4)}
+.profile-av{width:56px;height:56px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#0a0c10;flex-shrink:0;box-shadow:0 6px 22px rgba(197,138,42,0.4)}
 
 /* LICENSE CARD */
-.license-card{background:rgba(123,47,255,0.06);border:1px solid rgba(123,47,255,0.2);border-radius:14px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+.license-card{background:rgba(197,138,42,0.06);border:1px solid rgba(197,138,42,0.2);border-radius:14px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}
 .license-card.expired{background:rgba(255,45,85,0.06);border-color:rgba(255,45,85,0.2)}
 .license-card.trial{background:rgba(255,214,10,0.06);border-color:rgba(255,214,10,0.2)}
 
@@ -247,7 +249,7 @@ textarea{resize:vertical;min-height:80px}
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
   </button>
   <a class="nav-logo" href="https://devhertox.github.io/arich_iptv/">
-    <div class="nav-gem">A</div>
+    <div class="nav-gem"><img src="/logo-fg.png" alt="" width="36" height="36" /></div>
     <div class="nav-brand"><em>ARICH</em> IPTV</div>
   </a>
   <div class="nav-sp"></div>
@@ -413,7 +415,7 @@ textarea{resize:vertical;min-height:80px}
         <div style="font-size:12.5px;color:var(--sub);line-height:1.6;">✅ Accès illimité · ✅ Toutes les fonctions · ✅ Support prioritaire</div>
         <a href="https://devhertox.github.io/arich_iptv/#pricing" class="btn btn-ghost btn-sm" style="text-decoration:none;justify-content:center;">Choisir ce plan →</a>
       </div>
-      <div style="background:rgba(123,47,255,0.08);border:1px solid rgba(123,47,255,0.25);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px;">
+      <div style="background:rgba(197,138,42,0.08);border:1px solid rgba(197,138,42,0.25);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px;">
         <div style="display:flex;align-items:center;gap:8px;"><span style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;">Plan À vie</span><span class="badge b-purple">Populaire</span></div>
         <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">4,99€<span style="font-size:14px;font-weight:400;-webkit-text-fill-color:var(--sub);color:var(--sub);"> une fois</span></div>
         <div style="font-size:12.5px;color:var(--sub);line-height:1.6;">✅ Accès à vie · ✅ Toutes les mises à jour · ✅ Support VIP</div>
@@ -919,7 +921,7 @@ async function loadDevices() {
     const isOnline = d.last_seen_at && (new Date() - new Date(d.last_seen_at)) < 300000;
     return `<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px;">
       <div style="display:flex;align-items:center;gap:14px;">
-        <div style="width:40px;height:40px;border-radius:10px;background:rgba(123,47,255,0.12);border:1px solid rgba(123,47,255,0.2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">📱</div>
+        <div style="width:40px;height:40px;border-radius:10px;background:rgba(197,138,42,0.12);border:1px solid rgba(197,138,42,0.2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">📱</div>
         <div>
           <div style="font-weight:600;font-size:13.5px;">${esc(d.device_name || d.device_model || 'Appareil inconnu')}</div>
           <div style="font-size:11.5px;color:var(--muted);margin-top:2px;">${esc(d.device_brand || '')} ${esc(d.android_version ? '· Android ' + d.android_version : '')}</div>

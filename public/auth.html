@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ARICH IPTV — Authentification</title>
+<link rel="stylesheet" href="/arich-theme.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
@@ -94,7 +95,7 @@ body { min-height:100%; background:var(--bg); color:var(--text); font-family:'Fi
 @media (max-width:480px) { .card { padding:32px 22px; } }
 @keyframes cardIn { from { opacity:0; transform:translateY(30px) scale(0.965); } to { opacity:1; transform:translateY(0) scale(1); } }
 .logo { display:flex; align-items:center; gap:11px; margin-bottom:36px; animation:upFade 0.5s 0.12s var(--ez) both; }
-.logo-gem { width:42px; height:42px; border-radius:13px; flex-shrink:0; background:var(--gradient); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:#fff; letter-spacing:-0.03em; box-shadow:0 6px 24px rgba(124,143,255,0.45),0 2px 8px rgba(0,0,0,0.3); position:relative; overflow:hidden; }
+.logo-gem { width:42px; height:42px; border-radius:13px; flex-shrink:0; background:var(--gradient); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:#0a0c10; letter-spacing:-0.03em; box-shadow:0 6px 24px rgba(197,138,42,0.45),0 2px 8px rgba(0,0,0,0.3); position:relative; overflow:hidden; }
 .logo-gem::after { content:''; position:absolute; top:0; left:0; right:0; height:50%; background:rgba(255,255,255,0.15); border-radius:13px 13px 0 0; }
 .logo-name { font-family:'Syne',sans-serif; font-size:21px; font-weight:700; letter-spacing:-0.025em; }
 .logo-name em { background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; font-style:normal; }
@@ -126,7 +127,7 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
 .bar { flex:1; border-radius:3px; background:rgba(255,255,255,0.1); transition:background 0.35s var(--ez); }
 .bar.s1 { background:var(--error); } .bar.s2 { background:var(--warn); } .bar.s3 { background:var(--success); }
 .strength-lbl { font-size:11px; font-weight:500; color:var(--text-muted); transition:color 0.35s; letter-spacing:0.02em; text-transform:uppercase; height:14px; }
-.btn { width:100%; border:none; border-radius:var(--radius-sm); font-family:'DM Sans',sans-serif; font-size:15px; font-weight:500; padding:13.5px 20px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:9px; transition:transform 0.18s var(--ez-spring),box-shadow 0.18s,opacity 0.18s,background 0.2s; position:relative; overflow:hidden; user-select:none; letter-spacing:0.01em; }
+.btn { width:100%; border:none; border-radius:var(--radius-sm); font-family:'Figtree',sans-serif; font-size:15px; font-weight:500; padding:13.5px 20px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:9px; transition:transform 0.18s var(--ez-spring),box-shadow 0.18s,opacity 0.18s,background 0.2s; position:relative; overflow:hidden; user-select:none; letter-spacing:0.01em; }
 .btn::after { content:''; position:absolute; inset:0; background:rgba(255,255,255,0); transition:background 0.2s; }
 .btn:not(:disabled):active { transform:scale(0.96); }
 .btn:not(:disabled):hover::after { background:rgba(255,255,255,0.06); }

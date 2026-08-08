@@ -4,29 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ARICH IPTV — Connexion TV</title>
+<link rel="stylesheet" href="/arich-theme.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:        #000000;
-      --surface:   #111111;
-      --surfaceHi: #1a1a1a;
-      --border:    rgba(255,255,255,0.07);
-      --violet:    #7B2FFF;
+      --bg:        #080a0f;
+      --surface:   #12161f;
+      --surfaceHi: rgba(240,239,236,0.06);
+      --border:    rgba(240,239,236,0.1);
+      --violet:    #C58A2A;
       --red:       #FF2D55;
       --green:     #30D158;
-      --muted:     #8E8E93;
-      --grad:      linear-gradient(135deg, #7B2FFF, #FF2D55);
+      --muted:     rgba(240,239,236,0.55);
+      --grad:      linear-gradient(165deg, #D4A04A, #C58A2A);
+      --ink:       #0a0c10;
+      --text:      #F0EFEC;
     }
 
     html, body {
       height: 100%;
       background: var(--bg);
-      color: #fff;
-      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      font-family: 'Figtree', sans-serif;
       font-weight: 400;
       -webkit-font-smoothing: antialiased;
     }
@@ -41,7 +44,7 @@
       mix-blend-mode: screen;
     }
     body:has(a:hover) #cursor,
-    body:has(button:hover) #cursor { width: 28px; height: 28px; background: var(--red); }
+    body:has(button:hover) #cursor { width: 28px; height: 28px; background: #D4A04A; }
     @media (hover: none) { #cursor { display: none; } body { cursor: auto; } }
 
     .page {
@@ -54,13 +57,13 @@
     .glow-top {
       position: fixed; top: -120px; left: -120px;
       width: 420px; height: 420px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(123,47,255,.15) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(197,138,42,.15) 0%, transparent 70%);
       pointer-events: none;
     }
     .glow-bot {
       position: fixed; bottom: -100px; right: -100px;
       width: 380px; height: 380px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,45,85,.10) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(197,138,42,.10) 0%, transparent 70%);
       pointer-events: none;
     }
 
@@ -69,7 +72,7 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 24px; padding: 36px 32px;
-      box-shadow: 0 40px 80px rgba(0,0,0,.6), 0 0 60px rgba(123,47,255,.08);
+      box-shadow: 0 40px 80px rgba(0,0,0,.6), 0 0 60px rgba(197,138,42,.08);
       animation: fadeUp .5s cubic-bezier(.22,1,.36,1) both;
     }
     @keyframes fadeUp {
@@ -82,16 +85,17 @@
       width: 44px; height: 44px; border-radius: 12px;
       background: var(--grad);
       display: flex; align-items: center; justify-content: center;
-      font-size: 22px;
-      box-shadow: 0 0 24px rgba(123,47,255,.45); flex-shrink: 0;
+      font-size: 22px; overflow: hidden;
+      box-shadow: 0 0 24px rgba(197,138,42,.45); flex-shrink: 0;
     }
+    .logo-icon img { width: 100%; height: 100%; object-fit: cover; }
     .logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; letter-spacing: .5px; }
     .logo-sub  { font-size: 11px; color: var(--muted); margin-top: 1px; }
 
     .tv-badge {
       display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(123,47,255,.12);
-      border: 1px solid rgba(123,47,255,.25);
+      background: rgba(197,138,42,.12);
+      border: 1px solid rgba(197,138,42,.25);
       border-radius: 10px; padding: 8px 14px;
       font-size: 12px; color: var(--violet);
       margin-bottom: 24px; font-weight: 500;
@@ -110,7 +114,7 @@
       font-size: 13px; font-weight: 500; cursor: pointer; border: none;
       transition: all .2s; color: var(--muted); background: transparent;
     }
-    .tab.active { background: var(--grad); color: #fff; box-shadow: 0 4px 12px rgba(123,47,255,.3); }
+    .tab.active { background: var(--grad); color: var(--ink); box-shadow: 0 4px 12px rgba(197,138,42,.3); }
 
     .field { margin-bottom: 14px; }
     label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 6px; letter-spacing: .5px; text-transform: uppercase; }
@@ -119,21 +123,21 @@
       background: var(--surfaceHi);
       border: 1px solid var(--border);
       border-radius: 12px; color: #fff;
-      font-family: 'DM Sans', sans-serif; font-size: 14px;
+      font-family: 'Figtree', sans-serif; font-size: 14px;
       outline: none; transition: border-color .2s, box-shadow .2s;
     }
-    input:focus { border-color: rgba(123,47,255,.5); box-shadow: 0 0 0 3px rgba(123,47,255,.12); }
+    input:focus { border-color: rgba(197,138,42,.5); box-shadow: 0 0 0 3px rgba(197,138,42,.12); }
 
     .btn-primary {
       width: 100%; padding: 14px;
       background: var(--grad); border: none; border-radius: 14px;
-      color: #fff; font-family: 'DM Sans', sans-serif;
+      color: var(--ink); font-family: 'Figtree', sans-serif;
       font-size: 15px; font-weight: 700; cursor: pointer;
-      box-shadow: 0 8px 24px rgba(123,47,255,.35);
+      box-shadow: 0 8px 24px rgba(197,138,42,.35);
       transition: transform .15s, box-shadow .15s, opacity .15s;
       display: flex; align-items: center; justify-content: center; gap: 8px;
     }
-    .btn-primary:hover  { transform: translateY(-1px); box-shadow: 0 12px 32px rgba(123,47,255,.45); }
+    .btn-primary:hover  { transform: translateY(-1px); box-shadow: 0 12px 32px rgba(197,138,42,.45); }
     .btn-primary:active { transform: scale(.98); }
     .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
@@ -189,7 +193,7 @@
 
     .tv-connecting {
       display: flex; align-items: center; gap: 10px;
-      background: rgba(123,47,255,.10); border: 1px solid rgba(123,47,255,.25);
+      background: rgba(197,138,42,.10); border: 1px solid rgba(197,138,42,.25);
       border-radius: 12px; padding: 12px 16px;
       font-size: 13px; color: var(--violet);
       margin-bottom: 24px; width: 100%;
@@ -206,14 +210,14 @@
 
     .btn-manage {
       width: 100%; padding: 14px;
-      background: var(--surfaceHi); border: 1px solid rgba(123,47,255,.3);
+      background: var(--surfaceHi); border: 1px solid rgba(197,138,42,.3);
       border-radius: 14px; color: #fff;
-      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+      font-family: 'Figtree', sans-serif; font-size: 14px; font-weight: 600;
       cursor: pointer; text-decoration: none;
       display: flex; align-items: center; justify-content: center; gap: 8px;
       transition: background .2s, border-color .2s, transform .15s;
     }
-    .btn-manage:hover { background: rgba(123,47,255,.12); border-color: rgba(123,47,255,.5); transform: translateY(-1px); }
+    .btn-manage:hover { background: rgba(197,138,42,.12); border-color: rgba(197,138,42,.5); transform: translateY(-1px); }
 
     .token-info {
       margin-top: 20px; padding: 10px 14px;
@@ -238,7 +242,7 @@
     <div class="card">
 
       <div class="logo-row">
-        <div class="logo-icon">▶</div>
+        <div class="logo-icon"><img src="/logo-fg.png" alt="" width="44" height="44" /></div>
         <div>
           <div class="logo-text">ARICH IPTV</div>
           <div class="logo-sub">Connexion TV</div>

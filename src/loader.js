@@ -6,6 +6,12 @@ const STORAGE_KEY = 'arich_booted'
 /**
  * Signature boot: copper ember draws depth trails → exact logo mark → FLIP into nav.
  * First visit ~2.3s · return ~0.7s · prefers-reduced-motion: instant settle.
+ *
+ * Preview / debug (overrides reduced-motion):
+ *   ?boot=force  — full first-visit cinematic
+ *   ?boot=fresh  — same, clears arich_booted
+ *   ?boot=slow   — full cinematic at 2.2× duration
+ *   ?boot=0      — do not force (respect reduced-motion + storage)
  */
 export function runArichLoader({ reduced } = {}) {
   const boot = document.getElementById('boot')
@@ -21,13 +27,26 @@ export function runArichLoader({ reduced } = {}) {
   }
 
   const params = new URLSearchParams(location.search)
-  const forceFresh = params.has('boot') && params.get('boot') !== '0'
+  const bootParam = params.has('boot') ? (params.get('boot') ?? '') : null
+  // Any ?boot=… except ?boot=0 forces a fresh first-visit path + cinematic preview
+  const forceFresh = bootParam !== null && bootParam !== '0'
   if (forceFresh) sessionStorage.removeItem(STORAGE_KEY)
   const returning = !forceFresh && sessionStorage.getItem(STORAGE_KEY) === '1'
-  const slowMo = params.get('boot') === 'slow' ? 2.2 : 1
+  const slowMo = bootParam === 'slow' ? 2.2 : 1
 
-  if (reduced) {
+  // a11y: skip cinematic when OS asks for reduced motion — unless explicitly forced
+  if (reduced && !forceFresh) {
+    if (typeof console !== 'undefined' && console.info) {
+      console.info(
+        '[arich] boot loader skipped (prefers-reduced-motion). Preview with ?boot=force',
+      )
+    }
     return settleInstant(boot, app, navMark, nav)
+  }
+
+  if (reduced && forceFresh) {
+    // Exempt boot CSS transitions from the global reduced-motion kill-switch
+    document.documentElement.classList.add('arich-boot-force')
   }
 
   return new Promise((resolve) => {
@@ -164,6 +183,7 @@ export function runArichLoader({ reduced } = {}) {
           sessionStorage.setItem(STORAGE_KEY, '1')
           window.removeEventListener('resize', resize)
           stopTicks()
+          document.documentElement.classList.remove('arich-boot-force')
           window.dispatchEvent(new CustomEvent('arich:ready'))
           resolve()
         })
@@ -339,6 +359,7 @@ function beginHandoff(mark, navMark, nav, boot, app) {
 
 function settleInstant(boot, app, navMark, nav) {
   return new Promise((resolve) => {
+    document.documentElement.classList.remove('arich-boot-force')
     if (navMark) navMark.style.opacity = '1'
     boot?.classList.add('is-done')
     app?.classList.remove('is-booting')

@@ -2079,15 +2079,18 @@ em { font-style: italic; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  /* html.arich-boot-force = ?boot=force|fresh|slow preview — keep boot transitions alive */
+  html:not(.arich-boot-force) *,
+  html:not(.arich-boot-force) *::before,
+  html:not(.arich-boot-force) *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  [data-reveal],
-  [data-reveal].is-in,
-  .pricing__cards[data-reveal] .price-card,
-  .steps[data-reveal] .step {
+  html:not(.arich-boot-force) [data-reveal],
+  html:not(.arich-boot-force) [data-reveal].is-in,
+  html:not(.arich-boot-force) .pricing__cards[data-reveal] .price-card,
+  html:not(.arich-boot-force) .steps[data-reveal] .step {
     opacity: 1 !important;
     transform: none !important;
     filter: none !important;

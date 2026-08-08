@@ -589,6 +589,14 @@ em { font-style: italic; }
   height: 100%;
   object-fit: cover;
 }
+/* Soft swap: keep poster visible until first decoded frame is playing */
+.device__screen video.lazy-video {
+  opacity: 0;
+  transition: opacity 0.55s var(--ease);
+}
+.device__screen video.lazy-video.is-ready {
+  opacity: 1;
+}
 .device__stand {
   width: 18%;
   height: 14px;

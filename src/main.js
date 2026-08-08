@@ -520,39 +520,64 @@ function updateFeatFlow() {
 initFeatFlow()
 
 /* ── Lazy videos (IntersectionObserver) ────────────── */
-function initLazyVideos() {
-  const videosEls = document.querySelectorAll('video.lazy-video')
-  if (!videosEls.length) return
+function playSafe(v) {
+  v.muted = true
+  v.defaultMuted = true
+  v.playsInline = true
+  v.setAttribute('muted', '')
+  v.setAttribute('playsinline', '')
+  v.setAttribute('webkit-playsinline', '')
+  const p = v.play()
+  if (p?.catch) p.catch(() => {})
+}
 
-  const playSafe = (v) => {
+function armVideoSource(v) {
+  const want = v.dataset.src
+  if (!want) return
+  // HTMLMediaElement.src is never empty — use getAttribute
+  if (v.getAttribute('src') !== want) {
+    v.setAttribute('src', want)
+    v.load()
+  }
+}
+
+function markVideoReady(v) {
+  if (v.classList.contains('is-ready')) return
+  // Wait for a real painted frame so poster→video doesn't flash black
+  const reveal = () => v.classList.add('is-ready')
+  if (typeof v.requestVideoFrameCallback === 'function') {
+    v.requestVideoFrameCallback(() => reveal())
+  } else if (v.readyState >= 2 && !v.paused) {
+    reveal()
+  } else {
+    v.addEventListener('playing', reveal, { once: true })
+  }
+}
+
+/** Start hero/player downloads during boot so they're warm when the UI appears. */
+function preloadHeroVideos() {
+  document.querySelectorAll('.hero video.lazy-video, .feat-intro__player video.lazy-video').forEach((v) => {
     v.muted = true
     v.defaultMuted = true
     v.playsInline = true
-    v.setAttribute('muted', '')
-    v.setAttribute('playsinline', '')
-    v.setAttribute('webkit-playsinline', '')
-    const p = v.play()
-    if (p?.catch) p.catch(() => {})
-  }
+    v.loop = true
+    v.preload = 'auto'
+    armVideoSource(v)
+  })
+}
 
-  const armSource = (v) => {
-    const want = v.dataset.src
-    if (!want) return
-    // IMPORTANT: HTMLMediaElement.src is never empty (resolves to page URL).
-    // Use getAttribute — otherwise videos never start on production.
-    if (v.getAttribute('src') !== want) {
-      v.setAttribute('src', want)
-      v.load()
-    }
-  }
+function initLazyVideos() {
+  const videosEls = document.querySelectorAll('video.lazy-video')
+  if (!videosEls.length) return
 
   const io = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         const v = entry.target
         if (entry.isIntersecting) {
-          armSource(v)
+          armVideoSource(v)
           playSafe(v)
+          markVideoReady(v)
         } else {
           v.pause()
         }
@@ -566,13 +591,11 @@ function initLazyVideos() {
     v.defaultMuted = true
     v.playsInline = true
     v.loop = true
-    // Hero videos: start download immediately (files are large)
+    v.addEventListener('playing', () => markVideoReady(v))
     if (v.closest('.hero') || v.closest('.feat-intro__player')) {
-      armSource(v)
-      const kick = () => playSafe(v)
-      v.addEventListener('canplay', kick, { once: true })
-      v.addEventListener('loadeddata', kick, { once: true })
-      if (v.readyState >= 2) kick()
+      armVideoSource(v)
+      playSafe(v)
+      markVideoReady(v)
     }
     io.observe(v)
   })
@@ -580,7 +603,10 @@ function initLazyVideos() {
   document.addEventListener('visibilitychange', () => {
     videosEls.forEach((v) => {
       if (document.hidden) v.pause()
-      else if (v.getAttribute('src') && v.getBoundingClientRect().top < window.innerHeight) playSafe(v)
+      else if (v.getAttribute('src') && v.getBoundingClientRect().top < window.innerHeight) {
+        playSafe(v)
+        markVideoReady(v)
+      }
     })
   })
 }
@@ -729,6 +755,7 @@ window.addEventListener('resize', () => {
 /* ── Init ──────────────────────────────────────────── */
 initI18n()
 applyConfigUI()
+preloadHeroVideos()
 initHeroEnter({ reduced })
 initHeroTilt()
 initReveals()

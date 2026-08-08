@@ -444,7 +444,7 @@ function initReveals() {
     { sel: '.stage__block', kind: 'alt' },
     { sel: '.need__compose', kind: 'scale' },
     { sel: '.steps', kind: 'rise' },
-    { sel: '.install__cta', kind: 'wipe-left' },
+    { sel: '.install__compose', kind: 'wipe-left' },
     { sel: '.pricing__cards', kind: 'scale' },
     { sel: '.faq__list', kind: 'rise' },
     { sel: '.contact__form', kind: 'wipe-left' },

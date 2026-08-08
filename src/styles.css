@@ -1330,131 +1330,195 @@ em { font-style: italic; }
 .steps {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  margin-bottom: 14px;
+  gap: clamp(16px, 3vw, 36px);
+  margin-bottom: 18px;
   counter-reset: none;
 }
 .steps__item {
   display: flex;
   gap: 14px;
-  padding: 8px 4px 18px;
+  padding: 4px 2px 20px;
   border: none;
   background: transparent;
-  opacity: 0.42;
+  opacity: 0.38;
   transition: opacity var(--motion-med) var(--ease), transform var(--motion-med) var(--ease);
 }
 .steps__item.is-on {
   opacity: 1;
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 .steps__item.is-done {
-  opacity: 0.72;
+  opacity: 0.58;
 }
 .steps__n {
   font-family: var(--display);
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--copper);
   line-height: 1;
+  letter-spacing: 0.02em;
   transition: color var(--motion-short) var(--ease);
 }
 .steps__item:not(.is-on) .steps__n { color: var(--faint); }
+.steps__item.is-done .steps__n { color: rgba(197, 138, 42, 0.55); }
 .steps h3 {
-  font-size: 17px;
-  font-weight: 650;
+  font-size: 16px;
+  font-weight: 600;
   margin-bottom: 6px;
+  letter-spacing: 0.01em;
 }
-.steps p { color: var(--mute); font-size: 14px; }
+.steps p {
+  color: var(--mute);
+  font-size: 13.5px;
+  line-height: 1.45;
+  max-width: 28ch;
+}
 .steps__rail {
-  height: 2px;
-  background: rgba(240, 239, 236, 0.1);
+  height: 1px;
+  background: rgba(240, 239, 236, 0.08);
   border-radius: 999px;
-  margin-bottom: 40px;
+  margin-bottom: clamp(48px, 7vw, 72px);
   overflow: hidden;
 }
 .steps__fill {
   display: block;
   height: 100%;
   width: 33%;
-  background: linear-gradient(90deg, var(--copper), var(--copper-2));
+  background: linear-gradient(90deg, rgba(197, 138, 42, 0.35), var(--copper));
   border-radius: inherit;
   transition: width var(--motion-med) var(--ease-cinema);
 }
-.install__cta {
+
+/* Open composition — no card */
+.install__compose {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
   align-items: center;
-  gap: clamp(28px, 5vw, 48px);
-  padding: clamp(24px, 4vw, 36px);
-  border-radius: 24px;
-  border: 1px solid var(--line);
-  background:
-    radial-gradient(80% 80% at 20% 30%, rgba(197,138,42,0.12), transparent 60%),
-    rgba(20, 25, 35, 0.45);
+  gap: clamp(36px, 7vw, 80px);
+  min-height: clamp(360px, 48vw, 520px);
 }
-.install__product {
-  display: grid;
-  grid-template-columns: minmax(120px, 180px) 1fr;
-  align-items: end;
-  gap: 18px;
+.install__download {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  max-width: 420px;
 }
-.install__phone {
-  width: 100%;
-  max-width: 170px;
+.install__dl-title {
+  font-family: var(--display);
+  font-size: clamp(26px, 3.2vw, 34px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
 }
-.install__phone .device__bezel {
-  max-width: none;
-  width: 100%;
+.install__dl-sub {
+  margin: 0 0 28px;
+  color: var(--mute);
+  font-size: 15.5px;
+  line-height: 1.55;
+  max-width: 36ch;
 }
 .install__buttons {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 12px;
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 16px;
+}
+.install__buttons .btn { width: 100%; justify-content: center; }
+.install__buttons .btn--ghost {
+  opacity: 0.88;
+}
+.install__meta {
+  margin: 0 0 28px;
+  font-size: 12.5px;
+  color: var(--faint);
+  letter-spacing: 0.02em;
 }
 .install__qr {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 4px;
 }
 .install__qr-frame {
   position: relative;
-  width: 148px;
-  height: 148px;
-  margin: 0 auto 12px;
-  border-radius: 16px;
+  flex: 0 0 auto;
+  width: 88px;
+  height: 88px;
+  border-radius: 12px;
   overflow: hidden;
   background: #fff;
-  padding: 10px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  padding: 7px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
 }
 .install__qr-frame img {
   width: 100%;
   height: 100%;
   display: block;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 .install__qr-scan {
   position: absolute;
-  left: 10px;
-  right: 10px;
-  height: 2px;
+  left: 8px;
+  right: 8px;
+  height: 1.5px;
   top: 12%;
-  background: linear-gradient(90deg, transparent, rgba(197,138,42,0.85), transparent);
-  box-shadow: 0 0 12px rgba(197, 138, 42, 0.55);
-  animation: qrScan 2.8s var(--ease-soft) infinite;
+  background: linear-gradient(90deg, transparent, rgba(197,138,42,0.7), transparent);
+  box-shadow: 0 0 8px rgba(197, 138, 42, 0.35);
+  animation: qrScan 3.2s var(--ease-soft) infinite;
   pointer-events: none;
+  opacity: 0.75;
 }
 @keyframes qrScan {
   0%, 10% { top: 14%; opacity: 0; }
-  20% { opacity: 1; }
-  80% { opacity: 1; }
+  20% { opacity: 0.75; }
+  80% { opacity: 0.75; }
   100% { top: 86%; opacity: 0; }
 }
 .install__qr:hover .install__qr-scan {
-  animation-duration: 1.6s;
+  animation-duration: 1.8s;
 }
 .install__qr p {
-  font-size: 12px;
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.4;
   color: var(--faint);
+  max-width: 16ch;
+}
+
+.install__visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 420px;
+}
+.install__phone {
+  position: relative;
+  width: min(100%, 280px);
+  transform: rotate(-4deg);
+  z-index: 1;
+}
+.install__phone .device__glow--phone {
+  inset: -18% -28%;
+  background: radial-gradient(ellipse at 50% 45%, rgba(197, 138, 42, 0.32), transparent 62%);
+  filter: blur(36px);
+  opacity: 0.9;
+}
+.install__phone .device__bezel {
+  max-width: none;
+  width: 100%;
+  border-radius: 34px;
+  padding: 12px;
+  border-color: rgba(240, 239, 236, 0.16);
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(197, 138, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
 }
 
 /* ── Pricing ───────────────────────────────────────── */
@@ -1925,11 +1989,22 @@ em { font-style: italic; }
   .device--phone-land .device__screen { border-radius: 18px; }
   .device--phone-land .device__island { left: 8px; width: 4px; }
 
-  .steps { grid-template-columns: 1fr; }
-  .install__cta { grid-template-columns: 1fr; }
-  .install__buttons { align-items: stretch; }
-  .install__buttons .btn { width: 100%; }
-  .install__product { justify-content: center; }
+  .steps { grid-template-columns: 1fr; gap: 8px; }
+  .steps__item { padding-bottom: 12px; }
+  .steps p { max-width: none; }
+  .install__compose {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    min-height: 0;
+  }
+  .install__download {
+    max-width: none;
+    align-items: stretch;
+    text-align: left;
+  }
+  .install__buttons { max-width: none; }
+  .install__visual { min-height: 0; order: 2; }
+  .install__phone { width: min(220px, 58vw); }
   .pricing__cards { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
   .footer__grid { grid-template-columns: 1fr; gap: 28px; }
   .nav__account { display: none; }
@@ -1987,8 +2062,14 @@ em { font-style: italic; }
   .hero__phone { width: 38%; }
   .need__phone { display: none; }
   .bg-halo--2, .bg-halo--3 { opacity: 0.25; }
-  .install__cta { flex-direction: column; text-align: center; }
-  .install__buttons { justify-content: center; }
+  .install__download { align-items: stretch; }
+  .install__dl-title { text-align: left; }
+  .install__dl-sub { max-width: none; }
+  .install__qr {
+    align-self: flex-start;
+  }
+  .install__visual { padding-block: 8px 12px; }
+  .install__phone { width: min(200px, 52vw); }
 }
 
 @media (max-width: 480px) {

@@ -76,7 +76,10 @@ const dict = {
     inst_2_b: 'Ajoutez votre accès Xtream ou votre playlist M3U.',
     inst_3_t: 'Regardez',
     inst_3_b: 'Vos contenus, dans une interface digne du salon.',
-    inst_qr: 'Scannez pour télécharger',
+    inst_dl_title: 'Téléchargez ARICH PLAYER',
+    inst_dl_sub: "Installez l'application en quelques secondes et profitez de votre contenu sur Android.",
+    inst_meta: 'Android 8+ · v3.0.4',
+    inst_qr: 'Sur ordinateur ? Scannez pour télécharger',
     dl_apk: "Télécharger l'APK",
     dl_play: 'Google Play',
 
@@ -218,7 +221,10 @@ const dict = {
     inst_2_b: 'Add your Xtream access or M3U playlist.',
     inst_3_t: 'Watch',
     inst_3_b: 'Your content, in a living-room worthy interface.',
-    inst_qr: 'Scan to download',
+    inst_dl_title: 'Download ARICH PLAYER',
+    inst_dl_sub: 'Install the app in seconds and enjoy your content on Android.',
+    inst_meta: 'Android 8+ · v3.0.4',
+    inst_qr: 'On desktop? Scan to download',
     dl_apk: 'Download APK',
     dl_play: 'Google Play',
 

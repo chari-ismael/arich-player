@@ -107,10 +107,12 @@ body { min-height:100%; background:var(--bg); color:var(--text); font-family:'Fi
 @keyframes viewSlideRight { from { opacity:1; transform:none; } to { opacity:0; transform:translateX(20px); } }
 h1 { font-family:'Syne',sans-serif; font-size:clamp(22px,5vw,27px); font-weight:700; letter-spacing:-0.035em; line-height:1.2; }
 .sub { font-size:14px; color:var(--text-sub); font-weight:300; margin-top:5px; line-height:1.55; }
-.field { display:flex; flex-direction:column; gap:7px; }
-label { font-size:12.5px; font-weight:500; color:rgba(238,238,245,0.62); letter-spacing:0.02em; text-transform:uppercase; }
+.field { display:flex; flex-direction:column; gap:7px; transition: transform 0.28s var(--ez); }
+.field:focus-within { transform: translateY(-1px); }
+.field:focus-within label { color: rgba(212,160,74,0.92); }
+label { font-size:12.5px; font-weight:500; color:rgba(238,238,245,0.62); letter-spacing:0.02em; text-transform:uppercase; transition: color 0.22s var(--ez); }
 .input-wrap { position:relative; }
-input[type="email"], input[type="password"], input[type="text"] { width:100%; padding:13px 16px; background:var(--input-bg); border:1px solid var(--input-border); border-radius:var(--radius-sm); color:var(--text); font-family:'DM Sans',sans-serif; font-size:15px; font-weight:400; outline:none; transition:border-color 0.22s,box-shadow 0.22s,background 0.22s; -webkit-appearance:none; }
+input[type="email"], input[type="password"], input[type="text"] { width:100%; padding:13px 16px; background:var(--input-bg); border:1px solid var(--input-border); border-radius:var(--radius-sm); color:var(--text); font-family:'Figtree',sans-serif; font-size:15px; font-weight:400; outline:none; transition:border-color 0.22s,box-shadow 0.22s,background 0.22s; -webkit-appearance:none; }
 input::placeholder { color:var(--text-muted); }
 input:focus { border-color:rgba(197,138,42,0.55); box-shadow:0 0 0 3.5px rgba(197,138,42,0.14); background:rgba(255,255,255,0.065); }
 input.has-icon { padding-right:46px; }
@@ -177,7 +179,7 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
 <header class="auth-nav">
   <div class="auth-nav-pill">
     <a class="auth-nav-brand" href="/">
-      <img src="/logo-launcher.png" alt="" width="28" height="28" />
+      <img src="/logo-fg.png" alt="" width="28" height="28" />
       <span>ARICH</span>
     </a>
     <a class="auth-nav-home" href="/">Accueil</a>
@@ -199,7 +201,7 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
   <div class="card">
 
     <div class="logo">
-      <img src="/logo-launcher.png" alt="" width="42" height="42" style="border-radius:13px;box-shadow:0 6px 24px rgba(197,138,42,0.35)" />
+      <img src="/logo-fg.png" alt="" width="42" height="42" style="border-radius:13px;box-shadow:0 6px 24px rgba(197,138,42,0.35)" />
       <div class="logo-name"><em>ARICH</em> PLAYER</div>
     </div>
 

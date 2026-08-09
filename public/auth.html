@@ -1,798 +1,1049 @@
 ﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ARICH IPTV — Authentification</title>
-<meta name="description" content="Connexion et compte ARICH Player — gérez votre licence et vos playlists." />
-<meta name="robots" content="noindex, follow" />
-<link rel="icon" href="/favicon.ico" sizes="any" />
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-<meta name="theme-color" content="#0D1017" />
-<link rel="stylesheet" href="/arich-theme.css" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg: #080a0f; --glass: rgba(255,255,255,0.038); --glass-border: rgba(240,239,236,0.12);
-  --glass-hover: rgba(255,255,255,0.065); --accent: #C58A2A; --accent2: #D4A04A;
-  --gradient: linear-gradient(135deg, #C58A2A 0%, #D4A04A 100%);
-  --text: #F0EFEC; --text-sub: rgba(240,239,236,0.55); --text-muted: rgba(240,239,236,0.32);
-  --error: #ff6b8a; --success: #36d9a0; --warn: #fbbf24;
-  --input-bg: rgba(255,255,255,0.045); --input-border: rgba(240,239,236,0.12);
-  --radius: 22px; --radius-sm: 13px;
-  --ez: cubic-bezier(0.25,0.46,0.45,0.94); --ez-spring: cubic-bezier(0.34,1.56,0.64,1);
-}
-html { height: 100%; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connexion — ARICH Player</title>
+  <meta name="description" content="Connexion et compte ARICH Player — licence, playlists et accès sécurisé." />
+  <meta name="robots" content="noindex, follow" />
+  <link rel="canonical" href="https://arich.fr/auth.html" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <meta name="theme-color" content="#0D1017" />
+  <link rel="stylesheet" href="/arich-theme.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html[data-theme='light'] {
-  --bg: #F3F0E8; --glass: rgba(20,18,14,0.04); --glass-border: rgba(20,18,14,0.12);
-  --glass-hover: rgba(20,18,14,0.07); --accent: #A87220; --accent2: #C58A2A;
-  --gradient: linear-gradient(135deg, #C58A2A 0%, #D4A04A 100%);
-  --text: #14120e; --text-sub: rgba(20,18,14,0.58); --text-muted: rgba(20,18,14,0.36);
-  --input-bg: rgba(20,18,14,0.04); --input-border: rgba(20,18,14,0.12);
-}
-html[data-theme='light'] body { background: var(--bg); }
-html[data-theme='light'] .auth-nav-pill {
-  background: rgba(255,252,246,0.72);
-  border-color: rgba(20,18,14,0.12);
-  box-shadow: 0 10px 36px rgba(40,28,12,0.1), inset 0 1px 0 rgba(255,255,255,0.8);
-}
-html[data-theme='light'] .card {
-  background: rgba(255,252,246,0.78);
-  border-color: rgba(20,18,14,0.12);
-}
-.theme-btn {
-  border: 1px solid var(--glass-border); background: transparent; color: var(--text-sub);
-  width: 36px; height: 36px; border-radius: 999px; cursor: pointer;
-  display: inline-flex; align-items: center; justify-content: center;
-}
-.theme-btn:hover { color: var(--text); border-color: rgba(197,138,42,0.45); }
-
-body { min-height:100%; background:var(--bg); color:var(--text); font-family:'Figtree',sans-serif; overflow-x:hidden; -webkit-font-smoothing:antialiased; line-height:1.5; }
-.scene { position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
-#spark { position:fixed; inset:0; z-index:1; pointer-events:none; }
-.auth-nav {
-  position: fixed; top: 16px; left: 0; right: 0; z-index: 20;
-  display: flex; justify-content: center; padding: 0 16px; pointer-events: none;
-}
-.auth-nav-pill {
-  position: relative; overflow: hidden;
-  pointer-events: auto;
-  width: min(720px, 100%);
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 12px; padding: 8px 10px 8px 14px;
-  border-radius: 999px;
-  background: rgba(18,22,30,0.42);
-  border: 1px solid rgba(240,239,236,0.16);
-  backdrop-filter: blur(28px) saturate(1.5);
-  box-shadow: 0 10px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08);
-}
-.auth-nav-pill::before {
-  content:''; position:absolute; inset:-40%; z-index:0; pointer-events:none;
-  background: radial-gradient(circle at var(--lx,40%) var(--ly,50%), rgba(197,138,42,0.26), transparent 45%);
-  filter: blur(16px);
-}
-.auth-nav-pill > * { position: relative; z-index: 1; }
-.auth-nav-brand {
-  display: inline-flex; align-items: center; gap: 10px;
-  text-decoration: none; color: var(--text);
-  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.16em;
-}
-.auth-nav-brand img { width: 28px; height: 28px; border-radius: 8px; }
-.auth-nav-home {
-  text-decoration: none; color: var(--text-sub); font-size: 13px; font-weight: 500;
-  padding: 8px 14px; border-radius: 999px; border: 1px solid var(--glass-border);
-}
-.auth-nav-home:hover { color: var(--text); border-color: rgba(197,138,42,0.45); }
-.orb { position:absolute; border-radius:50%; filter:blur(90px); will-change:transform; }
-.orb-1 { width:55vmax; height:55vmax; opacity:0.18; background:radial-gradient(circle at 30% 30%,#C58A2A,transparent 65%); top:-20vmax; left:-15vmax; animation:drift1 18s ease-in-out infinite alternate; }
-.orb-2 { width:45vmax; height:45vmax; opacity:0.12; background:radial-gradient(circle at 60% 40%,#D4A04A,transparent 65%); bottom:-15vmax; right:-12vmax; animation:drift2 14s ease-in-out infinite alternate; }
-.orb-3 { width:35vmax; height:35vmax; opacity:0.08; background:radial-gradient(circle,#C58A2A,transparent 65%); top:45%; left:55%; transform:translate(-50%,-50%); animation:drift3 20s ease-in-out infinite alternate; }
-@keyframes drift1 { to { transform:translate(6vmin,8vmin) scale(1.06); } }
-@keyframes drift2 { to { transform:translate(-5vmin,-7vmin) scale(1.04); } }
-@keyframes drift3 { to { transform:translate(-40px,50px) scale(1.1); } }
-.grain { position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0.022; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E"); background-size:250px; }
-.page { position:relative; z-index:2; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:96px 16px 24px; }
-@media (orientation:landscape) and (max-height:600px) { .page { padding:12px 16px; align-items:flex-start; } }
-.card {
-  position: relative; overflow: hidden;
-  width:100%; max-width:440px;
-  background: rgba(18,22,30,0.38);
-  border:1px solid rgba(240,239,236,0.16);
-  border-radius:var(--radius);
-  backdrop-filter:blur(36px) saturate(170%) brightness(1.06);
-  -webkit-backdrop-filter:blur(36px) saturate(170%) brightness(1.06);
-  padding:44px 40px; animation:cardIn 0.65s var(--ez) both;
-  box-shadow:0 0 0 1px rgba(255,255,255,0.06) inset, 0 32px 80px rgba(0,0,0,0.45), 0 0 60px rgba(197,138,42,0.08);
-}
-.card::before {
-  content:''; position:absolute; inset:-30%; z-index:0; pointer-events:none;
-  background:
-    radial-gradient(circle at var(--lx,35%) var(--ly,40%), rgba(197,138,42,0.22), transparent 42%),
-    radial-gradient(circle at 70% 70%, rgba(240,239,236,0.06), transparent 50%);
-  filter: blur(22px);
-  animation: authLiquid 12s ease-in-out infinite alternate;
-}
-.card > * { position: relative; z-index: 1; }
-@keyframes authLiquid {
-  from { transform: translate(-2%,0) scale(1); }
-  to { transform: translate(3%,2%) scale(1.06); }
-}
-@media (max-width:480px) { .card { padding:32px 22px; } }
-@keyframes cardIn { from { opacity:0; transform:translateY(30px) scale(0.965); } to { opacity:1; transform:translateY(0) scale(1); } }
-.logo { display:flex; align-items:center; gap:11px; margin-bottom:36px; animation:upFade 0.5s 0.12s var(--ez) both; }
-.logo-gem { width:42px; height:42px; border-radius:13px; flex-shrink:0; background:var(--gradient); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:#0a0c10; letter-spacing:-0.03em; box-shadow:0 6px 24px rgba(197,138,42,0.45),0 2px 8px rgba(0,0,0,0.3); position:relative; overflow:hidden; }
-.logo-gem::after { content:''; position:absolute; top:0; left:0; right:0; height:50%; background:rgba(255,255,255,0.15); border-radius:13px 13px 0 0; }
-.logo-name { font-family:'Syne',sans-serif; font-size:21px; font-weight:700; letter-spacing:-0.025em; }
-.logo-name em { background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; font-style:normal; }
-.view { display:none; flex-direction:column; gap:20px; }
-.view.active { display:flex; animation:viewSlideIn 0.38s var(--ez) both; }
-.view.exit-left { animation:viewSlideLeft 0.28s var(--ez) both; pointer-events:none; }
-.view.exit-right { animation:viewSlideRight 0.28s var(--ez) both; pointer-events:none; }
-@keyframes viewSlideIn { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:none; } }
-@keyframes viewSlideLeft { from { opacity:1; transform:none; } to { opacity:0; transform:translateX(-20px); } }
-@keyframes viewSlideRight { from { opacity:1; transform:none; } to { opacity:0; transform:translateX(20px); } }
-h1 { font-family:'Syne',sans-serif; font-size:clamp(22px,5vw,27px); font-weight:700; letter-spacing:-0.035em; line-height:1.2; }
-.sub { font-size:14px; color:var(--text-sub); font-weight:300; margin-top:5px; line-height:1.55; }
-.field { display:flex; flex-direction:column; gap:7px; transition: transform 0.28s var(--ez); }
-.field:focus-within { transform: translateY(-1px); }
-.field:focus-within label { color: rgba(212,160,74,0.92); }
-label { font-size:12.5px; font-weight:500; color:rgba(238,238,245,0.62); letter-spacing:0.02em; text-transform:uppercase; transition: color 0.22s var(--ez); }
-.input-wrap { position:relative; }
-input[type="email"], input[type="password"], input[type="text"] { width:100%; padding:13px 16px; background:var(--input-bg); border:1px solid var(--input-border); border-radius:var(--radius-sm); color:var(--text); font-family:'Figtree',sans-serif; font-size:15px; font-weight:400; outline:none; transition:border-color 0.22s,box-shadow 0.22s,background 0.22s; -webkit-appearance:none; }
-input::placeholder { color:var(--text-muted); }
-input:focus { border-color:rgba(197,138,42,0.55); box-shadow:0 0 0 3.5px rgba(197,138,42,0.14); background:rgba(255,255,255,0.065); }
-input.has-icon { padding-right:46px; }
-input.err { border-color:rgba(255,107,138,0.55); }
-input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
-.eye { position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--text-muted); padding:3px; display:flex; align-items:center; justify-content:center; transition:color 0.2s; line-height:1; }
-.eye:hover { color:var(--text); }
-.forgot { text-align:right; }
-.pw-strength { display:flex; flex-direction:column; gap:6px; }
-.bars { display:flex; gap:5px; height:3px; }
-.bar { flex:1; border-radius:3px; background:rgba(255,255,255,0.1); transition:background 0.35s var(--ez); }
-.bar.s1 { background:var(--error); } .bar.s2 { background:var(--warn); } .bar.s3 { background:var(--success); }
-.strength-lbl { font-size:11px; font-weight:500; color:var(--text-muted); transition:color 0.35s; letter-spacing:0.02em; text-transform:uppercase; height:14px; }
-.btn { width:100%; border:none; border-radius:var(--radius-sm); font-family:'Figtree',sans-serif; font-size:15px; font-weight:500; padding:13.5px 20px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:9px; transition:transform 0.18s var(--ez-spring),box-shadow 0.18s,opacity 0.18s,background 0.2s; position:relative; overflow:hidden; user-select:none; letter-spacing:0.01em; }
-.btn::after { content:''; position:absolute; inset:0; background:rgba(255,255,255,0); transition:background 0.2s; }
-.btn:not(:disabled):active { transform:scale(0.96); }
-.btn:not(:disabled):hover::after { background:rgba(255,255,255,0.06); }
-.btn:disabled { opacity:0.55; cursor:not-allowed; }
-.btn-primary { background:var(--gradient); color:#0a0c10; box-shadow:0 5px 28px rgba(197,138,42,0.38),0 2px 8px rgba(0,0,0,0.25); }
-.btn-primary:not(:disabled):hover { box-shadow:0 8px 36px rgba(197,138,42,0.52),0 2px 8px rgba(0,0,0,0.25); transform:translateY(-1.5px); }
-.btn-ghost { background:rgba(255,255,255,0.055); border:1px solid var(--glass-border); color:var(--text); }
-.btn-ghost:hover { background:var(--glass-hover); }
-.spin { width:17px; height:17px; border-radius:50%; border:2px solid rgba(255,255,255,0.28); border-top-color:#fff; animation:spin 0.65s linear infinite; flex-shrink:0; display:none; }
-.btn.loading .spin { display:block; } .btn.loading .blbl { display:none; }
-@keyframes spin { to { transform:rotate(360deg); } }
-.divider { display:flex; align-items:center; gap:12px; color:var(--text-muted); font-size:12px; letter-spacing:0.02em; }
-.divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--glass-border); }
-.msg { border-radius:var(--radius-sm); font-size:13.5px; line-height:1.55; padding:12px 14px; display:none; align-items:flex-start; gap:9px; }
-.msg.show { display:flex; animation:msgPop 0.3s var(--ez) both; }
-.msg.error { background:rgba(255,107,138,0.11); border:1px solid rgba(255,107,138,0.22); color:var(--error); }
-.msg.success { background:rgba(54,217,160,0.11); border:1px solid rgba(54,217,160,0.22); color:var(--success); }
-.msg.info { background:rgba(197,138,42,0.11); border:1px solid rgba(197,138,42,0.22); color:var(--accent); }
-@keyframes msgPop { from { opacity:0; transform:scale(0.97) translateY(-5px); } to { opacity:1; transform:none; } }
-.lnk { color:var(--accent); text-decoration:none; font-weight:500; font-size:14px; cursor:pointer; background:none; border:none; font-family:inherit; padding:0; transition:color 0.2s; display:inline; }
-.lnk:hover { color:var(--accent2); }
-.form-footer { display:flex; justify-content:center; align-items:center; gap:6px; font-size:14px; color:var(--text-sub); }
-.g-svg { width:18px; height:18px; flex-shrink:0; }
-
-/* â•â•â•â•â•â• REDIRECT OVERLAY â•â•â•â•â•â• */
-.redirect-overlay { display:none; position:fixed; inset:0; z-index:100; background:var(--bg); flex-direction:column; align-items:center; justify-content:center; gap:24px; text-align:center; padding:24px; }
-.redirect-overlay.show { display:flex; animation:cardIn 0.4s var(--ez) both; }
-.redirect-icon { width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg,rgba(54,217,160,0.2),rgba(54,217,160,0.05)); border:2px solid rgba(54,217,160,0.4); display:flex; align-items:center; justify-content:center; font-size:32px; animation:popIn 0.5s var(--ez-spring) 0.2s both; }
-@keyframes popIn { from { transform:scale(0); opacity:0; } to { transform:scale(1); opacity:1; } }
-.redirect-title { font-family:'Syne',sans-serif; font-size:22px; font-weight:700; }
-.redirect-sub { font-size:14px; color:var(--text-sub); max-width:280px; line-height:1.6; }
-.redirect-loader { width:180px; height:3px; background:rgba(255,255,255,0.1); border-radius:2px; overflow:hidden; }
-.redirect-loader-bar { height:100%; background:var(--gradient); border-radius:2px; animation:loaderProg 2.2s var(--ez) forwards; }
-@keyframes loaderProg { from { width:0; } to { width:100%; } }
-.btn-open-app { max-width:240px; margin-top:4px; display:none; }
-
-@keyframes upFade { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
-</style>
-</head>
-<body>
-
-<div class="scene">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-</div>
-<canvas id="spark" aria-hidden="true"></canvas>
-<div class="grain"></div>
-
-<header class="auth-nav">
-  <div class="auth-nav-pill">
-    <a class="auth-nav-brand" href="/">
-      <img src="/logo-fg.png" alt="" width="28" height="28" />
-      <span>ARICH</span>
-    </a>
-    <button type="button" class="theme-btn" id="themeToggleAuth" aria-label="Theme" title="Theme">◐</button>
-  <a class="auth-nav-home" href="/">Accueil</a>
-  </div>
-</header>
-
-<!-- â•â•â•â•â•â• OVERLAY affiché après connexion Google réussie â•â•â•â•â•â• -->
-<div class="redirect-overlay" id="redirect-overlay">
-  <div class="redirect-icon">âœ“</div>
-  <div class="redirect-title">Connexion réussie !</div>
-  <div class="redirect-sub" id="redirect-sub">Retour vers l'application ARICH IPTVâ€¦</div>
-  <div class="redirect-loader"><div class="redirect-loader-bar"></div></div>
-  <button class="btn btn-primary btn-open-app" id="btn-open-app" onclick="openApp()">
-    <span>Ouvrir l'application</span>
-  </button>
-</div>
-
-<div class="page" id="main-page">
-  <div class="card">
-
-    <div class="logo">
-      <img src="/logo-fg.png" alt="" width="42" height="42" style="border-radius:13px;box-shadow:0 6px 24px rgba(197,138,42,0.35)" />
-      <div class="logo-name"><em>ARICH</em> PLAYER</div>
-    </div>
-
-    <!-- â•â•â•â•â•â• LOGIN â•â•â•â•â•â• -->
-    <div class="view active" id="view-login">
-      <div class="view-head">
-        <h1>Bon retour ðŸ‘‹</h1>
-        <p class="sub">Connectez-vous pour accéder Ã  vos playlists.</p>
-      </div>
-      <div class="msg-slot"><div class="msg" id="login-msg"></div></div>
-      <button class="btn btn-ghost" id="btn-google" onclick="loginGoogle()">
-        <div class="spin"></div>
-        <span class="blbl" style="display:flex;align-items:center;gap:9px;">
-          <svg class="g-svg" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-          Continuer avec Google
-        </span>
-      </button>
-      <div class="divider">ou</div>
-      <div class="field">
-        <label>Adresse e-mail</label>
-        <input type="email" id="login-email" placeholder="vous@exemple.com" autocomplete="email">
-      </div>
-      <div class="field">
-        <label>Mot de passe</label>
-        <div class="input-wrap">
-          <input type="password" id="login-pw" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" class="has-icon" autocomplete="current-password">
-          <button class="eye" type="button" onclick="togglePw('login-pw',this)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-      </div>
-      <div class="forgot">
-        <button class="lnk" onclick="goView('login','forgot')">Mot de passe oublié ?</button>
-      </div>
-      <button class="btn btn-primary" id="btn-login" onclick="doLogin()">
-        <div class="spin"></div>
-        <span class="blbl">Se connecter</span>
-      </button>
-      <div class="form-footer">
-        <span>Pas encore de compte ?</span>
-        <button class="lnk" onclick="goView('login','signup')">Créer un compte</button>
-      </div>
-    </div>
-
-    <!-- â•â•â•â•â•â• SIGNUP â•â•â•â•â•â• -->
-    <div class="view" id="view-signup">
-      <div class="view-head">
-        <h1>Créer un compte âœ¨</h1>
-        <p class="sub">Rejoignez ARICH IPTV et gérez vos playlists.</p>
-      </div>
-      <div class="msg-slot"><div class="msg" id="signup-msg"></div></div>
-      <button class="btn btn-ghost" onclick="loginGoogle()">
-        <div class="spin"></div>
-        <span class="blbl" style="display:flex;align-items:center;gap:9px;">
-          <svg class="g-svg" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-          S'inscrire avec Google
-        </span>
-      </button>
-      <div class="divider">ou</div>
-      <div class="field">
-        <label>Adresse e-mail</label>
-        <input type="email" id="signup-email" placeholder="vous@exemple.com" autocomplete="email">
-      </div>
-      <div class="field">
-        <label>Mot de passe</label>
-        <div class="input-wrap">
-          <input type="password" id="signup-pw" placeholder="8 caractères minimum" class="has-icon" autocomplete="new-password" oninput="checkStrength(this.value)">
-          <button class="eye" type="button" onclick="togglePw('signup-pw',this)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-        <div class="pw-strength">
-          <div class="bars"><div class="bar" id="bar1"></div><div class="bar" id="bar2"></div><div class="bar" id="bar3"></div></div>
-          <div class="strength-lbl" id="strength-lbl"></div>
-        </div>
-      </div>
-      <div class="field">
-        <label>Confirmer le mot de passe</label>
-        <div class="input-wrap">
-          <input type="password" id="signup-pw2" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" class="has-icon" autocomplete="new-password">
-          <button class="eye" type="button" onclick="togglePw('signup-pw2',this)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-      </div>
-      <button class="btn btn-primary" id="btn-signup" onclick="doSignup()">
-        <div class="spin"></div>
-        <span class="blbl">Créer mon compte</span>
-      </button>
-      <div class="form-footer">
-        <span>DéjÃ  un compte ?</span>
-        <button class="lnk" onclick="goView('signup','login','back')">Se connecter</button>
-      </div>
-    </div>
-
-    <!-- â•â•â•â•â•â• FORGOT â•â•â•â•â•â• -->
-    <div class="view" id="view-forgot">
-      <div class="view-head">
-        <h1>Mot de passe oublié ðŸ”‘</h1>
-        <p class="sub">Entrez votre e-mail, nous vous enverrons un lien de réinitialisation.</p>
-      </div>
-      <div class="msg-slot"><div class="msg" id="forgot-msg"></div></div>
-      <div class="field">
-        <label>Adresse e-mail</label>
-        <input type="email" id="forgot-email" placeholder="vous@exemple.com" autocomplete="email">
-      </div>
-      <button class="btn btn-primary" id="btn-forgot" onclick="doForgot()">
-        <div class="spin"></div>
-        <span class="blbl">Envoyer le lien</span>
-      </button>
-      <div class="form-footer">
-        <button class="lnk" onclick="goView('forgot','login','back')">â† Retour Ã  la connexion</button>
-      </div>
-    </div>
-
-    <!-- â•â•â•â•â•â• RESET â•â•â•â•â•â• -->
-    <div class="view" id="view-reset">
-      <div class="view-head">
-        <h1>Nouveau mot de passe ðŸ›¡ï¸</h1>
-        <p class="sub">Choisissez un nouveau mot de passe sécurisé.</p>
-      </div>
-      <div class="msg-slot"><div class="msg" id="reset-msg"></div></div>
-      <div class="field">
-        <label>Nouveau mot de passe</label>
-        <div class="input-wrap">
-          <input type="password" id="reset-pw" placeholder="8 caractères minimum" class="has-icon" oninput="checkStrength(this.value,'reset')">
-          <button class="eye" type="button" onclick="togglePw('reset-pw',this)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-        <div class="pw-strength">
-          <div class="bars"><div class="bar" id="rbar1"></div><div class="bar" id="rbar2"></div><div class="bar" id="rbar3"></div></div>
-          <div class="strength-lbl" id="rstrength-lbl"></div>
-        </div>
-      </div>
-      <div class="field">
-        <label>Confirmer</label>
-        <div class="input-wrap">
-          <input type="password" id="reset-pw2" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" class="has-icon">
-          <button class="eye" type="button" onclick="togglePw('reset-pw2',this)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-      </div>
-      <button class="btn btn-primary" id="btn-reset" onclick="doReset()">
-        <div class="spin"></div>
-        <span class="blbl">Mettre Ã  jour</span>
-      </button>
-    </div>
-
-  </div>
-</div>
-
-<script>
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• CONFIG â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-const SUPABASE_URL  = 'https://aynucieohuowgkwyftiy.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk';
-
-const THIS_PAGE_URL = 'https://arich.fr/auth.html';
-const APP_DEEP_LINK = 'com.arich.iptv://auth-callback';
-const WEB_REDIRECT  = 'https://arich.fr/manage-playlist.html';
-
-function getNextRedirectUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const next = params.get('next');
-  if (!next) return null;
-  try {
-    const url = new URL(next, window.location.origin);
-    if (url.origin !== window.location.origin) return null;
-    return url.href;
-  } catch (_) {
-    return null;
-  }
-}
-
-const { createClient } = supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
-
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• HELPERS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-function isAndroid() {
-  return /android/i.test(navigator.userAgent);
-}
-
-function isIos() {
-  return /iphone|ipad|ipod/i.test(navigator.userAgent);
-}
-
-/** Mobile ou retour app → bridge deep link (email confirm inclus). */
-function shouldOpenApp() {
-  return isAndroid() || isIos() || sessionStorage.getItem('arich_from_app') === '1';
-}
-
-/**
- * Construit le deep link avec access_token + refresh_token.
- * Après PKCE, le hash URL est souvent vidé alors que la session est déjÃ 
- * dans le client JS — on lit donc getSession() en secours.
- */
-async function buildAppDeepLink() {
-  const hash = window.location.hash || '';
-  const search = window.location.search || '';
-
-  if (hash.includes('access_token') && hash.includes('refresh_token')) {
-    return APP_DEEP_LINK + hash;
-  }
-  if (search.includes('code=')) {
-    return APP_DEEP_LINK + search;
-  }
-
-  try {
-    const { data: { session } } = await sb.auth.getSession();
-    if (session?.access_token && session?.refresh_token) {
-      const q = new URLSearchParams({
-        access_token: session.access_token,
-        refresh_token: session.refresh_token,
-        token_type: session.token_type || 'bearer',
-        type: 'email',
-      });
-      if (session.expires_in != null) q.set('expires_in', String(session.expires_in));
-      return `${APP_DEEP_LINK}#${q.toString()}`;
+    :root {
+      --bg: #080a0f;
+      --surface: rgba(18, 22, 30, 0.92);
+      --text: #F0EFEC;
+      --mute: rgba(240, 239, 236, 0.58);
+      --faint: rgba(240, 239, 236, 0.34);
+      --line: rgba(240, 239, 236, 0.12);
+      --input: rgba(255, 255, 255, 0.04);
+      --copper: #C58A2A;
+      --copper2: #D4A04A;
+      --grad: linear-gradient(165deg, #D4A04A, #C58A2A);
+      --ink: #0a0c10;
+      --err: #e07a8a;
+      --ok: #5a9a72;
+      --warn: #c9a227;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --nav-h: 64px;
+      --pad: clamp(16px, 4vw, 28px);
     }
-  } catch (e) {
-    console.warn('[auth] getSession for deep link:', e);
-  }
 
-  return APP_DEEP_LINK + (hash || search);
-}
-
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• REDIRECT LOGIC â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-async function redirectAfterAuth() {
-  const overlay = document.getElementById('redirect-overlay');
-  const page    = document.getElementById('main-page');
-  const sub     = document.getElementById('redirect-sub');
-
-  if (overlay) overlay.classList.add('show');
-  if (page)    page.style.display = 'none';
-
-  if (shouldOpenApp()) {
-    if (sub) sub.textContent = "Retour vers l'application ARICH IPTVâ€¦";
-
-    const deepLink = await buildAppDeepLink();
-    console.log('[auth] Redirecting to app:', deepLink.substring(0, 80) + '...');
-
-    setTimeout(() => {
-      window.location.href = deepLink;
-    }, 600);
-
-    setTimeout(() => {
-      const btn = document.getElementById('btn-open-app');
-      if (btn) btn.style.display = 'flex';
-      if (sub) sub.textContent = "L'app ne s'est pas ouverte automatiquement ?";
-    }, 2800);
-
-  } else {
-    const nextUrl = getNextRedirectUrl();
-    if (sub) sub.textContent = nextUrl
-      ? 'Retour vers Watch Togetherâ€¦'
-      : "Redirection vers votre espaceâ€¦";
-    setTimeout(() => {
-      window.location.href = nextUrl || WEB_REDIRECT;
-    }, 1500);
-  }
-}
-
-async function openApp() {
-  window.location.href = await buildAppDeepLink();
-}
-
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• SESSION CHECK â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-async function checkSession() {
-  const hash   = window.location.hash;
-  const search = window.location.search;
-
-  // Cas reset mot de passe
-  if (hash && hash.includes('type=recovery')) {
-    showView('reset');
-    return;
-  }
-
-  // Cas OAuth callback : hash avec access_token (implicit) ou query avec code (PKCE)
-  const hasToken = (hash && hash.includes('access_token')) ||
-                   (search && search.includes('code='));
-
-  if (hasToken) {
-    // Laisser le SDK parser le hash/query et établir la session
-    await new Promise(r => setTimeout(r, 500));
-    const { data: { session } } = await sb.auth.getSession();
-    if (session) {
-      redirectAfterAuth();
-      return;
+    html[data-theme='light'] {
+      --bg: #F3F0E8;
+      --surface: rgba(255, 252, 246, 0.94);
+      --text: #14120e;
+      --mute: rgba(20, 18, 14, 0.58);
+      --faint: rgba(20, 18, 14, 0.36);
+      --line: rgba(20, 18, 14, 0.12);
+      --input: rgba(20, 18, 14, 0.04);
+      --copper: #A87220;
+      --copper2: #C58A2A;
+      --err: #c44a5e;
+      --ok: #3d7a55;
+      --warn: #a88618;
     }
-  }
-}
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• AUTH STATE LISTENER â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-sb.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_IN' && session) {
-    if (currentView !== 'reset') redirectAfterAuth();
-  }
-  if (event === 'PASSWORD_RECOVERY') {
-    showView('reset');
-  }
-});
+    html { height: 100%; color-scheme: dark; }
+    html[data-theme='light'] { color-scheme: light; }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• VIEW TRANSITIONS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-let currentView = 'login';
-function goView(from, to, dir = 'forward') {
-  const fromEl = document.getElementById('view-' + from);
-  const toEl   = document.getElementById('view-' + to);
-  clearMsg(from); clearMsg(to);
-  fromEl.classList.add(dir === 'back' ? 'exit-right' : 'exit-left');
-  fromEl.addEventListener('animationend', () => {
-    fromEl.classList.remove('active','exit-left','exit-right');
-    toEl.classList.add('active');
-    currentView = to;
-    const inp = toEl.querySelector('input');
-    if (inp) setTimeout(() => inp.focus(), 80);
-  }, { once: true });
-}
-function showView(name) {
-  ['login','signup','forgot','reset'].forEach(v => {
-    document.getElementById('view-'+v).classList.remove('active','exit-left','exit-right');
-  });
-  document.getElementById('view-'+name).classList.add('active');
-  currentView = name;
-}
-
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• MESSAGES â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-function showMsg(id, text, type='error') {
-  const el = document.getElementById(id+'-msg');
-  if (!el) return;
-  el.textContent = text; el.className = 'msg '+type+' show';
-}
-function clearMsg(id) {
-  const el = document.getElementById(id+'-msg');
-  if (el) { el.className='msg'; el.textContent=''; }
-}
-
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• BUTTON LOADING â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-function setLoading(btnId, on) {
-  const btn = document.getElementById(btnId);
-  if (!btn) return;
-  btn.disabled = on; btn.classList.toggle('loading', on);
-}
-
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• UTILS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-function togglePw(inputId, btn) {
-  const inp = document.getElementById(inputId);
-  const hidden = inp.type === 'password';
-  inp.type = hidden ? 'text' : 'password';
-  btn.querySelector('svg').style.opacity = hidden ? '1' : '0.5';
-}
-function checkStrength(val, prefix='') {
-  const p = prefix ? 'r' : '';
-  const b1=document.getElementById(p+'bar1'), b2=document.getElementById(p+'bar2'), b3=document.getElementById(p+'bar3');
-  const lbl=document.getElementById(p+'strength-lbl');
-  if (!b1) return;
-  [b1,b2,b3].forEach(b => b.className='bar');
-  if (!val) { lbl.textContent=''; lbl.style.color=''; return; }
-  let s=0;
-  if (val.length>=8) s++;
-  if (val.length>=12||/[A-Z]/.test(val)) s++;
-  if (/[0-9]/.test(val)&&/[^A-Za-z0-9]/.test(val)) s++;
-  const c=[{lbl:'Faible',color:'var(--error)',bars:[1,0,0]},{lbl:'Moyen',color:'var(--warn)',bars:[1,1,0]},{lbl:'Fort',color:'var(--success)',bars:[1,1,1]}][Math.min(s,2)];
-  lbl.textContent=c.lbl; lbl.style.color=c.color;
-  [b1,b2,b3].forEach((b,i) => { if(c.bars[i]) b.classList.add('s'+s); });
-}
-function translateError(msg) {
-  if (!msg) return 'Une erreur est survenue.';
-  const m = msg.toLowerCase();
-  if (m.includes('invalid login credentials')||m.includes('invalid credentials')) return 'Email ou mot de passe incorrect.';
-  if (m.includes('email not confirmed')) return 'Veuillez confirmer votre adresse email avant de vous connecter.';
-  if (m.includes('user already registered')||m.includes('already registered')) return 'Un compte existe déjÃ  avec cet email.';
-  if (m.includes('password should be at least')) return 'Le mot de passe doit contenir au moins 8 caractères.';
-  if (m.includes('invalid email')) return 'Adresse email invalide.';
-  if (m.includes('rate limit')||m.includes('too many')) return 'Trop de tentatives. Veuillez patienter quelques minutes.';
-  if (m.includes('network')||m.includes('fetch')) return 'Erreur réseau. Vérifiez votre connexion internet.';
-  if (m.includes('token')&&m.includes('expired')) return 'Lien expiré. Veuillez en demander un nouveau.';
-  return msg;
-}
-
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• AUTH ACTIONS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-async function loginGoogle() {
-  if (shouldOpenApp()) sessionStorage.setItem('arich_from_app', '1');
-  const btns = document.querySelectorAll('#btn-google, .btn-ghost');
-  btns.forEach(b => { b.disabled=true; b.classList.add('loading'); });
-  const { error } = await sb.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: THIS_PAGE_URL,
-      queryParams: { access_type: 'offline', prompt: 'consent' }
+    body {
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Figtree', system-ui, sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
     }
-  });
-  if (error) {
-    btns.forEach(b => { b.disabled=false; b.classList.remove('loading'); });
-    showMsg(currentView, translateError(error.message));
-  }
-}
 
-async function doLogin() {
-  clearMsg('login');
-  const email=document.getElementById('login-email').value.trim();
-  const pw=document.getElementById('login-pw').value;
-  if (!email||!pw) { showMsg('login','Veuillez remplir tous les champs.'); return; }
-  setLoading('btn-login', true);
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
-  setLoading('btn-login', false);
-  if (error) { showMsg('login', translateError(error.message)); return; }
-  if (data.session) redirectAfterAuth();
-}
-
-async function doSignup() {
-  clearMsg('signup');
-  const email=document.getElementById('signup-email').value.trim();
-  const pw=document.getElementById('signup-pw').value;
-  const pw2=document.getElementById('signup-pw2').value;
-  if (!email||!pw||!pw2) { showMsg('signup','Veuillez remplir tous les champs.'); return; }
-  if (pw!==pw2) { showMsg('signup','Les mots de passe ne correspondent pas.'); return; }
-  if (pw.length<8) { showMsg('signup','Le mot de passe doit contenir au moins 8 caractères.'); return; }
-  setLoading('btn-signup', true);
-  const { data, error } = await sb.auth.signUp({ email, password: pw, options: { emailRedirectTo: THIS_PAGE_URL } });
-  setLoading('btn-signup', false);
-  if (error) { showMsg('signup', translateError(error.message)); return; }
-  if (data.user&&!data.session) {
-    showMsg('signup','ðŸ“¬ Un email de confirmation a été envoyé. Vérifiez votre boîte mail !','success');
-    return;
-  }
-  if (data.session) redirectAfterAuth();
-}
-
-async function doForgot() {
-  clearMsg('forgot');
-  const email=document.getElementById('forgot-email').value.trim();
-  if (!email) { showMsg('forgot','Veuillez entrer votre adresse e-mail.'); return; }
-  setLoading('btn-forgot', true);
-  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: THIS_PAGE_URL });
-  setLoading('btn-forgot', false);
-  if (error) { showMsg('forgot', translateError(error.message)); return; }
-  showMsg('forgot','âœ… Email envoyé ! Consultez votre boîte mail.','success');
-}
-
-async function doReset() {
-  clearMsg('reset');
-  const pw=document.getElementById('reset-pw').value;
-  const pw2=document.getElementById('reset-pw2').value;
-  if (!pw||!pw2) { showMsg('reset','Veuillez remplir tous les champs.'); return; }
-  if (pw!==pw2)  { showMsg('reset','Les mots de passe ne correspondent pas.'); return; }
-  if (pw.length<8) { showMsg('reset','Le mot de passe doit contenir au moins 8 caractères.'); return; }
-  setLoading('btn-reset', true);
-  const { error } = await sb.auth.updateUser({ password: pw });
-  setLoading('btn-reset', false);
-  if (error) { showMsg('reset', translateError(error.message)); return; }
-  showMsg('reset','ðŸŽ‰ Mot de passe mis Ã  jour ! Redirectionâ€¦','success');
-  setTimeout(redirectAfterAuth, 1800);
-}
-
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• KEYBOARD â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-document.addEventListener('keydown', e => {
-  if (e.key!=='Enter') return;
-  if (currentView==='login')  doLogin();
-  if (currentView==='signup') doSignup();
-  if (currentView==='forgot') doForgot();
-  if (currentView==='reset')  doReset();
-});
-
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• INIT â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-checkSession();
-
-/* Courant électrique entre points — le curseur est le connecteur */
-(function sparkField() {
-  const canvas = document.getElementById('spark');
-  if (!canvas || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const ctx = canvas.getContext('2d');
-  let w, h, raf;
-  const mouse = { x: -1, y: -1 };
-  const nodes = [];
-  function resize() {
-    w = canvas.width = innerWidth * devicePixelRatio;
-    h = canvas.height = innerHeight * devicePixelRatio;
-    canvas.style.width = innerWidth + 'px';
-    canvas.style.height = innerHeight + 'px';
-    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
-    nodes.length = 0;
-    const n = Math.min(36, Math.floor((innerWidth * innerHeight) / 42000));
-    for (let i = 0; i < n; i++) {
-      nodes.push({
-        x: Math.random() * innerWidth,
-        y: Math.random() * innerHeight,
-        r: Math.random() * 1.6 + 0.6,
-      });
+    .atmosphere {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 65% 40% at 50% -8%, rgba(197, 138, 42, 0.12), transparent 55%),
+        radial-gradient(ellipse 35% 28% at 100% 80%, rgba(60, 90, 140, 0.05), transparent 50%),
+        var(--bg);
     }
-  }
-  function tick() {
-    raf = requestAnimationFrame(tick);
-    ctx.clearRect(0, 0, innerWidth, innerHeight);
-    for (const n of nodes) {
-      ctx.beginPath();
-      ctx.fillStyle = 'rgba(197,138,42,0.45)';
-      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-      ctx.fill();
-      if (mouse.x < 0) continue;
-      const d = Math.hypot(mouse.x - n.x, mouse.y - n.y);
-      if (d < 180) {
-        const a = 0.35 * (1 - d / 180);
-        ctx.strokeStyle = `rgba(212,160,74,${a})`;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(n.x, n.y);
-        // zigzag léger vers le curseur
-        const mx = (n.x + mouse.x) / 2 + (Math.random() - 0.5) * 12;
-        const my = (n.y + mouse.y) / 2 + (Math.random() - 0.5) * 12;
-        ctx.quadraticCurveTo(mx, my, mouse.x, mouse.y);
-        ctx.stroke();
+    html[data-theme='light'] .atmosphere {
+      background:
+        radial-gradient(ellipse 65% 40% at 50% -8%, rgba(197, 138, 42, 0.1), transparent 55%),
+        var(--bg);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
       }
     }
-  }
-  resize();
-  tick();
-  addEventListener('resize', resize);
-  addEventListener('pointermove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
-  addEventListener('pointerleave', () => { mouse.x = -1; mouse.y = -1; });
-})();
 
-/* Liquide glass réactif sur nav + carte */
-(function liquidGlass() {
-  function bind(el) {
-    if (!el) return;
-    el.addEventListener('pointermove', (e) => {
-      const r = el.getBoundingClientRect();
-      el.style.setProperty('--lx', ((e.clientX - r.left) / r.width) * 100 + '%');
-      el.style.setProperty('--ly', ((e.clientY - r.top) / r.height) * 100 + '%');
-    }, { passive: true });
-  }
-  bind(document.querySelector('.auth-nav-pill'));
-  bind(document.querySelector('.card'));
-})();
-</script>
+    /* —— Nav —— */
+    .nav {
+      position: sticky; top: 0; z-index: 40;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px;
+      min-height: var(--nav-h);
+      padding: 12px var(--pad);
+      background: color-mix(in srgb, var(--bg) 82%, transparent);
+      backdrop-filter: blur(16px) saturate(1.15);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-brand {
+      display: inline-flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--text);
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px;
+      letter-spacing: -0.02em;
+    }
+    .nav-brand img {
+      width: 30px; height: 30px; border-radius: 8px;
+    }
+    .nav-actions {
+      display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+    }
+    .nav-btn {
+      appearance: none; border: 1px solid var(--line); background: transparent;
+      color: var(--mute); font: inherit; font-size: 13px; font-weight: 500;
+      padding: 7px 12px; border-radius: 999px; cursor: pointer;
+      text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
+      min-height: 36px; transition: color .2s, border-color .2s, background .2s;
+    }
+    .nav-btn:hover { color: var(--text); border-color: color-mix(in srgb, var(--copper) 45%, var(--line)); }
+    .nav-btn.is-icon { width: 36px; padding: 0; }
+    .nav-btn.is-active {
+      color: var(--text);
+      border-color: color-mix(in srgb, var(--copper) 50%, var(--line));
+      background: color-mix(in srgb, var(--copper) 10%, transparent);
+    }
+    .lang-switch { display: inline-flex; gap: 2px; }
 
-<script>
-(() => {
-  const KEY = 'arich_theme';
-  const apply = (t) => {
-    document.documentElement.dataset.theme = t;
-    document.documentElement.style.colorScheme = t;
-    const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.content = t === 'light' ? '#F4F1EA' : '#0D1017';
-  };
-  const saved = localStorage.getItem(KEY);
-  const initial = saved === 'light' || saved === 'dark'
-    ? saved
-    : (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-  apply(initial);
-  document.getElementById('themeToggleAuth')?.addEventListener('click', () => {
-    const next = (document.documentElement.dataset.theme === 'light') ? 'dark' : 'light';
-    localStorage.setItem(KEY, next);
-    apply(next);
-  });
-})();
-</script>
+    /* —— Layout —— */
+    .main {
+      position: relative; z-index: 1;
+      flex: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: clamp(24px, 5vh, 48px) var(--pad) 32px;
+      width: 100%;
+    }
 
+    .shell {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: clamp(24px, 4.5vw, 36px);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28);
+    }
+    html[data-theme='light'] .card {
+      box-shadow: 0 16px 40px rgba(40, 28, 12, 0.08);
+    }
+
+    .card-brand {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+    .card-brand img {
+      width: 40px; height: 40px; border-radius: 10px;
+    }
+    .card-brand-text {
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 17px;
+      letter-spacing: -0.03em; line-height: 1.2;
+    }
+    .card-brand-text span {
+      display: block;
+      font-family: 'Figtree', sans-serif; font-weight: 500; font-size: 12px;
+      letter-spacing: 0.02em; color: var(--mute); margin-top: 2px;
+    }
+
+    .view { display: none; flex-direction: column; gap: 18px; }
+    .view.active { display: flex; }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.35rem, 4vw, 1.55rem);
+      font-weight: 700; letter-spacing: -0.03em; line-height: 1.25;
+    }
+    .lede { font-size: 14px; color: var(--mute); margin-top: 6px; max-width: 34ch; }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label {
+      font-size: 12px; font-weight: 600; color: var(--mute);
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .hint { font-size: 12px; color: var(--faint); margin-top: 2px; }
+
+    .input-wrap { position: relative; }
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--input);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font: inherit; font-size: 15px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      -webkit-appearance: none;
+    }
+    input::placeholder { color: var(--faint); }
+    input:focus {
+      border-color: color-mix(in srgb, var(--copper) 55%, var(--line));
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--copper) 18%, transparent);
+    }
+    input.has-icon { padding-right: 44px; }
+    input.err { border-color: color-mix(in srgb, var(--err) 60%, var(--line)); }
+    input.err:focus { box-shadow: 0 0 0 3px color-mix(in srgb, var(--err) 16%, transparent); }
+
+    .eye {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--faint);
+      padding: 4px; display: flex; line-height: 1;
+    }
+    .eye:hover, .eye[aria-pressed="true"] { color: var(--text); }
+
+    .row-end { display: flex; justify-content: flex-end; }
+
+    .pw-strength { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+    .bars { display: flex; gap: 4px; height: 3px; }
+    .bar { flex: 1; border-radius: 2px; background: var(--line); transition: background .25s; }
+    .bar.s1 { background: var(--err); }
+    .bar.s2 { background: var(--warn); }
+    .bar.s3 { background: var(--ok); }
+    .strength-lbl {
+      font-size: 11px; font-weight: 600; color: var(--faint);
+      letter-spacing: 0.04em; text-transform: uppercase; min-height: 14px;
+    }
+
+    .btn {
+      width: 100%; border: none; border-radius: var(--radius-sm);
+      font: inherit; font-size: 15px; font-weight: 600;
+      padding: 13px 18px; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      transition: opacity .2s, background .2s, border-color .2s, transform .15s;
+      user-select: none; min-height: 48px;
+    }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn:not(:disabled):active { transform: scale(0.985); }
+    .btn-primary {
+      background: var(--grad); color: var(--ink);
+    }
+    .btn-primary:not(:disabled):hover { filter: brightness(1.04); }
+    .btn-ghost {
+      background: transparent; border: 1px solid var(--line); color: var(--text);
+    }
+    .btn-ghost:not(:disabled):hover {
+      background: color-mix(in srgb, var(--text) 4%, transparent);
+      border-color: color-mix(in srgb, var(--copper) 40%, var(--line));
+    }
+
+    .spin {
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 2px solid currentColor; border-top-color: transparent;
+      animation: spin .7s linear infinite; display: none; flex-shrink: 0;
+      opacity: 0.7;
+    }
+    .btn.loading .spin { display: block; }
+    .btn.loading .blbl { display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      color: var(--faint); font-size: 12px; font-weight: 500;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--line);
+    }
+
+    .msg {
+      border-radius: var(--radius-sm); font-size: 13.5px; line-height: 1.5;
+      padding: 11px 13px; display: none; border: 1px solid transparent;
+    }
+    .msg.show { display: block; }
+    .msg.error {
+      background: color-mix(in srgb, var(--err) 10%, transparent);
+      border-color: color-mix(in srgb, var(--err) 28%, transparent);
+      color: var(--err);
+    }
+    .msg.success {
+      background: color-mix(in srgb, var(--ok) 12%, transparent);
+      border-color: color-mix(in srgb, var(--ok) 28%, transparent);
+      color: var(--ok);
+    }
+    .msg.info {
+      background: color-mix(in srgb, var(--copper) 10%, transparent);
+      border-color: color-mix(in srgb, var(--copper) 28%, transparent);
+      color: var(--copper2);
+    }
+
+    .lnk {
+      color: var(--copper); text-decoration: none; font-weight: 600; font-size: 14px;
+      cursor: pointer; background: none; border: none; font-family: inherit; padding: 0;
+    }
+    .lnk:hover { color: var(--copper2); text-decoration: underline; text-underline-offset: 3px; }
+
+    .form-footer {
+      display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+      gap: 6px; font-size: 14px; color: var(--mute); text-align: center;
+    }
+
+    .legal-note {
+      font-size: 12px; color: var(--faint); line-height: 1.55; text-align: center;
+    }
+    .legal-note a { color: var(--mute); }
+
+    .g-svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    .site-footer {
+      position: relative; z-index: 1;
+      padding: 16px var(--pad) calc(20px + env(safe-area-inset-bottom, 0px));
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 18px;
+      font-size: 12px; color: var(--faint); border-top: 1px solid var(--line);
+    }
+    .site-footer a {
+      color: var(--mute); text-decoration: none;
+    }
+    .site-footer a:hover { color: var(--text); }
+
+    /* —— Redirect —— */
+    .redirect {
+      display: none; position: fixed; inset: 0; z-index: 100;
+      background: var(--bg); flex-direction: column;
+      align-items: center; justify-content: center; gap: 16px;
+      text-align: center; padding: var(--pad);
+    }
+    .redirect.show { display: flex; }
+    .redirect-mark {
+      width: 56px; height: 56px; border-radius: 50%;
+      border: 1.5px solid color-mix(in srgb, var(--ok) 45%, transparent);
+      background: color-mix(in srgb, var(--ok) 12%, transparent);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok); font-size: 22px; font-weight: 600;
+    }
+    .redirect h2 {
+      font-family: 'Syne', sans-serif; font-size: 1.25rem; font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .redirect p { font-size: 14px; color: var(--mute); max-width: 28ch; }
+    .redirect-bar {
+      width: min(200px, 70vw); height: 2px; background: var(--line);
+      border-radius: 2px; overflow: hidden; margin-top: 4px;
+    }
+    .redirect-bar > span {
+      display: block; height: 100%; width: 0; background: var(--grad);
+      animation: prog 2s var(--ease) forwards;
+    }
+    @keyframes prog { to { width: 100%; } }
+    .btn-open-app { max-width: 240px; margin-top: 8px; display: none; }
+
+    @media (max-width: 380px) {
+      .nav-home-label { display: none; }
+      .card { padding: 22px 18px; }
+    }
+
+    @media (orientation: landscape) and (max-height: 560px) {
+      .main { justify-content: flex-start; padding-top: 16px; padding-bottom: 16px; }
+      .card-brand { margin-bottom: 18px; padding-bottom: 14px; }
+      .nav { position: relative; }
+    }
+  </style>
+</head>
+<body>
+  <div class="atmosphere" aria-hidden="true"></div>
+
+  <header class="nav">
+    <a class="nav-brand" href="/">
+      <img src="/logo-fg.png" alt="" width="30" height="30" />
+      <span>ARICH</span>
+    </a>
+    <div class="nav-actions">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" class="nav-btn is-active" id="langFr" data-lang="fr">FR</button>
+        <button type="button" class="nav-btn" id="langEn" data-lang="en">EN</button>
+      </div>
+      <button type="button" class="nav-btn is-icon" id="themeToggle" aria-label="Theme">◐</button>
+      <a class="nav-btn" href="/"><span class="nav-home-label" data-i18n="nav_home">Accueil</span></a>
+    </div>
+  </header>
+
+  <div class="redirect" id="redirect" role="status" aria-live="polite">
+    <div class="redirect-mark" aria-hidden="true">✓</div>
+    <h2 data-i18n="redirect_title">Connexion réussie</h2>
+    <p id="redirect-sub" data-i18n="redirect_sub_web">Redirection en cours…</p>
+    <div class="redirect-bar"><span></span></div>
+    <button type="button" class="btn btn-primary btn-open-app" id="btn-open-app">
+      <span data-i18n="redirect_open">Ouvrir l’application</span>
+    </button>
+  </div>
+
+  <main class="main" id="main">
+    <div class="shell">
+      <div class="card">
+        <div class="card-brand">
+          <img src="/logo-fg.png" alt="" width="40" height="40" />
+          <div class="card-brand-text">
+            ARICH Player
+            <span data-i18n="brand_tag">Compte &amp; licence</span>
+          </div>
+        </div>
+
+        <!-- Login -->
+        <div class="view active" id="view-login">
+          <div>
+            <h1 data-i18n="login_title">Connexion</h1>
+            <p class="lede" data-i18n="login_lede">Accédez à votre compte pour gérer playlists et licence.</p>
+          </div>
+          <div class="msg" id="login-msg" role="alert"></div>
+          <button type="button" class="btn btn-ghost" id="btn-google">
+            <span class="spin" aria-hidden="true"></span>
+            <span class="blbl" style="display:inline-flex;align-items:center;gap:10px;">
+              <svg class="g-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+              <span data-i18n="google_continue">Continuer avec Google</span>
+            </span>
+          </button>
+          <div class="divider" data-i18n="or">ou</div>
+          <div class="field">
+            <label for="login-email" data-i18n="email">Adresse e-mail</label>
+            <input type="email" id="login-email" name="email" autocomplete="email" inputmode="email" required />
+          </div>
+          <div class="field">
+            <label for="login-pw" data-i18n="password">Mot de passe</label>
+            <div class="input-wrap">
+              <input type="password" id="login-pw" name="password" class="has-icon" autocomplete="current-password" required />
+              <button type="button" class="eye" data-toggle-pw="login-pw" aria-label="Show password" aria-pressed="false">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="row-end">
+            <button type="button" class="lnk" data-go="forgot" data-i18n="forgot_link">Mot de passe oublié ?</button>
+          </div>
+          <button type="button" class="btn btn-primary" id="btn-login">
+            <span class="spin" aria-hidden="true"></span>
+            <span class="blbl" data-i18n="login_cta">Se connecter</span>
+          </button>
+          <div class="form-footer">
+            <span data-i18n="no_account">Pas encore de compte ?</span>
+            <button type="button" class="lnk" data-go="signup" data-i18n="create_account">Créer un compte</button>
+          </div>
+        </div>
+
+        <!-- Signup -->
+        <div class="view" id="view-signup">
+          <div>
+            <h1 data-i18n="signup_title">Créer un compte</h1>
+            <p class="lede" data-i18n="signup_lede">Un compte pour synchroniser vos playlists et votre licence.</p>
+          </div>
+          <div class="msg" id="signup-msg" role="alert"></div>
+          <button type="button" class="btn btn-ghost" id="btn-google-signup">
+            <span class="spin" aria-hidden="true"></span>
+            <span class="blbl" style="display:inline-flex;align-items:center;gap:10px;">
+              <svg class="g-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+              <span data-i18n="google_signup">S’inscrire avec Google</span>
+            </span>
+          </button>
+          <div class="divider" data-i18n="or">ou</div>
+          <div class="field">
+            <label for="signup-email" data-i18n="email">Adresse e-mail</label>
+            <input type="email" id="signup-email" name="email" autocomplete="email" inputmode="email" required />
+          </div>
+          <div class="field">
+            <label for="signup-pw" data-i18n="password">Mot de passe</label>
+            <div class="input-wrap">
+              <input type="password" id="signup-pw" name="password" class="has-icon" autocomplete="new-password" required minlength="8" />
+              <button type="button" class="eye" data-toggle-pw="signup-pw" aria-label="Show password" aria-pressed="false">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <p class="hint" data-i18n="pw_hint">8 caractères minimum</p>
+            <div class="pw-strength" aria-hidden="true">
+              <div class="bars"><div class="bar" id="bar1"></div><div class="bar" id="bar2"></div><div class="bar" id="bar3"></div></div>
+              <div class="strength-lbl" id="strength-lbl"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="signup-pw2" data-i18n="password_confirm">Confirmer le mot de passe</label>
+            <div class="input-wrap">
+              <input type="password" id="signup-pw2" name="password_confirm" class="has-icon" autocomplete="new-password" required minlength="8" />
+              <button type="button" class="eye" data-toggle-pw="signup-pw2" aria-label="Show password" aria-pressed="false">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <p class="legal-note" data-i18n-html="signup_legal">
+            En créant un compte, vous acceptez la <a href="/privacy-policy.html">politique de confidentialité</a>.
+          </p>
+          <button type="button" class="btn btn-primary" id="btn-signup">
+            <span class="spin" aria-hidden="true"></span>
+            <span class="blbl" data-i18n="signup_cta">Créer mon compte</span>
+          </button>
+          <div class="form-footer">
+            <span data-i18n="has_account">Déjà un compte ?</span>
+            <button type="button" class="lnk" data-go="login" data-i18n="login_link">Se connecter</button>
+          </div>
+        </div>
+
+        <!-- Forgot -->
+        <div class="view" id="view-forgot">
+          <div>
+            <h1 data-i18n="forgot_title">Mot de passe oublié</h1>
+            <p class="lede" data-i18n="forgot_lede">Indiquez votre e-mail : nous enverrons un lien de réinitialisation.</p>
+          </div>
+          <div class="msg" id="forgot-msg" role="alert"></div>
+          <div class="field">
+            <label for="forgot-email" data-i18n="email">Adresse e-mail</label>
+            <input type="email" id="forgot-email" name="email" autocomplete="email" inputmode="email" required />
+          </div>
+          <button type="button" class="btn btn-primary" id="btn-forgot">
+            <span class="spin" aria-hidden="true"></span>
+            <span class="blbl" data-i18n="forgot_cta">Envoyer le lien</span>
+          </button>
+          <div class="form-footer">
+            <button type="button" class="lnk" data-go="login" data-i18n="back_login">← Retour à la connexion</button>
+          </div>
+        </div>
+
+        <!-- Reset -->
+        <div class="view" id="view-reset">
+          <div>
+            <h1 data-i18n="reset_title">Nouveau mot de passe</h1>
+            <p class="lede" data-i18n="reset_lede">Choisissez un mot de passe sécurisé pour votre compte.</p>
+          </div>
+          <div class="msg" id="reset-msg" role="alert"></div>
+          <div class="field">
+            <label for="reset-pw" data-i18n="password_new">Nouveau mot de passe</label>
+            <div class="input-wrap">
+              <input type="password" id="reset-pw" name="password" class="has-icon" autocomplete="new-password" required minlength="8" />
+              <button type="button" class="eye" data-toggle-pw="reset-pw" aria-label="Show password" aria-pressed="false">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <p class="hint" data-i18n="pw_hint">8 caractères minimum</p>
+            <div class="pw-strength" aria-hidden="true">
+              <div class="bars"><div class="bar" id="rbar1"></div><div class="bar" id="rbar2"></div><div class="bar" id="rbar3"></div></div>
+              <div class="strength-lbl" id="rstrength-lbl"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="reset-pw2" data-i18n="password_confirm">Confirmer le mot de passe</label>
+            <div class="input-wrap">
+              <input type="password" id="reset-pw2" name="password_confirm" class="has-icon" autocomplete="new-password" required minlength="8" />
+              <button type="button" class="eye" data-toggle-pw="reset-pw2" aria-label="Show password" aria-pressed="false">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary" id="btn-reset">
+            <span class="spin" aria-hidden="true"></span>
+            <span class="blbl" data-i18n="reset_cta">Mettre à jour</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <a href="/privacy-policy.html" data-i18n="footer_privacy">Confidentialité</a>
+    <a href="/data-deletion.html" data-i18n="footer_deletion">Suppression des données</a>
+    <a href="mailto:contact@arich.fr">contact@arich.fr</a>
+  </footer>
+
+  <script>
+    const I18N = {
+      fr: {
+        doc_title: 'Connexion — ARICH Player',
+        nav_home: 'Accueil',
+        brand_tag: 'Compte & licence',
+        login_title: 'Connexion',
+        login_lede: 'Accédez à votre compte pour gérer playlists et licence.',
+        signup_title: 'Créer un compte',
+        signup_lede: 'Un compte pour synchroniser vos playlists et votre licence.',
+        forgot_title: 'Mot de passe oublié',
+        forgot_lede: 'Indiquez votre e-mail : nous enverrons un lien de réinitialisation.',
+        reset_title: 'Nouveau mot de passe',
+        reset_lede: 'Choisissez un mot de passe sécurisé pour votre compte.',
+        email: 'Adresse e-mail',
+        password: 'Mot de passe',
+        password_new: 'Nouveau mot de passe',
+        password_confirm: 'Confirmer le mot de passe',
+        pw_hint: '8 caractères minimum',
+        google_continue: 'Continuer avec Google',
+        google_signup: 'S’inscrire avec Google',
+        or: 'ou',
+        login_cta: 'Se connecter',
+        signup_cta: 'Créer mon compte',
+        forgot_cta: 'Envoyer le lien',
+        reset_cta: 'Mettre à jour',
+        forgot_link: 'Mot de passe oublié ?',
+        no_account: 'Pas encore de compte ?',
+        create_account: 'Créer un compte',
+        has_account: 'Déjà un compte ?',
+        login_link: 'Se connecter',
+        back_login: '← Retour à la connexion',
+        signup_legal: 'En créant un compte, vous acceptez la <a href="/privacy-policy.html">politique de confidentialité</a>.',
+        footer_privacy: 'Confidentialité',
+        footer_deletion: 'Suppression des données',
+        redirect_title: 'Connexion réussie',
+        redirect_sub_web: 'Redirection en cours…',
+        redirect_sub_app: 'Retour vers l’application ARICH…',
+        redirect_sub_watch: 'Retour vers Watch Together…',
+        redirect_sub_space: 'Redirection vers votre espace…',
+        redirect_sub_manual: 'L’application ne s’est pas ouverte ?',
+        redirect_open: 'Ouvrir l’application',
+        strength_weak: 'Faible',
+        strength_mid: 'Moyen',
+        strength_strong: 'Fort',
+        err_fill: 'Veuillez remplir tous les champs.',
+        err_email: 'Veuillez entrer votre adresse e-mail.',
+        err_mismatch: 'Les mots de passe ne correspondent pas.',
+        err_short: 'Le mot de passe doit contenir au moins 8 caractères.',
+        ok_confirm_email: 'Un e-mail de confirmation a été envoyé. Vérifiez votre boîte mail.',
+        ok_reset_sent: 'E-mail envoyé. Consultez votre boîte mail.',
+        ok_pw_updated: 'Mot de passe mis à jour. Redirection…',
+      },
+      en: {
+        doc_title: 'Sign in — ARICH Player',
+        nav_home: 'Home',
+        brand_tag: 'Account & license',
+        login_title: 'Sign in',
+        login_lede: 'Access your account to manage playlists and license.',
+        signup_title: 'Create an account',
+        signup_lede: 'One account to sync your playlists and license.',
+        forgot_title: 'Forgot password',
+        forgot_lede: 'Enter your email and we’ll send a reset link.',
+        reset_title: 'New password',
+        reset_lede: 'Choose a secure password for your account.',
+        email: 'Email address',
+        password: 'Password',
+        password_new: 'New password',
+        password_confirm: 'Confirm password',
+        pw_hint: 'At least 8 characters',
+        google_continue: 'Continue with Google',
+        google_signup: 'Sign up with Google',
+        or: 'or',
+        login_cta: 'Sign in',
+        signup_cta: 'Create account',
+        forgot_cta: 'Send reset link',
+        reset_cta: 'Update password',
+        forgot_link: 'Forgot password?',
+        no_account: 'No account yet?',
+        create_account: 'Create an account',
+        has_account: 'Already have an account?',
+        login_link: 'Sign in',
+        back_login: '← Back to sign in',
+        signup_legal: 'By creating an account, you agree to the <a href="/privacy-policy.html">privacy policy</a>.',
+        footer_privacy: 'Privacy',
+        footer_deletion: 'Data deletion',
+        redirect_title: 'Signed in',
+        redirect_sub_web: 'Redirecting…',
+        redirect_sub_app: 'Returning to the ARICH app…',
+        redirect_sub_watch: 'Returning to Watch Together…',
+        redirect_sub_space: 'Redirecting to your dashboard…',
+        redirect_sub_manual: 'App didn’t open automatically?',
+        redirect_open: 'Open the app',
+        strength_weak: 'Weak',
+        strength_mid: 'Fair',
+        strength_strong: 'Strong',
+        err_fill: 'Please fill in all fields.',
+        err_email: 'Please enter your email address.',
+        err_mismatch: 'Passwords do not match.',
+        err_short: 'Password must be at least 8 characters.',
+        ok_confirm_email: 'A confirmation email was sent. Check your inbox.',
+        ok_reset_sent: 'Email sent. Check your inbox.',
+        ok_pw_updated: 'Password updated. Redirecting…',
+      },
+    }
+
+    let lang = 'fr'
+    function t(key) {
+      return (I18N[lang] && I18N[lang][key]) || I18N.fr[key] || key
+    }
+    function applyLang(next) {
+      lang = next === 'en' ? 'en' : 'fr'
+      document.documentElement.lang = lang
+      document.title = t('doc_title')
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        el.textContent = t(el.getAttribute('data-i18n'))
+      })
+      document.querySelectorAll('[data-i18n-html]').forEach((el) => {
+        el.innerHTML = t(el.getAttribute('data-i18n-html'))
+      })
+      document.getElementById('langFr')?.classList.toggle('is-active', lang === 'fr')
+      document.getElementById('langEn')?.classList.toggle('is-active', lang === 'en')
+      try { localStorage.setItem('arich_lang', lang) } catch (_) {}
+    }
+
+    const SUPABASE_URL = 'https://aynucieohuowgkwyftiy.supabase.co'
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk'
+    const THIS_PAGE_URL = 'https://arich.fr/auth.html'
+    const APP_DEEP_LINK = 'com.arich.iptv://auth-callback'
+    const WEB_REDIRECT = 'https://arich.fr/manage-playlist.html'
+
+    function getNextRedirectUrl() {
+      const params = new URLSearchParams(window.location.search)
+      const next = params.get('next')
+      if (!next) return null
+      try {
+        const url = new URL(next, window.location.origin)
+        if (url.origin !== window.location.origin) return null
+        return url.href
+      } catch (_) {
+        return null
+      }
+    }
+
+    const { createClient } = supabase
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON)
+
+    function isAndroid() { return /android/i.test(navigator.userAgent) }
+    function isIos() { return /iphone|ipad|ipod/i.test(navigator.userAgent) }
+    function shouldOpenApp() {
+      return isAndroid() || isIos() || sessionStorage.getItem('arich_from_app') === '1'
+    }
+
+    async function buildAppDeepLink() {
+      const hash = window.location.hash || ''
+      const search = window.location.search || ''
+      if (hash.includes('access_token') && hash.includes('refresh_token')) {
+        return APP_DEEP_LINK + hash
+      }
+      if (search.includes('code=')) {
+        return APP_DEEP_LINK + search
+      }
+      try {
+        const { data: { session } } = await sb.auth.getSession()
+        if (session?.access_token && session?.refresh_token) {
+          const q = new URLSearchParams({
+            access_token: session.access_token,
+            refresh_token: session.refresh_token,
+            token_type: session.token_type || 'bearer',
+            type: 'email',
+          })
+          if (session.expires_in != null) q.set('expires_in', String(session.expires_in))
+          return `${APP_DEEP_LINK}#${q.toString()}`
+        }
+      } catch (e) {
+        console.warn('[auth] getSession for deep link:', e)
+      }
+      return APP_DEEP_LINK + (hash || search)
+    }
+
+    async function redirectAfterAuth() {
+      const overlay = document.getElementById('redirect')
+      const main = document.getElementById('main')
+      const sub = document.getElementById('redirect-sub')
+      if (overlay) overlay.classList.add('show')
+      if (main) main.style.visibility = 'hidden'
+
+      if (shouldOpenApp()) {
+        if (sub) sub.textContent = t('redirect_sub_app')
+        const deepLink = await buildAppDeepLink()
+        setTimeout(() => { window.location.href = deepLink }, 600)
+        setTimeout(() => {
+          const btn = document.getElementById('btn-open-app')
+          if (btn) btn.style.display = 'inline-flex'
+          if (sub) sub.textContent = t('redirect_sub_manual')
+        }, 2800)
+      } else {
+        const nextUrl = getNextRedirectUrl()
+        if (sub) {
+          sub.textContent = nextUrl ? t('redirect_sub_watch') : t('redirect_sub_space')
+        }
+        setTimeout(() => {
+          window.location.href = nextUrl || WEB_REDIRECT
+        }, 1500)
+      }
+    }
+
+    async function openApp() {
+      window.location.href = await buildAppDeepLink()
+    }
+
+    async function checkSession() {
+      const hash = window.location.hash
+      const search = window.location.search
+      if (hash && hash.includes('type=recovery')) {
+        showView('reset')
+        return
+      }
+      const hasToken = (hash && hash.includes('access_token')) || (search && search.includes('code='))
+      if (hasToken) {
+        await new Promise((r) => setTimeout(r, 500))
+        const { data: { session } } = await sb.auth.getSession()
+        if (session) {
+          redirectAfterAuth()
+        }
+      }
+    }
+
+    let currentView = 'login'
+    let switching = false
+
+    function showView(name) {
+      ;['login', 'signup', 'forgot', 'reset'].forEach((v) => {
+        document.getElementById('view-' + v)?.classList.remove('active')
+      })
+      document.getElementById('view-' + name)?.classList.add('active')
+      currentView = name
+      clearMsg(name)
+      const inp = document.querySelector('#view-' + name + ' input')
+      if (inp) setTimeout(() => inp.focus(), 40)
+    }
+
+    function goView(to) {
+      if (switching || to === currentView) return
+      showView(to)
+    }
+
+    function showMsg(id, text, type = 'error') {
+      const el = document.getElementById(id + '-msg')
+      if (!el) return
+      el.textContent = text
+      el.className = 'msg ' + type + ' show'
+    }
+    function clearMsg(id) {
+      const el = document.getElementById(id + '-msg')
+      if (el) { el.className = 'msg'; el.textContent = '' }
+    }
+
+    function setLoading(btnId, on) {
+      const btn = document.getElementById(btnId)
+      if (!btn) return
+      btn.disabled = on
+      btn.classList.toggle('loading', on)
+      btn.setAttribute('aria-busy', on ? 'true' : 'false')
+    }
+
+    function togglePw(inputId, btn) {
+      const inp = document.getElementById(inputId)
+      if (!inp) return
+      const show = inp.type === 'password'
+      inp.type = show ? 'text' : 'password'
+      if (btn) btn.setAttribute('aria-pressed', show ? 'true' : 'false')
+    }
+
+    function checkStrength(val, prefix = '') {
+      const p = prefix ? 'r' : ''
+      const b1 = document.getElementById(p + 'bar1')
+      const b2 = document.getElementById(p + 'bar2')
+      const b3 = document.getElementById(p + 'bar3')
+      const lbl = document.getElementById(p + 'strength-lbl')
+      if (!b1 || !lbl) return
+      ;[b1, b2, b3].forEach((b) => { b.className = 'bar' })
+      if (!val) { lbl.textContent = ''; return }
+      let s = 0
+      if (val.length >= 8) s++
+      if (val.length >= 12 || /[A-Z]/.test(val)) s++
+      if (/[0-9]/.test(val) && /[^A-Za-z0-9]/.test(val)) s++
+      const labels = [t('strength_weak'), t('strength_mid'), t('strength_strong')]
+      const colors = ['var(--err)', 'var(--warn)', 'var(--ok)']
+      const idx = Math.min(Math.max(s, 1), 3) - 1
+      lbl.textContent = labels[idx]
+      lbl.style.color = colors[idx]
+      ;[b1, b2, b3].forEach((b, i) => {
+        if (i <= idx) b.classList.add('s' + (idx + 1))
+      })
+    }
+
+    function translateError(msg) {
+      if (!msg) return lang === 'en' ? 'Something went wrong.' : 'Une erreur est survenue.'
+      const m = msg.toLowerCase()
+      if (m.includes('invalid login credentials') || m.includes('invalid credentials')) {
+        return lang === 'en' ? 'Incorrect email or password.' : 'Email ou mot de passe incorrect.'
+      }
+      if (m.includes('email not confirmed')) {
+        return lang === 'en'
+          ? 'Please confirm your email before signing in.'
+          : 'Veuillez confirmer votre adresse e-mail avant de vous connecter.'
+      }
+      if (m.includes('user already registered') || m.includes('already registered')) {
+        return lang === 'en' ? 'An account already exists with this email.' : 'Un compte existe déjà avec cet e-mail.'
+      }
+      if (m.includes('password should be at least')) return t('err_short')
+      if (m.includes('invalid email')) {
+        return lang === 'en' ? 'Invalid email address.' : 'Adresse e-mail invalide.'
+      }
+      if (m.includes('rate limit') || m.includes('too many')) {
+        return lang === 'en'
+          ? 'Too many attempts. Please wait a few minutes.'
+          : 'Trop de tentatives. Veuillez patienter quelques minutes.'
+      }
+      if (m.includes('network') || m.includes('fetch')) {
+        return lang === 'en'
+          ? 'Network error. Check your internet connection.'
+          : 'Erreur réseau. Vérifiez votre connexion internet.'
+      }
+      if (m.includes('token') && m.includes('expired')) {
+        return lang === 'en'
+          ? 'Link expired. Please request a new one.'
+          : 'Lien expiré. Veuillez en demander un nouveau.'
+      }
+      return msg
+    }
+
+    async function loginGoogle() {
+      if (shouldOpenApp()) sessionStorage.setItem('arich_from_app', '1')
+      const btns = [document.getElementById('btn-google'), document.getElementById('btn-google-signup')].filter(Boolean)
+      btns.forEach((b) => { b.disabled = true; b.classList.add('loading') })
+      const { error } = await sb.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: THIS_PAGE_URL,
+          queryParams: { access_type: 'offline', prompt: 'consent' },
+        },
+      })
+      if (error) {
+        btns.forEach((b) => { b.disabled = false; b.classList.remove('loading') })
+        showMsg(currentView, translateError(error.message))
+      }
+    }
+
+    async function doLogin() {
+      clearMsg('login')
+      const email = document.getElementById('login-email').value.trim()
+      const pw = document.getElementById('login-pw').value
+      if (!email || !pw) { showMsg('login', t('err_fill')); return }
+      setLoading('btn-login', true)
+      const { data, error } = await sb.auth.signInWithPassword({ email, password: pw })
+      setLoading('btn-login', false)
+      if (error) { showMsg('login', translateError(error.message)); return }
+      if (data.session) redirectAfterAuth()
+    }
+
+    async function doSignup() {
+      clearMsg('signup')
+      const email = document.getElementById('signup-email').value.trim()
+      const pw = document.getElementById('signup-pw').value
+      const pw2 = document.getElementById('signup-pw2').value
+      if (!email || !pw || !pw2) { showMsg('signup', t('err_fill')); return }
+      if (pw !== pw2) { showMsg('signup', t('err_mismatch')); return }
+      if (pw.length < 8) { showMsg('signup', t('err_short')); return }
+      setLoading('btn-signup', true)
+      const { data, error } = await sb.auth.signUp({
+        email,
+        password: pw,
+        options: { emailRedirectTo: THIS_PAGE_URL },
+      })
+      setLoading('btn-signup', false)
+      if (error) { showMsg('signup', translateError(error.message)); return }
+      if (data.user && !data.session) {
+        showMsg('signup', t('ok_confirm_email'), 'success')
+        return
+      }
+      if (data.session) redirectAfterAuth()
+    }
+
+    async function doForgot() {
+      clearMsg('forgot')
+      const email = document.getElementById('forgot-email').value.trim()
+      if (!email) { showMsg('forgot', t('err_email')); return }
+      setLoading('btn-forgot', true)
+      const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: THIS_PAGE_URL })
+      setLoading('btn-forgot', false)
+      if (error) { showMsg('forgot', translateError(error.message)); return }
+      showMsg('forgot', t('ok_reset_sent'), 'success')
+    }
+
+    async function doReset() {
+      clearMsg('reset')
+      const pw = document.getElementById('reset-pw').value
+      const pw2 = document.getElementById('reset-pw2').value
+      if (!pw || !pw2) { showMsg('reset', t('err_fill')); return }
+      if (pw !== pw2) { showMsg('reset', t('err_mismatch')); return }
+      if (pw.length < 8) { showMsg('reset', t('err_short')); return }
+      setLoading('btn-reset', true)
+      const { error } = await sb.auth.updateUser({ password: pw })
+      setLoading('btn-reset', false)
+      if (error) { showMsg('reset', translateError(error.message)); return }
+      showMsg('reset', t('ok_pw_updated'), 'success')
+      setTimeout(redirectAfterAuth, 1800)
+    }
+
+    sb.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        if (currentView !== 'reset') redirectAfterAuth()
+      }
+      if (event === 'PASSWORD_RECOVERY') showView('reset')
+    })
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return
+      const tag = (e.target && e.target.tagName) || ''
+      if (tag !== 'INPUT') return
+      if (currentView === 'login') doLogin()
+      if (currentView === 'signup') doSignup()
+      if (currentView === 'forgot') doForgot()
+      if (currentView === 'reset') doReset()
+    })
+
+    document.getElementById('btn-google')?.addEventListener('click', loginGoogle)
+    document.getElementById('btn-google-signup')?.addEventListener('click', loginGoogle)
+    document.getElementById('btn-login')?.addEventListener('click', doLogin)
+    document.getElementById('btn-signup')?.addEventListener('click', doSignup)
+    document.getElementById('btn-forgot')?.addEventListener('click', doForgot)
+    document.getElementById('btn-reset')?.addEventListener('click', doReset)
+    document.getElementById('btn-open-app')?.addEventListener('click', openApp)
+
+    document.querySelectorAll('[data-go]').forEach((el) => {
+      el.addEventListener('click', () => goView(el.getAttribute('data-go')))
+    })
+    document.querySelectorAll('[data-toggle-pw]').forEach((btn) => {
+      btn.addEventListener('click', () => togglePw(btn.getAttribute('data-toggle-pw'), btn))
+    })
+    document.getElementById('signup-pw')?.addEventListener('input', (e) => checkStrength(e.target.value))
+    document.getElementById('reset-pw')?.addEventListener('input', (e) => checkStrength(e.target.value, 'reset'))
+
+    document.getElementById('langFr')?.addEventListener('click', () => applyLang('fr'))
+    document.getElementById('langEn')?.addEventListener('click', () => applyLang('en'))
+
+    ;(() => {
+      const KEY = 'arich_theme'
+      const apply = (theme) => {
+        document.documentElement.dataset.theme = theme
+        document.documentElement.style.colorScheme = theme
+        const meta = document.querySelector('meta[name="theme-color"]')
+        if (meta) meta.content = theme === 'light' ? '#F3F0E8' : '#0D1017'
+      }
+      const saved = localStorage.getItem(KEY)
+      const initial = saved === 'light' || saved === 'dark'
+        ? saved
+        : (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
+      apply(initial)
+      document.getElementById('themeToggle')?.addEventListener('click', () => {
+        const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light'
+        localStorage.setItem(KEY, next)
+        apply(next)
+      })
+    })()
+
+    ;(() => {
+      const saved = localStorage.getItem('arich_lang')
+      const browser = (navigator.language || 'fr').toLowerCase().startsWith('en') ? 'en' : 'fr'
+      applyLang(saved === 'en' || saved === 'fr' ? saved : browser)
+    })()
+
+    checkSession()
+  </script>
 </body>
 </html>

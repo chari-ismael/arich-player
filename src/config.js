@@ -1,13 +1,13 @@
-// config/site.js — contenu commercial + mapping media (un seul endroit)
+﻿// config/site.js â€” contenu commercial + mapping media (un seul endroit)
 
 export const site = {
   name: 'ARICH Player',
   slogan: {
-    fr: ['Le cinéma,', 'chez vous.', 'Sans le bruit.'],
+    fr: ['Le cinÃ©ma,', 'chez vous.', 'Sans le bruit.'],
     en: ['Cinema,', 'at home.', 'Without the noise.'],
   },
   subtitle: {
-    fr: 'Votre bibliothèque, vos chaînes, vos films et séries. Une expérience fluide, pensée pour vous.',
+    fr: 'Votre bibliothÃ¨que, vos chaÃ®nes, vos films et sÃ©ries. Une expÃ©rience fluide, pensÃ©e pour vous.',
     en: 'Your library, channels, movies and series. A fluid experience, designed for you.',
   },
   email: 'contact@arich.fr',
@@ -15,14 +15,14 @@ export const site = {
 }
 
 export const downloadLinks = {
-  apk: 'https://github.com/chari-ismael/arich-player/releases/download/v3.0.7/ArichPlayer-v3.0.7.apk',
+  apk: 'https://github.com/chari-ismael/arich-player/releases/download/v3.0.8/ArichPlayer-v3.0.8.apk',
   googlePlay: 'https://play.google.com/store/apps/details?id=com.arich.iptv',
   qrTarget: 'https://github.com/chari-ismael/arich-player/releases/latest',
 }
 
 export const pricing = {
   trialDays: 14,
-  currency: '€',
+  currency: 'â‚¬',
   yearly: {
     id: 'yearly',
     price: 3,
@@ -32,8 +32,8 @@ export const pricing = {
   lifetime: {
     id: 'lifetime',
     price: 5,
-    period: { fr: 'à vie', en: 'lifetime' },
-    label: { fr: 'À vie', en: 'Lifetime' },
+    period: { fr: 'Ã  vie', en: 'lifetime' },
+    label: { fr: 'Ã€ vie', en: 'Lifetime' },
     recommended: true,
   },
 }
@@ -52,7 +52,7 @@ export const videos = {
   playerLand: '/media/video/player-land.mp4',
 }
 
-/** Captures réelles — ne pas mélanger les usages */
+/** Captures rÃ©elles â€” ne pas mÃ©langer les usages */
 export const media = {
   homePhone: '/media/home-phone.png',
   homeLand: '/media/home-land.png',

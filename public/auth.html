@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ARICH IPTV — Authentification</title>
-<meta name="description" content="Connexion et compte ARICH Player — gérez votre licence et vos playlists." />
+<title>ARICH IPTV â€” Authentification</title>
+<meta name="description" content="Connexion et compte ARICH Player â€” gÃ©rez votre licence et vos playlists." />
 <meta name="robots" content="noindex, follow" />
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -158,7 +158,7 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
 .form-footer { display:flex; justify-content:center; align-items:center; gap:6px; font-size:14px; color:var(--text-sub); }
 .g-svg { width:18px; height:18px; flex-shrink:0; }
 
-/* ══════ REDIRECT OVERLAY ══════ */
+/* â•â•â•â•â•â• REDIRECT OVERLAY â•â•â•â•â•â• */
 .redirect-overlay { display:none; position:fixed; inset:0; z-index:100; background:var(--bg); flex-direction:column; align-items:center; justify-content:center; gap:24px; text-align:center; padding:24px; }
 .redirect-overlay.show { display:flex; animation:cardIn 0.4s var(--ez) both; }
 .redirect-icon { width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg,rgba(54,217,160,0.2),rgba(54,217,160,0.05)); border:2px solid rgba(54,217,160,0.4); display:flex; align-items:center; justify-content:center; font-size:32px; animation:popIn 0.5s var(--ez-spring) 0.2s both; }
@@ -193,11 +193,11 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
   </div>
 </header>
 
-<!-- ══════ OVERLAY affiché après connexion Google réussie ══════ -->
+<!-- â•â•â•â•â•â• OVERLAY affichÃ© aprÃ¨s connexion Google rÃ©ussie â•â•â•â•â•â• -->
 <div class="redirect-overlay" id="redirect-overlay">
-  <div class="redirect-icon">✓</div>
-  <div class="redirect-title">Connexion réussie !</div>
-  <div class="redirect-sub" id="redirect-sub">Retour vers l'application ARICH IPTV…</div>
+  <div class="redirect-icon">âœ“</div>
+  <div class="redirect-title">Connexion rÃ©ussie !</div>
+  <div class="redirect-sub" id="redirect-sub">Retour vers l'application ARICH IPTVâ€¦</div>
   <div class="redirect-loader"><div class="redirect-loader-bar"></div></div>
   <button class="btn btn-primary btn-open-app" id="btn-open-app" onclick="openApp()">
     <span>Ouvrir l'application</span>
@@ -212,11 +212,11 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
       <div class="logo-name"><em>ARICH</em> PLAYER</div>
     </div>
 
-    <!-- ══════ LOGIN ══════ -->
+    <!-- â•â•â•â•â•â• LOGIN â•â•â•â•â•â• -->
     <div class="view active" id="view-login">
       <div class="view-head">
-        <h1>Bon retour 👋</h1>
-        <p class="sub">Connectez-vous pour accéder à vos playlists.</p>
+        <h1>Bon retour ðŸ‘‹</h1>
+        <p class="sub">Connectez-vous pour accÃ©der Ã  vos playlists.</p>
       </div>
       <div class="msg-slot"><div class="msg" id="login-msg"></div></div>
       <button class="btn btn-ghost" id="btn-google" onclick="loginGoogle()">
@@ -234,14 +234,14 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
       <div class="field">
         <label>Mot de passe</label>
         <div class="input-wrap">
-          <input type="password" id="login-pw" placeholder="••••••••" class="has-icon" autocomplete="current-password">
+          <input type="password" id="login-pw" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" class="has-icon" autocomplete="current-password">
           <button class="eye" type="button" onclick="togglePw('login-pw',this)">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
         </div>
       </div>
       <div class="forgot">
-        <button class="lnk" onclick="goView('login','forgot')">Mot de passe oublié ?</button>
+        <button class="lnk" onclick="goView('login','forgot')">Mot de passe oubliÃ© ?</button>
       </div>
       <button class="btn btn-primary" id="btn-login" onclick="doLogin()">
         <div class="spin"></div>
@@ -249,15 +249,15 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
       </button>
       <div class="form-footer">
         <span>Pas encore de compte ?</span>
-        <button class="lnk" onclick="goView('login','signup')">Créer un compte</button>
+        <button class="lnk" onclick="goView('login','signup')">CrÃ©er un compte</button>
       </div>
     </div>
 
-    <!-- ══════ SIGNUP ══════ -->
+    <!-- â•â•â•â•â•â• SIGNUP â•â•â•â•â•â• -->
     <div class="view" id="view-signup">
       <div class="view-head">
-        <h1>Créer un compte ✨</h1>
-        <p class="sub">Rejoignez ARICH IPTV et gérez vos playlists.</p>
+        <h1>CrÃ©er un compte âœ¨</h1>
+        <p class="sub">Rejoignez ARICH IPTV et gÃ©rez vos playlists.</p>
       </div>
       <div class="msg-slot"><div class="msg" id="signup-msg"></div></div>
       <button class="btn btn-ghost" onclick="loginGoogle()">
@@ -275,7 +275,7 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
       <div class="field">
         <label>Mot de passe</label>
         <div class="input-wrap">
-          <input type="password" id="signup-pw" placeholder="8 caractères minimum" class="has-icon" autocomplete="new-password" oninput="checkStrength(this.value)">
+          <input type="password" id="signup-pw" placeholder="8 caractÃ¨res minimum" class="has-icon" autocomplete="new-password" oninput="checkStrength(this.value)">
           <button class="eye" type="button" onclick="togglePw('signup-pw',this)">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
@@ -288,7 +288,7 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
       <div class="field">
         <label>Confirmer le mot de passe</label>
         <div class="input-wrap">
-          <input type="password" id="signup-pw2" placeholder="••••••••" class="has-icon" autocomplete="new-password">
+          <input type="password" id="signup-pw2" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" class="has-icon" autocomplete="new-password">
           <button class="eye" type="button" onclick="togglePw('signup-pw2',this)">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
@@ -296,19 +296,19 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
       </div>
       <button class="btn btn-primary" id="btn-signup" onclick="doSignup()">
         <div class="spin"></div>
-        <span class="blbl">Créer mon compte</span>
+        <span class="blbl">CrÃ©er mon compte</span>
       </button>
       <div class="form-footer">
-        <span>Déjà un compte ?</span>
+        <span>DÃ©jÃ  un compte ?</span>
         <button class="lnk" onclick="goView('signup','login','back')">Se connecter</button>
       </div>
     </div>
 
-    <!-- ══════ FORGOT ══════ -->
+    <!-- â•â•â•â•â•â• FORGOT â•â•â•â•â•â• -->
     <div class="view" id="view-forgot">
       <div class="view-head">
-        <h1>Mot de passe oublié 🔑</h1>
-        <p class="sub">Entrez votre e-mail, nous vous enverrons un lien de réinitialisation.</p>
+        <h1>Mot de passe oubliÃ© ðŸ”‘</h1>
+        <p class="sub">Entrez votre e-mail, nous vous enverrons un lien de rÃ©initialisation.</p>
       </div>
       <div class="msg-slot"><div class="msg" id="forgot-msg"></div></div>
       <div class="field">
@@ -320,21 +320,21 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
         <span class="blbl">Envoyer le lien</span>
       </button>
       <div class="form-footer">
-        <button class="lnk" onclick="goView('forgot','login','back')">← Retour à la connexion</button>
+        <button class="lnk" onclick="goView('forgot','login','back')">â† Retour Ã  la connexion</button>
       </div>
     </div>
 
-    <!-- ══════ RESET ══════ -->
+    <!-- â•â•â•â•â•â• RESET â•â•â•â•â•â• -->
     <div class="view" id="view-reset">
       <div class="view-head">
-        <h1>Nouveau mot de passe 🛡️</h1>
-        <p class="sub">Choisissez un nouveau mot de passe sécurisé.</p>
+        <h1>Nouveau mot de passe ðŸ›¡ï¸</h1>
+        <p class="sub">Choisissez un nouveau mot de passe sÃ©curisÃ©.</p>
       </div>
       <div class="msg-slot"><div class="msg" id="reset-msg"></div></div>
       <div class="field">
         <label>Nouveau mot de passe</label>
         <div class="input-wrap">
-          <input type="password" id="reset-pw" placeholder="8 caractères minimum" class="has-icon" oninput="checkStrength(this.value,'reset')">
+          <input type="password" id="reset-pw" placeholder="8 caractÃ¨res minimum" class="has-icon" oninput="checkStrength(this.value,'reset')">
           <button class="eye" type="button" onclick="togglePw('reset-pw',this)">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
@@ -347,7 +347,7 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
       <div class="field">
         <label>Confirmer</label>
         <div class="input-wrap">
-          <input type="password" id="reset-pw2" placeholder="••••••••" class="has-icon">
+          <input type="password" id="reset-pw2" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" class="has-icon">
           <button class="eye" type="button" onclick="togglePw('reset-pw2',this)">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
@@ -355,7 +355,7 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
       </div>
       <button class="btn btn-primary" id="btn-reset" onclick="doReset()">
         <div class="spin"></div>
-        <span class="blbl">Mettre à jour</span>
+        <span class="blbl">Mettre Ã  jour</span>
       </button>
     </div>
 
@@ -363,7 +363,7 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
 </div>
 
 <script>
-/* ════════════════════════════ CONFIG ════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• CONFIG â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 const SUPABASE_URL  = 'https://aynucieohuowgkwyftiy.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk';
 
@@ -387,33 +387,48 @@ function getNextRedirectUrl() {
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-/* ════════════════════════════ HELPERS ═══════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• HELPERS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function isAndroid() {
   return /android/i.test(navigator.userAgent);
 }
 
 /**
- * ✅ FIX PRINCIPAL
- * Construit le deep link en transmettant TOUS les paramètres Supabase
- * (access_token, refresh_token, type, etc.) présents dans le hash ou la query.
- *
- * AVANT (cassé) :
- *   window.location.href = 'com.arich.iptv://auth-callback'
- *   → Flutter reçoit une URL vide, pas de token, pas de session.
- *
- * APRÈS (corrigé) :
- *   window.location.href = 'com.arich.iptv://auth-callback#access_token=xxx&...'
- *   → Flutter reçoit le token complet, Supabase SDK établit la session.
+ * Construit le deep link avec access_token + refresh_token.
+ * AprÃ¨s PKCE, le hash URL est souvent vidÃ© alors que la session est dÃ©jÃ 
+ * dans le client JS â€” on lit donc getSession() en secours.
  */
-function buildAppDeepLink() {
-  const hash   = window.location.hash   || '';   // #access_token=xxx&...
-  const search = window.location.search || '';   // ?code=xxx (PKCE fallback)
-  // Priorité au hash (implicit flow), fallback sur query string (PKCE)
+async function buildAppDeepLink() {
+  const hash = window.location.hash || '';
+  const search = window.location.search || '';
+
+  if (hash.includes('access_token') && hash.includes('refresh_token')) {
+    return APP_DEEP_LINK + hash;
+  }
+  if (search.includes('code=')) {
+    return APP_DEEP_LINK + search;
+  }
+
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.access_token && session?.refresh_token) {
+      const q = new URLSearchParams({
+        access_token: session.access_token,
+        refresh_token: session.refresh_token,
+        token_type: session.token_type || 'bearer',
+        type: 'email',
+      });
+      if (session.expires_in != null) q.set('expires_in', String(session.expires_in));
+      return `${APP_DEEP_LINK}#${q.toString()}`;
+    }
+  } catch (e) {
+    console.warn('[auth] getSession for deep link:', e);
+  }
+
   return APP_DEEP_LINK + (hash || search);
 }
 
-/* ════════════════════════════ REDIRECT LOGIC ════════════════════════════ */
-function redirectAfterAuth() {
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• REDIRECT LOGIC â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+async function redirectAfterAuth() {
   const overlay = document.getElementById('redirect-overlay');
   const page    = document.getElementById('main-page');
   const sub     = document.getElementById('redirect-sub');
@@ -422,17 +437,15 @@ function redirectAfterAuth() {
   if (page)    page.style.display = 'none';
 
   if (isAndroid() || sessionStorage.getItem('arich_from_app') === '1') {
-    if (sub) sub.textContent = "Retour vers l'application ARICH IPTV…";
+    if (sub) sub.textContent = "Retour vers l'application ARICH IPTVâ€¦";
 
-    // ✅ FIX : on passe le deep link AVEC les tokens
-    const deepLink = buildAppDeepLink();
+    const deepLink = await buildAppDeepLink();
     console.log('[auth] Redirecting to app:', deepLink.substring(0, 80) + '...');
 
     setTimeout(() => {
       window.location.href = deepLink;
     }, 600);
 
-    // Bouton manuel si l'app ne s'ouvre pas
     setTimeout(() => {
       const btn = document.getElementById('btn-open-app');
       if (btn) btn.style.display = 'flex';
@@ -442,20 +455,19 @@ function redirectAfterAuth() {
   } else {
     const nextUrl = getNextRedirectUrl();
     if (sub) sub.textContent = nextUrl
-      ? 'Retour vers Watch Together…'
-      : "Redirection vers votre espace…";
+      ? 'Retour vers Watch Togetherâ€¦'
+      : "Redirection vers votre espaceâ€¦";
     setTimeout(() => {
       window.location.href = nextUrl || WEB_REDIRECT;
     }, 1500);
   }
 }
 
-// Bouton manuel "Ouvrir l'application"
-function openApp() {
-  window.location.href = buildAppDeepLink();
+async function openApp() {
+  window.location.href = await buildAppDeepLink();
 }
 
-/* ════════════════════════════ SESSION CHECK ═════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• SESSION CHECK â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 async function checkSession() {
   const hash   = window.location.hash;
   const search = window.location.search;
@@ -471,7 +483,7 @@ async function checkSession() {
                    (search && search.includes('code='));
 
   if (hasToken) {
-    // Laisser le SDK parser le hash/query et établir la session
+    // Laisser le SDK parser le hash/query et Ã©tablir la session
     await new Promise(r => setTimeout(r, 500));
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
@@ -481,7 +493,7 @@ async function checkSession() {
   }
 }
 
-/* ════════════════════════════ AUTH STATE LISTENER ═══════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• AUTH STATE LISTENER â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 sb.auth.onAuthStateChange((event, session) => {
   if (event === 'SIGNED_IN' && session) {
     if (currentView !== 'reset') redirectAfterAuth();
@@ -491,7 +503,7 @@ sb.auth.onAuthStateChange((event, session) => {
   }
 });
 
-/* ════════════════════════════ VIEW TRANSITIONS ══════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• VIEW TRANSITIONS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 let currentView = 'login';
 function goView(from, to, dir = 'forward') {
   const fromEl = document.getElementById('view-' + from);
@@ -514,7 +526,7 @@ function showView(name) {
   currentView = name;
 }
 
-/* ════════════════════════════ MESSAGES ══════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• MESSAGES â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function showMsg(id, text, type='error') {
   const el = document.getElementById(id+'-msg');
   if (!el) return;
@@ -525,14 +537,14 @@ function clearMsg(id) {
   if (el) { el.className='msg'; el.textContent=''; }
 }
 
-/* ════════════════════════════ BUTTON LOADING ════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• BUTTON LOADING â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function setLoading(btnId, on) {
   const btn = document.getElementById(btnId);
   if (!btn) return;
   btn.disabled = on; btn.classList.toggle('loading', on);
 }
 
-/* ════════════════════════════ UTILS ════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• UTILS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function togglePw(inputId, btn) {
   const inp = document.getElementById(inputId);
   const hidden = inp.type === 'password';
@@ -559,16 +571,16 @@ function translateError(msg) {
   const m = msg.toLowerCase();
   if (m.includes('invalid login credentials')||m.includes('invalid credentials')) return 'Email ou mot de passe incorrect.';
   if (m.includes('email not confirmed')) return 'Veuillez confirmer votre adresse email avant de vous connecter.';
-  if (m.includes('user already registered')||m.includes('already registered')) return 'Un compte existe déjà avec cet email.';
-  if (m.includes('password should be at least')) return 'Le mot de passe doit contenir au moins 8 caractères.';
+  if (m.includes('user already registered')||m.includes('already registered')) return 'Un compte existe dÃ©jÃ  avec cet email.';
+  if (m.includes('password should be at least')) return 'Le mot de passe doit contenir au moins 8 caractÃ¨res.';
   if (m.includes('invalid email')) return 'Adresse email invalide.';
   if (m.includes('rate limit')||m.includes('too many')) return 'Trop de tentatives. Veuillez patienter quelques minutes.';
-  if (m.includes('network')||m.includes('fetch')) return 'Erreur réseau. Vérifiez votre connexion internet.';
-  if (m.includes('token')&&m.includes('expired')) return 'Lien expiré. Veuillez en demander un nouveau.';
+  if (m.includes('network')||m.includes('fetch')) return 'Erreur rÃ©seau. VÃ©rifiez votre connexion internet.';
+  if (m.includes('token')&&m.includes('expired')) return 'Lien expirÃ©. Veuillez en demander un nouveau.';
   return msg;
 }
 
-/* ════════════════════════════ AUTH ACTIONS ══════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• AUTH ACTIONS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 async function loginGoogle() {
   if (isAndroid()) sessionStorage.setItem('arich_from_app', '1');
   const btns = document.querySelectorAll('#btn-google, .btn-ghost');
@@ -605,13 +617,13 @@ async function doSignup() {
   const pw2=document.getElementById('signup-pw2').value;
   if (!email||!pw||!pw2) { showMsg('signup','Veuillez remplir tous les champs.'); return; }
   if (pw!==pw2) { showMsg('signup','Les mots de passe ne correspondent pas.'); return; }
-  if (pw.length<8) { showMsg('signup','Le mot de passe doit contenir au moins 8 caractères.'); return; }
+  if (pw.length<8) { showMsg('signup','Le mot de passe doit contenir au moins 8 caractÃ¨res.'); return; }
   setLoading('btn-signup', true);
   const { data, error } = await sb.auth.signUp({ email, password: pw, options: { emailRedirectTo: THIS_PAGE_URL } });
   setLoading('btn-signup', false);
   if (error) { showMsg('signup', translateError(error.message)); return; }
   if (data.user&&!data.session) {
-    showMsg('signup','📬 Un email de confirmation a été envoyé. Vérifiez votre boîte mail !','success');
+    showMsg('signup','ðŸ“¬ Un email de confirmation a Ã©tÃ© envoyÃ©. VÃ©rifiez votre boÃ®te mail !','success');
     return;
   }
   if (data.session) redirectAfterAuth();
@@ -625,7 +637,7 @@ async function doForgot() {
   const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: THIS_PAGE_URL });
   setLoading('btn-forgot', false);
   if (error) { showMsg('forgot', translateError(error.message)); return; }
-  showMsg('forgot','✅ Email envoyé ! Consultez votre boîte mail.','success');
+  showMsg('forgot','âœ… Email envoyÃ© ! Consultez votre boÃ®te mail.','success');
 }
 
 async function doReset() {
@@ -634,16 +646,16 @@ async function doReset() {
   const pw2=document.getElementById('reset-pw2').value;
   if (!pw||!pw2) { showMsg('reset','Veuillez remplir tous les champs.'); return; }
   if (pw!==pw2)  { showMsg('reset','Les mots de passe ne correspondent pas.'); return; }
-  if (pw.length<8) { showMsg('reset','Le mot de passe doit contenir au moins 8 caractères.'); return; }
+  if (pw.length<8) { showMsg('reset','Le mot de passe doit contenir au moins 8 caractÃ¨res.'); return; }
   setLoading('btn-reset', true);
   const { error } = await sb.auth.updateUser({ password: pw });
   setLoading('btn-reset', false);
   if (error) { showMsg('reset', translateError(error.message)); return; }
-  showMsg('reset','🎉 Mot de passe mis à jour ! Redirection…','success');
+  showMsg('reset','ðŸŽ‰ Mot de passe mis Ã  jour ! Redirectionâ€¦','success');
   setTimeout(redirectAfterAuth, 1800);
 }
 
-/* ════════════════════════════ KEYBOARD ══════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• KEYBOARD â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 document.addEventListener('keydown', e => {
   if (e.key!=='Enter') return;
   if (currentView==='login')  doLogin();
@@ -652,10 +664,10 @@ document.addEventListener('keydown', e => {
   if (currentView==='reset')  doReset();
 });
 
-/* ════════════════════════════ INIT ══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• INIT â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 checkSession();
 
-/* Courant électrique entre points — le curseur est le connecteur */
+/* Courant Ã©lectrique entre points â€” le curseur est le connecteur */
 (function sparkField() {
   const canvas = document.getElementById('spark');
   if (!canvas || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -695,7 +707,7 @@ checkSession();
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(n.x, n.y);
-        // zigzag léger vers le curseur
+        // zigzag lÃ©ger vers le curseur
         const mx = (n.x + mouse.x) / 2 + (Math.random() - 0.5) * 12;
         const my = (n.y + mouse.y) / 2 + (Math.random() - 0.5) * 12;
         ctx.quadraticCurveTo(mx, my, mouse.x, mouse.y);
@@ -710,7 +722,7 @@ checkSession();
   addEventListener('pointerleave', () => { mouse.x = -1; mouse.y = -1; });
 })();
 
-/* Liquide glass réactif sur nav + carte */
+/* Liquide glass rÃ©actif sur nav + carte */
 (function liquidGlass() {
   function bind(el) {
     if (!el) return;

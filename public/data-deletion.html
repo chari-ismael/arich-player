@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Suppression des données — ARICH Player</title>
+  <link rel="canonical" href="https://arich.fr/data-deletion.html" />
+  <meta name="description" content="Demandez la suppression de votre compte et de vos données personnelles ARICH Player (droit à l’effacement RGPD)." />
+  <meta name="robots" content="index, follow" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <meta name="theme-color" content="#0D1017" />
+  <link rel="stylesheet" href="/arich-theme.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080a0f;
+      --text: #F0EFEC;
+      --mute: rgba(240,239,236,0.58);
+      --faint: rgba(240,239,236,0.34);
+      --line: rgba(240,239,236,0.1);
+      --copper: #C58A2A;
+      --copper2: #D4A04A;
+      --grad: linear-gradient(165deg, #D4A04A, #C58A2A);
+      --ink: #0a0c10;
+      --danger: #e07a6a;
+      --ok: #5a9a72;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Figtree', system-ui, sans-serif;
+      line-height: 1.7;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .atmosphere {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse 65% 40% at 50% -8%, rgba(197,138,42,0.12), transparent 55%),
+        radial-gradient(ellipse 35% 28% at 10% 40%, rgba(224,122,106,0.05), transparent 50%),
+        var(--bg);
+    }
+    .wrap { position: relative; z-index: 1; }
+
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 28px;
+      background: rgba(8,10,15,0.78);
+      backdrop-filter: blur(20px) saturate(1.2);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-brand {
+      display: inline-flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--text);
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px;
+      letter-spacing: -0.02em;
+    }
+    .nav-brand img {
+      width: 30px; height: 30px; border-radius: 8px;
+      box-shadow: 0 4px 14px rgba(197,138,42,0.35);
+    }
+    .nav-links { display: flex; align-items: center; gap: 8px; }
+    .nav-link {
+      text-decoration: none; color: var(--mute); font-size: 13px; font-weight: 500;
+      padding: 8px 14px; border-radius: 999px; border: 1px solid transparent;
+      transition: color .2s, border-color .2s;
+    }
+    .nav-link:hover { color: var(--text); border-color: var(--line); }
+    .nav-link.is-accent {
+      color: var(--ink); background: var(--grad); border: none;
+      box-shadow: 0 4px 16px rgba(197,138,42,0.3);
+    }
+
+    .shell {
+      width: min(720px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 56px 0 88px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--copper2); margin-bottom: 14px;
+    }
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(28px, 4.5vw, 40px);
+      letter-spacing: -0.035em;
+      line-height: 1.12;
+      margin-bottom: 14px;
+    }
+    .lede {
+      color: var(--mute); font-size: 16px; max-width: 52ch; margin-bottom: 28px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(18,22,30,0.55);
+      padding: 24px 26px;
+    }
+    .panel h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px; font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+    .prose { color: var(--mute); font-size: 14.5px; }
+    .prose p + p { margin-top: 10px; }
+    .prose strong { color: var(--text); font-weight: 600; }
+    .prose a {
+      color: var(--copper2); text-decoration: none;
+      border-bottom: 1px solid rgba(212,160,74,0.35);
+    }
+    .prose a:hover { border-bottom-color: var(--copper2); }
+
+    ul.clean { list-style: none; margin-top: 8px; }
+    ul.clean li {
+      position: relative;
+      padding: 8px 0 8px 16px;
+      color: var(--mute); font-size: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    ul.clean li:last-child { border-bottom: none; }
+    ul.clean li::before {
+      content: '';
+      position: absolute; left: 0; top: 15px;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--copper);
+    }
+    ul.clean.danger li::before { background: var(--danger); }
+
+    .form-grid {
+      display: grid; gap: 14px; margin-top: 6px;
+    }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.03em;
+      text-transform: uppercase; color: var(--faint);
+    }
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 11px;
+      border: 1px solid var(--line);
+      background: rgba(240,239,236,0.04);
+      color: var(--text);
+      font: inherit;
+      font-size: 14.5px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .field textarea { min-height: 110px; resize: vertical; }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: rgba(197,138,42,0.55);
+      box-shadow: 0 0 0 3px rgba(197,138,42,0.12);
+    }
+    .field select option { background: #12161f; color: var(--text); }
+    .hint { font-size: 12.5px; color: var(--faint); }
+
+    .check {
+      display: flex; gap: 10px; align-items: flex-start;
+      font-size: 13.5px; color: var(--mute); line-height: 1.5;
+    }
+    .check input {
+      margin-top: 3px;
+      width: 16px; height: 16px; accent-color: var(--copper);
+      flex-shrink: 0;
+    }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 4px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 12px 20px; border-radius: 999px;
+      font-size: 14px; font-weight: 600; text-decoration: none; border: none;
+      cursor: pointer; font-family: inherit;
+      transition: transform .2s var(--ease), opacity .2s, box-shadow .2s;
+    }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+    .btn-danger {
+      color: #1a0c0c;
+      background: linear-gradient(165deg, #f0a090, #e07a6a);
+      box-shadow: 0 6px 20px rgba(224,122,106,0.28);
+    }
+    .btn-danger:hover:not(:disabled) { transform: translateY(-1px); }
+    .btn-ghost {
+      color: var(--text); border: 1px solid var(--line);
+      background: rgba(240,239,236,0.03);
+    }
+
+    .status {
+      font-size: 13.5px; min-height: 1.3em;
+    }
+    .status.is-ok { color: #7eb892; }
+    .status.is-error { color: var(--danger); }
+
+    .steps {
+      display: grid; gap: 12px; margin-top: 8px;
+      counter-reset: step;
+    }
+    .step {
+      display: grid; grid-template-columns: 28px 1fr; gap: 12px;
+      align-items: start;
+    }
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+      background: rgba(197,138,42,0.14); color: var(--copper2);
+      border: 1px solid rgba(197,138,42,0.28);
+    }
+    .step p { color: var(--mute); font-size: 14px; padding-top: 3px; }
+    .step strong { color: var(--text); }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px;
+      text-align: center;
+      color: var(--faint); font-size: 13px;
+    }
+    footer a { color: var(--mute); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+    footer .row { margin-top: 8px; }
+
+    @media (max-width: 520px) {
+      nav { padding: 12px 16px; }
+      .nav-link:not(.is-accent) { display: none; }
+      .shell { width: min(720px, calc(100% - 32px)); padding-top: 40px; }
+      .panel { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="atmosphere" aria-hidden="true"></div>
+  <div class="wrap">
+
+    <nav>
+      <a class="nav-brand" href="/">
+        <img src="/logo-fg.png" alt="" width="30" height="30" />
+        ARICH Player
+      </a>
+      <div class="nav-links">
+        <a class="nav-link" href="/privacy-policy.html">Confidentialité</a>
+        <a class="nav-link is-accent" href="/">Retour au site</a>
+      </div>
+    </nav>
+
+    <main class="shell">
+      <p class="eyebrow">Droit à l’effacement · RGPD</p>
+      <h1>Suppression des données</h1>
+      <p class="lede">Demandez la suppression de votre compte ARICH Player et des données personnelles associées. Traitement sous 30 jours.</p>
+
+      <div class="grid">
+        <section class="panel">
+          <h2>Ce qui sera supprimé</h2>
+          <ul class="clean">
+            <li>Compte / adresse e-mail (si compte créé)</li>
+            <li>Identifiant d’appareil et enregistrements de licence liés</li>
+            <li>Sessions d’utilisation et métadonnées techniques associées</li>
+            <li>Données de support liées à votre demande, hors archives légales</li>
+          </ul>
+          <div class="prose" style="margin-top:14px;">
+            <p><strong>Conservé si la loi l’exige :</strong> certaines traces de licence / facturation peuvent rester jusqu’à 2 ans après expiration (obligations comptables).</p>
+            <p><strong>Données locales :</strong> playlists IPTV, favoris et historique restent sur l’appareil — désinstallez l’app ou videz ses données pour les effacer.</p>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Comment ça se passe</h2>
+          <div class="steps">
+            <div class="step"><p><strong>Envoyez la demande</strong> via le formulaire ci-dessous (ou par e-mail).</p></div>
+            <div class="step"><p><strong>Vérification</strong> — nous confirmons votre identité (e-mail du compte ou Device Key).</p></div>
+            <div class="step"><p><strong>Suppression</strong> — sous 30 jours, avec confirmation par e-mail lorsque possible.</p></div>
+          </div>
+        </section>
+
+        <section class="panel" id="formulaire">
+          <h2>Formulaire de demande</h2>
+          <p class="prose" style="margin-bottom:16px;">Tous les champs marqués * sont requis. Une fausse demande peut être rejetée.</p>
+
+          <form id="deletionForm" novalidate>
+            <div class="form-grid">
+              <div class="field">
+                <label for="email">E-mail *</label>
+                <input id="email" name="email" type="email" autocomplete="email" required placeholder="vous@exemple.com" />
+                <p class="hint">Utilisez l’e-mail de votre compte ARICH si vous en avez un.</p>
+              </div>
+
+              <div class="field">
+                <label for="deviceKey">Device Key (optionnel)</label>
+                <input id="deviceKey" name="device_key" type="text" autocomplete="off" spellcheck="false" placeholder="ARICH-XXXX-XXXX-XXXX" />
+                <p class="hint">Aide à retrouver l’appareil si vous n’avez pas de compte e-mail.</p>
+              </div>
+
+              <div class="field">
+                <label for="scope">Périmètre *</label>
+                <select id="scope" name="scope" required>
+                  <option value="">Choisir…</option>
+                  <option value="account_and_data">Compte + toutes les données personnelles</option>
+                  <option value="device_only">Uniquement cet appareil / Device Key</option>
+                  <option value="access_copy">Demande d’accès (copie de mes données)</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="message">Précisions (optionnel)</label>
+                <textarea id="message" name="message" placeholder="Contexte utile : date d’achat, modèle d’appareil…"></textarea>
+              </div>
+
+              <label class="check">
+                <input id="confirm" name="confirm" type="checkbox" required />
+                <span>Je confirme demander la suppression / le traitement indiqué, et j’ai lu la <a href="/privacy-policy.html">politique de confidentialité</a>.</span>
+              </label>
+
+              <div class="actions">
+                <button type="submit" class="btn btn-danger" id="submitBtn">Envoyer la demande</button>
+                <a class="btn btn-ghost" href="mailto:contact@arich.fr?subject=Suppression%20des%20donn%C3%A9es%20%E2%80%94%20ARICH%20Player">Ou écrire à contact@arich.fr</a>
+              </div>
+              <p class="status" id="status" role="status" aria-live="polite"></p>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel">
+          <h2>Important</h2>
+          <ul class="clean danger">
+            <li>La suppression du compte est irréversible.</li>
+            <li>Une licence active liée à l’appareil / compte sera désactivée.</li>
+            <li>Google Play / abonnements éventuels se gèrent aussi dans les réglages Google Play.</li>
+          </ul>
+          <div class="prose" style="margin-top:14px;">
+            <p>Plus de détails : <a href="/privacy-policy.html">politique de confidentialité</a>.</p>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <p>© 2026 ARICH Player · Lecteur multimédia uniquement · Aucun contenu fourni</p>
+      <p class="row">
+        <a href="/">Accueil</a> ·
+        <a href="/privacy-policy.html">Confidentialité</a> ·
+        <a href="/auth.html">Compte</a> ·
+        <a href="mailto:contact@arich.fr">Contact</a>
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      const ENDPOINT = 'https://formspree.io/f/xgolqeyj';
+      const form = document.getElementById('deletionForm');
+      const status = document.getElementById('status');
+      const btn = document.getElementById('submitBtn');
+      const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        status.textContent = '';
+        status.className = 'status';
+
+        const email = String(form.email.value || '').trim();
+        const deviceKey = String(form.device_key.value || '').trim();
+        const scope = String(form.scope.value || '');
+        const message = String(form.message.value || '').trim();
+        const confirmed = form.confirm.checked;
+
+        if (!emailRe.test(email) || !scope || !confirmed) {
+          status.textContent = 'Vérifiez l’e-mail, le périmètre et la case de confirmation.';
+          status.classList.add('is-error');
+          return;
+        }
+
+        const scopeLabels = {
+          account_and_data: 'Compte + toutes les données personnelles',
+          device_only: 'Uniquement cet appareil / Device Key',
+          access_copy: 'Demande d’accès (copie de mes données)',
+        };
+
+        btn.disabled = true;
+        status.textContent = 'Envoi en cours…';
+
+        const body = {
+          email,
+          _replyto: email,
+          subject: '[ARICH] Suppression des données',
+          message: [
+            'Type : demande RGPD / suppression',
+            'Périmètre : ' + (scopeLabels[scope] || scope),
+            deviceKey ? 'Device Key : ' + deviceKey : 'Device Key : (non fourni)',
+            '',
+            message || '(pas de précisions)',
+          ].join('\n'),
+        };
+
+        try {
+          const res = await fetch(ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify(body),
+          });
+          if (!res.ok) throw new Error('http');
+          status.textContent = 'Demande envoyée. Nous vous répondrons sous 30 jours.';
+          status.classList.add('is-ok');
+          form.reset();
+        } catch (_) {
+          status.textContent = 'Envoi impossible. Écrivez à contact@arich.fr.';
+          status.classList.add('is-error');
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

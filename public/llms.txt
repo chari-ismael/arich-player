@@ -24,6 +24,7 @@ APK: https://github.com/chari-ismael/arich-player/releases/latest
 - [Accueil](https://arich.fr/): présentation produit, fonctionnalités, tarifs, FAQ, contact
 - [Compte / authentification](https://arich.fr/auth.html): connexion et compte
 - [Politique de confidentialité](https://arich.fr/privacy-policy.html)
+- [Suppression des données](https://arich.fr/data-deletion.html)
 
 ## Faits importants
 
@@ -35,4 +36,5 @@ APK: https://github.com/chari-ismael/arich-player/releases/latest
 ## Optional
 
 - [Privacy policy](https://arich.fr/privacy-policy.html)
+- [Data deletion](https://arich.fr/data-deletion.html)
 - [Sitemap](https://arich.fr/sitemap.xml)

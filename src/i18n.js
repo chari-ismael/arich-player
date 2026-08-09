@@ -1,4 +1,4 @@
-﻿const dict = {
+const dict = {
   fr: {
     nav_home: 'Accueil',
     nav_features: 'FonctionnalitÃ©s',
@@ -171,8 +171,9 @@
     cta_m3: 'Vos playlists',
 
     footer_product: 'Produit',
-    footer_legal: 'LÃ©gal',
-    footer_privacy: 'ConfidentialitÃ©',
+    footer_legal: 'Légal',
+    footer_privacy: 'Confidentialité',
+    footer_deletion: 'Suppression des données',
     footer_contact: 'Contact',
     footer_copy: 'Â© 2026 ARICH Player',
     footer_tag: 'Streaming premium Â· Xtream & M3U',
@@ -361,6 +362,7 @@
     footer_product: 'Product',
     footer_legal: 'Legal',
     footer_privacy: 'Privacy',
+    footer_deletion: 'Data deletion',
     footer_contact: 'Contact',
     footer_copy: 'Â© 2026 ARICH Player',
     footer_tag: 'Premium streaming Â· Xtream & M3U',

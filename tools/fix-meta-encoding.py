@@ -19,6 +19,10 @@ FIXES = {
         'Politique de confidentialité d’ARICH Player. Données, cookies, droits RGPD.',
         'index, follow',
     ),
+    'data-deletion.html': (
+        'Demande de suppression des données personnelles ARICH Player (RGPD).',
+        'index, follow',
+    ),
 }
 
 for name, (desc, robots) in FIXES.items():

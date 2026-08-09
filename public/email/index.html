@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ARICH — Aperçu e-mails</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: #0D1017;
+      color: #F0EFEC;
+    }
+    header {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 48px 24px 24px;
+    }
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      letter-spacing: -0.03em;
+      font-weight: 700;
+    }
+    header p {
+      margin: 0;
+      color: rgba(240,239,236,0.62);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 24px;
+    }
+    nav a {
+      color: #F0EFEC;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    nav a:hover { background: rgba(197,138,42,0.25); border-color: rgba(197,138,42,0.45); }
+    section {
+      max-width: 920px;
+      margin: 0 auto 40px;
+      padding: 0 24px;
+    }
+    section h2 {
+      margin: 0 0 12px;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(240,239,236,0.45);
+      font-weight: 600;
+    }
+    iframe {
+      width: 100%;
+      height: 720px;
+      border: 0;
+      border-radius: 16px;
+      background: #F0EFEC;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>E-mails ARICH</h1>
+    <p>Aperçu des templates auth (style Apple / premium). À coller dans Supabase → Authentication → Email Templates.</p>
+    <nav>
+      <a href="#confirm">Confirm</a>
+      <a href="#recovery">Recovery</a>
+      <a href="#magic">Magic link</a>
+      <a href="#invite">Invite</a>
+      <a href="#change">Email change</a>
+    </nav>
+  </header>
+  <section id="confirm">
+    <h2>Confirm sign up</h2>
+    <iframe src="./confirm.preview.html" title="Confirm"></iframe>
+  </section>
+  <section id="recovery">
+    <h2>Reset password</h2>
+    <iframe src="./recovery.preview.html" title="Recovery"></iframe>
+  </section>
+  <section id="magic">
+    <h2>Magic link</h2>
+    <iframe src="./magic-link.preview.html" title="Magic"></iframe>
+  </section>
+  <section id="invite">
+    <h2>Invite</h2>
+    <iframe src="./invite.preview.html" title="Invite"></iframe>
+  </section>
+  <section id="change">
+    <h2>Change email</h2>
+    <iframe src="./email-change.preview.html" title="Change"></iframe>
+  </section>
+</body>
+</html>

@@ -1,11 +1,9 @@
 /**
  * After Vite build: optionally serve maintenance as the homepage.
- * Set MAINTENANCE=0 to publish the real landing again.
  *
  * Always copies maintenance.html + 404.html into dist.
- * When maintenance mode is ON (default):
- *   - saves built landing as dist/landing.html
- *   - copies maintenance → dist/index.html
+ * Maintenance ON when: MAINTENANCE=1 or --on (and not --off)
+ * Default: OFF → real landing as index.html
  */
 import { copyFileSync, existsSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
@@ -16,7 +14,9 @@ const root = resolve(__dirname, '..')
 const dist = resolve(root, 'dist')
 const pub = resolve(root, 'public')
 
-const enabled = process.env.MAINTENANCE !== '0' && !process.argv.includes('--off')
+const enabled =
+  !process.argv.includes('--off') &&
+  (process.env.MAINTENANCE === '1' || process.argv.includes('--on'))
 mkdirSync(dist, { recursive: true })
 
 const maintSrc = resolve(pub, 'maintenance.html')

@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node tools/apply-maintenance.mjs",
+    "build": "vite build && node tools/apply-maintenance.mjs --off",
     "build:live": "vite build && node tools/apply-maintenance.mjs --off",
+    "build:maintenance": "vite build && node tools/apply-maintenance.mjs --on",
     "preview": "vite preview"
   },
   "dependencies": {

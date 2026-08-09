@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Maintenance — ARICH Player</title>
-  <meta name="description" content="ARICH Player — maintenance en cours. Nous peaufinons l’expérience. L’app reste disponible." />
+  <title>Site en maintenance — ARICH Player</title>
+  <meta name="description" content="ARICH Player — site en maintenance. Le site web est temporairement indisponible. L’application reste disponible." />
   <meta name="robots" content="noindex, follow" />
   <meta name="theme-color" content="#0B0D10" />
   <link rel="canonical" href="https://arich.fr/" />
@@ -108,8 +108,8 @@
     .badge {
       display: inline-flex; align-items: center; gap: 8px;
       padding: 8px 14px; border-radius: 999px;
-      border: 1px solid rgba(197,138,42,.35);
-      background: rgba(197,138,42,.1);
+      border: 1px solid rgba(197,138,42,.45);
+      background: rgba(197,138,42,.14);
       color: var(--copper2); font-size: 11px; font-weight: 700;
       letter-spacing: .14em; text-transform: uppercase;
     }
@@ -119,6 +119,19 @@
       box-shadow: 0 0 0 0 rgba(212,160,74,.55);
       animation: pulse 1.8s ease-out infinite;
     }
+
+    .banner {
+      position: relative; z-index: 6;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 10px 16px;
+      background: linear-gradient(90deg, rgba(197,138,42,.18), rgba(197,138,42,.08) 40%, rgba(197,138,42,.18));
+      border-bottom: 1px solid rgba(197,138,42,.28);
+      color: var(--copper2);
+      font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      text-align: center;
+      pointer-events: none;
+    }
+    .banner b { color: var(--text); font-weight: 800; letter-spacing: .12em; }
 
     .center {
       display: grid;
@@ -150,8 +163,17 @@
     }
     .lede {
       color: var(--mute); font-size: clamp(15px, 1.6vw, 17px);
-      line-height: 1.65; margin-bottom: 28px; max-width: 38ch;
+      line-height: 1.65; margin-bottom: 18px; max-width: 40ch;
     }
+    .notice {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 12px 14px; margin-bottom: 22px;
+      border-radius: 12px;
+      border: 1px solid rgba(197,138,42,.28);
+      background: rgba(197,138,42,.08);
+      color: #e6c48a; font-size: 13.5px; line-height: 1.5;
+    }
+    .notice strong { color: var(--text); font-weight: 700; }
     .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 22px; }
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -199,6 +221,7 @@
     .loader {
       position: fixed; inset: 0; z-index: 20;
       display: grid; place-items: center;
+      gap: 14px;
       background: #05070b;
       transition: opacity .7s var(--ease), visibility .7s;
     }
@@ -209,6 +232,10 @@
       animation: breathe 1.6s ease-in-out infinite;
     }
     .loader-mark img { width: 100%; height: 100%; object-fit: cover; }
+    .loader-label {
+      color: var(--faint); font-size: 11px; font-weight: 600;
+      letter-spacing: .16em; text-transform: uppercase;
+    }
 
     @keyframes pulse {
       0% { box-shadow: 0 0 0 0 rgba(212,160,74,.5); }
@@ -232,27 +259,35 @@
       .copy { text-align: left; }
     }
     @media (max-width: 560px) {
-      .badge span { display: none; }
       h1 { font-size: 34px; }
       .actions { width: 100%; }
       .btn { flex: 1 1 auto; }
+      .banner { font-size: 11px; letter-spacing: .04em; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: .01ms !important;
         transition-duration: .01ms !important;
       }
+      .badge i { animation: none; }
+      .loader-mark { animation: none; }
     }
   </style>
 </head>
 <body>
   <div class="loader" id="loader" aria-hidden="true">
     <div class="loader-mark"><img src="/logo-fg.png" alt="" width="56" height="56" /></div>
+    <p class="loader-label" data-i18n="loading">Chargement</p>
   </div>
 
   <div id="stage" aria-hidden="true"></div>
   <div class="vignette"></div>
   <div class="grain"></div>
+
+  <div class="banner" role="status" aria-live="polite">
+    <b data-i18n="banner_strong">MAINTENANCE</b>
+    <span data-i18n="banner">— Site temporairement indisponible</span>
+  </div>
 
   <div class="ui">
     <header class="top">
@@ -271,15 +306,19 @@
 
     <main class="center">
       <div class="copy">
-        <p class="eyebrow" data-i18n="eyebrow">En coulisses</p>
-        <h1 data-i18n-html="title">Nous peaufinons<br /><em>l’expérience.</em></h1>
-        <p class="lede" data-i18n="lede">Le site se refait une beauté. L’application ARICH Player reste disponible pendant la maintenance.</p>
+        <p class="eyebrow" data-i18n="eyebrow">Site en maintenance</p>
+        <h1 data-i18n-html="title">Site en<br /><em>maintenance</em></h1>
+        <p class="lede" data-i18n="lede">Nous mettons arich.fr à jour. La page d’accueil revient très bientôt.</p>
+        <div class="notice">
+          <span aria-hidden="true">⚠</span>
+          <p data-i18n-html="notice"><strong>Maintenance en cours.</strong> Le site web est temporairement inaccessible. L’application ARICH Player reste disponible.</p>
+        </div>
         <div class="actions">
           <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=com.arich.iptv" data-i18n="cta_play">Ouvrir Google Play</a>
           <a class="btn btn-ghost" href="https://github.com/chari-ismael/arich-player/releases/latest" data-i18n="cta_apk">Télécharger l’APK</a>
         </div>
         <div class="meta">
-          <span><b data-i18n="meta_status_label">Statut</b> · <span data-i18n="meta_status">Mise à jour en cours</span></span>
+          <span><b data-i18n="meta_status_label">Statut</b> · <span data-i18n="meta_status">Maintenance</span></span>
           <span><b data-i18n="meta_app_label">App</b> · <span data-i18n="meta_app">Toujours en ligne</span></span>
         </div>
       </div>
@@ -293,30 +332,49 @@
   </div>
 
   <script type="module">
+    const LANG_KEY = 'arich_lang'
+    const FR_COUNTRIES = new Set([
+      'FR', 'BE', 'CH', 'LU', 'MC', 'CA',
+      'SN', 'CI', 'CM', 'MA', 'DZ', 'TN', 'MG', 'HT', 'GF', 'GP', 'MQ', 'RE', 'YT', 'NC', 'PF',
+    ])
+    const FR_TZ = /^(Europe\/(Paris|Brussels|Luxembourg|Monaco)|Indian\/Reunion|America\/(Martinique|Guadeloupe|Cayenne)|Pacific\/(Noumea|Tahiti)|Africa\/(Casablanca|Algiers|Tunis|Dakar|Abidjan|Douala)|Indian\/Antananarivo)/
+
     const i18n = {
       fr: {
+        doc_title: 'Site en maintenance — ARICH Player',
+        meta_desc: 'ARICH Player — site en maintenance. Le site web est temporairement indisponible. L’application reste disponible.',
+        loading: 'Chargement',
+        banner_strong: 'MAINTENANCE',
+        banner: '— Site temporairement indisponible',
         badge: 'Maintenance',
-        eyebrow: 'En coulisses',
-        title: 'Nous peaufinons<br /><em>l’expérience.</em>',
-        lede: 'Le site se refait une beauté. L’application ARICH Player reste disponible pendant la maintenance.',
+        eyebrow: 'Site en maintenance',
+        title: 'Site en<br /><em>maintenance</em>',
+        lede: 'Nous mettons arich.fr à jour. La page d’accueil revient très bientôt.',
+        notice: '<strong>Maintenance en cours.</strong> Le site web est temporairement inaccessible. L’application ARICH Player reste disponible.',
         cta_play: 'Ouvrir Google Play',
         cta_apk: 'Télécharger l’APK',
         meta_status_label: 'Statut',
-        meta_status: 'Mise à jour en cours',
+        meta_status: 'Maintenance',
         meta_app_label: 'App',
         meta_app: 'Toujours en ligne',
         hint: 'Antique Camera · CC0 · Khronos',
         footer: 'Questions',
       },
       en: {
+        doc_title: 'Website under maintenance — ARICH Player',
+        meta_desc: 'ARICH Player — website under maintenance. The site is temporarily unavailable. The app remains available.',
+        loading: 'Loading',
+        banner_strong: 'MAINTENANCE',
+        banner: '— Website temporarily unavailable',
         badge: 'Maintenance',
-        eyebrow: 'Behind the curtain',
-        title: 'We’re polishing<br /><em>the experience.</em>',
-        lede: 'The website is getting a refresh. The ARICH Player app stays available during maintenance.',
+        eyebrow: 'Website under maintenance',
+        title: 'Website under<br /><em>maintenance</em>',
+        lede: 'We’re updating arich.fr. The homepage will be back very soon.',
+        notice: '<strong>Maintenance in progress.</strong> The website is temporarily unavailable. The ARICH Player app remains available.',
         cta_play: 'Open Google Play',
         cta_apk: 'Download APK',
         meta_status_label: 'Status',
-        meta_status: 'Update in progress',
+        meta_status: 'Maintenance',
         meta_app_label: 'App',
         meta_app: 'Still online',
         hint: 'Antique Camera · CC0 · Khronos',
@@ -324,30 +382,126 @@
       },
     }
 
-    let lang = (navigator.language || 'fr').toLowerCase().startsWith('en') ? 'en' : 'fr'
+    const normLang = (v) => {
+      if (!v) return null
+      const s = String(v).toLowerCase().trim()
+      if (s === 'fr' || s.startsWith('fr-') || s.startsWith('fr_')) return 'fr'
+      if (s === 'en' || s.startsWith('en-') || s.startsWith('en_')) return 'en'
+      return null
+    }
+
+    const fromQuery = () => {
+      try {
+        return normLang(new URLSearchParams(location.search).get('lang'))
+      } catch {
+        return null
+      }
+    }
+
+    const fromStorage = () => {
+      try {
+        return normLang(localStorage.getItem(LANG_KEY))
+      } catch {
+        return null
+      }
+    }
+
+    const fromNavigator = () => {
+      const list = [...(navigator.languages || []), navigator.language].filter(Boolean)
+      for (const l of list) {
+        const n = normLang(l)
+        if (n) return n
+      }
+      return null
+    }
+
+    const fromTimezone = () => {
+      try {
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''
+        if (FR_TZ.test(tz)) return 'fr'
+        if (/^(America\/(New_York|Chicago|Los_Angeles|Toronto)|Europe\/(London|Dublin)|Australia\/)/.test(tz)) return 'en'
+      } catch { /* ignore */ }
+      return null
+    }
+
+    const detectSync = () =>
+      fromQuery() || fromStorage() || fromNavigator() || fromTimezone() || 'fr'
+
+    let lang = detectSync()
+    let langLocked = !!(fromQuery() || fromStorage())
+
+    const metaDesc = document.querySelector('meta[name="description"]')
+
     const applyLang = () => {
-      const dict = i18n[lang]
+      const dict = i18n[lang] || i18n.fr
       document.documentElement.lang = lang
+      document.title = dict.doc_title
+      if (metaDesc) metaDesc.setAttribute('content', dict.meta_desc)
       document.querySelectorAll('[data-i18n]').forEach((el) => {
-        el.textContent = dict[el.dataset.i18n] || el.textContent
+        const key = el.dataset.i18n
+        if (dict[key] != null) el.textContent = dict[key]
       })
       document.querySelectorAll('[data-i18n-html]').forEach((el) => {
-        el.innerHTML = dict[el.dataset.i18nHtml] || el.innerHTML
+        const key = el.dataset.i18nHtml
+        if (dict[key] != null) el.innerHTML = dict[key]
       })
       document.querySelectorAll('.lang button').forEach((btn) => {
         btn.classList.toggle('is-on', btn.dataset.lang === lang)
       })
+      tick()
     }
+
+    const setLang = (next, persist = true) => {
+      const n = normLang(next) || 'fr'
+      if (n === lang) {
+        if (persist) {
+          try { localStorage.setItem(LANG_KEY, n) } catch { /* ignore */ }
+        }
+        return
+      }
+      lang = n
+      if (persist) {
+        langLocked = true
+        try { localStorage.setItem(LANG_KEY, n) } catch { /* ignore */ }
+      }
+      applyLang()
+    }
+
     document.querySelectorAll('.lang button').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        lang = btn.dataset.lang
-        applyLang()
-      })
+      btn.addEventListener('click', () => setLang(btn.dataset.lang, true))
     })
     applyLang()
 
+    // Optional IP country (only if user hasn't chosen / no query)
+    ;(async () => {
+      if (langLocked) return
+      const ctrl = new AbortController()
+      const kill = setTimeout(() => ctrl.abort(), 1800)
+      try {
+        const res = await fetch('https://ipapi.co/json/', { signal: ctrl.signal, cache: 'no-store' })
+        if (!res.ok) throw new Error('ip')
+        const data = await res.json()
+        const cc = String(data.country_code || data.country || '').toUpperCase()
+        if (!cc) return
+        const guessed = FR_COUNTRIES.has(cc) ? 'fr' : 'en'
+        if (!langLocked) setLang(guessed, false)
+      } catch {
+        try {
+          const res2 = await fetch('https://www.cloudflare.com/cdn-cgi/trace', { signal: AbortSignal.timeout(1200) })
+          const text = await res2.text()
+          const m = text.match(/loc=([A-Z]{2})/i)
+          if (m && !langLocked) {
+            const cc = m[1].toUpperCase()
+            setLang(FR_COUNTRIES.has(cc) ? 'fr' : 'en', false)
+          }
+        } catch { /* keep sync detect */ }
+      } finally {
+        clearTimeout(kill)
+      }
+    })()
+
     const clock = document.getElementById('clock')
-    const tick = () => {
+    function tick() {
       const now = new Date()
       clock.textContent = now.toLocaleString(lang === 'fr' ? 'fr-FR' : 'en-GB', {
         weekday: 'short', day: '2-digit', month: 'short',
@@ -365,6 +519,9 @@
     const root = document.getElementById('stage')
     const loaderEl = document.getElementById('loader')
 
+    const clamp = (v, a, b) => Math.min(b, Math.max(a, v))
+    const lerp = (a, b, t) => a + (b - a) * t
+
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' })
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2))
     renderer.setSize(innerWidth, innerHeight)
@@ -377,7 +534,10 @@
     scene.fog = new THREE.FogExp2(0x07090d, 0.045)
 
     const camera = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.1, 100)
-    camera.position.set(0.35, 1.15, 4.2)
+    const camBase = { x: 0.35, y: 1.15, z: 4.2 }
+    camera.position.set(camBase.x, camBase.y, camBase.z)
+    const lookTarget = new THREE.Vector3(0.45, 0.9, 0)
+    camera.lookAt(lookTarget)
 
     const pmrem = new THREE.PMREMGenerator(renderer)
     scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
@@ -393,7 +553,6 @@
     copperGlow.position.set(0.2, 1.6, 1.4)
     scene.add(copperGlow)
 
-    // Soft ground disc
     const ground = new THREE.Mesh(
       new THREE.CircleGeometry(2.4, 64),
       new THREE.MeshStandardMaterial({
@@ -413,8 +572,7 @@
     ring.position.y = 0.02
     scene.add(ring)
 
-    // Dust motes
-    const moteCount = reduced ? 80 : 280
+    const moteCount = reduced ? 60 : 220
     const moteGeo = new THREE.BufferGeometry()
     const motePos = new Float32Array(moteCount * 3)
     for (let i = 0; i < moteCount; i++) {
@@ -425,34 +583,46 @@
     moteGeo.setAttribute('position', new THREE.BufferAttribute(motePos, 3))
     const motes = new THREE.Points(
       moteGeo,
-      new THREE.PointsMaterial({ color: 0xd4a04a, size: 0.015, transparent: true, opacity: 0.45, depthAttenuation: true })
+      new THREE.PointsMaterial({ color: 0xd4a04a, size: 0.015, transparent: true, opacity: 0.45, sizeAttenuation: true })
     )
     scene.add(motes)
 
+    // pivot = world placement + gentle float; turntable = yaw/pitch only
     const pivot = new THREE.Group()
     pivot.position.set(0.55, 0, 0)
     scene.add(pivot)
+    const turntable = new THREE.Group()
+    pivot.add(turntable)
 
     function makeFallback() {
       const g = new THREE.Group()
-      const body = new THREE.Mesh(
-        new THREE.BoxGeometry(1.1, 0.72, 0.55),
-        new THREE.MeshStandardMaterial({ color: 0x1a1612, metalness: 0.85, roughness: 0.35 })
+      const bodyMat = new THREE.MeshStandardMaterial({ color: 0x1a1612, metalness: 0.88, roughness: 0.32 })
+      const copperMat = new THREE.MeshStandardMaterial({
+        color: 0xc58a2a, metalness: 0.92, roughness: 0.22,
+        emissive: 0x3a2208, emissiveIntensity: 0.28,
+      })
+      const body = new THREE.Mesh(new THREE.BoxGeometry(1.05, 0.7, 0.52), bodyMat)
+      const top = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.18, 0.4), bodyMat)
+      top.position.set(-0.12, 0.42, 0)
+      const lensBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.24, 0.5, 28), copperMat)
+      lensBarrel.rotation.z = Math.PI / 2
+      lensBarrel.position.set(0.58, 0.04, 0)
+      const lensGlass = new THREE.Mesh(
+        new THREE.CircleGeometry(0.16, 28),
+        new THREE.MeshStandardMaterial({
+          color: 0x1a3040, metalness: 0.4, roughness: 0.15,
+          emissive: 0x0a2030, emissiveIntensity: 0.4,
+        })
       )
-      const lens = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.22, 0.26, 0.45, 32),
-        new THREE.MeshStandardMaterial({ color: 0xc58a2a, metalness: 0.9, roughness: 0.25, emissive: 0x3a2208, emissiveIntensity: 0.35 })
+      lensGlass.position.set(0.84, 0.04, 0)
+      lensGlass.rotation.y = Math.PI / 2
+      const bellows = new THREE.Mesh(
+        new THREE.BoxGeometry(0.28, 0.38, 0.38),
+        new THREE.MeshStandardMaterial({ color: 0x2a2218, metalness: 0.3, roughness: 0.7 })
       )
-      lens.rotation.z = Math.PI / 2
-      lens.position.set(0.55, 0.05, 0)
-      const screen = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.72, 0.42),
-        new THREE.MeshStandardMaterial({ color: 0xd4a04a, emissive: 0xc58a2a, emissiveIntensity: 0.55, metalness: 0.2, roughness: 0.4 })
-      )
-      screen.position.set(-0.56, 0.05, 0)
-      screen.rotation.y = Math.PI / 2
-      g.add(body, lens, screen)
-      g.position.y = 0.85
+      bellows.position.set(0.28, 0.04, 0)
+      g.add(body, top, bellows, lensBarrel, lensGlass)
+      g.position.y = 0.55
       return g
     }
 
@@ -461,20 +631,52 @@
 
     const gltfLoader = new GLTFLoader()
     const loadModel = () => new Promise((resolve) => {
-      const timeout = setTimeout(() => resolve(null), 12000)
+      let settled = false
+      const done = (v) => {
+        if (settled) return
+        settled = true
+        resolve(v)
+      }
+      const timeout = setTimeout(() => done(null), 8000)
       gltfLoader.load(
         MODEL_URL,
-        (gltf) => { clearTimeout(timeout); resolve(gltf.scene) },
+        (gltf) => { clearTimeout(timeout); done(gltf.scene) },
         undefined,
-        () => { clearTimeout(timeout); resolve(null) }
+        () => { clearTimeout(timeout); done(null) }
       )
     })
 
-    const pointer = { x: 0, y: 0, tx: 0, ty: 0 }
-    addEventListener('pointermove', (e) => {
-      pointer.tx = (e.clientX / innerWidth) * 2 - 1
-      pointer.ty = (e.clientY / innerHeight) * 2 - 1
-    })
+    // Pointer parallax — window-level so UI pointer-events:none still works
+    const pointer = {
+      x: 0, y: 0,
+      tx: 0, ty: 0,
+      active: false,
+      leaveAt: 0,
+    }
+
+    const onPointerMove = (e) => {
+      pointer.tx = clamp((e.clientX / innerWidth) * 2 - 1, -1, 1)
+      pointer.ty = clamp((e.clientY / innerHeight) * 2 - 1, -1, 1)
+      pointer.active = true
+    }
+    const onPointerLeave = () => {
+      pointer.active = false
+      pointer.tx = 0
+      pointer.ty = 0
+      pointer.leaveAt = performance.now()
+    }
+
+    addEventListener('pointermove', onPointerMove, { passive: true })
+    document.addEventListener('pointerleave', onPointerLeave)
+    addEventListener('blur', onPointerLeave)
+    // Touch: follow finger, rest on end
+    addEventListener('touchmove', (e) => {
+      const t = e.touches[0]
+      if (!t) return
+      onPointerMove(t)
+    }, { passive: true })
+    addEventListener('touchend', onPointerLeave, { passive: true })
+    addEventListener('touchcancel', onPointerLeave, { passive: true })
 
     addEventListener('resize', () => {
       camera.aspect = innerWidth / innerHeight
@@ -482,54 +684,87 @@
       renderer.setSize(innerWidth, innerHeight)
     })
 
+    const finishLoader = () => {
+      loaderEl.classList.add('is-done')
+    }
+
     ;(async () => {
-      const loaded = await loadModel()
-      if (loaded) {
-        model = loaded
-        model.traverse((o) => {
-          if (o.isMesh) {
-            o.castShadow = false
-            o.receiveShadow = false
-            if (o.material) {
-              o.material.envMapIntensity = 1.15
-              o.material.needsUpdate = true
+      try {
+        const loaded = await loadModel()
+        if (loaded) {
+          model = loaded
+          model.traverse((o) => {
+            if (o.isMesh) {
+              o.castShadow = false
+              o.receiveShadow = false
+              if (o.material) {
+                o.material.envMapIntensity = 1.15
+                o.material.needsUpdate = true
+              }
             }
-          }
-        })
-        const box = new THREE.Box3().setFromObject(model)
-        const size = box.getSize(new THREE.Vector3())
-        const scale = 1.55 / Math.max(size.x, size.y, size.z)
-        model.scale.setScalar(scale)
-        box.setFromObject(model)
-        const center = box.getCenter(new THREE.Vector3())
-        model.position.sub(center)
-        model.position.y += 0.15
-      } else {
+          })
+          const box = new THREE.Box3().setFromObject(model)
+          const size = box.getSize(new THREE.Vector3())
+          const scale = 1.55 / Math.max(size.x, size.y, size.z)
+          model.scale.setScalar(scale)
+          box.setFromObject(model)
+          const center = box.getCenter(new THREE.Vector3())
+          model.position.sub(center)
+          model.position.y += 0.12
+        } else {
+          model = makeFallback()
+        }
+      } catch {
         model = makeFallback()
       }
-      pivot.add(model)
-      loaderEl.classList.add('is-done')
+      turntable.add(model)
+      finishLoader()
     })()
 
+    // Safety: never leave loader forever
+    setTimeout(finishLoader, 9000)
+
+    let idleYaw = 0
     const clock3 = new THREE.Clock()
+    const yawAmp = 0.42
+    const pitchAmp = 0.16
+
     function frame() {
-      const t = clock3.getElapsedTime()
-      pointer.x += (pointer.tx - pointer.x) * 0.04
-      pointer.y += (pointer.ty - pointer.y) * 0.04
+      const dt = Math.min(clock3.getDelta(), 0.05)
+      const t = clock3.elapsedTime
+      const smooth = 1 - Math.exp(-dt * (pointer.active ? 7 : 4.5))
 
-      if (pivot) {
-        const bob = reduced ? 0 : Math.sin(t * 0.7) * 0.04
-        pivot.position.y = bob
-        pivot.rotation.y = t * (reduced ? 0.05 : 0.12) + pointer.x * 0.25
-        pivot.rotation.x = pointer.y * -0.12
+      pointer.x = lerp(pointer.x, pointer.tx, smooth)
+      pointer.y = lerp(pointer.y, pointer.ty, smooth)
+
+      // Soften auto-spin while pointer is guiding; stop for reduced motion
+      const spinRate = reduced ? 0 : (pointer.active ? 0.025 : 0.08)
+      idleYaw += spinRate * dt
+
+      const targetYaw = idleYaw + pointer.x * yawAmp
+      const targetPitch = clamp(-pointer.y * pitchAmp, -pitchAmp, pitchAmp)
+
+      turntable.rotation.y = lerp(turntable.rotation.y, targetYaw, 1 - Math.exp(-dt * 5))
+      turntable.rotation.x = lerp(turntable.rotation.x, targetPitch, 1 - Math.exp(-dt * 5))
+      // Never let pitch flip the model
+      turntable.rotation.x = clamp(turntable.rotation.x, -0.22, 0.22)
+      turntable.rotation.z = 0
+
+      // Gentle float on pivot only — camera stays put (no bob jitter in lookAt)
+      pivot.position.y = reduced ? 0 : Math.sin(t * 0.65) * 0.035
+
+      ring.rotation.z = reduced ? 0 : t * 0.12
+      copperGlow.intensity = reduced ? 17 : 16 + Math.sin(t * 1.2) * 2.2
+      motes.rotation.y = reduced ? 0 : t * 0.018
+
+      // Tiny camera parallax, damped — lookAt fixed
+      if (!reduced) {
+        camera.position.x = lerp(camera.position.x, camBase.x + pointer.x * 0.08, 1 - Math.exp(-dt * 3))
+        camera.position.y = lerp(camera.position.y, camBase.y + pointer.y * -0.04, 1 - Math.exp(-dt * 3))
+      } else {
+        camera.position.set(camBase.x, camBase.y, camBase.z)
       }
-      ring.rotation.z = t * 0.15
-      copperGlow.intensity = 16 + Math.sin(t * 1.4) * 3
-      motes.rotation.y = t * 0.02
-
-      camera.position.x = 0.35 + pointer.x * 0.18
-      camera.position.y = 1.15 + pointer.y * -0.08
-      camera.lookAt(0.4, 0.85, 0)
+      camera.lookAt(lookTarget)
 
       renderer.render(scene, camera)
       requestAnimationFrame(frame)

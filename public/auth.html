@@ -392,6 +392,15 @@ function isAndroid() {
   return /android/i.test(navigator.userAgent);
 }
 
+function isIos() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+
+/** Mobile ou retour app → bridge deep link (email confirm inclus). */
+function shouldOpenApp() {
+  return isAndroid() || isIos() || sessionStorage.getItem('arich_from_app') === '1';
+}
+
 /**
  * Construit le deep link avec access_token + refresh_token.
  * AprÃ¨s PKCE, le hash URL est souvent vidÃ© alors que la session est dÃ©jÃ 
@@ -436,7 +445,7 @@ async function redirectAfterAuth() {
   if (overlay) overlay.classList.add('show');
   if (page)    page.style.display = 'none';
 
-  if (isAndroid() || sessionStorage.getItem('arich_from_app') === '1') {
+  if (shouldOpenApp()) {
     if (sub) sub.textContent = "Retour vers l'application ARICH IPTVâ€¦";
 
     const deepLink = await buildAppDeepLink();
@@ -582,7 +591,7 @@ function translateError(msg) {
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• AUTH ACTIONS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 async function loginGoogle() {
-  if (isAndroid()) sessionStorage.setItem('arich_from_app', '1');
+  if (shouldOpenApp()) sessionStorage.setItem('arich_from_app', '1');
   const btns = document.querySelectorAll('#btn-google, .btn-ghost');
   btns.forEach(b => { b.disabled=true; b.classList.add('loading'); });
   const { error } = await sb.auth.signInWithOAuth({

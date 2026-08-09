@@ -563,7 +563,7 @@
   <script>
     const SUPABASE_URL = 'https://aynucieohuowgkwyftiy.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk';
-    const MAX_PARTICIPANTS = 8;
+    const MAX_PARTICIPANTS = 3;
     const APP_SCHEME = 'com.arich.iptv://watch';
     const APP_INTENT = (code) =>
       `intent://watch?code=${encodeURIComponent(code)}#Intent;scheme=com.arich.iptv;package=com.arich.iptv;end`;
@@ -911,12 +911,32 @@
       }, 30000);
     }
 
+    async function tryOpenApp(code) {
+      if (!code || code.length !== 6) return;
+      const ua = navigator.userAgent || '';
+      const isAndroid = /Android/i.test(ua);
+      if (isAndroid) {
+        window.location.href = APP_INTENT(code);
+        setTimeout(() => {
+          // Si l'app n'a pas pris le focus, on reste sur le web
+        }, 1200);
+      } else {
+        // Autres plateformes : tenter le scheme custom
+        window.location.href = `${APP_SCHEME}?code=${encodeURIComponent(code)}`;
+      }
+    }
+
     async function init() {
       document.getElementById('retryJoinBtn')?.addEventListener('click', () => {
         hideError();
         showPanel('joinPanel');
         history.replaceState({}, '', location.pathname);
       });
+
+      if (ROOM_CODE && ROOM_CODE.length === 6) {
+        // App installée → ouvrir immédiatement le salon natif
+        tryOpenApp(ROOM_CODE);
+      }
 
       if (!ROOM_CODE || ROOM_CODE.length !== 6) {
         showPanel('joinPanel');
@@ -925,6 +945,7 @@
           if (c.length !== 6) { showError('Code invalide (6 caractères).'); return; }
           ROOM_CODE = c;
           history.replaceState({}, '', `?code=${encodeURIComponent(c)}`);
+          tryOpenApp(c);
           try {
             await enterRoom(c);
           } catch (e) {

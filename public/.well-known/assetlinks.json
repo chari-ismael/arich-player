@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.arich.iptv",
+      "sha256_cert_fingerprints": [
+        "8F:08:93:4E:2F:74:04:8A:F4:EA:14:7C:FF:01:C0:C9:57:5D:E3:71:71:73:E3:BB:DD:4D:C4:D8:C5:C8:0A:61"
+      ]
+    }
+  }
+]

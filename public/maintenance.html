@@ -431,6 +431,16 @@
     let langLocked = !!(fromQuery() || fromStorage())
 
     const metaDesc = document.querySelector('meta[name="description"]')
+    const clockEl = document.getElementById('clock')
+
+    function tick() {
+      if (!clockEl) return
+      const now = new Date()
+      clockEl.textContent = now.toLocaleString(lang === 'fr' ? 'fr-FR' : 'en-GB', {
+        weekday: 'short', day: '2-digit', month: 'short',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+      })
+    }
 
     const applyLang = () => {
       const dict = i18n[lang] || i18n.fr
@@ -471,6 +481,7 @@
       btn.addEventListener('click', () => setLang(btn.dataset.lang, true))
     })
     applyLang()
+    setInterval(tick, 1000)
 
     // Optional IP country (only if user hasn't chosen / no query)
     ;(async () => {
@@ -499,17 +510,6 @@
         clearTimeout(kill)
       }
     })()
-
-    const clock = document.getElementById('clock')
-    function tick() {
-      const now = new Date()
-      clock.textContent = now.toLocaleString(lang === 'fr' ? 'fr-FR' : 'en-GB', {
-        weekday: 'short', day: '2-digit', month: 'short',
-        hour: '2-digit', minute: '2-digit', second: '2-digit',
-      })
-    }
-    tick()
-    setInterval(tick, 1000)
 
     import * as THREE from 'three'
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'

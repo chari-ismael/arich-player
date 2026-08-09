@@ -1,54 +1,82 @@
-"""Fix main-branch site encoding so Vite/parse5 can build."""
+"""Repair double-UTF-8 and euro mojibake in website sources."""
+from __future__ import annotations
+
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-FILES = [ROOT / 'index.html', ROOT / 'src' / 'i18n.js']
+TARGETS = [
+    ROOT / 'src' / 'config.js',
+    ROOT / 'src' / 'i18n.js',
+    ROOT / 'index.html',
+]
 
-MOJIBAKE = {
+# € UTF-8 misread as cp1252 then re-saved as UTF-8
+EURO_JUNK = 'â‚¬'  # U+00E2 U+201A U+00AC
+# Common double-encoded sequences (UTF-8 bytes interpreted as latin-1, re-encoded)
+DOUBLE_MAP = {
     'Ã©': 'é', 'Ã¨': 'è', 'Ãª': 'ê', 'Ã«': 'ë',
     'Ã ': 'à', 'Ã¡': 'á', 'Ã¢': 'â', 'Ã¤': 'ä',
     'Ã§': 'ç', 'Ã®': 'î', 'Ã¯': 'ï', 'Ã´': 'ô',
     'Ã¶': 'ö', 'Ã¹': 'ù', 'Ã»': 'û', 'Ã¼': 'ü',
+    'Ã\u00a0': 'à', 'Ã\u00a9': 'é', 'Ã\u00a8': 'è',
+    'Ã\u00aa': 'ê', 'Ã\u00a7': 'ç', 'Ã\u00b4': 'ô',
     'Ã‰': 'É', 'Ã€': 'À', 'Ã‡': 'Ç',
     'Â©': '©', 'Â·': '·', 'Â°': '°', 'Â«': '«', 'Â»': '»',
-    'â€™': "'", 'â€˜': "'", 'â€œ': '"', 'â€': '"',
+    'Â€': '€',
+    'â€™': '\u2019', 'â€˜': '\u2018', 'â€œ': '\u201c', 'â€': '\u201d',
     'â€”': '—', 'â€“': '–', 'â€¦': '…', 'â†’': '→',
-    'ðŸš€': '',  # emoji junk if any
 }
 
 
-def sanitize(text: str) -> str:
-    # Drop C0/C1 controls (except whitespace) — parse5 rejects them
-    out = []
-    for ch in text:
-        o = ord(ch)
-        if ch in '\n\r\t' or (o >= 32 and not (0x7F <= o <= 0x9F)):
-            out.append(ch)
-        elif o == 0x90:
-            out.append('-')  # was likely box-drawing in comments
-        # else drop
-    text = ''.join(out)
-    text = text.replace('\ufffd', '')
-    for bad, good in sorted(MOJIBAKE.items(), key=lambda x: -len(x[0])):
+def undo_double_utf8(text: str) -> str:
+    """If the whole string is double-encoded, reverse once."""
+    try:
+        return text.encode('latin-1').decode('utf-8')
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        return text
+
+
+def fix_text(text: str) -> str:
+    # Prefer wholesale undo when it produces fewer mojibake markers
+    candidate = undo_double_utf8(text)
+    if candidate.count('Ã') < text.count('Ã') and EURO_JUNK not in candidate:
+        # wholesale worked for accents; still scrub euro if any slipped
+        text = candidate
+    else:
+        for bad, good in sorted(DOUBLE_MAP.items(), key=lambda x: -len(x[0])):
+            text = text.replace(bad, good)
+    text = text.replace(EURO_JUNK, '€')
+    # Second pass for any remaining double-map leftovers
+    for bad, good in sorted(DOUBLE_MAP.items(), key=lambda x: -len(x[0])):
         text = text.replace(bad, good)
-    # Normalize mangled HTML comment banners like "--- HERO ---"
-    text = text.replace('----', '---')
+    text = text.replace(EURO_JUNK, '€')
     return text
 
 
+def has_corruption(data: bytes) -> bool:
+    if bytes([0xC3, 0x83, 0xC2, 0xA9]) in data:  # double é
+        return True
+    if EURO_JUNK.encode('utf-8') in data:
+        return True
+    return False
+
+
 def main() -> None:
-    for path in FILES:
+    for path in TARGETS:
         if not path.exists():
-            print('skip missing', path)
+            print('skip', path)
             continue
-        text = path.read_text(encoding='utf-8')
-        fixed = sanitize(text)
-        illegal = sum(
-            1 for c in fixed
-            if (ord(c) < 32 and c not in '\n\r\t') or (0x7F <= ord(c) <= 0x9F)
-        )
+        raw = path.read_bytes()
+        text = raw.decode('utf-8')
+        fixed = fix_text(text)
         path.write_text(fixed, encoding='utf-8', newline='\n')
-        print(f'{path.name}: illegal={illegal} mojibake_left={fixed.count("Ã")}')
+        after = path.read_bytes()
+        print(
+            f'{path.relative_to(ROOT)}: '
+            f'corrupt_before={has_corruption(raw)} '
+            f'corrupt_after={has_corruption(after)} '
+            f'A_tilde={fixed.count("Ã")} euro_junk={fixed.count(EURO_JUNK)}'
+        )
 
 
 if __name__ == '__main__':

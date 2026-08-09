@@ -1,0 +1,11 @@
+{
+  "name": "ARICH Player Web",
+  "install": "npm ci",
+  "terminals": [
+    {
+      "name": "vite-dev",
+      "command": "npm run dev -- --host 0.0.0.0"
+    }
+  ],
+  "ports": [8765]
+}

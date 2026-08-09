@@ -322,7 +322,7 @@
           <span><b data-i18n="meta_app_label">App</b> · <span data-i18n="meta_app">Toujours en ligne</span></span>
         </div>
       </div>
-      <p class="stage-hint" data-i18n="hint">Antique Camera · CC0 · Khronos</p>
+      <p class="stage-hint" data-i18n="hint">Engrenages · ARICH</p>
     </main>
 
     <footer class="bottom">
@@ -357,7 +357,7 @@
         meta_status: 'Maintenance',
         meta_app_label: 'App',
         meta_app: 'Toujours en ligne',
-        hint: 'Antique Camera · CC0 · Khronos',
+        hint: 'Engrenages · ARICH',
         footer: 'Questions',
       },
       en: {
@@ -377,7 +377,7 @@
         meta_status: 'Maintenance',
         meta_app_label: 'App',
         meta_app: 'Still online',
-        hint: 'Antique Camera · CC0 · Khronos',
+        hint: 'Gears · ARICH',
         footer: 'Questions',
       },
     }
@@ -512,7 +512,6 @@
     })()
 
     import * as THREE from 'three'
-    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
     import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
 
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -523,137 +522,145 @@
     const lerp = (a, b, t) => a + (b - a) * t
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' })
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2))
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75))
     renderer.setSize(innerWidth, innerHeight)
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.12
+    renderer.toneMappingExposure = 1.05
     root.appendChild(renderer.domElement)
 
     const scene = new THREE.Scene()
-    scene.fog = new THREE.FogExp2(0x07090d, 0.045)
+    scene.fog = new THREE.FogExp2(0x07090d, 0.038)
 
-    const camera = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.1, 100)
-    const camBase = { x: 0.35, y: 1.15, z: 4.2 }
+    const camera = new THREE.PerspectiveCamera(36, innerWidth / innerHeight, 0.1, 80)
+    const camBase = { x: 0.2, y: 0.55, z: 5.2 }
     camera.position.set(camBase.x, camBase.y, camBase.z)
-    const lookTarget = new THREE.Vector3(0.45, 0.9, 0)
+    const lookTarget = new THREE.Vector3(0.35, 0.35, 0)
     camera.lookAt(lookTarget)
 
     const pmrem = new THREE.PMREMGenerator(renderer)
     scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
 
-    const key = new THREE.DirectionalLight(0xffd19a, 2.1)
-    key.position.set(3.2, 5.5, 2.4)
+    const key = new THREE.DirectionalLight(0xffd19a, 1.9)
+    key.position.set(3.5, 4.5, 2.8)
     scene.add(key)
-    const rim = new THREE.DirectionalLight(0xc58a2a, 1.4)
-    rim.position.set(-3.5, 2.2, -2.5)
+    const rim = new THREE.DirectionalLight(0xc58a2a, 1.2)
+    rim.position.set(-3.2, 1.8, -2.2)
     scene.add(rim)
-    scene.add(new THREE.AmbientLight(0x2a241c, 0.55))
-    const copperGlow = new THREE.PointLight(0xc58a2a, 18, 12, 2)
-    copperGlow.position.set(0.2, 1.6, 1.4)
+    scene.add(new THREE.AmbientLight(0x2a241c, 0.5))
+    const copperGlow = new THREE.PointLight(0xc58a2a, 14, 14, 2)
+    copperGlow.position.set(0.4, 1.2, 1.6)
     scene.add(copperGlow)
 
-    const ground = new THREE.Mesh(
-      new THREE.CircleGeometry(2.4, 64),
-      new THREE.MeshStandardMaterial({
-        color: 0x0c0e12, metalness: 0.7, roughness: 0.45,
-        transparent: true, opacity: 0.85,
-      })
-    )
-    ground.rotation.x = -Math.PI / 2
-    ground.position.y = 0
-    scene.add(ground)
-
-    const ring = new THREE.Mesh(
-      new THREE.TorusGeometry(1.55, 0.008, 16, 128),
-      new THREE.MeshBasicMaterial({ color: 0xc58a2a, transparent: true, opacity: 0.35 })
-    )
-    ring.rotation.x = Math.PI / 2
-    ring.position.y = 0.02
-    scene.add(ring)
-
-    const moteCount = reduced ? 60 : 220
+    // Soft dust only — no ground disc / yellow ring
+    const moteCount = reduced ? 40 : 140
     const moteGeo = new THREE.BufferGeometry()
     const motePos = new Float32Array(moteCount * 3)
     for (let i = 0; i < moteCount; i++) {
-      motePos[i * 3] = (Math.random() - 0.5) * 10
-      motePos[i * 3 + 1] = Math.random() * 5
-      motePos[i * 3 + 2] = (Math.random() - 0.5) * 10
+      motePos[i * 3] = (Math.random() - 0.5) * 9
+      motePos[i * 3 + 1] = Math.random() * 4.5 - 0.4
+      motePos[i * 3 + 2] = (Math.random() - 0.5) * 9
     }
     moteGeo.setAttribute('position', new THREE.BufferAttribute(motePos, 3))
     const motes = new THREE.Points(
       moteGeo,
-      new THREE.PointsMaterial({ color: 0xd4a04a, size: 0.015, transparent: true, opacity: 0.45, sizeAttenuation: true })
+      new THREE.PointsMaterial({ color: 0xd4a04a, size: 0.012, transparent: true, opacity: 0.35, depthAttenuation: true })
     )
     scene.add(motes)
 
-    // pivot = world placement + gentle float; turntable = yaw/pitch only
     const pivot = new THREE.Group()
-    pivot.position.set(0.55, 0, 0)
+    pivot.position.set(0.55, 0.15, 0)
     scene.add(pivot)
     const turntable = new THREE.Group()
     pivot.add(turntable)
 
-    function makeFallback() {
-      const g = new THREE.Group()
-      const bodyMat = new THREE.MeshStandardMaterial({ color: 0x1a1612, metalness: 0.88, roughness: 0.32 })
-      const copperMat = new THREE.MeshStandardMaterial({
-        color: 0xc58a2a, metalness: 0.92, roughness: 0.22,
-        emissive: 0x3a2208, emissiveIntensity: 0.28,
+    /** Procedural spur gear — light, copper, no network lag */
+    function createGear({ teeth = 16, radius = 1, thickness = 0.22, hole = 0.18, rim = 0.72 } = {}) {
+      const shape = new THREE.Shape()
+      const outer = radius
+      const rootR = radius * rim
+      const tipW = (Math.PI * 2) / teeth / 4
+      for (let i = 0; i < teeth; i++) {
+        const a0 = (i / teeth) * Math.PI * 2
+        const a1 = a0 + tipW * 0.55
+        const a2 = a0 + tipW * 1.45
+        const a3 = a0 + tipW * 2
+        const a4 = a0 + (Math.PI * 2) / teeth
+        const p = (r, a) => [Math.cos(a) * r, Math.sin(a) * r]
+        const [x0, y0] = p(rootR, a0)
+        if (i === 0) shape.moveTo(x0, y0)
+        else shape.lineTo(x0, y0)
+        shape.lineTo(...p(outer, a1))
+        shape.lineTo(...p(outer, a2))
+        shape.lineTo(...p(rootR, a3))
+        shape.lineTo(...p(rootR, a4))
+      }
+      shape.closePath()
+      const holePath = new THREE.Path()
+      holePath.absarc(0, 0, hole, 0, Math.PI * 2, true)
+      shape.holes.push(holePath)
+
+      const geo = new THREE.ExtrudeGeometry(shape, {
+        depth: thickness,
+        bevelEnabled: true,
+        bevelThickness: 0.018,
+        bevelSize: 0.014,
+        bevelSegments: 1,
+        curveSegments: 1,
       })
-      const body = new THREE.Mesh(new THREE.BoxGeometry(1.05, 0.7, 0.52), bodyMat)
-      const top = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.18, 0.4), bodyMat)
-      top.position.set(-0.12, 0.42, 0)
-      const lensBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.24, 0.5, 28), copperMat)
-      lensBarrel.rotation.z = Math.PI / 2
-      lensBarrel.position.set(0.58, 0.04, 0)
-      const lensGlass = new THREE.Mesh(
-        new THREE.CircleGeometry(0.16, 28),
-        new THREE.MeshStandardMaterial({
-          color: 0x1a3040, metalness: 0.4, roughness: 0.15,
-          emissive: 0x0a2030, emissiveIntensity: 0.4,
-        })
-      )
-      lensGlass.position.set(0.84, 0.04, 0)
-      lensGlass.rotation.y = Math.PI / 2
-      const bellows = new THREE.Mesh(
-        new THREE.BoxGeometry(0.28, 0.38, 0.38),
-        new THREE.MeshStandardMaterial({ color: 0x2a2218, metalness: 0.3, roughness: 0.7 })
-      )
-      bellows.position.set(0.28, 0.04, 0)
-      g.add(body, top, bellows, lensBarrel, lensGlass)
-      g.position.y = 0.55
-      return g
+      geo.center()
+      return geo
     }
 
-    let model = null
-    const MODEL_URL = 'https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Assets@main/Models/AntiqueCamera/glTF-Binary/AntiqueCamera.glb'
-
-    const gltfLoader = new GLTFLoader()
-    const loadModel = () => new Promise((resolve) => {
-      let settled = false
-      const done = (v) => {
-        if (settled) return
-        settled = true
-        resolve(v)
-      }
-      const timeout = setTimeout(() => done(null), 8000)
-      gltfLoader.load(
-        MODEL_URL,
-        (gltf) => { clearTimeout(timeout); done(gltf.scene) },
-        undefined,
-        () => { clearTimeout(timeout); done(null) }
-      )
+    const matDark = new THREE.MeshStandardMaterial({
+      color: 0x2a241c, metalness: 0.92, roughness: 0.28,
+      envMapIntensity: 1.1,
+    })
+    const matCopper = new THREE.MeshStandardMaterial({
+      color: 0xc58a2a, metalness: 0.95, roughness: 0.22,
+      emissive: 0x3a2208, emissiveIntensity: 0.22,
+      envMapIntensity: 1.2,
+    })
+    const matBright = new THREE.MeshStandardMaterial({
+      color: 0xd4a04a, metalness: 0.9, roughness: 0.18,
+      emissive: 0x4a2e0a, emissiveIntensity: 0.18,
+      envMapIntensity: 1.25,
     })
 
-    // Pointer parallax — window-level so UI pointer-events:none still works
-    const pointer = {
-      x: 0, y: 0,
-      tx: 0, ty: 0,
-      active: false,
-      leaveAt: 0,
+    const gears = []
+    function addGear({ teeth, radius, thickness, hole, rim, x, y, z, mat, speed, meshRot = 0 }) {
+      const mesh = new THREE.Mesh(createGear({ teeth, radius, thickness, hole, rim }), mat)
+      mesh.position.set(x, y, z)
+      mesh.rotation.z = meshRot
+      turntable.add(mesh)
+      const hub = new THREE.Mesh(
+        new THREE.CylinderGeometry(hole * 1.35, hole * 1.35, thickness * 1.15, 20),
+        matCopper
+      )
+      hub.rotation.x = Math.PI / 2
+      hub.position.copy(mesh.position)
+      turntable.add(hub)
+      gears.push({ mesh, speed, teeth })
+      return mesh
     }
 
+    // Meshing layout — tooth ratios keep relative speeds coherent
+    addGear({ teeth: 28, radius: 1.15, thickness: 0.2, hole: 0.16, rim: 0.78, x: 0, y: 0, z: 0, mat: matCopper, speed: 1 })
+    addGear({ teeth: 16, radius: 0.68, thickness: 0.18, hole: 0.12, rim: 0.76, x: 1.55, y: 0.35, z: 0.12, mat: matBright, speed: -28 / 16 })
+    addGear({ teeth: 12, radius: 0.5, thickness: 0.16, hole: 0.1, rim: 0.74, x: -1.28, y: 0.55, z: -0.08, mat: matDark, speed: -28 / 12 })
+    addGear({ teeth: 20, radius: 0.82, thickness: 0.17, hole: 0.13, rim: 0.77, x: 0.55, y: -1.15, z: 0.18, mat: matDark, speed: -28 / 20 })
+    addGear({ teeth: 10, radius: 0.4, thickness: 0.14, hole: 0.09, rim: 0.72, x: 1.95, y: -0.55, z: -0.05, mat: matCopper, speed: (28 / 16) * (16 / 10) })
+
+    // Axle accents
+    const axle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.04, 2.4, 12),
+      matBright
+    )
+    axle.rotation.z = Math.PI / 2
+    axle.position.set(0.35, 0.05, 0.35)
+    turntable.add(axle)
+
+    const pointer = { x: 0, y: 0, tx: 0, ty: 0, active: false }
     const onPointerMove = (e) => {
       pointer.tx = clamp((e.clientX / innerWidth) * 2 - 1, -1, 1)
       pointer.ty = clamp((e.clientY / innerHeight) * 2 - 1, -1, 1)
@@ -663,104 +670,60 @@
       pointer.active = false
       pointer.tx = 0
       pointer.ty = 0
-      pointer.leaveAt = performance.now()
     }
-
     addEventListener('pointermove', onPointerMove, { passive: true })
     document.addEventListener('pointerleave', onPointerLeave)
     addEventListener('blur', onPointerLeave)
-    // Touch: follow finger, rest on end
-    addEventListener('touchmove', (e) => {
-      const t = e.touches[0]
-      if (!t) return
-      onPointerMove(t)
-    }, { passive: true })
+    addEventListener('touchmove', (e) => { const t = e.touches[0]; if (t) onPointerMove(t) }, { passive: true })
     addEventListener('touchend', onPointerLeave, { passive: true })
     addEventListener('touchcancel', onPointerLeave, { passive: true })
-
     addEventListener('resize', () => {
       camera.aspect = innerWidth / innerHeight
       camera.updateProjectionMatrix()
       renderer.setSize(innerWidth, innerHeight)
     })
 
-    const finishLoader = () => {
-      loaderEl.classList.add('is-done')
-    }
-
-    ;(async () => {
-      try {
-        const loaded = await loadModel()
-        if (loaded) {
-          model = loaded
-          model.traverse((o) => {
-            if (o.isMesh) {
-              o.castShadow = false
-              o.receiveShadow = false
-              if (o.material) {
-                o.material.envMapIntensity = 1.15
-                o.material.needsUpdate = true
-              }
-            }
-          })
-          const box = new THREE.Box3().setFromObject(model)
-          const size = box.getSize(new THREE.Vector3())
-          const scale = 1.55 / Math.max(size.x, size.y, size.z)
-          model.scale.setScalar(scale)
-          box.setFromObject(model)
-          const center = box.getCenter(new THREE.Vector3())
-          model.position.sub(center)
-          model.position.y += 0.12
-        } else {
-          model = makeFallback()
-        }
-      } catch {
-        model = makeFallback()
-      }
-      turntable.add(model)
-      finishLoader()
-    })()
-
-    // Safety: never leave loader forever
-    setTimeout(finishLoader, 9000)
+    // Instant — no GLB download
+    requestAnimationFrame(() => loaderEl.classList.add('is-done'))
+    setTimeout(() => loaderEl.classList.add('is-done'), 1200)
 
     let idleYaw = 0
     const clock3 = new THREE.Clock()
-    const yawAmp = 0.42
-    const pitchAmp = 0.16
+    const yawAmp = 0.38
+    const pitchAmp = 0.14
+    let gearSpin = 0
 
     function frame() {
       const dt = Math.min(clock3.getDelta(), 0.05)
       const t = clock3.elapsedTime
-      const smooth = 1 - Math.exp(-dt * (pointer.active ? 7 : 4.5))
+      const smooth = 1 - Math.exp(-dt * (pointer.active ? 7 : 4.2))
 
       pointer.x = lerp(pointer.x, pointer.tx, smooth)
       pointer.y = lerp(pointer.y, pointer.ty, smooth)
 
-      // Soften auto-spin while pointer is guiding; stop for reduced motion
-      const spinRate = reduced ? 0 : (pointer.active ? 0.025 : 0.08)
+      const spinRate = reduced ? 0 : (pointer.active ? 0.03 : 0.07)
       idleYaw += spinRate * dt
 
       const targetYaw = idleYaw + pointer.x * yawAmp
       const targetPitch = clamp(-pointer.y * pitchAmp, -pitchAmp, pitchAmp)
-
       turntable.rotation.y = lerp(turntable.rotation.y, targetYaw, 1 - Math.exp(-dt * 5))
-      turntable.rotation.x = lerp(turntable.rotation.x, targetPitch, 1 - Math.exp(-dt * 5))
-      // Never let pitch flip the model
-      turntable.rotation.x = clamp(turntable.rotation.x, -0.22, 0.22)
+      turntable.rotation.x = clamp(lerp(turntable.rotation.x, targetPitch, 1 - Math.exp(-dt * 5)), -0.2, 0.2)
       turntable.rotation.z = 0
 
-      // Gentle float on pivot only — camera stays put (no bob jitter in lookAt)
-      pivot.position.y = reduced ? 0 : Math.sin(t * 0.65) * 0.035
+      pivot.position.y = reduced ? 0.15 : 0.15 + Math.sin(t * 0.6) * 0.03
 
-      ring.rotation.z = reduced ? 0 : t * 0.12
-      copperGlow.intensity = reduced ? 17 : 16 + Math.sin(t * 1.2) * 2.2
-      motes.rotation.y = reduced ? 0 : t * 0.018
+      const gearRate = reduced ? 0 : (pointer.active ? 0.55 : 0.95)
+      gearSpin += gearRate * dt
+      for (const g of gears) {
+        g.mesh.rotation.z = gearSpin * g.speed
+      }
 
-      // Tiny camera parallax, damped — lookAt fixed
+      copperGlow.intensity = reduced ? 14 : 13 + Math.sin(t * 1.15) * 2
+      motes.rotation.y = reduced ? 0 : t * 0.015
+
       if (!reduced) {
-        camera.position.x = lerp(camera.position.x, camBase.x + pointer.x * 0.08, 1 - Math.exp(-dt * 3))
-        camera.position.y = lerp(camera.position.y, camBase.y + pointer.y * -0.04, 1 - Math.exp(-dt * 3))
+        camera.position.x = lerp(camera.position.x, camBase.x + pointer.x * 0.07, 1 - Math.exp(-dt * 3))
+        camera.position.y = lerp(camera.position.y, camBase.y + pointer.y * -0.035, 1 - Math.exp(-dt * 3))
       } else {
         camera.position.set(camBase.x, camBase.y, camBase.z)
       }

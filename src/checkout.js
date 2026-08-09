@@ -1,4 +1,4 @@
-import { SUPABASE_URL, pricing } from './config.js'
+import { SUPABASE_URL, SUPABASE_ANON_KEY, pricing } from './config.js'
 import { getLang } from './i18n.js'
 
 /**
@@ -79,7 +79,11 @@ export function initCheckout() {
     try {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        },
         body: JSON.stringify({
           plan,
           deviceKey,

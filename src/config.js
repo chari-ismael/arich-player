@@ -98,6 +98,10 @@ export const posters = {
 
 export const SUPABASE_URL = 'https://aynucieohuowgkwyftiy.supabase.co'
 
+/** Legacy anon key — required by Edge Functions gateway (create-checkout) */
+export const SUPABASE_ANON_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk'
+
 /** Same Formspree inbox as manage-playlist support form */
 export const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xgolqeyj'
 

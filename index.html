@@ -24,10 +24,10 @@
   <link rel="alternate" hreflang="x-default" href="https://arich.fr/" />
 
   <!-- Favicon / app icons -->
-  <link rel="icon" href="/favicon.ico" sizes="any" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" href="/favicon.ico?v=2" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
   <link rel="manifest" href="/manifest.json" />
 
   <!-- Open Graph (Google / social preview) -->
@@ -144,7 +144,7 @@
         ],
         "downloadUrl": "https://github.com/chari-ismael/arich-player/releases/latest",
         "installUrl": "https://play.google.com/store/apps/details?id=com.arich.iptv",
-        "softwareVersion": "3.0.4",
+        "softwareVersion": "3.0.7",
         "inLanguage": ["fr", "en"],
         "featureList": [
           "Xtream Codes",
@@ -231,11 +231,11 @@
       <div class="nav__inner" id="navPill">
         <div class="nav__liquid" id="navLiquid" aria-hidden="true"></div>
         <a class="nav__brand" href="#top">
-          <img id="navBrandMark" src="/logo-fg.png" alt="ARICH" width="28" height="28" />
+          <img id="navBrandMark" class="nav__mark" src="/logo-fg.png" alt="ARICH" width="32" height="32" />
           <span>ARICH</span>
         </a>
 
-        <nav class="nav__links" id="navLinks" aria-label="Navigation">
+        <nav class="nav__links nav__links--desktop" aria-label="Navigation">
           <a href="#top" data-i18n="nav_home">Accueil</a>
           <a href="#features" data-i18n="nav_features">Fonctionnalités</a>
           <a href="#browse" data-i18n="nav_browse">Parcourir</a>
@@ -251,11 +251,20 @@
           </div>
           <a class="nav__account" href="/auth.html" data-i18n="nav_account">Compte</a>
           <a class="btn btn--copper nav__cta" href="#install" data-i18n="nav_download">Télécharger</a>
-          <button type="button" class="nav__burger" id="navBurger" aria-expanded="false" aria-controls="navLinks" data-i18n-aria="nav_menu" aria-label="Menu">
+          <button type="button" class="nav__burger" id="navBurger" aria-expanded="false" aria-controls="navDrawer" data-i18n-aria="nav_menu" aria-label="Menu">
             <span></span><span></span><span></span>
           </button>
         </div>
       </div>
+      <nav class="nav__drawer" id="navDrawer" aria-label="Menu" hidden>
+        <a href="#top" data-i18n="nav_home">Accueil</a>
+        <a href="#features" data-i18n="nav_features">Fonctionnalités</a>
+        <a href="#browse" data-i18n="nav_browse">Parcourir</a>
+        <a href="#faq" data-i18n="nav_faq">FAQ</a>
+        <a href="#contact" data-i18n="nav_contact">Contact</a>
+        <a href="#pricing" data-i18n="nav_pricing">Tarifs</a>
+        <a class="nav__drawer-cta" href="#install" data-i18n="nav_download">Télécharger</a>
+      </nav>
     </header>
 
     <main id="main">
@@ -643,7 +652,7 @@
               </a>
               <a class="btn btn--ghost" id="dlPlay" href="#" target="_blank" rel="noopener" data-i18n="dl_play">Google Play</a>
             </div>
-            <p class="install__meta" data-i18n="inst_meta">Android 8+ · v3.0.6</p>
+            <p class="install__meta" data-i18n="inst_meta">Android 8+ · v3.0.7</p>
             <div class="install__qr" id="installQr">
               <div class="install__qr-frame">
                 <img id="qrImg" src="" alt="QR code download" width="96" height="96" loading="lazy" />
@@ -881,7 +890,7 @@
     <footer class="footer">
       <div class="footer__grid">
         <div class="footer__brand">
-          <img src="/logo-fg.png" alt="" width="40" height="40" />
+          <img src="/logo-fg.png" alt="" width="44" height="44" />
           <div>
             <strong>ARICH Player</strong>
             <p data-i18n="footer_tag">Streaming premium · Xtream & M3U</p>

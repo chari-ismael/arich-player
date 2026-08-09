@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maintenance — ARICH Player</title>
+  <meta name="description" content="ARICH Player — maintenance en cours. Nous peaufinons l’expérience. L’app reste disponible." />
+  <meta name="robots" content="noindex, follow" />
+  <meta name="theme-color" content="#0B0D10" />
+  <link rel="canonical" href="https://arich.fr/" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <style>
+    :root {
+      --bg: #07090d;
+      --bg2: #0b0d10;
+      --text: #f0efec;
+      --mute: rgba(240,239,236,.58);
+      --faint: rgba(240,239,236,.34);
+      --line: rgba(240,239,236,.12);
+      --copper: #c58a2a;
+      --copper2: #d4a04a;
+      --ink: #0a0c10;
+      --grad: linear-gradient(165deg, #d4a04a, #c58a2a);
+      --ease: cubic-bezier(.22,1,.36,1);
+      --font: 'Figtree', system-ui, sans-serif;
+      --display: 'Syne', system-ui, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--bg);
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    #stage {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 70% 55% at 62% 42%, rgba(110,72,36,.22), transparent 58%),
+        radial-gradient(ellipse 50% 40% at 18% 78%, rgba(40,28,18,.18), transparent 60%),
+        linear-gradient(180deg, #05070b 0%, #0b0d10 48%, #07090d 100%);
+    }
+    #stage canvas { display: block; width: 100% !important; height: 100% !important; }
+    .vignette {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background:
+        radial-gradient(ellipse 75% 70% at 50% 45%, transparent 30%, rgba(0,0,0,.55) 100%),
+        linear-gradient(180deg, rgba(0,0,0,.35) 0%, transparent 18%, transparent 72%, rgba(0,0,0,.55) 100%);
+    }
+    .grain {
+      position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: .045;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 220px; mix-blend-mode: soft-light;
+    }
+    .ui {
+      position: relative; z-index: 5;
+      min-height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      padding: clamp(18px, 3vw, 28px) clamp(18px, 4vw, 40px);
+      pointer-events: none;
+    }
+    .ui a, .ui button { pointer-events: auto; }
+
+    .top {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      animation: rise .9s var(--ease) both;
+    }
+    .brand {
+      display: inline-flex; align-items: center; gap: 12px;
+      text-decoration: none; color: var(--text);
+      font-family: var(--display); font-weight: 700; font-size: 15px;
+      letter-spacing: .02em;
+    }
+    .brand img {
+      width: 34px; height: 34px; border-radius: 9px;
+      box-shadow: 0 6px 22px rgba(197,138,42,.35);
+    }
+    .top-right { display: flex; align-items: center; gap: 10px; }
+    .lang {
+      display: inline-flex; padding: 3px;
+      border: 1px solid var(--line); border-radius: 999px;
+      background: rgba(240,239,236,.03);
+    }
+    .lang button {
+      border: 0; background: transparent; color: var(--faint);
+      font: 600 11px/1 var(--font); letter-spacing: .08em;
+      padding: 8px 11px; border-radius: 999px; cursor: pointer;
+      transition: color .2s, background .2s;
+    }
+    .lang button.is-on {
+      color: var(--ink); background: var(--grad);
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 14px; border-radius: 999px;
+      border: 1px solid rgba(197,138,42,.35);
+      background: rgba(197,138,42,.1);
+      color: var(--copper2); font-size: 11px; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+    }
+    .badge i {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--copper2);
+      box-shadow: 0 0 0 0 rgba(212,160,74,.55);
+      animation: pulse 1.8s ease-out infinite;
+    }
+
+    .center {
+      display: grid;
+      grid-template-columns: minmax(280px, 460px) 1fr;
+      align-items: center;
+      gap: clamp(24px, 5vw, 64px);
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: 24px 0;
+    }
+    .copy { animation: rise 1s .12s var(--ease) both; max-width: 34rem; }
+    .eyebrow {
+      font-size: 11px; font-weight: 700; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--copper); margin-bottom: 16px;
+    }
+    h1 {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: clamp(34px, 6vw, 58px);
+      line-height: 1.05;
+      letter-spacing: -.035em;
+      margin-bottom: 16px;
+    }
+    h1 em {
+      font-style: normal;
+      background: var(--grad);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .lede {
+      color: var(--mute); font-size: clamp(15px, 1.6vw, 17px);
+      line-height: 1.65; margin-bottom: 28px; max-width: 38ch;
+    }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 22px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 13px 20px; border-radius: 999px;
+      font-size: 14px; font-weight: 600; text-decoration: none;
+      transition: transform .25s var(--ease), box-shadow .25s, border-color .2s, background .2s;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      color: var(--ink); background: var(--grad);
+      box-shadow: 0 10px 36px rgba(197,138,42,.32);
+    }
+    .btn-primary:hover { box-shadow: 0 14px 42px rgba(197,138,42,.42); }
+    .btn-ghost {
+      color: var(--text); border: 1px solid var(--line);
+      background: rgba(240,239,236,.03);
+    }
+    .btn-ghost:hover { border-color: rgba(197,138,42,.45); }
+    .meta {
+      display: flex; flex-wrap: wrap; gap: 14px 20px;
+      color: var(--faint); font-size: 12.5px;
+    }
+    .meta span { display: inline-flex; align-items: center; gap: 7px; }
+    .meta b { color: var(--mute); font-weight: 600; }
+
+    .stage-hint {
+      justify-self: end; align-self: end;
+      color: var(--faint); font-size: 11px; letter-spacing: .12em;
+      text-transform: uppercase; margin-bottom: 8%; margin-right: 4%;
+      animation: rise 1.1s .25s var(--ease) both;
+      opacity: .7;
+    }
+
+    .bottom {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 12px; color: var(--faint); font-size: 12.5px;
+      animation: rise 1s .2s var(--ease) both;
+      border-top: 1px solid rgba(240,239,236,.06);
+      padding-top: 16px;
+    }
+    .bottom a { color: var(--mute); text-decoration: none; border-bottom: 1px solid transparent; }
+    .bottom a:hover { color: var(--text); border-bottom-color: rgba(197,138,42,.4); }
+    .clock { font-variant-numeric: tabular-nums; color: var(--mute); }
+
+    .loader {
+      position: fixed; inset: 0; z-index: 20;
+      display: grid; place-items: center;
+      background: #05070b;
+      transition: opacity .7s var(--ease), visibility .7s;
+    }
+    .loader.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loader-mark {
+      width: 56px; height: 56px; border-radius: 14px; overflow: hidden;
+      box-shadow: 0 0 0 1px rgba(197,138,42,.25), 0 20px 60px rgba(197,138,42,.2);
+      animation: breathe 1.6s ease-in-out infinite;
+    }
+    .loader-mark img { width: 100%; height: 100%; object-fit: cover; }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(212,160,74,.5); }
+      70% { box-shadow: 0 0 0 10px rgba(212,160,74,0); }
+      100% { box-shadow: 0 0 0 0 rgba(212,160,74,0); }
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.04); filter: brightness(1.08); }
+    }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .center { grid-template-columns: 1fr; min-height: 58vh; }
+      .stage-hint { display: none; }
+      #stage { position: fixed; }
+      .copy { text-align: left; }
+    }
+    @media (max-width: 560px) {
+      .badge span { display: none; }
+      h1 { font-size: 34px; }
+      .actions { width: 100%; }
+      .btn { flex: 1 1 auto; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader-mark"><img src="/logo-fg.png" alt="" width="56" height="56" /></div>
+  </div>
+
+  <div id="stage" aria-hidden="true"></div>
+  <div class="vignette"></div>
+  <div class="grain"></div>
+
+  <div class="ui">
+    <header class="top">
+      <a class="brand" href="https://arich.fr/">
+        <img src="/logo-fg.png" alt="" width="34" height="34" />
+        ARICH
+      </a>
+      <div class="top-right">
+        <div class="lang" role="group" aria-label="Language">
+          <button type="button" data-lang="fr" class="is-on">FR</button>
+          <button type="button" data-lang="en">EN</button>
+        </div>
+        <div class="badge"><i></i><span data-i18n="badge">Maintenance</span></div>
+      </div>
+    </header>
+
+    <main class="center">
+      <div class="copy">
+        <p class="eyebrow" data-i18n="eyebrow">En coulisses</p>
+        <h1 data-i18n-html="title">Nous peaufinons<br /><em>l’expérience.</em></h1>
+        <p class="lede" data-i18n="lede">Le site se refait une beauté. L’application ARICH Player reste disponible pendant la maintenance.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=com.arich.iptv" data-i18n="cta_play">Ouvrir Google Play</a>
+          <a class="btn btn-ghost" href="https://github.com/chari-ismael/arich-player/releases/latest" data-i18n="cta_apk">Télécharger l’APK</a>
+        </div>
+        <div class="meta">
+          <span><b data-i18n="meta_status_label">Statut</b> · <span data-i18n="meta_status">Mise à jour en cours</span></span>
+          <span><b data-i18n="meta_app_label">App</b> · <span data-i18n="meta_app">Toujours en ligne</span></span>
+        </div>
+      </div>
+      <p class="stage-hint" data-i18n="hint">Antique Camera · CC0 · Khronos</p>
+    </main>
+
+    <footer class="bottom">
+      <p><span data-i18n="footer">Questions</span> — <a href="mailto:contact@arich.fr">contact@arich.fr</a></p>
+      <p class="clock" id="clock" aria-live="polite"></p>
+    </footer>
+  </div>
+
+  <script type="module">
+    const i18n = {
+      fr: {
+        badge: 'Maintenance',
+        eyebrow: 'En coulisses',
+        title: 'Nous peaufinons<br /><em>l’expérience.</em>',
+        lede: 'Le site se refait une beauté. L’application ARICH Player reste disponible pendant la maintenance.',
+        cta_play: 'Ouvrir Google Play',
+        cta_apk: 'Télécharger l’APK',
+        meta_status_label: 'Statut',
+        meta_status: 'Mise à jour en cours',
+        meta_app_label: 'App',
+        meta_app: 'Toujours en ligne',
+        hint: 'Antique Camera · CC0 · Khronos',
+        footer: 'Questions',
+      },
+      en: {
+        badge: 'Maintenance',
+        eyebrow: 'Behind the curtain',
+        title: 'We’re polishing<br /><em>the experience.</em>',
+        lede: 'The website is getting a refresh. The ARICH Player app stays available during maintenance.',
+        cta_play: 'Open Google Play',
+        cta_apk: 'Download APK',
+        meta_status_label: 'Status',
+        meta_status: 'Update in progress',
+        meta_app_label: 'App',
+        meta_app: 'Still online',
+        hint: 'Antique Camera · CC0 · Khronos',
+        footer: 'Questions',
+      },
+    }
+
+    let lang = (navigator.language || 'fr').toLowerCase().startsWith('en') ? 'en' : 'fr'
+    const applyLang = () => {
+      const dict = i18n[lang]
+      document.documentElement.lang = lang
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        el.textContent = dict[el.dataset.i18n] || el.textContent
+      })
+      document.querySelectorAll('[data-i18n-html]').forEach((el) => {
+        el.innerHTML = dict[el.dataset.i18nHtml] || el.innerHTML
+      })
+      document.querySelectorAll('.lang button').forEach((btn) => {
+        btn.classList.toggle('is-on', btn.dataset.lang === lang)
+      })
+    }
+    document.querySelectorAll('.lang button').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        lang = btn.dataset.lang
+        applyLang()
+      })
+    })
+    applyLang()
+
+    const clock = document.getElementById('clock')
+    const tick = () => {
+      const now = new Date()
+      clock.textContent = now.toLocaleString(lang === 'fr' ? 'fr-FR' : 'en-GB', {
+        weekday: 'short', day: '2-digit', month: 'short',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+      })
+    }
+    tick()
+    setInterval(tick, 1000)
+
+    import * as THREE from 'three'
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
+
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+    const root = document.getElementById('stage')
+    const loaderEl = document.getElementById('loader')
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' })
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2))
+    renderer.setSize(innerWidth, innerHeight)
+    renderer.outputColorSpace = THREE.SRGBColorSpace
+    renderer.toneMapping = THREE.ACESFilmicToneMapping
+    renderer.toneMappingExposure = 1.12
+    root.appendChild(renderer.domElement)
+
+    const scene = new THREE.Scene()
+    scene.fog = new THREE.FogExp2(0x07090d, 0.045)
+
+    const camera = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.1, 100)
+    camera.position.set(0.35, 1.15, 4.2)
+
+    const pmrem = new THREE.PMREMGenerator(renderer)
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
+
+    const key = new THREE.DirectionalLight(0xffd19a, 2.1)
+    key.position.set(3.2, 5.5, 2.4)
+    scene.add(key)
+    const rim = new THREE.DirectionalLight(0xc58a2a, 1.4)
+    rim.position.set(-3.5, 2.2, -2.5)
+    scene.add(rim)
+    scene.add(new THREE.AmbientLight(0x2a241c, 0.55))
+    const copperGlow = new THREE.PointLight(0xc58a2a, 18, 12, 2)
+    copperGlow.position.set(0.2, 1.6, 1.4)
+    scene.add(copperGlow)
+
+    // Soft ground disc
+    const ground = new THREE.Mesh(
+      new THREE.CircleGeometry(2.4, 64),
+      new THREE.MeshStandardMaterial({
+        color: 0x0c0e12, metalness: 0.7, roughness: 0.45,
+        transparent: true, opacity: 0.85,
+      })
+    )
+    ground.rotation.x = -Math.PI / 2
+    ground.position.y = 0
+    scene.add(ground)
+
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(1.55, 0.008, 16, 128),
+      new THREE.MeshBasicMaterial({ color: 0xc58a2a, transparent: true, opacity: 0.35 })
+    )
+    ring.rotation.x = Math.PI / 2
+    ring.position.y = 0.02
+    scene.add(ring)
+
+    // Dust motes
+    const moteCount = reduced ? 80 : 280
+    const moteGeo = new THREE.BufferGeometry()
+    const motePos = new Float32Array(moteCount * 3)
+    for (let i = 0; i < moteCount; i++) {
+      motePos[i * 3] = (Math.random() - 0.5) * 10
+      motePos[i * 3 + 1] = Math.random() * 5
+      motePos[i * 3 + 2] = (Math.random() - 0.5) * 10
+    }
+    moteGeo.setAttribute('position', new THREE.BufferAttribute(motePos, 3))
+    const motes = new THREE.Points(
+      moteGeo,
+      new THREE.PointsMaterial({ color: 0xd4a04a, size: 0.015, transparent: true, opacity: 0.45, depthAttenuation: true })
+    )
+    scene.add(motes)
+
+    const pivot = new THREE.Group()
+    pivot.position.set(0.55, 0, 0)
+    scene.add(pivot)
+
+    function makeFallback() {
+      const g = new THREE.Group()
+      const body = new THREE.Mesh(
+        new THREE.BoxGeometry(1.1, 0.72, 0.55),
+        new THREE.MeshStandardMaterial({ color: 0x1a1612, metalness: 0.85, roughness: 0.35 })
+      )
+      const lens = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.22, 0.26, 0.45, 32),
+        new THREE.MeshStandardMaterial({ color: 0xc58a2a, metalness: 0.9, roughness: 0.25, emissive: 0x3a2208, emissiveIntensity: 0.35 })
+      )
+      lens.rotation.z = Math.PI / 2
+      lens.position.set(0.55, 0.05, 0)
+      const screen = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.72, 0.42),
+        new THREE.MeshStandardMaterial({ color: 0xd4a04a, emissive: 0xc58a2a, emissiveIntensity: 0.55, metalness: 0.2, roughness: 0.4 })
+      )
+      screen.position.set(-0.56, 0.05, 0)
+      screen.rotation.y = Math.PI / 2
+      g.add(body, lens, screen)
+      g.position.y = 0.85
+      return g
+    }
+
+    let model = null
+    const MODEL_URL = 'https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Assets@main/Models/AntiqueCamera/glTF-Binary/AntiqueCamera.glb'
+
+    const gltfLoader = new GLTFLoader()
+    const loadModel = () => new Promise((resolve) => {
+      const timeout = setTimeout(() => resolve(null), 12000)
+      gltfLoader.load(
+        MODEL_URL,
+        (gltf) => { clearTimeout(timeout); resolve(gltf.scene) },
+        undefined,
+        () => { clearTimeout(timeout); resolve(null) }
+      )
+    })
+
+    const pointer = { x: 0, y: 0, tx: 0, ty: 0 }
+    addEventListener('pointermove', (e) => {
+      pointer.tx = (e.clientX / innerWidth) * 2 - 1
+      pointer.ty = (e.clientY / innerHeight) * 2 - 1
+    })
+
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight
+      camera.updateProjectionMatrix()
+      renderer.setSize(innerWidth, innerHeight)
+    })
+
+    ;(async () => {
+      const loaded = await loadModel()
+      if (loaded) {
+        model = loaded
+        model.traverse((o) => {
+          if (o.isMesh) {
+            o.castShadow = false
+            o.receiveShadow = false
+            if (o.material) {
+              o.material.envMapIntensity = 1.15
+              o.material.needsUpdate = true
+            }
+          }
+        })
+        const box = new THREE.Box3().setFromObject(model)
+        const size = box.getSize(new THREE.Vector3())
+        const scale = 1.55 / Math.max(size.x, size.y, size.z)
+        model.scale.setScalar(scale)
+        box.setFromObject(model)
+        const center = box.getCenter(new THREE.Vector3())
+        model.position.sub(center)
+        model.position.y += 0.15
+      } else {
+        model = makeFallback()
+      }
+      pivot.add(model)
+      loaderEl.classList.add('is-done')
+    })()
+
+    const clock3 = new THREE.Clock()
+    function frame() {
+      const t = clock3.getElapsedTime()
+      pointer.x += (pointer.tx - pointer.x) * 0.04
+      pointer.y += (pointer.ty - pointer.y) * 0.04
+
+      if (pivot) {
+        const bob = reduced ? 0 : Math.sin(t * 0.7) * 0.04
+        pivot.position.y = bob
+        pivot.rotation.y = t * (reduced ? 0.05 : 0.12) + pointer.x * 0.25
+        pivot.rotation.x = pointer.y * -0.12
+      }
+      ring.rotation.z = t * 0.15
+      copperGlow.intensity = 16 + Math.sin(t * 1.4) * 3
+      motes.rotation.y = t * 0.02
+
+      camera.position.x = 0.35 + pointer.x * 0.18
+      camera.position.y = 1.15 + pointer.y * -0.08
+      camera.lookAt(0.4, 0.85, 0)
+
+      renderer.render(scene, camera)
+      requestAnimationFrame(frame)
+    }
+    frame()
+  </script>
+</body>
+</html>

@@ -257,6 +257,9 @@ textarea{resize:vertical;min-height:80px}
 .notif-preview{background:rgba(197,138,42,.07);border:1px solid rgba(197,138,42,.15);border-radius:var(--r12);padding:14px;margin-top:14px}
 .notif-preview-title{font-weight:600;font-size:13.5px;margin-bottom:4px}
 .notif-preview-body{font-size:12px;color:var(--sub);line-height:1.55}
+.notif-templates{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px}
+.notif-tpl{border:1px solid var(--border2);background:var(--glass2);color:var(--text);border-radius:999px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:border-color .2s,background .2s}
+.notif-tpl:hover,.notif-tpl.active{border-color:rgba(197,138,42,.55);background:rgba(197,138,42,.12);color:var(--amber,#C58A2A)}
 .maintenance-bar{background:rgba(255,45,85,.07);border:1px solid rgba(255,45,85,.25);border-radius:var(--r16);padding:18px;display:flex;align-items:center;gap:14px;margin-bottom:22px;animation:msgIn .3s var(--ez)}
 .sec-label{font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:18px 0 10px;padding-left:2px}
 .country-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
@@ -683,34 +686,56 @@ textarea{resize:vertical;min-height:80px}
 
 <!-- ══════ NOTIFICATIONS ══════ -->
 <section class="sec" id="sec-notifs">
-  <div class="ph"><div class="ph-left"><h1>Notifications 🔔</h1><p>Push réel via Edge Function + FCM.</p></div></div>
+  <div class="ph"><div class="ph-left"><h1>Notifications</h1><p>Push FCM vers tous les utilisateurs ayant autorisé les notifications (toutes versions).</p></div></div>
   <div class="grid2">
     <div class="card">
       <div class="card-title">Composer une notification</div>
       <div style="display:flex;flex-direction:column;gap:13px;">
-        <div class="field"><label>Titre *</label><input type="text" id="notif-title" placeholder="Nouvelle mise à jour !" oninput="previewNotif()"></div>
-        <div class="field"><label>Message *</label><textarea id="notif-body" rows="3" placeholder="ARICH IPTV v2.0 est disponible…" oninput="previewNotif()"></textarea></div>
+        <div class="field">
+          <label>Template</label>
+          <div class="notif-templates" id="notif-templates">
+            <button type="button" class="notif-tpl" data-tpl="update" onclick="applyNotifTemplate('update')">Mise a jour</button>
+            <button type="button" class="notif-tpl" data-tpl="promo" onclick="applyNotifTemplate('promo')">Promotion</button>
+            <button type="button" class="notif-tpl" data-tpl="info" onclick="applyNotifTemplate('info')">Info</button>
+            <button type="button" class="notif-tpl active" data-tpl="custom" onclick="applyNotifTemplate('custom')">Personnalise</button>
+          </div>
+        </div>
+        <div class="field"><label>Titre *</label><input type="text" id="notif-title" placeholder="Nouvelle mise a jour !" oninput="previewNotif()"></div>
+        <div class="field"><label>Message *</label><textarea id="notif-body" rows="3" placeholder="ARICH v3.0.10 est disponible…" oninput="previewNotif()"></textarea></div>
         <div class="field"><label>Image URL (optionnel)</label><input type="url" id="notif-image" placeholder="https://…"></div>
-        <div class="field"><label>Cible</label>
-          <select id="notif-target">
-            <option value="all">Tous les devices</option>
-            <option value="active">Non bannis seulement</option>
-            <option value="trial">En période trial</option>
-            <option value="paid">Licences actives (payées)</option>
+        <div class="field"><label>Action au clic</label>
+          <select id="notif-action" onchange="onNotifActionChange()">
+            <option value="home">Ouvrir l'accueil</option>
+            <option value="update">Ouvrir Play Store / mise a jour</option>
+            <option value="discover">Ouvrir Decouvrir</option>
+            <option value="settings">Ouvrir Reglages</option>
+            <option value="url">URL personnalisee</option>
           </select>
         </div>
+        <div class="field" id="notif-url-wrap" style="display:none;">
+          <label>URL au clic</label>
+          <input type="url" id="notif-url" placeholder="https://arich.fr">
+        </div>
+        <div class="field"><label>Cible</label>
+          <select id="notif-target">
+            <option value="all">Tous (tokens actifs)</option>
+            <option value="trial">Trial</option>
+            <option value="paid">Licences payees</option>
+          </select>
+        </div>
+        <input type="hidden" id="notif-type" value="custom">
         <div id="notif-msg" class="msg"></div>
         <button class="btn btn-primary" style="width:fit-content;" id="btn-send-notif" onclick="sendNotification()">
-          <span class="spin"></span><span class="blbl">🚀 Envoyer via FCM</span>
+          <span class="spin"></span><span class="blbl">Envoyer via FCM</span>
         </button>
       </div>
       <div class="notif-preview" style="margin-top:18px;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
           <div style="width:30px;height:30px;border-radius:8px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0;">A</div>
-          <div style="font-size:10.5px;color:var(--muted);">ARICH IPTV · Maintenant</div>
+          <div style="font-size:10.5px;color:var(--muted);">ARICH · Maintenant</div>
         </div>
         <div class="notif-preview-title" id="notif-prev-title">Titre de la notification</div>
-        <div class="notif-preview-body" id="notif-prev-body">Le message apparaîtra ici…</div>
+        <div class="notif-preview-body" id="notif-prev-body">Le message apparaitra ici…</div>
       </div>
     </div>
     <div class="card">
@@ -1915,6 +1940,64 @@ async function deletePromo(id) {
 /* ════════════════════════════════════════
    NOTIFICATIONS (Edge Function réelle)
 ════════════════════════════════════════ */
+const NOTIF_TEMPLATES = {
+  update: {
+    type: 'update',
+    action: 'update',
+    title: 'Nouvelle mise a jour ARICH',
+    body: 'Une nouvelle version est disponible. Ouvre la notification pour mettre a jour.',
+  },
+  promo: {
+    type: 'promo',
+    action: 'home',
+    title: 'Offre ARICH',
+    body: 'Profite de notre promo en cours — ouvre l\'app pour en savoir plus.',
+  },
+  info: {
+    type: 'info',
+    action: 'home',
+    title: 'Info ARICH',
+    body: 'Une information importante t\'attend dans l\'application.',
+  },
+  custom: {
+    type: 'custom',
+    action: 'home',
+    title: '',
+    body: '',
+  },
+};
+
+function applyNotifTemplate(key) {
+  const tpl = NOTIF_TEMPLATES[key] || NOTIF_TEMPLATES.custom;
+  document.getElementById('notif-type').value = tpl.type;
+  document.getElementById('notif-title').value = tpl.title;
+  document.getElementById('notif-body').value = tpl.body;
+  document.getElementById('notif-action').value = tpl.action;
+  document.querySelectorAll('.notif-tpl').forEach((b) => {
+    b.classList.toggle('active', b.dataset.tpl === key);
+  });
+  onNotifActionChange();
+  previewNotif();
+}
+
+function onNotifActionChange() {
+  const action = document.getElementById('notif-action').value;
+  document.getElementById('notif-url-wrap').style.display =
+    action === 'url' ? 'block' : 'none';
+}
+
+function resolveNotifDeepLink() {
+  const action = document.getElementById('notif-action').value;
+  if (action === 'update') return 'arich://update';
+  if (action === 'discover') return 'arich://discover';
+  if (action === 'settings') return 'arich://settings';
+  if (action === 'url') {
+    const url = document.getElementById('notif-url').value.trim();
+    return url || 'arich://home';
+  }
+  return 'arich://home';
+}
+
 function previewNotif() {
   setText('notif-prev-title', document.getElementById('notif-title').value||'Titre de la notification');
   setText('notif-prev-body',  document.getElementById('notif-body').value||'Le message apparaîtra ici…');
@@ -1925,10 +2008,14 @@ async function sendNotification() {
   const body     = document.getElementById('notif-body').value.trim();
   const target   = document.getElementById('notif-target').value;
   const imageUrl = document.getElementById('notif-image')?.value?.trim() || undefined;
+  const type     = document.getElementById('notif-type').value || 'custom';
+  const deepLink = resolveNotifDeepLink();
   if (!title||!body) { showMsg('notif-msg','Titre et message obligatoires','msg-error'); return; }
+  if (document.getElementById('notif-action').value === 'url' && !/^https?:\/\//i.test(deepLink)) {
+    showMsg('notif-msg','URL invalide (https://…)','msg-error'); return;
+  }
   setLoading('btn-send-notif', true);
   try {
-    // Appeler la nouvelle Edge Function V1
     const session = await sb.auth.getSession();
     const accessToken = session.data.session?.access_token;
     
@@ -1944,6 +2031,8 @@ async function sendNotification() {
         title,
         body,
         imageUrl,
+        type,
+        deepLink,
         targetSegment: target,
         priority: 'high'
       })
@@ -1952,12 +2041,12 @@ async function sendNotification() {
     const result = await res.json();
     if (!res.ok) throw new Error(result.error || 'Erreur Edge Function');
 
-    await logAction('send_notification','—',{title,target,sent:result.sent,failed:result.failed});
-    showMsg('notif-msg',`✅ Envoyée à ${result.sent||0} devices (${result.failed||0} échecs)`, 'msg-success');
+    await logAction('send_notification','—',{title,target,type,deepLink,sent:result.sent,failed:result.failed});
+    showMsg('notif-msg',`Envoyee a ${result.sent||0} devices (${result.failed||0} echecs)`, 'msg-success');
     document.getElementById('notif-title').value='';
     document.getElementById('notif-body').value='';
     previewNotif();
-    toast('🔔 Notification envoyée via FCM V1');
+    toast('Notification envoyee via FCM');
     loadNotifsHistory();
   } catch(e) {
     showMsg('notif-msg','❌ '+e.message,'msg-error');

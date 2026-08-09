@@ -1,6 +1,7 @@
 import './styles.css'
 import Lenis from 'lenis'
-import { initI18n, getLang, applyI18n, t } from './i18n.js'
+import { initI18n, getLang, applyI18n, t, formatMoney } from './i18n.js'
+import { initTheme } from './theme.js'
 import { initParticles } from './particles.js'
 import { pricing, downloadLinks, videos, posters } from './config.js'
 import { initCheckout } from './checkout.js'
@@ -84,6 +85,22 @@ if (navPill && navLiquid && !window.matchMedia('(prefers-reduced-motion: reduce)
 }
 
 const sectionIds = ['top', 'features', 'browse', 'faq', 'contact', 'pricing']
+const navLinksPill = document.getElementById('navLinksPill')
+
+function syncNavPill() {
+  if (!navLinks || !navLinksPill) return
+  const active = navLinks.querySelector('a.is-active') || navLinks.querySelector('a')
+  if (!active) {
+    navLinksPill.style.opacity = '0'
+    return
+  }
+  const parent = navLinks.getBoundingClientRect()
+  const box = active.getBoundingClientRect()
+  navLinksPill.style.width = `${box.width}px`
+  navLinksPill.style.left = `${box.left - parent.left}px`
+  navLinksPill.style.opacity = '1'
+}
+
 function updateNav() {
   const y = window.scrollY
   nav?.classList.toggle('is-scrolled', y > 40)
@@ -98,6 +115,7 @@ function updateNav() {
     const href = a.getAttribute('href') || ''
     a.classList.toggle('is-active', href === `#${current}`)
   })
+  syncNavPill()
 }
 
 /* ── Hero tilt (after entrance settles) ─────────────── */
@@ -653,8 +671,19 @@ function applyConfigUI() {
   if (yearPer) yearPer.textContent = pricing.yearly.period[lang]
   if (lifePer) lifePer.textContent = pricing.lifetime.period[lang]
   curs.forEach((el) => {
-    el.textContent = pricing.currency
+    // Locale-aware currency symbol (fr-FR → "€", en-GB → "€")
+    const sample = formatMoney(0).replace(/[\d\s.,]/g, '').trim()
+    el.textContent = sample || pricing.currency
   })
+  // Optional full-price aria labels for screen readers
+  document.getElementById('priceYearCard')?.setAttribute(
+    'aria-label',
+    formatMoney(pricing.yearly.price) + ' / ' + pricing.yearly.period[lang],
+  )
+  document.getElementById('priceLifeCard')?.setAttribute(
+    'aria-label',
+    formatMoney(pricing.lifetime.price) + ' / ' + pricing.lifetime.period[lang],
+  )
 }
 
 /* ── Scroll top ────────────────────────────────────── */
@@ -754,6 +783,7 @@ window.addEventListener('resize', () => {
 
 /* ── Init ──────────────────────────────────────────── */
 initI18n()
+initTheme()
 applyConfigUI()
 preloadHeroVideos()
 initHeroEnter({ reduced })

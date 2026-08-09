@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ARICH IPTV â€” Authentification</title>
-<meta name="description" content="Connexion et compte ARICH Player â€” gÃ©rez votre licence et vos playlists." />
+<title>ARICH IPTV — Authentification</title>
+<meta name="description" content="Connexion et compte ARICH Player — gérez votre licence et vos playlists." />
 <meta name="robots" content="noindex, follow" />
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -28,6 +28,31 @@
   --ez: cubic-bezier(0.25,0.46,0.45,0.94); --ez-spring: cubic-bezier(0.34,1.56,0.64,1);
 }
 html { height: 100%; }
+
+html[data-theme='light'] {
+  --bg: #F3F0E8; --glass: rgba(20,18,14,0.04); --glass-border: rgba(20,18,14,0.12);
+  --glass-hover: rgba(20,18,14,0.07); --accent: #A87220; --accent2: #C58A2A;
+  --gradient: linear-gradient(135deg, #C58A2A 0%, #D4A04A 100%);
+  --text: #14120e; --text-sub: rgba(20,18,14,0.58); --text-muted: rgba(20,18,14,0.36);
+  --input-bg: rgba(20,18,14,0.04); --input-border: rgba(20,18,14,0.12);
+}
+html[data-theme='light'] body { background: var(--bg); }
+html[data-theme='light'] .auth-nav-pill {
+  background: rgba(255,252,246,0.72);
+  border-color: rgba(20,18,14,0.12);
+  box-shadow: 0 10px 36px rgba(40,28,12,0.1), inset 0 1px 0 rgba(255,255,255,0.8);
+}
+html[data-theme='light'] .card {
+  background: rgba(255,252,246,0.78);
+  border-color: rgba(20,18,14,0.12);
+}
+.theme-btn {
+  border: 1px solid var(--glass-border); background: transparent; color: var(--text-sub);
+  width: 36px; height: 36px; border-radius: 999px; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.theme-btn:hover { color: var(--text); border-color: rgba(197,138,42,0.45); }
+
 body { min-height:100%; background:var(--bg); color:var(--text); font-family:'Figtree',sans-serif; overflow-x:hidden; -webkit-font-smoothing:antialiased; line-height:1.5; }
 .scene { position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
 #spark { position:fixed; inset:0; z-index:1; pointer-events:none; }
@@ -189,14 +214,15 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
       <img src="/logo-fg.png" alt="" width="28" height="28" />
       <span>ARICH</span>
     </a>
-    <a class="auth-nav-home" href="/">Accueil</a>
+    <button type="button" class="theme-btn" id="themeToggleAuth" aria-label="Theme" title="Theme">◐</button>
+  <a class="auth-nav-home" href="/">Accueil</a>
   </div>
 </header>
 
-<!-- â•â•â•â•â•â• OVERLAY affichÃ© aprÃ¨s connexion Google rÃ©ussie â•â•â•â•â•â• -->
+<!-- â•â•â•â•â•â• OVERLAY affiché après connexion Google réussie â•â•â•â•â•â• -->
 <div class="redirect-overlay" id="redirect-overlay">
   <div class="redirect-icon">âœ“</div>
-  <div class="redirect-title">Connexion rÃ©ussie !</div>
+  <div class="redirect-title">Connexion réussie !</div>
   <div class="redirect-sub" id="redirect-sub">Retour vers l'application ARICH IPTVâ€¦</div>
   <div class="redirect-loader"><div class="redirect-loader-bar"></div></div>
   <button class="btn btn-primary btn-open-app" id="btn-open-app" onclick="openApp()">
@@ -216,7 +242,7 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
     <div class="view active" id="view-login">
       <div class="view-head">
         <h1>Bon retour ðŸ‘‹</h1>
-        <p class="sub">Connectez-vous pour accÃ©der Ã  vos playlists.</p>
+        <p class="sub">Connectez-vous pour accéder Ã  vos playlists.</p>
       </div>
       <div class="msg-slot"><div class="msg" id="login-msg"></div></div>
       <button class="btn btn-ghost" id="btn-google" onclick="loginGoogle()">
@@ -241,7 +267,7 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
         </div>
       </div>
       <div class="forgot">
-        <button class="lnk" onclick="goView('login','forgot')">Mot de passe oubliÃ© ?</button>
+        <button class="lnk" onclick="goView('login','forgot')">Mot de passe oublié ?</button>
       </div>
       <button class="btn btn-primary" id="btn-login" onclick="doLogin()">
         <div class="spin"></div>
@@ -249,15 +275,15 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
       </button>
       <div class="form-footer">
         <span>Pas encore de compte ?</span>
-        <button class="lnk" onclick="goView('login','signup')">CrÃ©er un compte</button>
+        <button class="lnk" onclick="goView('login','signup')">Créer un compte</button>
       </div>
     </div>
 
     <!-- â•â•â•â•â•â• SIGNUP â•â•â•â•â•â• -->
     <div class="view" id="view-signup">
       <div class="view-head">
-        <h1>CrÃ©er un compte âœ¨</h1>
-        <p class="sub">Rejoignez ARICH IPTV et gÃ©rez vos playlists.</p>
+        <h1>Créer un compte âœ¨</h1>
+        <p class="sub">Rejoignez ARICH IPTV et gérez vos playlists.</p>
       </div>
       <div class="msg-slot"><div class="msg" id="signup-msg"></div></div>
       <button class="btn btn-ghost" onclick="loginGoogle()">
@@ -275,7 +301,7 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
       <div class="field">
         <label>Mot de passe</label>
         <div class="input-wrap">
-          <input type="password" id="signup-pw" placeholder="8 caractÃ¨res minimum" class="has-icon" autocomplete="new-password" oninput="checkStrength(this.value)">
+          <input type="password" id="signup-pw" placeholder="8 caractères minimum" class="has-icon" autocomplete="new-password" oninput="checkStrength(this.value)">
           <button class="eye" type="button" onclick="togglePw('signup-pw',this)">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
@@ -296,10 +322,10 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
       </div>
       <button class="btn btn-primary" id="btn-signup" onclick="doSignup()">
         <div class="spin"></div>
-        <span class="blbl">CrÃ©er mon compte</span>
+        <span class="blbl">Créer mon compte</span>
       </button>
       <div class="form-footer">
-        <span>DÃ©jÃ  un compte ?</span>
+        <span>DéjÃ  un compte ?</span>
         <button class="lnk" onclick="goView('signup','login','back')">Se connecter</button>
       </div>
     </div>
@@ -307,8 +333,8 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
     <!-- â•â•â•â•â•â• FORGOT â•â•â•â•â•â• -->
     <div class="view" id="view-forgot">
       <div class="view-head">
-        <h1>Mot de passe oubliÃ© ðŸ”‘</h1>
-        <p class="sub">Entrez votre e-mail, nous vous enverrons un lien de rÃ©initialisation.</p>
+        <h1>Mot de passe oublié ðŸ”‘</h1>
+        <p class="sub">Entrez votre e-mail, nous vous enverrons un lien de réinitialisation.</p>
       </div>
       <div class="msg-slot"><div class="msg" id="forgot-msg"></div></div>
       <div class="field">
@@ -328,13 +354,13 @@ input.err:focus { box-shadow:0 0 0 3.5px rgba(255,107,138,0.13); }
     <div class="view" id="view-reset">
       <div class="view-head">
         <h1>Nouveau mot de passe ðŸ›¡ï¸</h1>
-        <p class="sub">Choisissez un nouveau mot de passe sÃ©curisÃ©.</p>
+        <p class="sub">Choisissez un nouveau mot de passe sécurisé.</p>
       </div>
       <div class="msg-slot"><div class="msg" id="reset-msg"></div></div>
       <div class="field">
         <label>Nouveau mot de passe</label>
         <div class="input-wrap">
-          <input type="password" id="reset-pw" placeholder="8 caractÃ¨res minimum" class="has-icon" oninput="checkStrength(this.value,'reset')">
+          <input type="password" id="reset-pw" placeholder="8 caractères minimum" class="has-icon" oninput="checkStrength(this.value,'reset')">
           <button class="eye" type="button" onclick="togglePw('reset-pw',this)">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
@@ -403,8 +429,8 @@ function shouldOpenApp() {
 
 /**
  * Construit le deep link avec access_token + refresh_token.
- * AprÃ¨s PKCE, le hash URL est souvent vidÃ© alors que la session est dÃ©jÃ 
- * dans le client JS â€” on lit donc getSession() en secours.
+ * Après PKCE, le hash URL est souvent vidé alors que la session est déjÃ 
+ * dans le client JS — on lit donc getSession() en secours.
  */
 async function buildAppDeepLink() {
   const hash = window.location.hash || '';
@@ -492,7 +518,7 @@ async function checkSession() {
                    (search && search.includes('code='));
 
   if (hasToken) {
-    // Laisser le SDK parser le hash/query et Ã©tablir la session
+    // Laisser le SDK parser le hash/query et établir la session
     await new Promise(r => setTimeout(r, 500));
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
@@ -580,12 +606,12 @@ function translateError(msg) {
   const m = msg.toLowerCase();
   if (m.includes('invalid login credentials')||m.includes('invalid credentials')) return 'Email ou mot de passe incorrect.';
   if (m.includes('email not confirmed')) return 'Veuillez confirmer votre adresse email avant de vous connecter.';
-  if (m.includes('user already registered')||m.includes('already registered')) return 'Un compte existe dÃ©jÃ  avec cet email.';
-  if (m.includes('password should be at least')) return 'Le mot de passe doit contenir au moins 8 caractÃ¨res.';
+  if (m.includes('user already registered')||m.includes('already registered')) return 'Un compte existe déjÃ  avec cet email.';
+  if (m.includes('password should be at least')) return 'Le mot de passe doit contenir au moins 8 caractères.';
   if (m.includes('invalid email')) return 'Adresse email invalide.';
   if (m.includes('rate limit')||m.includes('too many')) return 'Trop de tentatives. Veuillez patienter quelques minutes.';
-  if (m.includes('network')||m.includes('fetch')) return 'Erreur rÃ©seau. VÃ©rifiez votre connexion internet.';
-  if (m.includes('token')&&m.includes('expired')) return 'Lien expirÃ©. Veuillez en demander un nouveau.';
+  if (m.includes('network')||m.includes('fetch')) return 'Erreur réseau. Vérifiez votre connexion internet.';
+  if (m.includes('token')&&m.includes('expired')) return 'Lien expiré. Veuillez en demander un nouveau.';
   return msg;
 }
 
@@ -626,13 +652,13 @@ async function doSignup() {
   const pw2=document.getElementById('signup-pw2').value;
   if (!email||!pw||!pw2) { showMsg('signup','Veuillez remplir tous les champs.'); return; }
   if (pw!==pw2) { showMsg('signup','Les mots de passe ne correspondent pas.'); return; }
-  if (pw.length<8) { showMsg('signup','Le mot de passe doit contenir au moins 8 caractÃ¨res.'); return; }
+  if (pw.length<8) { showMsg('signup','Le mot de passe doit contenir au moins 8 caractères.'); return; }
   setLoading('btn-signup', true);
   const { data, error } = await sb.auth.signUp({ email, password: pw, options: { emailRedirectTo: THIS_PAGE_URL } });
   setLoading('btn-signup', false);
   if (error) { showMsg('signup', translateError(error.message)); return; }
   if (data.user&&!data.session) {
-    showMsg('signup','ðŸ“¬ Un email de confirmation a Ã©tÃ© envoyÃ©. VÃ©rifiez votre boÃ®te mail !','success');
+    showMsg('signup','ðŸ“¬ Un email de confirmation a été envoyé. Vérifiez votre boîte mail !','success');
     return;
   }
   if (data.session) redirectAfterAuth();
@@ -646,7 +672,7 @@ async function doForgot() {
   const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: THIS_PAGE_URL });
   setLoading('btn-forgot', false);
   if (error) { showMsg('forgot', translateError(error.message)); return; }
-  showMsg('forgot','âœ… Email envoyÃ© ! Consultez votre boÃ®te mail.','success');
+  showMsg('forgot','âœ… Email envoyé ! Consultez votre boîte mail.','success');
 }
 
 async function doReset() {
@@ -655,7 +681,7 @@ async function doReset() {
   const pw2=document.getElementById('reset-pw2').value;
   if (!pw||!pw2) { showMsg('reset','Veuillez remplir tous les champs.'); return; }
   if (pw!==pw2)  { showMsg('reset','Les mots de passe ne correspondent pas.'); return; }
-  if (pw.length<8) { showMsg('reset','Le mot de passe doit contenir au moins 8 caractÃ¨res.'); return; }
+  if (pw.length<8) { showMsg('reset','Le mot de passe doit contenir au moins 8 caractères.'); return; }
   setLoading('btn-reset', true);
   const { error } = await sb.auth.updateUser({ password: pw });
   setLoading('btn-reset', false);
@@ -676,7 +702,7 @@ document.addEventListener('keydown', e => {
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• INIT â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 checkSession();
 
-/* Courant Ã©lectrique entre points â€” le curseur est le connecteur */
+/* Courant électrique entre points — le curseur est le connecteur */
 (function sparkField() {
   const canvas = document.getElementById('spark');
   if (!canvas || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -716,7 +742,7 @@ checkSession();
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(n.x, n.y);
-        // zigzag lÃ©ger vers le curseur
+        // zigzag léger vers le curseur
         const mx = (n.x + mouse.x) / 2 + (Math.random() - 0.5) * 12;
         const my = (n.y + mouse.y) / 2 + (Math.random() - 0.5) * 12;
         ctx.quadraticCurveTo(mx, my, mouse.x, mouse.y);
@@ -731,7 +757,7 @@ checkSession();
   addEventListener('pointerleave', () => { mouse.x = -1; mouse.y = -1; });
 })();
 
-/* Liquide glass rÃ©actif sur nav + carte */
+/* Liquide glass réactif sur nav + carte */
 (function liquidGlass() {
   function bind(el) {
     if (!el) return;
@@ -745,5 +771,28 @@ checkSession();
   bind(document.querySelector('.card'));
 })();
 </script>
+
+<script>
+(() => {
+  const KEY = 'arich_theme';
+  const apply = (t) => {
+    document.documentElement.dataset.theme = t;
+    document.documentElement.style.colorScheme = t;
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = t === 'light' ? '#F4F1EA' : '#0D1017';
+  };
+  const saved = localStorage.getItem(KEY);
+  const initial = saved === 'light' || saved === 'dark'
+    ? saved
+    : (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+  apply(initial);
+  document.getElementById('themeToggleAuth')?.addEventListener('click', () => {
+    const next = (document.documentElement.dataset.theme === 'light') ? 'dark' : 'light';
+    localStorage.setItem(KEY, next);
+    apply(next);
+  });
+})();
+</script>
+
 </body>
 </html>

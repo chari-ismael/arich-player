@@ -9,19 +9,19 @@
     nav_account: 'Compte',
     nav_menu: 'Menu',
 
-    hero_over: 'Lecteur média premium',
+    hero_over: 'Lecteur cinéma pour Android & TV',
     hero_title_1: 'Le cinéma,',
     hero_title_2: 'chez vous.',
     hero_title_3: 'Sans le bruit.',
     hero_lede:
-      'Votre bibliothèque, vos chaînes, vos films et séries. Une expérience fluide, pensée pour vous.',
-    hero_cta: "Télécharger l'app",
+      'Vos playlists Xtream ou M3U. Une interface pensée salon — fluide, claire, sans frictions.',
+    hero_cta: 'Installer ARICH',
     hero_secondary: 'Découvrir',
-    hero_trial: '14 jours gratuits · sans engagement',
+    hero_trial: 'Essai 14 jours · puis 3 €/an ou 5 € à vie',
 
     browse_over: 'Parcourir',
     browse_title: 'Naviguez. Explorez. Regardez.',
-    browse_sub: 'Faites défiler pour parcourir l’expérience.',
+    browse_sub: 'Faites défiler : l’app défile avec vous.',
     browse_home: 'Accueil',
     browse_films: 'Films',
     browse_series: 'Séries',
@@ -29,7 +29,7 @@
     browse_playlists: 'Playlist',
 
     feat_over: 'Fonctionnalités',
-    feat_title: 'Conçu pour regarder. Pas pour gérer.',
+    feat_title: 'Pensé pour regarder. Pas pour bricoler.',
     feat_sub: 'Des gestes simples. Une lecture précise.',
     feat_fluid_t: 'Fluidité absolue',
     feat_fluid_b:
@@ -83,9 +83,9 @@
     dl_apk: "Télécharger l'APK",
     dl_play: 'Google Play',
 
-    price_over: 'Tarifs',
-    price_title: 'Deux offres. Zéro surprise.',
-    price_sub: 'Licence application uniquement — aucun contenu fourni.',
+    price_over: 'Tarifs simples',
+    price_title: 'Deux formules. Zéro surprise.',
+    price_sub: 'Licence app uniquement — aucun contenu inclus.',
     price_trial: 'jours d’essai',
     price_trial_hint: 'Sans engagement. Testez avant de choisir.',
     price_year_t: 'Annuel',
@@ -197,15 +197,15 @@
     nav_faq: 'FAQ',
     nav_contact: 'Contact',
 
-    hero_over: 'Premium media player',
+    hero_over: 'Cinema player for Android & TV',
     hero_title_1: 'Cinema,',
     hero_title_2: 'at home.',
     hero_title_3: 'Without the noise.',
     hero_lede:
-      'Your library, channels, movies and series. A fluid experience, designed for you.',
-    hero_cta: 'Download the app',
+      'Your Xtream or M3U playlists. A living-room UI — fluid, clear, frictionless.',
+    hero_cta: 'Install ARICH',
     hero_secondary: 'Explore',
-    hero_trial: '14-day free trial · no commitment',
+    hero_trial: '14-day trial · then €3/year or €5 lifetime',
 
     browse_over: 'Browse',
     browse_title: 'Navigate. Explore. Watch.',
@@ -393,6 +393,24 @@ export function getLang() {
 
 export function t(key) {
   return dict[lang][key] ?? dict.en[key] ?? key
+}
+
+export function formatMoney(amount, currency = 'EUR') {
+  try {
+    return new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-GB', {
+      style: 'currency',
+      currency,
+      maximumFractionDigits: 0,
+    }).format(amount)
+  } catch {
+    return `${amount} €`
+  }
+}
+
+export function formatDate(date = new Date()) {
+  return new Intl.DateTimeFormat(lang === 'fr' ? 'fr-FR' : 'en-GB', {
+    dateStyle: 'medium',
+  }).format(date)
 }
 
 export function setLang(next) {

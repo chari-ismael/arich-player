@@ -15,7 +15,7 @@ export const site = {
 }
 
 export const downloadLinks = {
-  apk: 'https://github.com/chari-ismael/arich-player/releases/download/v3.0.10/ArichPlayer-v3.0.10.apk',
+  apk: 'https://github.com/chari-ismael/arich-player/releases/download/v3.0.11/ArichPlayer-v3.0.11.apk',
   googlePlay: 'https://play.google.com/store/apps/details?id=com.arich.iptv',
   qrTarget: 'https://github.com/chari-ismael/arich-player/releases/latest',
 }

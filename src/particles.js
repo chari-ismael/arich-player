@@ -1,6 +1,6 @@
 /**
- * Discreet starfield background — few dots, soft twinkle, no dense webs.
- * Reduced-motion: static stars (no RAF thrash). Mobile: ~12–16 max.
+ * Cinema dust — tiny warm motes, not a starfield.
+ * Few particles, very low alpha, almost unnoticed until compared to flat black.
  */
 export function initParticles(canvas) {
   if (!canvas) return () => {}
@@ -14,28 +14,27 @@ export function initParticles(canvas) {
 
   let raf = 0
   let running = true
-  /** @type {{ x: number, y: number, r: number, tw: number, spd: number, warm: boolean }[]} */
-  const stars = []
+  /** @type {{ x: number, y: number, r: number, tw: number, spd: number, drift: number }[]} */
+  const motes = []
   const mobile = () => window.innerWidth < 768
 
   function count() {
-    if (mobile()) return 14
-    return 22
+    return mobile() ? 10 : 16
   }
 
   function spawn() {
-    stars.length = 0
+    motes.length = 0
     const n = count()
     const w = window.innerWidth
     const h = window.innerHeight
     for (let i = 0; i < n; i++) {
-      stars.push({
+      motes.push({
         x: Math.random() * w,
         y: Math.random() * h,
-        r: Math.random() * 1.15 + 0.35,
+        r: Math.random() * 0.7 + 0.25,
         tw: Math.random() * Math.PI * 2,
-        spd: 0.008 + Math.random() * 0.014,
-        warm: Math.random() > 0.72,
+        spd: 0.004 + Math.random() * 0.008,
+        drift: (Math.random() - 0.5) * 0.04,
       })
     }
   }
@@ -56,25 +55,22 @@ export function initParticles(canvas) {
     const h = window.innerHeight
     ctx.clearRect(0, 0, w, h)
 
-    for (const s of stars) {
-      const pulse = reduced ? 0.55 : 0.38 + (Math.sin(t * s.spd + s.tw) * 0.5 + 0.5) * 0.42
-      const a = pulse * (s.warm ? 0.55 : 0.42)
-
-      // Soft glow halo (1 extra circle — cheap)
-      if (s.r > 0.9) {
-        ctx.beginPath()
-        ctx.fillStyle = s.warm
-          ? `rgba(197,138,42,${a * 0.22})`
-          : `rgba(240,239,236,${a * 0.16})`
-        ctx.arc(s.x, s.y, s.r * 3.2, 0, Math.PI * 2)
-        ctx.fill()
+    for (const m of motes) {
+      if (!reduced) {
+        m.x += m.drift
+        m.y += m.drift * 0.35
+        if (m.x < -4) m.x = w + 4
+        if (m.x > w + 4) m.x = -4
+        if (m.y < -4) m.y = h + 4
+        if (m.y > h + 4) m.y = -4
       }
 
+      const pulse = reduced ? 0.5 : 0.35 + (Math.sin(t * m.spd + m.tw) * 0.5 + 0.5) * 0.35
+      const a = pulse * 0.22
+
       ctx.beginPath()
-      ctx.fillStyle = s.warm
-        ? `rgba(212,160,74,${a})`
-        : `rgba(240,239,236,${a})`
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2)
+      ctx.fillStyle = `rgba(210, 170, 110, ${a})`
+      ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2)
       ctx.fill()
     }
   }
@@ -98,12 +94,8 @@ export function initParticles(canvas) {
   }
 
   resize()
-  if (reduced) {
-    // One paint — no continuous animation
-    paint(0)
-  } else {
-    tick(performance.now())
-  }
+  if (reduced) paint(0)
+  else tick(performance.now())
 
   window.addEventListener('resize', resize, { passive: true })
   document.addEventListener('visibilitychange', () => {

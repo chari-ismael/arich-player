@@ -1,9 +1,9 @@
 /* ARICH.fr — landing cinématique premium
-   DA: #0D1017 / #C58A2A / #F0EFEC — streaming, pas SaaS */
+   DA: #0B0D10 / #C58A2A / #F0EFEC — matière cinéma, pas SaaS */
 
 :root {
-  --bg: #0D1017;
-  --bg-deep: #080a0f;
+  --bg: #0E1014;
+  --bg-deep: #0B0D10;
   --surface: #141923;
   --surface-2: #1a2030;
   --line: rgba(240, 239, 236, 0.1);
@@ -73,41 +73,51 @@ em { font-style: italic; }
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
+  background:
+    radial-gradient(ellipse 90% 70% at 70% 18%, rgba(72, 48, 28, 0.22), transparent 58%),
+    radial-gradient(ellipse 70% 55% at 18% 78%, rgba(40, 28, 18, 0.18), transparent 62%),
+    linear-gradient(180deg, #0B0D10 0%, #0C0E12 48%, #0B0D10 100%);
 }
 .bg-halo {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.45;
+  filter: blur(120px);
+  opacity: 0.55;
 }
+/* Warm cinema wash — no blue/violet auroras */
 .bg-halo--1 {
-  width: min(70vw, 720px);
+  width: min(85vw, 900px);
   height: min(70vw, 720px);
-  top: -12%;
-  left: -10%;
-  background: radial-gradient(circle, rgba(197,138,42,0.28), transparent 68%);
+  top: -18%;
+  left: 42%;
+  transform: translateX(-20%);
+  background: radial-gradient(ellipse at center, rgba(110, 72, 36, 0.2), transparent 72%);
+  opacity: 0.7;
 }
 .bg-halo--2 {
-  width: min(55vw, 560px);
-  height: min(55vw, 560px);
-  top: 35%;
-  right: -15%;
-  background: radial-gradient(circle, rgba(60,90,140,0.22), transparent 70%);
+  width: min(70vw, 640px);
+  height: min(60vw, 560px);
+  top: 28%;
+  right: -22%;
+  background: radial-gradient(ellipse at center, rgba(58, 40, 26, 0.16), transparent 74%);
+  opacity: 0.5;
 }
 .bg-halo--3 {
-  width: min(50vw, 480px);
-  height: min(50vw, 480px);
-  bottom: 5%;
-  left: 20%;
-  background: radial-gradient(circle, rgba(197,138,42,0.12), transparent 70%);
+  width: min(60vw, 520px);
+  height: min(50vw, 440px);
+  bottom: -8%;
+  left: 8%;
+  background: radial-gradient(ellipse at center, rgba(90, 58, 30, 0.1), transparent 70%);
+  opacity: 0.45;
 }
 .bg-grain {
   position: absolute;
   inset: 0;
-  opacity: 0.045;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 180px;
-  mix-blend-mode: overlay;
+  opacity: 0.032;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 220px;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
 }
 
 .fx {
@@ -115,7 +125,7 @@ em { font-style: italic; }
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.72;
+  opacity: 0.38;
 }
 
 .app { position: relative; z-index: 1; }
@@ -482,15 +492,16 @@ em { font-style: italic; }
 .device { position: relative; }
 .device__glow {
   position: absolute;
-  inset: -8% -6%;
-  background: radial-gradient(ellipse at center, rgba(197,138,42,0.22), transparent 65%);
-  filter: blur(24px);
+  inset: -18% -14%;
+  background: radial-gradient(ellipse at 50% 45%, rgba(120, 78, 40, 0.2), transparent 68%);
+  filter: blur(42px);
   pointer-events: none;
   z-index: 0;
+  opacity: 0.85;
 }
 .device__glow--phone {
-  inset: -12% -20%;
-  background: radial-gradient(ellipse at center, rgba(197,138,42,0.28), transparent 60%);
+  inset: -22% -28%;
+  background: radial-gradient(ellipse at 50% 40%, rgba(130, 84, 42, 0.18), transparent 66%);
 }
 .device__bezel {
   position: relative;
@@ -556,10 +567,10 @@ em { font-style: italic; }
   pointer-events: none;
 }
 .device__glow--land {
-  inset: -14% -8%;
-  background: radial-gradient(ellipse at center, rgba(197, 138, 42, 0.38), transparent 58%);
-  filter: blur(32px);
-  opacity: 0.95;
+  inset: -18% -10%;
+  background: radial-gradient(ellipse at center, rgba(110, 72, 36, 0.22), transparent 64%);
+  filter: blur(40px);
+  opacity: 0.8;
 }
 .device--phone-land:hover .device__bezel {
   border-color: rgba(197, 138, 42, 0.55);
@@ -908,9 +919,20 @@ em { font-style: italic; }
   justify-content: center;
   align-items: center;
   min-height: 420px;
+  position: relative;
+}
+.hero__stage::before {
+  content: '';
+  position: absolute;
+  inset: 8% 4% 0;
+  background: radial-gradient(ellipse 70% 60% at 55% 48%, rgba(95, 62, 32, 0.22), transparent 72%);
+  filter: blur(48px);
+  pointer-events: none;
+  z-index: 0;
 }
 .hero__compose {
   position: relative;
+  z-index: 1;
   width: min(100%, 640px);
   transform-style: preserve-3d;
   will-change: transform;
@@ -1576,10 +1598,10 @@ em { font-style: italic; }
   z-index: 1;
 }
 .install__phone .device__glow--phone {
-  inset: -18% -28%;
-  background: radial-gradient(ellipse at 50% 45%, rgba(197, 138, 42, 0.32), transparent 62%);
-  filter: blur(36px);
-  opacity: 0.9;
+  inset: -22% -30%;
+  background: radial-gradient(ellipse at 50% 45%, rgba(110, 72, 36, 0.2), transparent 66%);
+  filter: blur(44px);
+  opacity: 0.75;
 }
 .install__phone .device__bezel {
   max-width: none;
@@ -2331,7 +2353,7 @@ em { font-style: italic; }
   }
   .hero__phone { width: 38%; }
   .need__phone { display: none; }
-  .bg-halo--2, .bg-halo--3 { opacity: 0.25; }
+  .bg-halo--2, .bg-halo--3 { opacity: 0.28; }
   .install__download { align-items: stretch; }
   .install__dl-title { text-align: left; }
   .install__dl-sub { max-width: none; }
@@ -2367,10 +2389,10 @@ em { font-style: italic; }
     clip-path: none !important;
     animation: none !important;
   }
-  .bg-halo { opacity: 0.2; }
-  .fx { opacity: 0.55; }
+  .bg-halo { opacity: 0.28; }
+  .fx { opacity: 0.28; }
 }
 
 @media (max-width: 768px) {
-  .fx { opacity: 0.35; }
+  .fx { opacity: 0.28; }
 }

@@ -660,9 +660,11 @@
         return data.session;
       }
 
-      const returnUrl = `${location.origin}${location.pathname}${location.search}`;
-      location.href = `auth.html?next=${encodeURIComponent(returnUrl)}`;
-      throw new Error('Redirection connexion…');
+      const detail = error?.message || 'Connexion anonyme indisponible';
+      throw new Error(
+        `Impossible de rejoindre depuis le navigateur (${detail}). ` +
+        'Ouvrez le lien dans l’app ARICH Player, ou réessayez plus tard.',
+      );
     }
 
     function destroyPlayers() {
@@ -701,6 +703,28 @@
         placeholderMsg.textContent = msg || 'Flux inaccessible. Ouvrez l\'app Arich.';
       };
 
+      const isProgressive = /\.(mkv|mp4|m4v|webm|mov)(\?|$)/i.test(rawUrl || '');
+      const looksHls = /\.m3u8(\?|$)/i.test(rawUrl || '') || /\.ts(\?|$)/i.test(rawUrl || '');
+
+      // VOD conteneur (mkv/mp4) : lecture native via proxy (Range), pas HLS.js
+      if (isProgressive && !looksHls) {
+        const isMkv = /\.mkv(\?|$)/i.test(rawUrl || '');
+        if (isMkv) {
+          // Chrome/Firefox ne décodent pas Matroska — guider vers l’app
+          onFatal('Format MKV : lecture web non supportée. Ouvrez ce lien dans l’app ARICH Player.');
+          return;
+        }
+        video.src = proxied;
+        video.onloadeddata = onPlaying;
+        video.play().catch(() => {});
+        setTimeout(() => {
+          if (video.readyState < 2 && !placeholder.classList.contains('hidden')) {
+            onFatal('Lecture navigateur impossible pour ce fichier. Ouvrez l’app ARICH.');
+          }
+        }, 8000);
+        return;
+      }
+
       if (window.Hls && Hls.isSupported()) {
         hls = new Hls({
           enableWorker: true,
@@ -722,6 +746,14 @@
             hls.destroy();
             hls = null;
             attachMpegTs(proxied, authHeaders, onPlaying, onFatal);
+            return;
+          }
+          // Dernier recours : URL progressive native
+          if (isProgressive) {
+            hls.destroy();
+            hls = null;
+            video.src = proxied;
+            video.play().catch(() => onFatal('Flux HLS inaccessible. Ouvrez l\'app Arich.'));
             return;
           }
           onFatal('Flux HLS inaccessible. Ouvrez l\'app Arich.');

@@ -2300,7 +2300,17 @@ html[data-theme='light'] .theme-toggle .icon-moon { display: none; }
 .modal-copy {
   color: var(--mute);
   font-size: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+.modal-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mute);
+  margin-bottom: 6px;
 }
 .modal-panel input {
   width: 100%;
@@ -2312,11 +2322,20 @@ html[data-theme='light'] .theme-toggle .icon-moon { display: none; }
   font-size: 15px;
   letter-spacing: 0.04em;
   outline: none;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
+}
+.modal-panel input[type="email"] {
+  letter-spacing: 0;
 }
 .modal-panel input:focus {
   border-color: var(--copper);
   box-shadow: 0 0 0 3px var(--copper-dim);
+}
+.modal-hint {
+  font-size: 12.5px;
+  color: var(--faint);
+  margin: -4px 0 12px;
+  line-height: 1.45;
 }
 .modal-err {
   min-height: 1.2em;

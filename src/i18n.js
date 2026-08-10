@@ -181,9 +181,16 @@
     nav_contact: 'Contact',
 
     modal_title: 'Activer sur cet appareil',
-    modal_copy: 'Device Key dans l’app · Paramètres → Appareil',
+    modal_copy: 'Saisissez la Device Key affichée dans Paramètres → Licence de l’app.',
+    modal_key_label: 'Device Key',
+    modal_email_label: 'E-mail (reçu Stripe)',
+    modal_hint: 'Vous serez redirigé vers le paiement sécurisé Stripe.',
     modal_cancel: 'Annuler',
-    modal_ok: 'Continuer',
+    modal_ok: 'Payer avec Stripe',
+    modal_loading: 'Redirection…',
+    modal_err_key: 'Entrez la Device Key complète (affichée dans l’app).',
+    modal_err_email: 'Adresse e-mail invalide.',
+    modal_err_network: 'Erreur réseau. Réessayez.',
   },
   en: {
     nav_home: 'Home',
@@ -366,9 +373,16 @@
     footer_tag: 'Premium streaming · Xtream & M3U',
 
     modal_title: 'Activate on this device',
-    modal_copy: 'Device Key in the app · Settings → Device',
+    modal_copy: 'Enter the Device Key shown in Settings → License in the app.',
+    modal_key_label: 'Device Key',
+    modal_email_label: 'Email (Stripe receipt)',
+    modal_hint: 'You’ll be redirected to secure Stripe Checkout.',
     modal_cancel: 'Cancel',
-    modal_ok: 'Continue',
+    modal_ok: 'Pay with Stripe',
+    modal_loading: 'Redirecting…',
+    modal_err_key: 'Enter the full Device Key from the app.',
+    modal_err_email: 'Invalid email address.',
+    modal_err_network: 'Network error. Try again.',
   },
 }
 

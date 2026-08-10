@@ -935,12 +935,16 @@
       <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <p class="eyebrow" id="modalPlan">Licence</p>
         <h3 id="modalTitle" data-i18n="modal_title">Activer sur cet appareil</h3>
-        <p class="modal-copy" data-i18n="modal_copy">Device Key</p>
-        <input id="modalKey" type="text" autocomplete="off" spellcheck="false" placeholder="ARICH-XXXX-XXXX-XXXX" />
+        <p class="modal-copy" data-i18n="modal_copy">Saisissez la Device Key affichée dans Paramètres → Licence de l’app.</p>
+        <label class="modal-label" for="modalKey" data-i18n="modal_key_label">Device Key</label>
+        <input id="modalKey" type="text" autocomplete="off" spellcheck="false" placeholder="A2DBA1F8" inputmode="text" />
+        <label class="modal-label" for="modalEmail" data-i18n="modal_email_label">E-mail (reçu Stripe)</label>
+        <input id="modalEmail" type="email" autocomplete="email" inputmode="email" placeholder="vous@exemple.com" />
+        <p class="modal-hint" data-i18n="modal_hint">Vous serez redirigé vers le paiement sécurisé Stripe.</p>
         <p class="modal-err" id="modalErr" role="alert"></p>
         <div class="modal-actions">
           <button type="button" class="btn btn--ghost" id="modalCancel" data-i18n="modal_cancel">Annuler</button>
-          <button type="button" class="btn btn--copper" id="modalOk" data-i18n="modal_ok">Continuer</button>
+          <button type="button" class="btn btn--copper" id="modalOk" data-i18n="modal_ok">Payer avec Stripe</button>
         </div>
       </div>
     </div>

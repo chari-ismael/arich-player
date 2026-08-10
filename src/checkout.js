@@ -1,13 +1,13 @@
 import { SUPABASE_URL, SUPABASE_ANON_KEY, pricing } from './config.js'
-import { getLang } from './i18n.js'
+import { getLang, t } from './i18n.js'
 
 /**
- * Checkout via Device Key modal — calme, guidé.
- * Labels de plan depuis pricing (config centralisée).
+ * Checkout Device Key → Edge Function create-checkout → Stripe Checkout (live).
  */
 export function initCheckout() {
   const modal = document.getElementById('modal')
   const input = document.getElementById('modalKey')
+  const emailInput = document.getElementById('modalEmail')
   const err = document.getElementById('modalErr')
   const planLabel = document.getElementById('modalPlan')
   const ok = document.getElementById('modalOk')
@@ -21,7 +21,7 @@ export function initCheckout() {
     const lang = getLang()
     const cur = pricing.currency
     if (id === 'yearly') {
-      return `${pricing.yearly.label[lang]} — ${pricing.yearly.price}${cur}`
+      return `${pricing.yearly.label[lang]} — ${pricing.yearly.price}${cur}/${pricing.yearly.period[lang]}`
     }
     if (id === 'lifetime') {
       return `${pricing.lifetime.label[lang]} — ${pricing.lifetime.price}${cur}`
@@ -34,6 +34,7 @@ export function initCheckout() {
     planLabel.textContent = planText(p)
     err.textContent = ''
     input.value = ''
+    if (emailInput) emailInput.value = ''
     modal.hidden = false
     requestAnimationFrame(() => modal.classList.add('open'))
     document.body.style.overflow = 'hidden'
@@ -63,18 +64,28 @@ export function initCheckout() {
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') ok.click()
   })
+  emailInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') ok.click()
+  })
 
   ok.addEventListener('click', async () => {
-    const deviceKey = input.value.trim().toUpperCase()
+    const deviceKey = input.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '')
     if (!deviceKey || deviceKey.length < 6) {
-      err.textContent = getLang() === 'fr' ? 'Entrez la Device Key complète.' : 'Enter the full Device Key.'
+      err.textContent = t('modal_err_key')
       input.focus()
       return
     }
+    const email = (emailInput?.value || '').trim()
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      err.textContent = t('modal_err_email')
+      emailInput?.focus()
+      return
+    }
+
     err.textContent = ''
     ok.disabled = true
     const label = ok.textContent
-    ok.textContent = '…'
+    ok.textContent = t('modal_loading')
 
     try {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout`, {
@@ -88,19 +99,25 @@ export function initCheckout() {
           plan,
           deviceKey,
           userId: null,
-          email: null,
+          email: email || null,
         }),
       })
-      const data = await res.json()
-      if (data.error) {
-        err.textContent = data.error
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || data.error) {
+        err.textContent = data.error || t('modal_err_network')
+        ok.disabled = false
+        ok.textContent = label
+        return
+      }
+      if (!data.url) {
+        err.textContent = t('modal_err_network')
         ok.disabled = false
         ok.textContent = label
         return
       }
       window.location.href = data.url
     } catch {
-      err.textContent = getLang() === 'fr' ? 'Erreur réseau. Réessayez.' : 'Network error. Try again.'
+      err.textContent = t('modal_err_network')
       ok.disabled = false
       ok.textContent = label
     }

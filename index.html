@@ -933,19 +933,31 @@
 
     <div class="modal" id="modal" hidden>
       <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-        <p class="eyebrow" id="modalPlan">Licence</p>
-        <h3 id="modalTitle" data-i18n="modal_title">Activer sur cet appareil</h3>
-        <p class="modal-copy" data-i18n="modal_copy">Saisissez la Device Key affichée dans Paramètres → Licence de l’app.</p>
-        <label class="modal-label" for="modalKey" data-i18n="modal_key_label">Device Key</label>
-        <input id="modalKey" type="text" autocomplete="off" spellcheck="false" placeholder="A2DBA1F8" inputmode="text" />
-        <label class="modal-label" for="modalEmail" data-i18n="modal_email_label">E-mail (reçu Stripe)</label>
-        <input id="modalEmail" type="email" autocomplete="email" inputmode="email" placeholder="vous@exemple.com" />
-        <p class="modal-hint" data-i18n="modal_hint">Vous serez redirigé vers le paiement sécurisé Stripe.</p>
+        <button type="button" class="modal-close" id="modalClose" aria-label="Fermer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+        <div class="modal-top">
+          <span class="modal-badge" id="modalPlan">Licence</span>
+          <h3 id="modalTitle" data-i18n="modal_title">Finaliser l’achat</h3>
+          <p class="modal-copy" data-i18n="modal_copy">Liez la licence à votre appareil, puis payez en toute sécurité.</p>
+        </div>
+        <div class="modal-fields">
+          <div class="modal-field">
+            <label for="modalKey" data-i18n="modal_key_label">Clé appareil</label>
+            <input id="modalKey" type="text" autocomplete="off" spellcheck="false" placeholder="A2DBA1F8" inputmode="text" />
+            <span class="modal-field-hint" data-i18n="modal_key_hint">App → Paramètres → Licence</span>
+          </div>
+          <div class="modal-field">
+            <label for="modalEmail"><span data-i18n="modal_email_label">E-mail</span> <em data-i18n="modal_optional">optionnel</em></label>
+            <input id="modalEmail" type="email" autocomplete="email" inputmode="email" placeholder="vous@exemple.com" />
+          </div>
+        </div>
         <p class="modal-err" id="modalErr" role="alert"></p>
         <div class="modal-actions">
           <button type="button" class="btn btn--ghost" id="modalCancel" data-i18n="modal_cancel">Annuler</button>
-          <button type="button" class="btn btn--copper" id="modalOk" data-i18n="modal_ok">Payer avec Stripe</button>
+          <button type="button" class="btn btn--copper" id="modalOk" data-i18n="modal_ok">Continuer</button>
         </div>
+        <p class="modal-secure" data-i18n="modal_hint">Paiement sécurisé via Stripe</p>
       </div>
     </div>
   </div>

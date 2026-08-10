@@ -12,6 +12,7 @@ export function initCheckout() {
   const planLabel = document.getElementById('modalPlan')
   const ok = document.getElementById('modalOk')
   const cancel = document.getElementById('modalCancel')
+  const closeBtn = document.getElementById('modalClose')
 
   if (!modal || !input || !ok || !cancel) return
 
@@ -21,10 +22,10 @@ export function initCheckout() {
     const lang = getLang()
     const cur = pricing.currency
     if (id === 'yearly') {
-      return `${pricing.yearly.label[lang]} — ${pricing.yearly.price}${cur}/${pricing.yearly.period[lang]}`
+      return `${pricing.yearly.label[lang]} · ${pricing.yearly.price}${cur}`
     }
     if (id === 'lifetime') {
-      return `${pricing.lifetime.label[lang]} — ${pricing.lifetime.price}${cur}`
+      return `${pricing.lifetime.label[lang]} · ${pricing.lifetime.price}${cur}`
     }
     return lang === 'fr' ? 'Licence' : 'License'
   }
@@ -55,6 +56,7 @@ export function initCheckout() {
   })
 
   cancel.addEventListener('click', close)
+  closeBtn?.addEventListener('click', close)
   modal.addEventListener('click', (e) => {
     if (e.target === modal) close()
   })

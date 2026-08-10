@@ -1200,6 +1200,16 @@
       const sub = document.getElementById('redirect-sub')
       if (overlay) overlay.classList.add('show')
       if (main) main.style.visibility = 'hidden'
+
+      const nextUrl = getNextRedirectUrl()
+      // Explicit web next (e.g. checkout) wins over mobile deep-link bridge
+      const fromApp = sessionStorage.getItem('arich_from_app') === '1'
+      if (nextUrl && !fromApp) {
+        if (sub) sub.textContent = t('redirect_sub_web')
+        setTimeout(() => { window.location.href = nextUrl }, 900)
+        return
+      }
+
       if (shouldOpenApp()) {
         if (sub) sub.textContent = t('redirect_sub_app')
         const deepLink = await buildAppDeepLink()
@@ -1210,7 +1220,6 @@
           if (sub) sub.textContent = t('redirect_sub_manual')
         }, 2800)
       } else {
-        const nextUrl = getNextRedirectUrl()
         if (sub) sub.textContent = nextUrl ? t('redirect_sub_watch') : t('redirect_sub_space')
         setTimeout(() => { window.location.href = nextUrl || WEB_REDIRECT }, 1500)
       }

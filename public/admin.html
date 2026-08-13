@@ -1114,8 +1114,10 @@ async function doLogin() {
     if (error || !data) { showAuthErr('Identifiant introuvable'); return; }
     if (data.password_hash !== hash) { showAuthErr('Mot de passe incorrect'); return; }
     await sb.from('admin_users').update({ last_login: new Date().toISOString() }).eq('id', data.id);
-    adminUser = data;
-    sessionStorage.setItem('arich_admin', JSON.stringify({ id:data.id, email:data.email, username:data.username, role:data.role }));
+    adminUser = { ...data, _key: hash };
+    sessionStorage.setItem('arich_admin', JSON.stringify({
+      id: data.id, email: data.email, username: data.username, role: data.role, key: hash,
+    }));
     launchApp();
   } catch(e) { showAuthErr('Erreur: ' + e.message); }
   finally { btn.disabled=false; spin.style.display='none'; lbl.textContent='Accéder au panel →'; }
@@ -1124,6 +1126,10 @@ async function doLogin() {
 function showAuthErr(msg) {
   const el = document.getElementById('auth-err');
   el.textContent = msg; el.style.display = 'block';
+}
+
+function adminKey() {
+  return adminUser?._key || null;
 }
 
 function doLogout() {
@@ -1150,8 +1156,12 @@ function launchApp() {
 window.addEventListener('DOMContentLoaded', () => {
   const saved = sessionStorage.getItem('arich_admin');
   if (saved) {
-    try { adminUser = JSON.parse(saved); launchApp(); }
-    catch(e) { sessionStorage.removeItem('arich_admin'); }
+    try {
+      const s = JSON.parse(saved);
+      if (!s.key) { sessionStorage.removeItem('arich_admin'); return; }
+      adminUser = { id: s.id, email: s.email, username: s.username, role: s.role, _key: s.key };
+      launchApp();
+    } catch(e) { sessionStorage.removeItem('arich_admin'); }
   }
 });
 function toggleSB() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sov').classList.toggle('show'); }
@@ -2016,16 +2026,16 @@ async function sendNotification() {
   }
   setLoading('btn-send-notif', true);
   try {
-    const session = await sb.auth.getSession();
-    const accessToken = session.data.session?.access_token;
-    
-    if (!accessToken) throw new Error('Non authentifié');
-    
+    const key = adminKey();
+    if (!key) throw new Error('Session admin expirée — reconnecte-toi');
+
     const res = await fetch(`${EDGE_BASE}/push-notification-v1`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
+        'Authorization': `Bearer ${SB_ANON}`,
+        'apikey': SB_ANON,
+        'X-Admin-Key': key,
       },
       body: JSON.stringify({
         title,
@@ -2037,16 +2047,16 @@ async function sendNotification() {
         priority: 'high'
       })
     });
-    
-    const result = await res.json();
-    if (!res.ok) throw new Error(result.error || 'Erreur Edge Function');
+
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(result.error || `Erreur Edge Function (${res.status})`);
 
     await logAction('send_notification','—',{title,target,type,deepLink,sent:result.sent,failed:result.failed});
-    showMsg('notif-msg',`Envoyee a ${result.sent||0} devices (${result.failed||0} echecs)`, 'msg-success');
+    showMsg('notif-msg',`Envoyée à ${result.sent||0} devices (${result.failed||0} échecs)`, 'msg-success');
     document.getElementById('notif-title').value='';
     document.getElementById('notif-body').value='';
     previewNotif();
-    toast('Notification envoyee via FCM');
+    toast('Notification envoyée via FCM');
     loadNotifsHistory();
   } catch(e) {
     showMsg('notif-msg','❌ '+e.message,'msg-error');

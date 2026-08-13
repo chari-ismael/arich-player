@@ -208,9 +208,9 @@
     .extra {
       display: none; position: absolute; inset: 0; z-index: 8;
       background: var(--form); padding: 44px 40px;
-      flex-direction: column; justify-content: center;
-      width: 100%; max-width: 430px; margin: 0 auto; left: 0; right: 0;
+      flex-direction: column; justify-content: center; align-items: center;
     }
+    .extra > * { width: min(380px, 100%); }
     .extra.show { display: flex; }
     .extra h1 { font-size: 1.5rem; font-weight: 600; letter-spacing: -.03em; margin-bottom: 6px; }
     .otp-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: end; }

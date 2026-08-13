@@ -173,6 +173,7 @@
       min-width: 180px; width: auto; padding: 0 28px;
     }
     html[data-theme='light'] .btn-outline { border-color: rgba(10,12,16,.2); color: var(--ink); }
+    .overlay .btn-outline { border-color: rgba(255,255,255,.6); color: #fff; }
     .btn-fb { background: #1877F2; color: #fff; text-transform: none; letter-spacing: 0; font-weight: 600; }
     .spin { width: 15px; height: 15px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; animation: spin .65s linear infinite; display: none; }
     .btn.loading .spin { display: block; }
@@ -198,26 +199,42 @@
     .bar.s1 { background: var(--err); } .bar.s2 { background: var(--warn); } .bar.s3 { background: var(--ok); }
     .strength-lbl { font-size: 11px; font-weight: 650; color: var(--faint); text-transform: uppercase; min-height: 14px; }
 
-    /* Overlay switch */
+    /* Overlay switch — copper panel that slides, with a living wave on the inner edge */
     .overlay {
-      position: absolute; inset: 0 0 0 50%;
+      position: absolute; top: 0; bottom: 0; left: 46%; width: 54%;
       z-index: 5; overflow: hidden;
-      background:
-        radial-gradient(circle at 30% 20%, rgba(255,255,255,.16), transparent 42%),
-        linear-gradient(160deg, #1a1208 0%, #C58A2A 48%, #8a5c18 100%);
       color: #fff;
-      transition: inset .75s var(--ez-move);
+      transition: left .8s var(--ez-move);
     }
-    .shell.is-signup .overlay { inset: 0 50% 0 0; }
+    .shell.is-signup .overlay { left: 0; }
+    .overlay-skin {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 28% 18%, rgba(255,255,255,.2), transparent 36%),
+        radial-gradient(circle at 88% 82%, rgba(0,0,0,.28), transparent 42%),
+        linear-gradient(155deg, #24180c 0%, #C58A2A 46%, #7a5014 100%);
+      box-shadow: 0 0 0 1px rgba(255,255,255,.08) inset;
+    }
+    .overlay-skin::before, .overlay-skin::after {
+      content: ''; position: absolute; border-radius: 50%; pointer-events: none;
+      background: radial-gradient(circle, rgba(255,255,255,.18), transparent 68%);
+    }
+    .overlay-skin::before { width: 220px; height: 220px; left: -40px; top: 12%; }
+    .overlay-skin::after { width: 160px; height: 160px; right: 10%; bottom: 8%; opacity: .7; }
+    .wave {
+      position: absolute; top: -4%; height: 108%; width: 72px; z-index: 2; pointer-events: none;
+      left: -1px; transition: left .8s var(--ez-move), right .8s var(--ez-move), transform .8s var(--ez-move);
+    }
+    .shell.is-signup .wave { left: auto; right: -1px; transform: scaleX(-1); }
     .overlay-inner {
-      position: relative; height: 100%; width: 200%;
-      display: flex; transition: transform .75s var(--ez-move);
+      position: relative; z-index: 3; height: 100%; width: 200%;
+      display: flex; transition: transform .8s var(--ez-move);
     }
     .shell.is-signup .overlay-inner { transform: translateX(-50%); }
     .overlay-copy {
       width: 50%; height: 100%;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      text-align: center; padding: 40px 36px; gap: 14px;
+      text-align: center; padding: 40px 48px; gap: 14px;
     }
     .overlay-copy img { width: 54px; height: 54px; border-radius: 16px; box-shadow: 0 10px 28px rgba(0,0,0,.25); }
     .overlay-copy h2 { font-family: Syne, sans-serif; font-size: clamp(1.7rem, 3vw, 2.2rem); letter-spacing: -.03em; }
@@ -407,7 +424,11 @@
         <p class="mobile-switch"><span data-i18n="has_account">Déjà un compte ?</span> <button type="button" class="lnk" data-mode="login" data-i18n="login_cta_short">Se connecter</button></p>
       </section>
 
-      <div class="overlay" aria-hidden="true">
+      <div class="overlay">
+        <div class="overlay-skin" aria-hidden="true"></div>
+        <svg class="wave" viewBox="0 0 72 800" preserveAspectRatio="none" aria-hidden="true">
+          <path fill="var(--form)" d="M72,0 C48,64 8,128 28,200 C48,272 0,336 22,408 C44,480 4,544 26,616 C48,688 12,744 72,800 L72,0 Z"/>
+        </svg>
         <div class="overlay-inner">
           <div class="overlay-copy">
             <img src="/logo-fg.png" alt="" width="54" height="54" />
@@ -752,6 +773,13 @@
       const m = (msg || '').toLowerCase()
       return m.includes('user not found') || m.includes('no user') || m.includes('email not found')
     }
+    async function emailRegistered(email) {
+      try {
+        const { data, error } = await sb.rpc('email_registered', { p_email: email })
+        if (error) return null
+        return !!data
+      } catch (_) { return null }
+    }
 
     async function oauth(provider, btnId) {
       if (shouldOpenApp()) sessionStorage.setItem('arich_from_app', '1')
@@ -778,9 +806,14 @@
       const { data, error } = await sb.auth.signInWithPassword({ email, password: pw })
       setLoading('btn-login', false)
       if (error) {
-        if (isUnknownUserError(error.message)) {
-          setMode('signup', { email, info: 'unknown' })
-          return
+        const unknown = isUnknownUserError(error.message)
+        const invalid = /invalid login credentials|invalid credentials/i.test(error.message || '')
+        if (unknown || invalid) {
+          const exists = unknown ? false : await emailRegistered(email)
+          if (exists === false) {
+            setMode('signup', { email, info: 'unknown' })
+            return
+          }
         }
         showMsg('login', translateError(error.message))
         return

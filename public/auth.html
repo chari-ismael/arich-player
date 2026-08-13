@@ -13,297 +13,256 @@
   <meta name="theme-color" content="#0D1017" id="themeColor" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #07090d; --text: #F0EFEC; --mute: rgba(240,239,236,.58); --faint: rgba(240,239,236,.34);
-      --line: rgba(240,239,236,.12); --line2: rgba(240,239,236,.18);
-      --form: rgba(16,19,26,.92); --input: rgba(255,255,255,.05);
-      --copper: #C58A2A; --copper2: #D4A04A; --glow: rgba(197,138,42,.32);
-      --grad: linear-gradient(135deg,#C58A2A,#D4A04A); --ink: #0a0c10;
-      --err: #ff6b8a; --ok: #36d9a0; --warn: #fbbf24;
-      --ez: cubic-bezier(.22,1,.36,1); --ez-move: cubic-bezier(.77,0,.175,1);
+      --bg: #0c0e12;
+      --text: #ececec;
+      --mute: #9a9a96;
+      --faint: #6c6c68;
+      --line: rgba(255,255,255,.08);
+      --form: #111318;
+      --panel: #16181e;
+      --input: #0c0e12;
+      --copper: #c58a2a;
+      --ink: #0a0c10;
+      --err: #e06b7a;
+      --ok: #3dba8b;
+      --ez: cubic-bezier(.22, 1, .36, 1);
     }
     html[data-theme='light'] {
-      --bg: #EFE8DC; --text: #14120e; --mute: rgba(20,18,14,.58); --faint: rgba(20,18,14,.38);
-      --line: rgba(20,18,14,.1); --line2: rgba(20,18,14,.16);
-      --form: #FFFcf7; --input: rgba(20,18,14,.04);
-      --copper: #A87220; --copper2: #C58A2A; --glow: rgba(168,114,32,.22);
-      --err: #c44a5e; --ok: #2f8f6a;
+      --bg: #f4f1ea;
+      --text: #161512;
+      --mute: #6b6860;
+      --faint: #8f8b82;
+      --line: rgba(20,18,14,.1);
+      --form: #fff;
+      --panel: #ece7dc;
+      --input: #f7f5f0;
+      --copper: #a87220;
+      --err: #c44a5e;
+      --ok: #2f8f6a;
     }
     html { height: 100%; color-scheme: dark; }
     html[data-theme='light'] { color-scheme: light; }
     body {
       min-height: 100%; background: var(--bg); color: var(--text);
-      font-family: Figtree, system-ui, sans-serif; line-height: 1.5;
-      -webkit-font-smoothing: antialiased; overflow-x: hidden;
+      font-family: Figtree, system-ui, sans-serif; line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
     }
+    button, input { font: inherit; color: inherit; }
+    a { color: inherit; }
     @media (prefers-reduced-motion: reduce) {
-      .overlay, .pane, .overlay-copy, .boot { animation: none !important; transition: none !important; }
+      .overlay, .overlay-inner, .boot, .extra { transition: none !important; animation: none !important; }
     }
 
     .boot {
       position: fixed; inset: 0; z-index: 200; display: grid; place-items: center;
-      background: var(--bg); transition: opacity .5s var(--ez), visibility .5s;
+      background: var(--bg); transition: opacity .35s var(--ez), visibility .35s;
     }
     .boot.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
-    .boot-mark {
-      width: 56px; height: 56px; border-radius: 16px; background: var(--grad);
-      display: grid; place-items: center; box-shadow: 0 12px 36px var(--glow);
-    }
-    .boot-mark img { width: 34px; height: 34px; border-radius: 8px; }
-
-    .scene { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-    .orb { position: absolute; border-radius: 50%; filter: blur(90px); }
-    .orb-1 { width: 50vmax; height: 50vmax; left: -18vmax; top: -20vmax; opacity: .22; background: radial-gradient(circle,#C58A2A,transparent 65%); animation: drift 18s ease-in-out infinite alternate; }
-    .orb-2 { width: 40vmax; height: 40vmax; right: -14vmax; bottom: -16vmax; opacity: .14; background: radial-gradient(circle,#D4A04A,transparent 65%); animation: drift 22s ease-in-out infinite alternate-reverse; }
-    @keyframes drift { to { transform: translate(6vmin, 8vmin) scale(1.06); } }
-    .grain {
-      position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: .03;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='280' height='280' filter='url(%23n)'/%3E%3C/svg%3E");
-    }
+    .boot img { width: 28px; height: 28px; border-radius: 6px; }
 
     .top {
-      position: relative; z-index: 20;
-      display: flex; justify-content: center; padding: 16px clamp(16px,3vw,28px) 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 28px 0; max-width: 1040px; margin: 0 auto;
     }
-    .nav {
-      width: min(1080px, 100%); min-height: 52px;
-      display: flex; align-items: center; justify-content: space-between; gap: 10px;
-      padding: 6px 8px 6px 14px; border-radius: 999px;
-      background: color-mix(in srgb, var(--bg) 35%, transparent);
-      border: 1px solid var(--line2); backdrop-filter: blur(22px) saturate(1.4);
+    .brand {
+      display: inline-flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--text);
+      font-size: 14px; font-weight: 600; letter-spacing: .02em;
     }
-    .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); font-family: Syne, sans-serif; font-weight: 700; font-size: 12px; letter-spacing: .16em; }
-    .brand img { width: 28px; height: 28px; border-radius: 8px; }
-    .nav-end { display: flex; align-items: center; gap: 6px; }
+    .brand img { width: 22px; height: 22px; border-radius: 5px; }
+    .nav-end { display: flex; align-items: center; gap: 4px; }
     .chip {
-      appearance: none; height: 32px; padding: 0 11px; border-radius: 999px; cursor: pointer;
-      border: 1px solid var(--line); background: transparent; color: var(--mute);
-      font: inherit; font-size: 12px; font-weight: 600; text-decoration: none;
-      display: inline-flex; align-items: center; justify-content: center;
+      appearance: none; height: 30px; padding: 0 10px; border-radius: 6px; cursor: pointer;
+      border: 0; background: transparent; color: var(--mute);
+      font: inherit; font-size: 13px; font-weight: 500; text-decoration: none;
+      display: inline-flex; align-items: center;
     }
-    .chip.is-icon { width: 32px; padding: 0; }
-    .chip.is-active, .chip:hover { color: var(--text); border-color: rgba(197,138,42,.45); }
-    .lang { display: inline-flex; padding: 2px; gap: 2px; border: 1px solid var(--line); border-radius: 999px; }
-    .lang .chip { border: 0; height: 28px; }
+    .chip:hover, .chip.is-active { color: var(--text); }
+    .chip.is-icon { width: 30px; padding: 0; justify-content: center; }
 
     .wrap {
-      position: relative; z-index: 2;
-      min-height: calc(100vh - 84px);
+      min-height: calc(100vh - 72px);
       display: grid; place-items: center;
-      padding: 28px clamp(16px,3vw,28px) 40px;
+      padding: 32px 20px 40px;
     }
-
     .shell {
       position: relative;
-      width: min(980px, 100%);
-      min-height: 620px;
-      border-radius: 28px;
+      width: min(860px, 100%);
+      min-height: 560px;
+      border-radius: 16px;
       overflow: hidden;
       background: var(--form);
-      border: 1px solid var(--line2);
-      box-shadow: 0 40px 90px rgba(0,0,0,.45), 0 0 80px var(--glow);
+      border: 1px solid var(--line);
       display: grid; grid-template-columns: 1fr 1fr;
     }
-    html[data-theme='light'] .shell { box-shadow: 0 30px 70px rgba(40,28,12,.14); }
 
     .pane {
-      padding: clamp(28px, 4vw, 48px) clamp(24px, 3.5vw, 44px);
+      padding: 44px 40px;
       display: flex; flex-direction: column; justify-content: center;
-      min-height: 620px;
-      transition: opacity .45s var(--ez), transform .7s var(--ez-move);
+      min-height: 560px; max-width: 430px; width: 100%;
     }
-    .pane h1 {
-      font-family: Syne, sans-serif; font-size: clamp(1.55rem, 2.6vw, 2rem);
-      letter-spacing: -.035em; margin-bottom: 6px;
-    }
-    .pane .sub { color: var(--mute); font-size: 14px; margin-bottom: 22px; }
+    .pane h1 { font-size: 1.5rem; font-weight: 600; letter-spacing: -.03em; margin-bottom: 6px; }
+    .sub { color: var(--mute); font-size: 14px; margin-bottom: 28px; }
 
-    .social { display: flex; gap: 10px; margin-bottom: 18px; }
-    .social .btn { flex: 1; }
-
+    .social { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
     .or {
-      display: flex; align-items: center; gap: 12px; color: var(--faint);
-      font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
-      margin-bottom: 18px;
+      display: flex; align-items: center; gap: 12px;
+      color: var(--faint); font-size: 12px; margin-bottom: 20px;
     }
     .or::before, .or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
 
-    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-    .field label { font-size: 11.5px; font-weight: 650; letter-spacing: .06em; text-transform: uppercase; color: var(--mute); }
-    .in {
-      position: relative; display: flex; align-items: center;
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .field label { font-size: 13px; font-weight: 500; color: var(--text); }
+    .in { position: relative; }
+    .in input, .plain {
+      width: 100%; height: 42px; padding: 0 12px;
+      border-radius: 8px; border: 1px solid var(--line);
+      background: var(--input); color: var(--text); font-size: 14px; outline: none;
+      transition: border-color .15s;
     }
-    .in svg.ico { position: absolute; left: 14px; width: 16px; height: 16px; color: var(--faint); pointer-events: none; }
-    .in input {
-      width: 100%; height: 48px; padding: 0 44px 0 42px;
-      border-radius: 999px; border: 1px solid var(--line2);
-      background: var(--input); color: var(--text); font: inherit; font-size: 15px; outline: none;
-      transition: border-color .2s, box-shadow .2s;
-    }
-    .in input:focus { border-color: rgba(197,138,42,.55); box-shadow: 0 0 0 3px rgba(197,138,42,.14); }
+    .in input.has-eye { padding-right: 40px; }
+    .in input:focus, .plain:focus { border-color: var(--copper); }
     .eye {
-      position: absolute; right: 8px; width: 36px; height: 36px; border: 0; background: none;
-      color: var(--faint); cursor: pointer; display: grid; place-items: center; border-radius: 999px;
+      position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+      width: 32px; height: 32px; border: 0; background: none;
+      color: var(--faint); cursor: pointer; display: grid; place-items: center; border-radius: 6px;
     }
     .eye:hover { color: var(--text); }
 
-    .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin: 4px 0 16px; }
-    .lnk { background: none; border: 0; color: var(--copper); font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; padding: 0; }
-    .lnk:hover { color: var(--copper2); }
+    .row { display: flex; justify-content: flex-end; margin: -4px 0 16px; }
+    .lnk { background: none; border: 0; color: var(--mute); font: inherit; font-size: 13px; cursor: pointer; padding: 0; }
+    .lnk:hover { color: var(--text); }
 
     .btn {
-      width: 100%; min-height: 48px; border: 0; border-radius: 999px; cursor: pointer;
-      font: inherit; font-size: 14px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
-      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-      transition: transform .18s var(--ez), filter .2s, opacity .2s;
+      width: 100%; height: 42px; border: 0; border-radius: 8px; cursor: pointer;
+      font-size: 14px; font-weight: 600;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background .15s, opacity .15s, border-color .15s;
     }
-    .btn:disabled { opacity: .55; cursor: not-allowed; }
-    .btn:not(:disabled):hover { transform: translateY(-1px); filter: brightness(1.05); }
-    .btn-primary { background: var(--grad); color: var(--ink); box-shadow: 0 10px 28px var(--glow); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-primary { background: var(--copper); color: var(--ink); }
+    .btn-primary:not(:disabled):hover { background: #d49a3a; }
     .btn-ghost {
-      background: transparent; border: 1px solid var(--line2); color: var(--text);
-      text-transform: none; letter-spacing: 0; font-weight: 600;
+      background: transparent; border: 1px solid var(--line); color: var(--text); font-weight: 500;
     }
+    .btn-ghost:hover { border-color: rgba(255,255,255,.18); }
+    html[data-theme='light'] .btn-ghost:hover { border-color: rgba(20,18,14,.22); }
     .btn-outline {
-      background: transparent; border: 1.5px solid rgba(255,255,255,.55); color: #fff;
-      min-width: 180px; width: auto; padding: 0 28px;
+      width: auto; min-width: 140px; padding: 0 18px;
+      background: transparent; border: 1px solid var(--line); color: var(--text);
     }
-    html[data-theme='light'] .btn-outline { border-color: rgba(10,12,16,.2); color: var(--ink); }
-    .overlay .btn-outline { border-color: rgba(255,255,255,.6); color: #fff; }
-    .btn-fb { background: #1877F2; color: #fff; text-transform: none; letter-spacing: 0; font-weight: 600; }
-    .spin { width: 15px; height: 15px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; animation: spin .65s linear infinite; display: none; }
+    .btn-outline:hover { border-color: var(--copper); color: var(--copper); }
+    .spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; animation: spin .6s linear infinite; display: none; }
     .btn.loading .spin { display: block; }
     .btn.loading .blbl { display: none; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .g-svg, .fb-svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .g-svg, .fb-svg { width: 16px; height: 16px; }
 
-    .msg { display: none; margin-bottom: 12px; padding: 10px 12px; border-radius: 12px; font-size: 13px; border: 1px solid transparent; }
+    .msg { display: none; margin-bottom: 14px; font-size: 13px; }
     .msg.show { display: block; }
-    .msg.error { background: rgba(255,107,138,.1); border-color: rgba(255,107,138,.22); color: var(--err); }
-    .msg.success { background: rgba(54,217,160,.1); border-color: rgba(54,217,160,.22); color: var(--ok); }
-    .msg.info { background: rgba(197,138,42,.12); border-color: rgba(197,138,42,.28); color: var(--copper2); }
+    .msg.error { color: var(--err); }
+    .msg.success { color: var(--ok); }
+    .msg.info { color: var(--copper); }
 
-    .hint { font-size: 12px; color: var(--faint); }
-    .legal { margin-top: 14px; font-size: 12px; color: var(--faint); text-align: center; }
+    .legal { margin-top: 16px; font-size: 12px; color: var(--faint); }
     .legal a { color: var(--mute); }
-    .more { margin-top: 14px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 14px; }
-    .more .lnk { color: var(--mute); font-weight: 550; }
+    .more { margin-top: 16px; display: flex; gap: 16px; }
+    .more .lnk { font-size: 12px; }
 
-    .pw-strength { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
-    .bars { display: flex; gap: 4px; height: 3px; }
-    .bar { flex: 1; border-radius: 2px; background: var(--line); }
-    .bar.s1 { background: var(--err); } .bar.s2 { background: var(--warn); } .bar.s3 { background: var(--ok); }
-    .strength-lbl { font-size: 11px; font-weight: 650; color: var(--faint); text-transform: uppercase; min-height: 14px; }
+    .pw-strength { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+    .bars { display: flex; gap: 3px; height: 2px; flex: 1; }
+    .bar { flex: 1; border-radius: 1px; background: var(--line); }
+    .bar.s1 { background: var(--err); } .bar.s2 { background: #c9a227; } .bar.s3 { background: var(--ok); }
+    .strength-lbl { font-size: 11px; color: var(--faint); min-width: 3.5em; }
 
-    /* Overlay switch — copper panel that slides, with a living wave on the inner edge */
     .overlay {
-      position: absolute; top: 0; bottom: 0; left: 46%; width: 54%;
+      position: absolute; inset: 0 0 0 50%;
       z-index: 5; overflow: hidden;
-      color: #fff;
-      transition: left .8s var(--ez-move);
+      background: var(--panel);
+      border-left: 1px solid var(--line);
+      transition: inset .55s var(--ez);
     }
-    .shell.is-signup .overlay { left: 0; }
-    .overlay-skin {
-      position: absolute; inset: 0;
-      background:
-        radial-gradient(circle at 28% 18%, rgba(255,255,255,.2), transparent 36%),
-        radial-gradient(circle at 88% 82%, rgba(0,0,0,.28), transparent 42%),
-        linear-gradient(155deg, #24180c 0%, #C58A2A 46%, #7a5014 100%);
-      box-shadow: 0 0 0 1px rgba(255,255,255,.08) inset;
+    .shell.is-signup .overlay {
+      inset: 0 50% 0 0;
+      border-left: 0;
+      border-right: 1px solid var(--line);
     }
-    .overlay-skin::before, .overlay-skin::after {
-      content: ''; position: absolute; border-radius: 50%; pointer-events: none;
-      background: radial-gradient(circle, rgba(255,255,255,.18), transparent 68%);
-    }
-    .overlay-skin::before { width: 220px; height: 220px; left: -40px; top: 12%; }
-    .overlay-skin::after { width: 160px; height: 160px; right: 10%; bottom: 8%; opacity: .7; }
-    .wave {
-      position: absolute; top: -4%; height: 108%; width: 72px; z-index: 2; pointer-events: none;
-      left: -1px; transition: left .8s var(--ez-move), right .8s var(--ez-move), transform .8s var(--ez-move);
-    }
-    .shell.is-signup .wave { left: auto; right: -1px; transform: scaleX(-1); }
     .overlay-inner {
-      position: relative; z-index: 3; height: 100%; width: 200%;
-      display: flex; transition: transform .8s var(--ez-move);
+      height: 100%; width: 200%;
+      display: flex; transition: transform .55s var(--ez);
     }
     .shell.is-signup .overlay-inner { transform: translateX(-50%); }
     .overlay-copy {
       width: 50%; height: 100%;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      text-align: center; padding: 40px 48px; gap: 14px;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 48px 44px; gap: 10px;
     }
-    .overlay-copy img { width: 54px; height: 54px; border-radius: 16px; box-shadow: 0 10px 28px rgba(0,0,0,.25); }
-    .overlay-copy h2 { font-family: Syne, sans-serif; font-size: clamp(1.7rem, 3vw, 2.2rem); letter-spacing: -.03em; }
-    .overlay-copy p { max-width: 28ch; color: rgba(255,255,255,.82); font-size: 15px; }
+    .overlay-copy h2 { font-size: 1.35rem; font-weight: 600; letter-spacing: -.03em; }
+    .overlay-copy p { color: var(--mute); font-size: 14px; max-width: 28ch; line-height: 1.5; margin-bottom: 10px; }
 
     .extra {
       display: none; position: absolute; inset: 0; z-index: 8;
-      background: var(--form); padding: clamp(28px,4vw,48px);
-      flex-direction: column; justify-content: center; max-width: 460px; margin: 0 auto;
+      background: var(--form); padding: 44px 40px;
+      flex-direction: column; justify-content: center;
+      width: 100%; max-width: 430px; margin: 0 auto; left: 0; right: 0;
     }
-    .extra.show { display: flex; animation: fadeUp .4s var(--ez); }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-    .otp-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; }
-    .otp-row .btn { width: auto; min-width: 120px; padding-inline: 18px; }
+    .extra.show { display: flex; }
+    .extra h1 { font-size: 1.5rem; font-weight: 600; letter-spacing: -.03em; margin-bottom: 6px; }
+    .otp-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: end; }
+    .otp-row .btn { width: auto; min-width: 108px; padding: 0 16px; }
 
     .redirect {
       display: none; position: fixed; inset: 0; z-index: 120; background: var(--bg);
-      flex-direction: column; align-items: center; justify-content: center; gap: 16px; text-align: center; padding: 24px;
+      flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 24px;
     }
     .redirect.show { display: flex; }
-    .redirect-mark {
-      width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center;
-      border: 2px solid rgba(54,217,160,.4); background: rgba(54,217,160,.12); color: var(--ok); font-size: 26px;
-    }
-    .redirect h2 { font-family: Syne, sans-serif; }
-    .redirect p { color: var(--mute); max-width: 30ch; }
-    .redirect-bar { width: min(200px,70vw); height: 3px; background: var(--line); border-radius: 99px; overflow: hidden; }
-    .redirect-bar > span { display: block; height: 100%; width: 0; background: var(--grad); animation: prog 2s var(--ez) forwards; }
+    .redirect-mark { color: var(--ok); font-size: 20px; }
+    .redirect h2 { font-size: 1.2rem; font-weight: 600; }
+    .redirect p { color: var(--mute); font-size: 14px; }
+    .redirect-bar { width: 120px; height: 1px; background: var(--line); overflow: hidden; }
+    .redirect-bar > span { display: block; height: 100%; width: 0; background: var(--copper); animation: prog 1.6s var(--ez) forwards; }
     @keyframes prog { to { width: 100%; } }
-    .btn-open-app { max-width: 260px; display: none; }
+    .btn-open-app { max-width: 220px; display: none; }
 
     .foot {
-      position: relative; z-index: 2; padding: 0 24px 24px;
-      display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;
+      padding: 0 24px 24px;
+      display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;
       font-size: 12px; color: var(--faint);
     }
-    .foot a { color: var(--mute); text-decoration: none; }
-    .foot a:hover { color: var(--text); }
+    .foot a { color: var(--faint); text-decoration: none; }
+    .foot a:hover { color: var(--mute); }
 
-    @media (max-width: 840px) {
+    .mobile-switch { display: none; }
+
+    @media (max-width: 800px) {
+      .top { padding: 16px 16px 0; }
       .shell { grid-template-columns: 1fr; min-height: 0; }
       .pane-signup { display: none; }
       .shell.is-signup .pane-login { display: none; }
       .shell.is-signup .pane-signup { display: flex; }
       .overlay { display: none; }
-      .pane { min-height: 0; padding: 28px 22px 24px; }
+      .pane, .extra { min-height: 0; max-width: none; padding: 32px 22px; }
       .mobile-switch {
-        display: flex !important; justify-content: center; margin-top: 16px; color: var(--mute); font-size: 14px; gap: 6px;
+        display: flex; margin-top: 20px; color: var(--mute); font-size: 13px; gap: 6px;
       }
     }
-    .mobile-switch { display: none; }
   </style>
 </head>
 <body>
-  <div class="boot" id="boot"><div class="boot-mark"><img src="/logo-fg.png" alt="" width="34" height="34" /></div></div>
-  <div class="scene" aria-hidden="true"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
-  <div class="grain" aria-hidden="true"></div>
+  <div class="boot" id="boot"><img src="/logo-fg.png" alt="" width="28" height="28" /></div>
 
   <header class="top">
-    <div class="nav">
-      <a class="brand" href="/"><img src="/logo-fg.png" alt="" width="28" height="28" /><span>ARICH</span></a>
-      <div class="nav-end">
-        <div class="lang">
-          <button type="button" class="chip is-active" id="langFr">FR</button>
-          <button type="button" class="chip" id="langEn">EN</button>
-        </div>
-        <button type="button" class="chip is-icon" id="themeToggle" aria-label="Theme">◐</button>
-        <a class="chip" href="/" data-i18n="nav_home">Accueil</a>
-      </div>
+    <a class="brand" href="/"><img src="/logo-fg.png" alt="" width="22" height="22" />ARICH</a>
+    <div class="nav-end">
+      <button type="button" class="chip is-active" id="langFr">FR</button>
+      <button type="button" class="chip" id="langEn">EN</button>
+      <button type="button" class="chip is-icon" id="themeToggle" aria-label="Theme">◐</button>
+      <a class="chip" href="/" data-i18n="nav_home">Accueil</a>
     </div>
   </header>
 
@@ -317,7 +276,6 @@
 
   <main class="wrap" id="main">
     <div class="shell" id="shell">
-      <!-- LOGIN -->
       <section class="pane pane-login" id="paneLogin">
         <h1 data-i18n="login_title">Connexion</h1>
         <p class="sub" data-i18n="login_lede">Retrouvez vos playlists et votre licence.</p>
@@ -330,10 +288,10 @@
               Google
             </span>
           </button>
-          <button type="button" class="btn btn-fb" id="btn-facebook">
+          <button type="button" class="btn btn-ghost" id="btn-facebook">
             <span class="spin"></span>
             <span class="blbl" style="display:inline-flex;align-items:center;gap:8px;">
-              <svg class="fb-svg" viewBox="0 0 24 24" fill="#fff"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.89v2.26h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07z"/></svg>
+              <svg class="fb-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.89v2.26h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07z"/></svg>
               Facebook
             </span>
           </button>
@@ -341,21 +299,16 @@
         <div class="or" data-i18n="or">ou</div>
         <div class="field">
           <label for="login-email" data-i18n="email">E-mail</label>
-          <div class="in">
-            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg>
-            <input id="login-email" type="email" autocomplete="email" inputmode="email" placeholder="vous@exemple.com" />
-          </div>
+          <div class="in"><input id="login-email" type="email" autocomplete="email" inputmode="email" placeholder="vous@exemple.com" /></div>
         </div>
         <div class="field">
           <label for="login-pw" data-i18n="password">Mot de passe</label>
           <div class="in">
-            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
-            <input id="login-pw" type="password" class="has-icon" autocomplete="current-password" />
+            <input id="login-pw" type="password" class="has-eye" autocomplete="current-password" />
             <button type="button" class="eye" data-toggle-pw="login-pw" aria-label="Show password"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
           </div>
         </div>
         <div class="row">
-          <span></span>
           <button type="button" class="lnk" id="forgotLink" data-i18n="forgot_link">Mot de passe oublié ?</button>
         </div>
         <button type="button" class="btn btn-primary" id="btn-login">
@@ -368,7 +321,6 @@
         <p class="mobile-switch"><span data-i18n="no_account">Pas de compte ?</span> <button type="button" class="lnk" data-mode="signup" data-i18n="signup_cta_short">S’inscrire</button></p>
       </section>
 
-      <!-- SIGNUP -->
       <section class="pane pane-signup" id="paneSignup">
         <h1 data-i18n="signup_title">Créer un compte</h1>
         <p class="sub" data-i18n="signup_lede">Un compte pour synchroniser playlists et licence.</p>
@@ -381,10 +333,10 @@
               Google
             </span>
           </button>
-          <button type="button" class="btn btn-fb" id="btn-facebook-up">
+          <button type="button" class="btn btn-ghost" id="btn-facebook-up">
             <span class="spin"></span>
             <span class="blbl" style="display:inline-flex;align-items:center;gap:8px;">
-              <svg class="fb-svg" viewBox="0 0 24 24" fill="#fff"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.89v2.26h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07z"/></svg>
+              <svg class="fb-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.89v2.26h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07z"/></svg>
               Facebook
             </span>
           </button>
@@ -392,16 +344,12 @@
         <div class="or" data-i18n="or">ou</div>
         <div class="field">
           <label for="signup-email" data-i18n="email">E-mail</label>
-          <div class="in">
-            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg>
-            <input id="signup-email" type="email" autocomplete="email" inputmode="email" placeholder="vous@exemple.com" />
-          </div>
+          <div class="in"><input id="signup-email" type="email" autocomplete="email" inputmode="email" placeholder="vous@exemple.com" /></div>
         </div>
         <div class="field">
           <label for="signup-pw" data-i18n="password">Mot de passe</label>
           <div class="in">
-            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
-            <input id="signup-pw" type="password" autocomplete="new-password" />
+            <input id="signup-pw" type="password" class="has-eye" autocomplete="new-password" />
             <button type="button" class="eye" data-toggle-pw="signup-pw" aria-label="Show password"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
           </div>
           <div class="pw-strength">
@@ -412,12 +360,11 @@
         <div class="field">
           <label for="signup-pw2" data-i18n="password_confirm">Confirmer</label>
           <div class="in">
-            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
-            <input id="signup-pw2" type="password" autocomplete="new-password" />
+            <input id="signup-pw2" type="password" class="has-eye" autocomplete="new-password" />
             <button type="button" class="eye" data-toggle-pw="signup-pw2" aria-label="Show password"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
           </div>
         </div>
-        <button type="button" class="btn btn-primary" id="btn-signup" style="margin-top:8px">
+        <button type="button" class="btn btn-primary" id="btn-signup" style="margin-top:4px">
           <span class="spin"></span><span class="blbl" data-i18n="signup_cta">Créer mon compte</span>
         </button>
         <p class="legal" data-i18n-html="signup_legal">En créant un compte, vous acceptez la <a href="/privacy-policy.html">politique de confidentialité</a>.</p>
@@ -425,21 +372,15 @@
       </section>
 
       <div class="overlay">
-        <div class="overlay-skin" aria-hidden="true"></div>
-        <svg class="wave" viewBox="0 0 72 800" preserveAspectRatio="none" aria-hidden="true">
-          <path fill="var(--form)" d="M72,0 C48,64 8,128 28,200 C48,272 0,336 22,408 C44,480 4,544 26,616 C48,688 12,744 72,800 L72,0 Z"/>
-        </svg>
         <div class="overlay-inner">
           <div class="overlay-copy">
-            <img src="/logo-fg.png" alt="" width="54" height="54" />
             <h2 data-i18n="overlay_signup_t">Nouveau ici ?</h2>
             <p data-i18n="overlay_signup_p">Créez un compte pour lier vos appareils et votre licence.</p>
             <button type="button" class="btn btn-outline" data-mode="signup" data-i18n="signup_cta_short">S’inscrire</button>
           </div>
           <div class="overlay-copy">
-            <img src="/logo-fg.png" alt="" width="54" height="54" />
-            <h2 data-i18n="overlay_login_t">Content de vous revoir</h2>
-            <p data-i18n="overlay_login_p">Déjà membre ? Revenez à votre espace ARICH.</p>
+            <h2 data-i18n="overlay_login_t">Déjà un compte ?</h2>
+            <p data-i18n="overlay_login_p">Revenez à votre espace ARICH.</p>
             <button type="button" class="btn btn-outline" data-mode="login" data-i18n="login_cta">Se connecter</button>
           </div>
         </div>
@@ -452,10 +393,7 @@
         <div class="msg" id="forgot-msg" role="alert"></div>
         <div class="field">
           <label for="forgot-email" data-i18n="email">E-mail</label>
-          <div class="in">
-            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg>
-            <input id="forgot-email" type="email" autocomplete="email" />
-          </div>
+          <div class="in"><input id="forgot-email" type="email" autocomplete="email" /></div>
         </div>
         <button type="button" class="btn btn-primary" id="btn-forgot"><span class="spin"></span><span class="blbl" data-i18n="forgot_cta">Envoyer le lien</span></button>
         <p class="legal"><button type="button" class="lnk" data-extra-close data-i18n="back_login">← Retour</button></p>
@@ -466,10 +404,7 @@
         <div class="msg" id="magic-msg" role="alert"></div>
         <div class="field">
           <label for="magic-email" data-i18n="email">E-mail</label>
-          <div class="in">
-            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg>
-            <input id="magic-email" type="email" autocomplete="email" />
-          </div>
+          <div class="in"><input id="magic-email" type="email" autocomplete="email" /></div>
         </div>
         <button type="button" class="btn btn-primary" id="btn-magic"><span class="spin"></span><span class="blbl" data-i18n="magic_cta">Envoyer le lien</span></button>
         <p class="legal"><button type="button" class="lnk" data-extra-close data-i18n="back_login">← Retour</button></p>
@@ -480,13 +415,13 @@
         <div class="msg" id="phone-msg" role="alert"></div>
         <div class="field">
           <label for="phone-input" data-i18n="phone">Numéro</label>
-          <input id="phone-input" type="tel" autocomplete="tel" inputmode="tel" placeholder="+33…" style="width:100%;height:48px;padding:0 18px;border-radius:999px;border:1px solid var(--line2);background:var(--input);color:var(--text);font:inherit;outline:none" />
+          <div class="in"><input id="phone-input" class="plain" type="tel" autocomplete="tel" inputmode="tel" placeholder="+33…" /></div>
         </div>
         <button type="button" class="btn btn-primary" id="btn-phone-send"><span class="spin"></span><span class="blbl" data-i18n="phone_send">Envoyer le SMS</span></button>
         <div class="otp-row" id="otpRow" hidden style="margin-top:14px">
           <div class="field" style="margin:0">
             <label for="phone-otp" data-i18n="otp">Code</label>
-            <input id="phone-otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" style="width:100%;height:48px;padding:0 18px;border-radius:999px;border:1px solid var(--line2);background:var(--input);color:var(--text);font:inherit;outline:none" />
+            <div class="in"><input id="phone-otp" class="plain" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" /></div>
           </div>
           <button type="button" class="btn btn-primary" id="btn-phone-verify"><span class="spin"></span><span class="blbl" data-i18n="phone_verify">Vérifier</span></button>
         </div>
@@ -499,8 +434,7 @@
         <div class="field">
           <label for="reset-pw" data-i18n="password_new">Nouveau mot de passe</label>
           <div class="in">
-            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
-            <input id="reset-pw" type="password" autocomplete="new-password" />
+            <input id="reset-pw" type="password" class="has-eye" autocomplete="new-password" />
             <button type="button" class="eye" data-toggle-pw="reset-pw"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
           </div>
           <div class="pw-strength">
@@ -511,8 +445,7 @@
         <div class="field">
           <label for="reset-pw2" data-i18n="password_confirm">Confirmer</label>
           <div class="in">
-            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
-            <input id="reset-pw2" type="password" autocomplete="new-password" />
+            <input id="reset-pw2" type="password" class="has-eye" autocomplete="new-password" />
             <button type="button" class="eye" data-toggle-pw="reset-pw2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
           </div>
         </div>
@@ -533,7 +466,7 @@
         doc_title: 'Connexion — ARICH Player', nav_home: 'Accueil',
         login_title: 'Connexion', login_lede: 'Retrouvez vos playlists et votre licence.',
         signup_title: 'Créer un compte', signup_lede: 'Un compte pour synchroniser playlists et licence.',
-        overlay_login_t: 'Content de vous revoir', overlay_login_p: 'Déjà membre ? Revenez à votre espace ARICH.',
+        overlay_login_t: 'Déjà un compte ?', overlay_login_p: 'Revenez à votre espace ARICH.',
         overlay_signup_t: 'Nouveau ici ?', overlay_signup_p: 'Créez un compte pour lier vos appareils et votre licence.',
         email: 'E-mail', password: 'Mot de passe', password_confirm: 'Confirmer', password_new: 'Nouveau mot de passe',
         or: 'ou', login_cta: 'Se connecter', login_cta_short: 'Se connecter',
@@ -566,7 +499,7 @@
         doc_title: 'Sign in — ARICH Player', nav_home: 'Home',
         login_title: 'Sign in', login_lede: 'Access your playlists and license.',
         signup_title: 'Create an account', signup_lede: 'One account to sync playlists and license.',
-        overlay_login_t: 'Welcome back', overlay_login_p: 'Already a member? Return to your ARICH space.',
+        overlay_login_t: 'Already have an account?', overlay_login_p: 'Sign in to your ARICH space.',
         overlay_signup_t: 'New here?', overlay_signup_p: 'Create an account to link your devices and license.',
         email: 'Email', password: 'Password', password_confirm: 'Confirm', password_new: 'New password',
         or: 'or', login_cta: 'Sign in', login_cta_short: 'Sign in',

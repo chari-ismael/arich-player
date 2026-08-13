@@ -283,6 +283,7 @@ html[data-theme='light'] .bg-layers::after {
   font-weight: 600;
   font-size: 14px;
   letter-spacing: 0.01em;
+  text-decoration: none;
   transition: transform .25s var(--ease), background .25s, box-shadow .25s, border-color .25s;
   white-space: nowrap;
 }

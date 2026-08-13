@@ -10,454 +10,399 @@
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <meta name="theme-color" content="#0D1017" id="themeColor" />
+  <meta name="theme-color" content="#0A0B0E" id="themeColor" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { gold: '#D49B3E', ink: '#0A0B0E', card: '#111318' },
+          fontFamily: { sans: ['Figtree', 'system-ui', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #0c0e12;
-      --text: #ececec;
-      --mute: #9a9a96;
-      --faint: #6c6c68;
-      --line: rgba(255,255,255,.08);
-      --form: #111318;
-      --panel: #16181e;
-      --input: #0c0e12;
-      --copper: #c58a2a;
-      --ink: #0a0c10;
+      --gold: #D49B3E;
+      --card: #111318;
       --err: #e06b7a;
       --ok: #3dba8b;
-      --ez: cubic-bezier(.22, 1, .36, 1);
+      --warn: #c9a227;
     }
     html[data-theme='light'] {
-      --bg: #f4f1ea;
-      --text: #161512;
-      --mute: #6b6860;
-      --faint: #8f8b82;
-      --line: rgba(20,18,14,.1);
-      --form: #fff;
-      --panel: #ece7dc;
-      --input: #f7f5f0;
-      --copper: #a87220;
-      --err: #c44a5e;
-      --ok: #2f8f6a;
+      --card: #fff;
     }
-    html { height: 100%; color-scheme: dark; }
-    html[data-theme='light'] { color-scheme: light; }
-    body {
-      min-height: 100%; background: var(--bg); color: var(--text);
-      font-family: Figtree, system-ui, sans-serif; line-height: 1.45;
-      -webkit-font-smoothing: antialiased;
-    }
-    button, input { font: inherit; color: inherit; }
-    a { color: inherit; }
+    html[data-theme='light'] body { background: #f4f1ea; }
+    html[data-theme='light'] #fx { opacity: .22; }
+    html[data-theme='light'] .shell { background: #fff; border-color: rgba(20,18,14,.1); }
+    html[data-theme='light'] .overlay { background: #ece7dc; }
+    html[data-theme='light'] .notch label { background: #fff; }
+    html[data-theme='light'] .notch input { color: #161512; border-color: rgba(20,18,14,.14); }
+    html[data-theme='light'] .btn-ghost { border-color: rgba(20,18,14,.14); color: #161512; }
+    html[data-theme='light'] .pill { border-color: rgba(20,18,14,.14); color: #5c5850; }
+    html[data-theme='light'] .extra { background: #fff; }
     @media (prefers-reduced-motion: reduce) {
-      .overlay, .overlay-inner, .boot, .extra { transition: none !important; animation: none !important; }
+      .btn-shimmer::after { display: none; }
     }
 
-    .boot {
-      position: fixed; inset: 0; z-index: 200; display: grid; place-items: center;
-      background: var(--bg); transition: opacity .35s var(--ez), visibility .35s;
-    }
+    .boot { transition: opacity .35s, visibility .35s; }
     .boot.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
-    .boot img { width: 28px; height: 28px; border-radius: 6px; }
 
-    .top {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 20px 28px 0; max-width: 1040px; margin: 0 auto;
+    .shell { min-height: 600px; }
+    .pane { min-height: 600px; }
+    .overlay {
+      position: absolute; top: 0; bottom: 0; left: 50%; width: 50%;
+      z-index: 5; overflow: hidden; background: #16120c;
     }
-    .brand {
-      display: inline-flex; align-items: center; gap: 10px;
-      text-decoration: none; color: var(--text);
-      font-size: 14px; font-weight: 600; letter-spacing: .02em;
-    }
-    .brand img { width: 22px; height: 22px; border-radius: 5px; }
-    .nav-end { display: flex; align-items: center; gap: 4px; }
-    .chip {
-      appearance: none; height: 30px; padding: 0 10px; border-radius: 6px; cursor: pointer;
-      border: 0; background: transparent; color: var(--mute);
-      font: inherit; font-size: 13px; font-weight: 500; text-decoration: none;
-      display: inline-flex; align-items: center;
-    }
-    .chip:hover, .chip.is-active { color: var(--text); }
-    .chip.is-icon { width: 30px; padding: 0; justify-content: center; }
+    .overlay-inner { height: 100%; width: 200%; display: flex; }
+    .overlay-copy { width: 50%; height: 100%; }
 
-    .wrap {
-      min-height: calc(100vh - 72px);
-      display: grid; place-items: center;
-      padding: 32px 20px 40px;
+    .notch { position: relative; }
+    .notch input {
+      width: 100%; height: 48px; padding: 0 14px;
+      border: 1px solid rgba(255,255,255,.12); border-radius: 10px;
+      background: transparent; color: #ececec; font-size: 14px; outline: none;
+      transition: border-color .2s;
     }
-    .shell {
-      position: relative;
-      width: min(860px, 100%);
-      min-height: 560px;
-      border-radius: 16px;
-      overflow: hidden;
-      background: var(--form);
-      border: 1px solid var(--line);
-      display: grid; grid-template-columns: 1fr 1fr;
+    .notch input.has-eye { padding-right: 42px; }
+    .notch label {
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      padding: 0 6px; font-size: 14px; color: #8a8a86;
+      pointer-events: none; background: var(--card);
+      transition: top .18s ease, font-size .18s ease, color .18s ease, transform .18s ease;
+    }
+    .notch:focus-within input { border-color: var(--gold); }
+    .notch:focus-within label,
+    .notch.is-filled label {
+      top: 0; font-size: 11px; color: var(--gold); font-weight: 600;
     }
 
-    .pane {
-      padding: 44px 40px;
-      display: flex; flex-direction: column; justify-content: center;
-      min-height: 560px; max-width: 430px; width: 100%;
-    }
-    .pane h1 { font-size: 1.5rem; font-weight: 600; letter-spacing: -.03em; margin-bottom: 6px; }
-    .sub { color: var(--mute); font-size: 14px; margin-bottom: 28px; }
-
-    .social { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
-    .or {
-      display: flex; align-items: center; gap: 12px;
-      color: var(--faint); font-size: 12px; margin-bottom: 20px;
-    }
-    .or::before, .or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
-
-    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-    .field label { font-size: 13px; font-weight: 500; color: var(--text); }
-    .in { position: relative; }
-    .in input, .plain {
-      width: 100%; height: 42px; padding: 0 12px;
-      border-radius: 8px; border: 1px solid var(--line);
-      background: var(--input); color: var(--text); font-size: 14px; outline: none;
-      transition: border-color .15s;
-    }
-    .in input.has-eye { padding-right: 40px; }
-    .in input:focus, .plain:focus { border-color: var(--copper); }
     .eye {
-      position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+      position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
       width: 32px; height: 32px; border: 0; background: none;
-      color: var(--faint); cursor: pointer; display: grid; place-items: center; border-radius: 6px;
+      color: #6c6c68; cursor: pointer; display: grid; place-items: center; border-radius: 8px;
     }
-    .eye:hover { color: var(--text); }
+    .eye:hover, .eye[aria-pressed='true'] { color: var(--gold); }
 
-    .row { display: flex; justify-content: flex-end; margin: -4px 0 16px; }
-    .lnk { background: none; border: 0; color: var(--mute); font: inherit; font-size: 13px; cursor: pointer; padding: 0; }
-    .lnk:hover { color: var(--text); }
-
-    .btn {
-      width: 100%; height: 42px; border: 0; border-radius: 8px; cursor: pointer;
-      font-size: 14px; font-weight: 600;
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      transition: background .15s, opacity .15s, border-color .15s;
-    }
-    .btn:disabled { opacity: .5; cursor: not-allowed; }
-    .btn-primary { background: var(--copper); color: var(--ink); }
-    .btn-primary:not(:disabled):hover { background: #d49a3a; }
     .btn-ghost {
-      background: transparent; border: 1px solid var(--line); color: var(--text); font-weight: 500;
+      height: 42px; border-radius: 10px; border: 1px solid rgba(255,255,255,.12);
+      background: transparent; color: #ececec; font-weight: 500; font-size: 14px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      transition: border-color .2s, box-shadow .25s, transform .25s;
     }
-    .btn-ghost:hover { border-color: rgba(255,255,255,.18); }
-    html[data-theme='light'] .btn-ghost:hover { border-color: rgba(20,18,14,.22); }
-    .btn-outline {
-      width: auto; min-width: 140px; padding: 0 18px;
-      background: transparent; border: 1px solid var(--line); color: var(--text);
+    .btn-ghost:hover { border-color: rgba(212,155,62,.4); }
+    .js-google.gmail-hot {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 1px rgba(212,155,62,.35), 0 0 22px rgba(212,155,62,.28);
+      transform: scale(1.03);
     }
-    .btn-outline:hover { border-color: var(--copper); color: var(--copper); }
-    .spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; animation: spin .6s linear infinite; display: none; }
-    .btn.loading .spin { display: block; }
-    .btn.loading .blbl { display: none; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .g-svg, .fb-svg { width: 16px; height: 16px; }
+    .gmail-hint { display: none; font-size: 12px; color: var(--gold); margin: -8px 0 12px; }
+    .gmail-hint.show { display: block; }
 
-    .msg { display: none; margin-bottom: 14px; font-size: 13px; }
+    .btn-shimmer {
+      position: relative; overflow: hidden;
+      height: 46px; border: 0; border-radius: 10px; cursor: pointer;
+      background: var(--gold); color: #0A0B0E; font-weight: 700; font-size: 14px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+    }
+    .btn-shimmer::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.42) 50%, transparent 65%);
+      transform: translateX(-130%);
+    }
+    .btn-shimmer:hover::after { animation: shimmer .75s ease; }
+    @keyframes shimmer { to { transform: translateX(130%); } }
+    .btn-shimmer:disabled { opacity: .5; cursor: not-allowed; }
+    .spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; animation: spin .6s linear infinite; display: none; }
+    .btn-shimmer.loading .spin, .btn-ghost.loading .spin { display: block; }
+    .btn-shimmer.loading .blbl, .btn-ghost.loading .blbl { display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .pill {
+      height: 32px; padding: 0 14px; border-radius: 999px; cursor: pointer;
+      border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.04);
+      color: #b8b8b4; font-size: 12px; font-weight: 600;
+      transition: border-color .2s, color .2s, background .2s;
+    }
+    .pill:hover { border-color: var(--gold); color: var(--gold); background: rgba(212,155,62,.08); }
+
+    .btn-outline {
+      height: 42px; min-width: 148px; padding: 0 20px; border-radius: 10px; cursor: pointer;
+      border: 1px solid rgba(212,155,62,.45); background: transparent; color: #fff; font-weight: 600;
+      transition: background .2s, color .2s;
+    }
+    .btn-outline:hover { background: var(--gold); color: #0A0B0E; }
+
+    .msg { display: none; margin-bottom: 12px; font-size: 13px; }
     .msg.show { display: block; }
     .msg.error { color: var(--err); }
     .msg.success { color: var(--ok); }
-    .msg.info { color: var(--copper); }
+    .msg.info { color: var(--gold); }
 
-    .legal { margin-top: 16px; font-size: 12px; color: var(--faint); }
-    .legal a { color: var(--mute); }
-    .more { margin-top: 16px; display: flex; gap: 16px; }
-    .more .lnk { font-size: 12px; }
-
-    .pw-strength { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+    .pw-strength { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
     .bars { display: flex; gap: 3px; height: 2px; flex: 1; }
-    .bar { flex: 1; border-radius: 1px; background: var(--line); }
-    .bar.s1 { background: var(--err); } .bar.s2 { background: #c9a227; } .bar.s3 { background: var(--ok); }
-    .strength-lbl { font-size: 11px; color: var(--faint); min-width: 3.5em; }
-
-    .overlay {
-      position: absolute; inset: 0 0 0 50%;
-      z-index: 5; overflow: hidden;
-      background: var(--panel);
-      border-left: 1px solid var(--line);
-      transition: inset .55s var(--ez);
-    }
-    .shell.is-signup .overlay {
-      inset: 0 50% 0 0;
-      border-left: 0;
-      border-right: 1px solid var(--line);
-    }
-    .overlay-inner {
-      height: 100%; width: 200%;
-      display: flex; transition: transform .55s var(--ez);
-    }
-    .shell.is-signup .overlay-inner { transform: translateX(-50%); }
-    .overlay-copy {
-      width: 50%; height: 100%;
-      display: flex; flex-direction: column; justify-content: center;
-      padding: 48px 44px; gap: 10px;
-    }
-    .overlay-copy h2 { font-size: 1.35rem; font-weight: 600; letter-spacing: -.03em; }
-    .overlay-copy p { color: var(--mute); font-size: 14px; max-width: 28ch; line-height: 1.5; margin-bottom: 10px; }
+    .bar { flex: 1; border-radius: 1px; background: rgba(255,255,255,.1); }
+    .bar.s1 { background: var(--err); } .bar.s2 { background: var(--warn); } .bar.s3 { background: var(--ok); }
+    .strength-lbl { font-size: 11px; color: #6c6c68; min-width: 3.5em; }
 
     .extra {
       display: none; position: absolute; inset: 0; z-index: 8;
-      background: var(--form); padding: 44px 40px;
+      background: var(--card); padding: 44px 40px;
       flex-direction: column; justify-content: center; align-items: center;
     }
     .extra > * { width: min(380px, 100%); }
     .extra.show { display: flex; }
-    .extra h1 { font-size: 1.5rem; font-weight: 600; letter-spacing: -.03em; margin-bottom: 6px; }
-    .otp-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: end; }
-    .otp-row .btn { width: auto; min-width: 108px; padding: 0 16px; }
 
-    .redirect {
-      display: none; position: fixed; inset: 0; z-index: 120; background: var(--bg);
-      flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 24px;
-    }
+    .redirect { display: none; }
     .redirect.show { display: flex; }
-    .redirect-mark { color: var(--ok); font-size: 20px; }
-    .redirect h2 { font-size: 1.2rem; font-weight: 600; }
-    .redirect p { color: var(--mute); font-size: 14px; }
-    .redirect-bar { width: 120px; height: 1px; background: var(--line); overflow: hidden; }
-    .redirect-bar > span { display: block; height: 100%; width: 0; background: var(--copper); animation: prog 1.6s var(--ez) forwards; }
+    .redirect-bar > span { display: block; height: 100%; width: 0; background: var(--gold); animation: prog 1.6s ease forwards; }
     @keyframes prog { to { width: 100%; } }
-    .btn-open-app { max-width: 220px; display: none; }
 
-    .foot {
-      padding: 0 24px 24px;
-      display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;
-      font-size: 12px; color: var(--faint);
-    }
-    .foot a { color: var(--faint); text-decoration: none; }
-    .foot a:hover { color: var(--mute); }
+    .otp-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: end; }
+    .otp-row .btn-shimmer { width: auto; min-width: 108px; padding: 0 16px; }
 
     .mobile-switch { display: none; }
-
-    @media (max-width: 800px) {
-      .top { padding: 16px 16px 0; }
-      .shell { grid-template-columns: 1fr; min-height: 0; }
+    @media (max-width: 767px) {
+      .shell { min-height: 0; }
+      .pane { min-height: 0; }
       .pane-signup { display: none; }
       .shell.is-signup .pane-login { display: none; }
       .shell.is-signup .pane-signup { display: flex; }
       .overlay { display: none; }
-      .pane, .extra { min-height: 0; max-width: none; padding: 32px 22px; }
-      .mobile-switch {
-        display: flex; margin-top: 20px; color: var(--mute); font-size: 13px; gap: 6px;
-      }
+      .mobile-switch { display: flex; }
     }
   </style>
 </head>
-<body>
-  <div class="boot" id="boot"><img src="/logo-fg.png" alt="" width="28" height="28" /></div>
+<body class="min-h-screen bg-ink text-zinc-100 font-sans antialiased">
+  <canvas id="fx" class="pointer-events-none fixed inset-0 z-0"></canvas>
+  <div class="boot fixed inset-0 z-[200] grid place-items-center bg-ink" id="boot">
+    <img src="/logo-fg.png" alt="" width="28" height="28" class="rounded-md" />
+  </div>
 
-  <header class="top">
-    <a class="brand" href="/"><img src="/logo-fg.png" alt="" width="22" height="22" />ARICH</a>
-    <div class="nav-end">
-      <button type="button" class="chip is-active" id="langFr">FR</button>
-      <button type="button" class="chip" id="langEn">EN</button>
-      <button type="button" class="chip is-icon" id="themeToggle" aria-label="Theme">◐</button>
-      <a class="chip" href="/" data-i18n="nav_home">Accueil</a>
+  <header class="relative z-20 mx-auto flex max-w-[1040px] items-center justify-between px-6 pt-5">
+    <a href="/" class="inline-flex items-center gap-2.5 text-sm font-semibold tracking-wide text-zinc-100 no-underline">
+      <img src="/logo-fg.png" alt="" width="22" height="22" class="rounded" />ARICH
+    </a>
+    <div class="flex items-center gap-1">
+      <button type="button" class="chip h-8 px-2.5 text-[13px] text-zinc-400 hover:text-white" id="langFr">FR</button>
+      <button type="button" class="chip h-8 px-2.5 text-[13px] text-zinc-400 hover:text-white" id="langEn">EN</button>
+      <button type="button" class="chip h-8 w-8 text-zinc-400 hover:text-white" id="themeToggle" aria-label="Theme">◐</button>
+      <a class="chip h-8 px-2.5 text-[13px] text-zinc-400 no-underline hover:text-white" href="/" data-i18n="nav_home">Accueil</a>
     </div>
   </header>
 
-  <div class="redirect" id="redirect" role="status">
-    <div class="redirect-mark">✓</div>
-    <h2 data-i18n="redirect_title">Connexion réussie</h2>
-    <p id="redirect-sub" data-i18n="redirect_sub_web">Redirection en cours…</p>
-    <div class="redirect-bar"><span></span></div>
-    <button type="button" class="btn btn-primary btn-open-app" id="btn-open-app"><span data-i18n="redirect_open">Ouvrir l’application</span></button>
+  <div class="redirect fixed inset-0 z-[120] flex-col items-center justify-center gap-3 bg-ink px-6 text-center" id="redirect" role="status">
+    <div class="text-xl text-[#3dba8b]">✓</div>
+    <h2 class="text-lg font-semibold" data-i18n="redirect_title">Connexion réussie</h2>
+    <p id="redirect-sub" class="text-sm text-zinc-400" data-i18n="redirect_sub_web">Redirection en cours…</p>
+    <div class="redirect-bar h-px w-28 overflow-hidden bg-white/10"><span></span></div>
+    <button type="button" class="btn-shimmer mt-2 hidden max-w-[220px]" id="btn-open-app"><span data-i18n="redirect_open">Ouvrir l’application</span></button>
   </div>
 
-  <main class="wrap" id="main">
-    <div class="shell" id="shell">
-      <section class="pane pane-login" id="paneLogin">
-        <h1 data-i18n="login_title">Connexion</h1>
-        <p class="sub" data-i18n="login_lede">Retrouvez vos playlists et votre licence.</p>
+  <main class="relative z-10 grid min-h-[calc(100vh-72px)] place-items-center px-5 py-8" id="main">
+    <div class="shell relative grid w-full max-w-[920px] grid-cols-1 overflow-hidden rounded-2xl border border-white/10 bg-card/90 shadow-[0_30px_80px_rgba(0,0,0,.45)] backdrop-blur md:grid-cols-2" id="shell">
+
+      <section class="pane flex w-full max-w-[460px] flex-col justify-center px-8 py-10 md:px-10" id="paneLogin">
+        <h1 class="stagger mb-1.5 text-2xl font-semibold tracking-tight" data-i18n="login_title">Connexion</h1>
+        <p class="stagger mb-7 text-sm text-zinc-400" data-i18n="login_lede">Retrouvez vos playlists et votre licence.</p>
         <div class="msg" id="login-msg" role="alert"></div>
-        <div class="social">
-          <button type="button" class="btn btn-ghost" id="btn-google">
+        <div class="stagger mb-5 grid grid-cols-2 gap-2">
+          <button type="button" class="btn-ghost js-google" id="btn-google">
             <span class="spin"></span>
-            <span class="blbl" style="display:inline-flex;align-items:center;gap:8px;">
-              <svg class="g-svg" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            <span class="blbl inline-flex items-center gap-2">
+              <svg class="h-4 w-4" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
               Google
             </span>
           </button>
-          <button type="button" class="btn btn-ghost" id="btn-facebook">
+          <button type="button" class="btn-ghost" id="btn-facebook">
             <span class="spin"></span>
-            <span class="blbl" style="display:inline-flex;align-items:center;gap:8px;">
-              <svg class="fb-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.89v2.26h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07z"/></svg>
+            <span class="blbl inline-flex items-center gap-2">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.89v2.26h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07z"/></svg>
               Facebook
             </span>
           </button>
         </div>
-        <div class="or" data-i18n="or">ou</div>
-        <div class="field">
+        <p class="gmail-hint" data-i18n="gmail_hint">Compte Gmail détecté — plus rapide avec Google.</p>
+        <div class="stagger mb-5 flex items-center gap-3">
+          <span class="h-px flex-1 bg-white/10"></span>
+          <span class="text-xs text-zinc-500" data-i18n="or">ou</span>
+          <span class="h-px flex-1 bg-white/10"></span>
+        </div>
+        <div class="stagger notch mb-4" data-notch>
+          <input id="login-email" type="email" autocomplete="email" inputmode="email" placeholder=" " />
           <label for="login-email" data-i18n="email">E-mail</label>
-          <div class="in"><input id="login-email" type="email" autocomplete="email" inputmode="email" placeholder="vous@exemple.com" /></div>
         </div>
-        <div class="field">
+        <div class="stagger notch mb-2" data-notch>
+          <input id="login-pw" type="password" class="has-eye" autocomplete="current-password" placeholder=" " />
           <label for="login-pw" data-i18n="password">Mot de passe</label>
-          <div class="in">
-            <input id="login-pw" type="password" class="has-eye" autocomplete="current-password" />
-            <button type="button" class="eye" data-toggle-pw="login-pw" aria-label="Show password"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-          </div>
+          <button type="button" class="eye" data-toggle-pw="login-pw" aria-label="Show password">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
         </div>
-        <div class="row">
-          <button type="button" class="lnk" id="forgotLink" data-i18n="forgot_link">Mot de passe oublié ?</button>
+        <div class="stagger mb-4 flex justify-end">
+          <button type="button" class="text-[13px] text-zinc-400 hover:text-gold" id="forgotLink" data-i18n="forgot_link">Mot de passe oublié ?</button>
         </div>
-        <button type="button" class="btn btn-primary" id="btn-login">
+        <button type="button" class="stagger btn-shimmer" id="btn-login">
           <span class="spin"></span><span class="blbl" data-i18n="login_cta">Se connecter</span>
         </button>
-        <div class="more">
-          <button type="button" class="lnk" data-extra="magic" data-i18n="jump_magic">Magic link</button>
-          <button type="button" class="lnk" data-extra="phone" data-i18n="jump_phone">SMS</button>
+        <div class="stagger mt-5 flex gap-2">
+          <button type="button" class="pill" data-extra="magic" data-i18n="jump_magic">Magic link</button>
+          <button type="button" class="pill" data-extra="phone" data-i18n="jump_phone">SMS</button>
         </div>
-        <p class="mobile-switch"><span data-i18n="no_account">Pas de compte ?</span> <button type="button" class="lnk" data-mode="signup" data-i18n="signup_cta_short">S’inscrire</button></p>
+        <p class="mobile-switch mt-5 items-center gap-1.5 text-[13px] text-zinc-400">
+          <span data-i18n="no_account">Pas de compte ?</span>
+          <button type="button" class="text-gold" data-mode="signup" data-i18n="signup_cta_short">S’inscrire</button>
+        </p>
       </section>
 
-      <section class="pane pane-signup" id="paneSignup">
-        <h1 data-i18n="signup_title">Créer un compte</h1>
-        <p class="sub" data-i18n="signup_lede">Un compte pour synchroniser playlists et licence.</p>
+      <section class="pane flex w-full max-w-[460px] flex-col justify-center px-8 py-10 md:px-10" id="paneSignup">
+        <h1 class="stagger mb-1.5 text-2xl font-semibold tracking-tight" data-i18n="signup_title">Créer un compte</h1>
+        <p class="stagger mb-7 text-sm text-zinc-400" data-i18n="signup_lede">Un compte pour synchroniser playlists et licence.</p>
         <div class="msg" id="signup-msg" role="alert"></div>
-        <div class="social">
-          <button type="button" class="btn btn-ghost" id="btn-google-up">
+        <div class="stagger mb-5 grid grid-cols-2 gap-2">
+          <button type="button" class="btn-ghost js-google" id="btn-google-up">
             <span class="spin"></span>
-            <span class="blbl" style="display:inline-flex;align-items:center;gap:8px;">
-              <svg class="g-svg" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            <span class="blbl inline-flex items-center gap-2">
+              <svg class="h-4 w-4" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
               Google
             </span>
           </button>
-          <button type="button" class="btn btn-ghost" id="btn-facebook-up">
+          <button type="button" class="btn-ghost" id="btn-facebook-up">
             <span class="spin"></span>
-            <span class="blbl" style="display:inline-flex;align-items:center;gap:8px;">
-              <svg class="fb-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.89v2.26h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07z"/></svg>
+            <span class="blbl inline-flex items-center gap-2">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.89v2.26h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07z"/></svg>
               Facebook
             </span>
           </button>
         </div>
-        <div class="or" data-i18n="or">ou</div>
-        <div class="field">
+        <p class="gmail-hint" data-i18n="gmail_hint">Compte Gmail détecté — plus rapide avec Google.</p>
+        <div class="stagger mb-5 flex items-center gap-3">
+          <span class="h-px flex-1 bg-white/10"></span>
+          <span class="text-xs text-zinc-500" data-i18n="or">ou</span>
+          <span class="h-px flex-1 bg-white/10"></span>
+        </div>
+        <div class="stagger notch mb-4" data-notch>
+          <input id="signup-email" type="email" autocomplete="email" inputmode="email" placeholder=" " />
           <label for="signup-email" data-i18n="email">E-mail</label>
-          <div class="in"><input id="signup-email" type="email" autocomplete="email" inputmode="email" placeholder="vous@exemple.com" /></div>
         </div>
-        <div class="field">
+        <div class="stagger notch mb-4" data-notch>
+          <input id="signup-pw" type="password" class="has-eye" autocomplete="new-password" placeholder=" " />
           <label for="signup-pw" data-i18n="password">Mot de passe</label>
-          <div class="in">
-            <input id="signup-pw" type="password" class="has-eye" autocomplete="new-password" />
-            <button type="button" class="eye" data-toggle-pw="signup-pw" aria-label="Show password"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-          </div>
-          <div class="pw-strength">
-            <div class="bars"><div class="bar" id="bar1"></div><div class="bar" id="bar2"></div><div class="bar" id="bar3"></div></div>
-            <div class="strength-lbl" id="strength-lbl"></div>
-          </div>
+          <button type="button" class="eye" data-toggle-pw="signup-pw" aria-label="Show password">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
         </div>
-        <div class="field">
+        <div class="pw-strength mb-3">
+          <div class="bars"><div class="bar" id="bar1"></div><div class="bar" id="bar2"></div><div class="bar" id="bar3"></div></div>
+          <div class="strength-lbl" id="strength-lbl"></div>
+        </div>
+        <div class="stagger notch mb-5" data-notch>
+          <input id="signup-pw2" type="password" class="has-eye" autocomplete="new-password" placeholder=" " />
           <label for="signup-pw2" data-i18n="password_confirm">Confirmer</label>
-          <div class="in">
-            <input id="signup-pw2" type="password" class="has-eye" autocomplete="new-password" />
-            <button type="button" class="eye" data-toggle-pw="signup-pw2" aria-label="Show password"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-          </div>
+          <button type="button" class="eye" data-toggle-pw="signup-pw2" aria-label="Show password">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
         </div>
-        <button type="button" class="btn btn-primary" id="btn-signup" style="margin-top:4px">
+        <button type="button" class="stagger btn-shimmer" id="btn-signup">
           <span class="spin"></span><span class="blbl" data-i18n="signup_cta">Créer mon compte</span>
         </button>
-        <p class="legal" data-i18n-html="signup_legal">En créant un compte, vous acceptez la <a href="/privacy-policy.html">politique de confidentialité</a>.</p>
-        <p class="mobile-switch"><span data-i18n="has_account">Déjà un compte ?</span> <button type="button" class="lnk" data-mode="login" data-i18n="login_cta_short">Se connecter</button></p>
+        <p class="stagger mt-4 text-xs text-zinc-500" data-i18n-html="signup_legal">En créant un compte, vous acceptez la <a class="text-zinc-400 underline" href="/privacy-policy.html">politique de confidentialité</a>.</p>
+        <p class="mobile-switch mt-5 items-center gap-1.5 text-[13px] text-zinc-400">
+          <span data-i18n="has_account">Déjà un compte ?</span>
+          <button type="button" class="text-gold" data-mode="login" data-i18n="login_cta_short">Se connecter</button>
+        </p>
       </section>
 
-      <div class="overlay">
-        <div class="overlay-inner">
-          <div class="overlay-copy">
-            <h2 data-i18n="overlay_signup_t">Nouveau ici ?</h2>
-            <p data-i18n="overlay_signup_p">Créez un compte pour lier vos appareils et votre licence.</p>
-            <button type="button" class="btn btn-outline" data-mode="signup" data-i18n="signup_cta_short">S’inscrire</button>
+      <div class="overlay" id="overlay">
+        <div class="overlay-inner" id="overlayInner">
+          <div class="overlay-copy flex flex-col justify-center px-11 py-12">
+            <p class="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-gold">ARICH</p>
+            <h2 class="mb-3 text-[1.65rem] font-semibold tracking-tight" data-i18n="overlay_signup_t">Nouveau ici ?</h2>
+            <p class="mb-6 max-w-[28ch] text-sm leading-relaxed text-zinc-400" data-i18n="overlay_signup_p">Créez un compte pour lier vos appareils et votre licence.</p>
+            <button type="button" class="btn-outline w-fit" data-mode="signup" data-i18n="signup_cta_short">S’inscrire</button>
           </div>
-          <div class="overlay-copy">
-            <h2 data-i18n="overlay_login_t">Déjà un compte ?</h2>
-            <p data-i18n="overlay_login_p">Revenez à votre espace ARICH.</p>
-            <button type="button" class="btn btn-outline" data-mode="login" data-i18n="login_cta">Se connecter</button>
+          <div class="overlay-copy flex flex-col justify-center px-11 py-12">
+            <p class="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-gold">ARICH</p>
+            <h2 class="mb-3 text-[1.65rem] font-semibold tracking-tight" data-i18n="overlay_login_t">Déjà un compte ?</h2>
+            <p class="mb-6 max-w-[28ch] text-sm leading-relaxed text-zinc-400" data-i18n="overlay_login_p">Revenez à votre espace ARICH.</p>
+            <button type="button" class="btn-outline w-fit" data-mode="login" data-i18n="login_cta">Se connecter</button>
           </div>
         </div>
       </div>
 
-      <!-- Extra flows -->
       <div class="extra" id="extra-forgot">
-        <h1 data-i18n="forgot_title">Mot de passe oublié</h1>
-        <p class="sub" data-i18n="forgot_lede">Nous enverrons un lien de réinitialisation.</p>
+        <h1 class="mb-1.5 text-2xl font-semibold" data-i18n="forgot_title">Mot de passe oublié</h1>
+        <p class="mb-7 text-sm text-zinc-400" data-i18n="forgot_lede">Nous enverrons un lien de réinitialisation.</p>
         <div class="msg" id="forgot-msg" role="alert"></div>
-        <div class="field">
+        <div class="notch mb-5" data-notch>
+          <input id="forgot-email" type="email" autocomplete="email" placeholder=" " />
           <label for="forgot-email" data-i18n="email">E-mail</label>
-          <div class="in"><input id="forgot-email" type="email" autocomplete="email" /></div>
         </div>
-        <button type="button" class="btn btn-primary" id="btn-forgot"><span class="spin"></span><span class="blbl" data-i18n="forgot_cta">Envoyer le lien</span></button>
-        <p class="legal"><button type="button" class="lnk" data-extra-close data-i18n="back_login">← Retour</button></p>
+        <button type="button" class="btn-shimmer" id="btn-forgot"><span class="spin"></span><span class="blbl" data-i18n="forgot_cta">Envoyer le lien</span></button>
+        <p class="mt-4"><button type="button" class="text-[13px] text-zinc-400 hover:text-gold" data-extra-close data-i18n="back_login">← Retour</button></p>
       </div>
       <div class="extra" id="extra-magic">
-        <h1 data-i18n="magic_title">Magic link</h1>
-        <p class="sub" data-i18n="magic_hint">Un lien unique par e-mail, sans mot de passe.</p>
+        <h1 class="mb-1.5 text-2xl font-semibold" data-i18n="magic_title">Magic link</h1>
+        <p class="mb-7 text-sm text-zinc-400" data-i18n="magic_hint">Un lien unique par e-mail, sans mot de passe.</p>
         <div class="msg" id="magic-msg" role="alert"></div>
-        <div class="field">
+        <div class="notch mb-5" data-notch>
+          <input id="magic-email" type="email" autocomplete="email" placeholder=" " />
           <label for="magic-email" data-i18n="email">E-mail</label>
-          <div class="in"><input id="magic-email" type="email" autocomplete="email" /></div>
         </div>
-        <button type="button" class="btn btn-primary" id="btn-magic"><span class="spin"></span><span class="blbl" data-i18n="magic_cta">Envoyer le lien</span></button>
-        <p class="legal"><button type="button" class="lnk" data-extra-close data-i18n="back_login">← Retour</button></p>
+        <button type="button" class="btn-shimmer" id="btn-magic"><span class="spin"></span><span class="blbl" data-i18n="magic_cta">Envoyer le lien</span></button>
+        <p class="mt-4"><button type="button" class="text-[13px] text-zinc-400 hover:text-gold" data-extra-close data-i18n="back_login">← Retour</button></p>
       </div>
       <div class="extra" id="extra-phone">
-        <h1 data-i18n="phone_title">Téléphone</h1>
-        <p class="sub" data-i18n="phone_hint">Format international, ex. +33612345678.</p>
+        <h1 class="mb-1.5 text-2xl font-semibold" data-i18n="phone_title">Téléphone</h1>
+        <p class="mb-7 text-sm text-zinc-400" data-i18n="phone_hint">Format international, ex. +33612345678.</p>
         <div class="msg" id="phone-msg" role="alert"></div>
-        <div class="field">
+        <div class="notch mb-5" data-notch>
+          <input id="phone-input" type="tel" autocomplete="tel" inputmode="tel" placeholder=" " />
           <label for="phone-input" data-i18n="phone">Numéro</label>
-          <div class="in"><input id="phone-input" class="plain" type="tel" autocomplete="tel" inputmode="tel" placeholder="+33…" /></div>
         </div>
-        <button type="button" class="btn btn-primary" id="btn-phone-send"><span class="spin"></span><span class="blbl" data-i18n="phone_send">Envoyer le SMS</span></button>
-        <div class="otp-row" id="otpRow" hidden style="margin-top:14px">
-          <div class="field" style="margin:0">
+        <button type="button" class="btn-shimmer" id="btn-phone-send"><span class="spin"></span><span class="blbl" data-i18n="phone_send">Envoyer le SMS</span></button>
+        <div class="otp-row mt-4" id="otpRow" hidden>
+          <div class="notch" data-notch>
+            <input id="phone-otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder=" " />
             <label for="phone-otp" data-i18n="otp">Code</label>
-            <div class="in"><input id="phone-otp" class="plain" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" /></div>
           </div>
-          <button type="button" class="btn btn-primary" id="btn-phone-verify"><span class="spin"></span><span class="blbl" data-i18n="phone_verify">Vérifier</span></button>
+          <button type="button" class="btn-shimmer" id="btn-phone-verify"><span class="spin"></span><span class="blbl" data-i18n="phone_verify">Vérifier</span></button>
         </div>
-        <p class="legal"><button type="button" class="lnk" data-extra-close data-i18n="back_login">← Retour</button></p>
+        <p class="mt-4"><button type="button" class="text-[13px] text-zinc-400 hover:text-gold" data-extra-close data-i18n="back_login">← Retour</button></p>
       </div>
       <div class="extra" id="extra-reset">
-        <h1 data-i18n="reset_title">Nouveau mot de passe</h1>
-        <p class="sub" data-i18n="pw_hint">8 caractères minimum.</p>
+        <h1 class="mb-1.5 text-2xl font-semibold" data-i18n="reset_title">Nouveau mot de passe</h1>
+        <p class="mb-7 text-sm text-zinc-400" data-i18n="pw_hint">8 caractères minimum.</p>
         <div class="msg" id="reset-msg" role="alert"></div>
-        <div class="field">
+        <div class="notch mb-4" data-notch>
+          <input id="reset-pw" type="password" class="has-eye" autocomplete="new-password" placeholder=" " />
           <label for="reset-pw" data-i18n="password_new">Nouveau mot de passe</label>
-          <div class="in">
-            <input id="reset-pw" type="password" class="has-eye" autocomplete="new-password" />
-            <button type="button" class="eye" data-toggle-pw="reset-pw"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-          </div>
-          <div class="pw-strength">
-            <div class="bars"><div class="bar" id="rbar1"></div><div class="bar" id="rbar2"></div><div class="bar" id="rbar3"></div></div>
-            <div class="strength-lbl" id="rstrength-lbl"></div>
-          </div>
+          <button type="button" class="eye" data-toggle-pw="reset-pw"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
-        <div class="field">
+        <div class="pw-strength mb-4">
+          <div class="bars"><div class="bar" id="rbar1"></div><div class="bar" id="rbar2"></div><div class="bar" id="rbar3"></div></div>
+          <div class="strength-lbl" id="rstrength-lbl"></div>
+        </div>
+        <div class="notch mb-5" data-notch>
+          <input id="reset-pw2" type="password" class="has-eye" autocomplete="new-password" placeholder=" " />
           <label for="reset-pw2" data-i18n="password_confirm">Confirmer</label>
-          <div class="in">
-            <input id="reset-pw2" type="password" class="has-eye" autocomplete="new-password" />
-            <button type="button" class="eye" data-toggle-pw="reset-pw2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-          </div>
+          <button type="button" class="eye" data-toggle-pw="reset-pw2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
-        <button type="button" class="btn btn-primary" id="btn-reset"><span class="spin"></span><span class="blbl" data-i18n="reset_cta">Mettre à jour</span></button>
+        <button type="button" class="btn-shimmer" id="btn-reset"><span class="spin"></span><span class="blbl" data-i18n="reset_cta">Mettre à jour</span></button>
       </div>
     </div>
   </main>
 
-  <footer class="foot">
-    <a href="/privacy-policy.html" data-i18n="footer_privacy">Confidentialité</a>
-    <a href="/data-deletion.html" data-i18n="footer_deletion">Suppression des données</a>
-    <a href="mailto:contact@arich.fr">contact@arich.fr</a>
+  <footer class="relative z-10 flex flex-wrap justify-center gap-5 px-6 pb-6 text-xs text-zinc-500">
+    <a class="text-zinc-500 no-underline hover:text-zinc-300" href="/privacy-policy.html" data-i18n="footer_privacy">Confidentialité</a>
+    <a class="text-zinc-500 no-underline hover:text-zinc-300" href="/data-deletion.html" data-i18n="footer_deletion">Suppression des données</a>
+    <a class="text-zinc-500 no-underline hover:text-zinc-300" href="mailto:contact@arich.fr">contact@arich.fr</a>
   </footer>
 
   <script>
@@ -480,7 +425,7 @@
         phone_title: 'Téléphone', phone: 'Numéro', phone_hint: 'Format international, ex. +33612345678.',
         phone_send: 'Envoyer le SMS', phone_verify: 'Vérifier', otp: 'Code',
         reset_title: 'Nouveau mot de passe', reset_cta: 'Mettre à jour',
-        signup_legal: 'En créant un compte, vous acceptez la <a href="/privacy-policy.html">politique de confidentialité</a>.',
+        signup_legal: 'En créant un compte, vous acceptez la <a class="text-zinc-400 underline" href="/privacy-policy.html">politique de confidentialité</a>.',
         footer_privacy: 'Confidentialité', footer_deletion: 'Suppression des données',
         redirect_title: 'Connexion réussie', redirect_sub_web: 'Redirection en cours…',
         redirect_sub_app: 'Retour vers l’application ARICH…', redirect_sub_watch: 'Retour vers Watch Together…',
@@ -494,6 +439,7 @@
         ok_sms: 'Code SMS envoyé.', ok_reset_sent: 'E-mail envoyé.', ok_pw_updated: 'Mot de passe mis à jour.',
         switch_exists: 'Ce compte existe déjà. Connectez-vous.',
         switch_unknown: 'Aucun compte pour cet e-mail. Créez-en un.',
+        gmail_hint: 'Compte Gmail détecté — plus rapide avec Google.',
       },
       en: {
         doc_title: 'Sign in — ARICH Player', nav_home: 'Home',
@@ -513,7 +459,7 @@
         phone_title: 'Phone', phone: 'Number', phone_hint: 'International format, e.g. +33612345678.',
         phone_send: 'Send SMS', phone_verify: 'Verify', otp: 'Code',
         reset_title: 'New password', reset_cta: 'Update password',
-        signup_legal: 'By creating an account, you agree to the <a href="/privacy-policy.html">privacy policy</a>.',
+        signup_legal: 'By creating an account, you agree to the <a class="text-zinc-400 underline" href="/privacy-policy.html">privacy policy</a>.',
         footer_privacy: 'Privacy', footer_deletion: 'Data deletion',
         redirect_title: 'Signed in', redirect_sub_web: 'Redirecting…',
         redirect_sub_app: 'Returning to the ARICH app…', redirect_sub_watch: 'Returning to Watch Together…',
@@ -527,6 +473,7 @@
         ok_sms: 'SMS code sent.', ok_reset_sent: 'Email sent.', ok_pw_updated: 'Password updated.',
         switch_exists: 'This account already exists. Sign in.',
         switch_unknown: 'No account for this email. Create one.',
+        gmail_hint: 'Gmail detected — faster with Google.',
       },
     }
 
@@ -540,6 +487,7 @@
     const WEB_REDIRECT = 'https://arich.fr/manage-playlist.html'
     const { createClient } = supabase
     const sb = createClient(SUPABASE_URL, SUPABASE_ANON)
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
 
     function t(key) { return (I18N[lang] && I18N[lang][key]) || I18N.fr[key] || key }
     function applyLang(next) {
@@ -548,9 +496,40 @@
       document.title = t('doc_title')
       document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.getAttribute('data-i18n')) })
       document.querySelectorAll('[data-i18n-html]').forEach((el) => { el.innerHTML = t(el.getAttribute('data-i18n-html')) })
-      document.getElementById('langFr')?.classList.toggle('is-active', lang === 'fr')
-      document.getElementById('langEn')?.classList.toggle('is-active', lang === 'en')
+      document.getElementById('langFr')?.classList.toggle('text-white', lang === 'fr')
+      document.getElementById('langEn')?.classList.toggle('text-white', lang === 'en')
       try { localStorage.setItem('arich_lang', lang) } catch (_) {}
+    }
+
+    function isDesktop() { return matchMedia('(min-width: 768px)').matches }
+    function syncNotches() {
+      document.querySelectorAll('[data-notch]').forEach((wrap) => {
+        const input = wrap.querySelector('input')
+        wrap.classList.toggle('is-filled', !!(input && input.value))
+      })
+    }
+    function checkGmail(email) {
+      const hit = /@gmail\.com$/i.test((email || '').trim())
+      document.querySelectorAll('.js-google').forEach((btn) => btn.classList.toggle('gmail-hot', hit))
+      document.querySelectorAll('.gmail-hint').forEach((el) => el.classList.toggle('show', hit))
+    }
+    function staggerPane(paneId) {
+      if (reduceMotion || !window.gsap) return
+      const items = document.getElementById(paneId)?.querySelectorAll('.stagger')
+      if (!items?.length) return
+      gsap.fromTo(items, { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.42, stagger: 0.055, ease: 'power2.out', delay: 0.12 })
+    }
+    function slideOverlay(toSignup) {
+      const overlay = document.getElementById('overlay')
+      const inner = document.getElementById('overlayInner')
+      if (!overlay || !inner || !isDesktop()) return
+      if (reduceMotion || !window.gsap) {
+        overlay.style.left = toSignup ? '0%' : '50%'
+        inner.style.transform = toSignup ? 'translateX(-50%)' : 'translateX(0)'
+        return
+      }
+      gsap.to(overlay, { left: toSignup ? '0%' : '50%', duration: 0.72, ease: 'power3.inOut' })
+      gsap.to(inner, { xPercent: toSignup ? -50 : 0, duration: 0.72, ease: 'power3.inOut' })
     }
 
     function setMode(next, { email, info } = {}) {
@@ -562,10 +541,14 @@
         document.getElementById('login-email').value = email
         document.getElementById('signup-email').value = email
       }
+      syncNotches()
+      checkGmail(document.getElementById('login-email').value)
+      slideOverlay(mode === 'signup')
+      staggerPane(mode === 'signup' ? 'paneSignup' : 'paneLogin')
       if (info === 'exists') showMsg('login', t('switch_exists'), 'info')
       if (info === 'unknown') showMsg('signup', t('switch_unknown'), 'info')
       const focusId = mode === 'signup' ? 'signup-email' : 'login-email'
-      setTimeout(() => document.getElementById(focusId)?.focus(), 420)
+      setTimeout(() => document.getElementById(focusId)?.focus(), 480)
     }
 
     function showMsg(id, text, type = 'error') {
@@ -599,6 +582,7 @@
         const v = document.getElementById('login-email').value.trim() || document.getElementById('signup-email').value.trim()
         if (v) document.getElementById('magic-email').value = v
       }
+      syncNotches()
     }
 
     function getNextRedirectUrl() {
@@ -652,7 +636,7 @@
         setTimeout(() => { location.href = deepLink }, 600)
         setTimeout(() => {
           const btn = document.getElementById('btn-open-app')
-          if (btn) btn.style.display = 'inline-flex'
+          if (btn) { btn.style.display = 'inline-flex'; btn.classList.remove('hidden') }
           if (sub) sub.textContent = t('redirect_sub_manual')
         }, 2800)
       } else {
@@ -773,7 +757,6 @@
         showMsg('signup', translateError(error.message))
         return
       }
-      // Supabase often returns a user with empty identities when email already exists
       const identities = data.user?.identities || []
       if (data.user && identities.length === 0 && !data.session) {
         setMode('login', { email, info: 'exists' })
@@ -864,10 +847,10 @@
         document.documentElement.dataset.theme = next
         document.documentElement.style.colorScheme = next
         const meta = document.getElementById('themeColor')
-        if (meta) meta.content = next === 'light' ? '#F4F1EA' : '#0D1017'
+        if (meta) meta.content = next === 'light' ? '#F4F1EA' : '#0A0B0E'
       }
       const saved = localStorage.getItem(KEY)
-      apply(saved === 'light' || saved === 'dark' ? saved : (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'))
+      apply(saved === 'light' || saved === 'dark' ? saved : 'dark')
       document.getElementById('themeToggle')?.addEventListener('click', () => {
         const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light'
         localStorage.setItem(KEY, next)
@@ -901,8 +884,20 @@
     document.querySelectorAll('[data-toggle-pw]').forEach((btn) => btn.addEventListener('click', () => togglePw(btn.getAttribute('data-toggle-pw'), btn)))
     document.getElementById('signup-pw')?.addEventListener('input', (e) => checkStrength(e.target.value))
     document.getElementById('reset-pw')?.addEventListener('input', (e) => checkStrength(e.target.value, 'reset'))
-    document.getElementById('login-email')?.addEventListener('input', (e) => { document.getElementById('signup-email').value = e.target.value })
-    document.getElementById('signup-email')?.addEventListener('input', (e) => { document.getElementById('login-email').value = e.target.value })
+    document.querySelectorAll('[data-notch] input').forEach((input) => {
+      const sync = () => { input.closest('[data-notch]')?.classList.toggle('is-filled', !!input.value) }
+      input.addEventListener('input', sync)
+      input.addEventListener('blur', sync)
+    })
+    const onEmail = (e) => {
+      const v = e.target.value
+      const other = e.target.id === 'login-email' ? 'signup-email' : 'login-email'
+      document.getElementById(other).value = v
+      syncNotches()
+      checkGmail(v)
+    }
+    document.getElementById('login-email')?.addEventListener('input', onEmail)
+    document.getElementById('signup-email')?.addEventListener('input', onEmail)
 
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Enter' || e.target?.tagName !== 'INPUT') return
@@ -914,14 +909,76 @@
       else if (currentView === 'reset') doReset()
     })
 
+    ;(function particles() {
+      const canvas = document.getElementById('fx')
+      if (!canvas || reduceMotion) return
+      const ctx = canvas.getContext('2d')
+      const mouse = { x: -9999, y: -9999 }
+      let dots = [], raf = 0
+      function resize() {
+        canvas.width = innerWidth
+        canvas.height = innerHeight
+        const n = Math.min(78, Math.floor((canvas.width * canvas.height) / 16000))
+        dots = Array.from({ length: n }, () => ({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
+          r: Math.random() * 1.4 + 0.4,
+        }))
+      }
+      function tick() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        const link = 118
+        for (let i = 0; i < dots.length; i++) {
+          const d = dots[i]
+          const dx = d.x - mouse.x, dy = d.y - mouse.y
+          const dist = Math.hypot(dx, dy)
+          if (dist < 130 && dist > 0.1) {
+            d.vx += (dx / dist) * 0.04
+            d.vy += (dy / dist) * 0.04
+          }
+          d.vx *= 0.98; d.vy *= 0.98
+          d.x += d.vx; d.y += d.vy
+          if (d.x < 0 || d.x > canvas.width) d.vx *= -1
+          if (d.y < 0 || d.y > canvas.height) d.vy *= -1
+          ctx.beginPath()
+          ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2)
+          ctx.fillStyle = 'rgba(212,155,62,0.55)'
+          ctx.fill()
+          for (let j = i + 1; j < dots.length; j++) {
+            const o = dots[j]
+            const dd = Math.hypot(d.x - o.x, d.y - o.y)
+            if (dd < link) {
+              ctx.beginPath()
+              ctx.moveTo(d.x, d.y)
+              ctx.lineTo(o.x, o.y)
+              ctx.strokeStyle = `rgba(212,155,62,${(1 - dd / link) * 0.18})`
+              ctx.lineWidth = 1
+              ctx.stroke()
+            }
+          }
+        }
+        raf = requestAnimationFrame(tick)
+      }
+      addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY })
+      addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999 })
+      addEventListener('resize', resize)
+      resize(); tick()
+      addEventListener('pagehide', () => cancelAnimationFrame(raf))
+    })()
+
     ;(() => {
       const saved = localStorage.getItem('arich_lang')
       const browser = (navigator.language || 'fr').toLowerCase().startsWith('en') ? 'en' : 'fr'
       applyLang(saved === 'en' || saved === 'fr' ? saved : browser)
-      const finish = () => document.getElementById('boot')?.classList.add('is-done')
-      if (document.readyState === 'complete') setTimeout(finish, 360)
-      else addEventListener('load', () => setTimeout(finish, 360))
-      setTimeout(finish, 1600)
+      const finish = () => {
+        document.getElementById('boot')?.classList.add('is-done')
+        staggerPane('paneLogin')
+      }
+      if (document.readyState === 'complete') setTimeout(finish, 280)
+      else addEventListener('load', () => setTimeout(finish, 280))
+      setTimeout(finish, 1400)
     })()
     checkSession()
   </script>

@@ -651,35 +651,77 @@
         </ol>
         <div class="steps__rail" aria-hidden="true"><span class="steps__fill" id="stepsFill"></span></div>
 
-        <div class="install__compose">
-          <div class="install__download">
-            <h3 class="install__dl-title" data-i18n="inst_dl_title">Téléchargez ARICH PLAYER</h3>
-            <p class="install__dl-sub" data-i18n="inst_dl_sub">Installez l'application en quelques secondes et profitez de votre contenu sur Android.</p>
-            <div class="install__buttons">
-              <a class="btn btn--copper btn--lg btn--glow" id="dlApk" href="#">
-                <span class="btn__icon" aria-hidden="true">↓</span>
-                <span data-i18n="dl_apk">Télécharger l'APK</span>
-              </a>
-              <a class="btn btn--ghost" id="dlPlay" href="#" target="_blank" rel="noopener" data-i18n="dl_play">Google Play</a>
-            </div>
-            <p class="install__meta" data-i18n="inst_meta">Android 8+ · v3.0.10</p>
-            <div class="install__qr" id="installQr">
-              <div class="install__qr-frame">
-                <img id="qrImg" src="" alt="QR code download" width="96" height="96" loading="lazy" />
-                <span class="install__qr-scan" aria-hidden="true"></span>
-              </div>
-              <p data-i18n="inst_qr">Sur ordinateur ? Scannez pour télécharger</p>
-            </div>
-          </div>
-          <div class="install__visual">
-            <div class="device device--phone install__phone">
-              <div class="device__glow device__glow--phone" aria-hidden="true"></div>
-              <div class="device__bezel">
-                <div class="device__notch"></div>
-                <div class="device__screen">
-                  <img src="/media/welcome-phone.png" alt="" loading="lazy" width="540" height="1170" />
+        <div class="dl-card">
+          <!-- Phone visual (left side) -->
+          <div class="dl-card__visual">
+            <div class="dl-card__halo" aria-hidden="true"></div>
+            <div class="dl-card__phone-stack">
+              <div class="device device--phone dl-phone dl-phone--back">
+                <div class="device__glow device__glow--phone" aria-hidden="true"></div>
+                <div class="device__bezel">
+                  <div class="device__notch"></div>
+                  <div class="device__screen">
+                    <img src="/media/welcome-phone.png" alt="" loading="lazy" width="540" height="1170" />
+                  </div>
                 </div>
               </div>
+              <div class="device device--phone dl-phone dl-phone--front">
+                <div class="device__glow device__glow--phone" aria-hidden="true"></div>
+                <div class="device__bezel">
+                  <div class="device__notch"></div>
+                  <div class="device__screen">
+                    <img src="/media/login-phone.png" alt="" loading="lazy" width="540" height="1170" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Download CTA (right side) -->
+          <div class="dl-card__content">
+            <div class="dl-card__badge">
+              <span class="dl-card__badge-dot" aria-hidden="true"></span>
+              <span data-i18n="inst_meta">Android 8+ · v3.0.10</span>
+            </div>
+
+            <h3 class="dl-card__title" data-i18n="inst_dl_title">Téléchargez ARICH PLAYER</h3>
+            <p class="dl-card__sub" data-i18n="inst_dl_sub">Installez l'application en quelques secondes et profitez de votre contenu sur Android.</p>
+
+            <div class="dl-card__buttons">
+              <a class="btn btn--copper btn--lg btn--glow dl-btn-main" id="dlApk" href="#">
+                <svg class="dl-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span data-i18n="dl_apk">Télécharger l'APK</span>
+                <span class="dl-btn-size" aria-hidden="true">~28 Mo</span>
+              </a>
+              <a class="btn btn--ghost dl-btn-play" id="dlPlay" href="#" target="_blank" rel="noopener">
+                <svg class="dl-btn-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 20.5V3.5a1 1 0 0 1 1.5-.87l15 8.5a1 1 0 0 1 0 1.74l-15 8.5A1 1 0 0 1 3 20.5z"/></svg>
+                <span data-i18n="dl_play">Google Play</span>
+              </a>
+            </div>
+
+            <div class="dl-card__trust">
+              <div class="dl-card__trust-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span>Sans pub</span>
+              </div>
+              <div class="dl-card__trust-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <span>Open source</span>
+              </div>
+              <div class="dl-card__trust-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Léger</span>
+              </div>
+            </div>
+
+            <div class="dl-card__qr" id="installQr">
+              <div class="dl-card__qr-wrap">
+                <div class="dl-card__qr-frame">
+                  <img id="qrImg" src="" alt="QR code download" width="96" height="96" loading="lazy" />
+                  <span class="dl-card__qr-scan" aria-hidden="true"></span>
+                </div>
+              </div>
+              <p class="dl-card__qr-text" data-i18n="inst_qr">Sur ordinateur ? Scannez pour télécharger</p>
             </div>
           </div>
         </div>

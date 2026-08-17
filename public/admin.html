@@ -1113,10 +1113,10 @@ async function doLogin() {
       .single();
     if (error || !data) { showAuthErr('Identifiant introuvable'); return; }
     if (data.password_hash !== hash) { showAuthErr('Mot de passe incorrect'); return; }
-    await sb.from('admin_users').update({ last_login: new Date().toISOString() }).eq('id', data.id);
+    await sb.from('admin_users').update({ last_login: new Date().toISOString() }).eq('user_id', data.user_id);
     adminUser = { ...data, _key: hash };
     sessionStorage.setItem('arich_admin', JSON.stringify({
-      id: data.id, email: data.email, username: data.username, role: data.role, key: hash,
+      id: data.user_id, email: data.email, username: data.username, role: data.role, key: hash,
     }));
     launchApp();
   } catch(e) { showAuthErr('Erreur: ' + e.message); }
@@ -1199,8 +1199,8 @@ async function loadDashboard() {
   if (dashLoaded) return; dashLoaded = true;
   try {
     const [devRes, licRes, logsRes, payRes] = await Promise.all([
-      sb.from('device_registry').select('*', { count:'exact' }),
-      sb.from('license_management').select('*'),
+      sb.from('devices').select('*', { count:'exact' }),
+      sb.from('licenses').select('*'),
       sb.from('admin_logs').select('*').order('created_at',{ascending:false}).limit(5),
       sb.from('payments').select('amount_eur,status'),
     ]);
@@ -1387,8 +1387,8 @@ async function loadAnalytics() {
   if (analyticsLoaded) return; analyticsLoaded = true;
   try {
     const [devRes, sessRes] = await Promise.all([
-      sb.from('device_registry').select('country,country_code,device_brand,last_seen,created_at'),
-      sb.from('user_sessions').select('created_at,watch_time_seconds,country').order('created_at',{ascending:false}).limit(500),
+      sb.from('devices').select('country,country_code,device_brand,last_seen_at,created_at'),
+      sb.from('app_sessions').select('created_at,duration_seconds,country').order('created_at',{ascending:false}).limit(500),
     ]);
 
     const devices = devRes.data  || [];
@@ -1396,7 +1396,7 @@ async function loadAnalytics() {
     const installs = devices.length;
     const sessCount= sessions.length;
     const in30     = new Date(); in30.setDate(in30.getDate()-30);
-    const activeDev= devices.filter(d=>d.last_seen&&new Date(d.last_seen)>=in30).length;
+    const activeDev= devices.filter(d=>d.last_seen_at&&new Date(d.last_seen_at)>=in30).length;
     const retention= devices.length ? Math.round(activeDev/devices.length*100) : 0;
 
     const countryCounts = {};
@@ -1471,13 +1471,13 @@ async function loadDevices() {
   if (devicesLoaded) return; devicesLoaded = true;
   document.getElementById('dev-loading').style.display = 'flex';
   document.getElementById('dev-wrap').style.display = 'none';
-  const { data, error } = await sb.from('device_registry').select('*').order('created_at',{ascending:false}).limit(500);
+  const { data, error } = await sb.from('devices').select('*').order('created_at',{ascending:false}).limit(500);
   document.getElementById('dev-loading').style.display = 'none';
   document.getElementById('dev-wrap').style.display = 'block';
   if (error) { toast('❌ '+error.message); return; }
   allDevices = data || [];
 
-  const { data: lics } = await sb.from('license_management').select('*');
+  const { data: lics } = await sb.from('licenses').select('*');
   allLicenses = lics || [];
 
   const today = new Date(); today.setHours(0,0,0,0);
@@ -1523,7 +1523,7 @@ function renderDevices(rows) {
     const licBadge = lic
       ? `<span class="badge ${lic.status==='active'?'b-green b-dot':lic.status==='trial'?'b-blue':'b-red'}">${esc(lic.status)}</span>`
       : '<span class="badge b-gray">–</span>';
-    const seen = d.last_seen ? timeAgo(d.last_seen) : '—';
+    const seen = d.last_seen_at ? timeAgo(d.last_seen_at) : '—';
     tbody.innerHTML += `<tr>
       <td class="td-main">${esc(d.device_name||d.device_model||'—')}</td>
       <td class="td-mono" style="font-size:11px;">${esc(d.device_model||'—')}</td>
@@ -1555,8 +1555,8 @@ function openDevice(d) {
   setText('ddet-app-ver', d.app_version||'—');
   setText('ddet-ip', d.ip_address||'—');
   setText('ddet-country', d.country || (d.country_code ? `(${d.country_code})` : '—'));
-  setText('ddet-first-seen', d.first_seen?new Date(d.first_seen).toLocaleString('fr-FR'):'—');
-  setText('ddet-last-seen', d.last_seen?new Date(d.last_seen).toLocaleString('fr-FR'):'—');
+  setText('ddet-first-seen', d.first_seen_at?new Date(d.first_seen_at).toLocaleString('fr-FR'):'—');
+  setText('ddet-last-seen', d.last_seen_at?new Date(d.last_seen_at).toLocaleString('fr-FR'):'—');
 
   document.getElementById('ddet-status').innerHTML = d.is_banned
     ? '<span class="badge b-red">🚫 Banni</span>'
@@ -1622,7 +1622,7 @@ async function quickBanDevice(id, isBanned, name) { await doBanDevice(id, isBann
 
 async function doBanDevice(id, isBanned, name) {
   const newBan = !isBanned;
-  const { error } = await sb.from('device_registry').update({ is_banned:newBan, updated_at:new Date().toISOString() }).eq('id', id);
+  const { error } = await sb.from('devices').update({ is_banned:newBan, updated_at:new Date().toISOString() }).eq('id', id);
   if (error) { toast('❌ '+error.message); return; }
   const idx = allDevices.findIndex(d=>d.id===id);
   if (idx!==-1) allDevices[idx].is_banned = newBan;
@@ -1634,7 +1634,7 @@ async function doBanDevice(id, isBanned, name) {
 
 async function deleteDevice() {
   if (!currentDevice || !confirm(`Supprimer définitivement ${currentDevice.device_name||currentDevice.id} ?`)) return;
-  const { error } = await sb.from('device_registry').delete().eq('id', currentDevice.id);
+  const { error } = await sb.from('devices').delete().eq('id', currentDevice.id);
   if (error) { toast('❌ '+error.message); return; }
   await logAction('delete_device', currentDevice.device_name||currentDevice.id);
   toast('🗑️ Device supprimé');
@@ -1649,7 +1649,7 @@ function openDeviceNote() {
 async function saveDeviceNote() {
   const note = document.getElementById('ddet-note-input').value.trim();
   setLoading('btn-device-note', true);
-  const { error } = await sb.from('device_registry').update({ ban_reason:note }).eq('id', currentDevice.id);
+  const { error } = await sb.from('devices').update({ ban_reason:note }).eq('id', currentDevice.id);
   setLoading('btn-device-note', false);
   if (error) { toast('❌ '+error.message); return; }
   currentDevice.ban_reason = note;
@@ -1694,7 +1694,7 @@ async function loadLicenses() {
   if (licLoaded) return; licLoaded = true;
   document.getElementById('lic-loading').style.display = 'flex';
   document.getElementById('lic-wrap').style.display = 'none';
-  const { data, error } = await sb.from('license_management').select('*').order('created_at',{ascending:false});
+  const { data, error } = await sb.from('licenses').select('*').order('created_at',{ascending:false});
   document.getElementById('lic-loading').style.display = 'none';
   document.getElementById('lic-wrap').style.display = 'block';
   if (error) { toast('❌ '+error.message); return; }
@@ -1776,7 +1776,7 @@ async function saveLicenseEdit() {
   const updates = { status, plan_type:planType, plan_name:planName, notes, updated_at:new Date().toISOString() };
   if (planType!=='lifetime'&&expiry) updates.expires_at = new Date(expiry).toISOString();
   if (planType==='lifetime') updates.expires_at = null;
-  const { error } = await sb.from('license_management').update(updates).eq('id', id);
+  const { error } = await sb.from('licenses').update(updates).eq('id', id);
   setLoading('btn-lic-edit', false);
   if (error) { toast('❌ '+error.message); return; }
   await logAction('edit_license','—',{license_id:id,status,plan_type:planType});
@@ -1800,7 +1800,7 @@ async function addLicense() {
   if (planType!=='lifetime') {
     row.expires_at = expiry?new Date(expiry).toISOString():new Date(Date.now()+(planType==='trial_7'?7:365)*864e5).toISOString();
   }
-  const { error } = await sb.from('license_management').insert([row]);
+  const { error } = await sb.from('licenses').insert([row]);
   setLoading('btn-add-lic', false);
   if (error) { showModalMsg('add-lic-msg',error.message); return; }
   await logAction('add_license',deviceId,{plan_type:planType});
@@ -1809,7 +1809,7 @@ async function addLicense() {
 
 async function deleteLicense(id) {
   if (!confirm('Supprimer cette licence ?')) return;
-  const { error } = await sb.from('license_management').delete().eq('id', id);
+  const { error } = await sb.from('licenses').delete().eq('id', id);
   if (error) { toast('❌ '+error.message); return; }
   toast('🗑️ Licence supprimée'); licLoaded=false; loadLicenses();
 }
@@ -2413,11 +2413,10 @@ async function sendBroadcast() {
   setLoading('btn-broadcast', true);
   try {
     const { error } = await sb.from('broadcast_messages').insert([{
-      title, body, type,
+      title,
+      message: body,
       is_active: true,
-      priority,
       target_segment: segment,
-      sent_by: adminUser?.email || 'admin',
       created_at: new Date().toISOString(),
       expires_at: new Date(Date.now() + days * 86400000).toISOString()
     }]);
@@ -2461,8 +2460,8 @@ async function loadBroadcastHistory() {
       return `<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);">
         <div style="flex:1;">
           <div style="font-size:13px;font-weight:600;">${esc(b.title||'—')}</div>
-          <div style="font-size:11.5px;color:var(--sub);margin-top:3px;max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(b.body||'')}</div>
-          <div style="font-size:10.5px;color:var(--muted);margin-top:2px;">${esc(b.sent_by||'—')} · ${b.created_at?timeAgo(b.created_at):'—'}</div>
+          <div style="font-size:11.5px;color:var(--sub);margin-top:3px;max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(b.message||'')}</div>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:2px;">${b.created_at?timeAgo(b.created_at):'—'}</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
           <span class="badge ${isActive?'b-green b-dot':'b-gray'}">${isActive?'Actif':'Expiré'}</span>

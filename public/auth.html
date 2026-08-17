@@ -1,0 +1,1041 @@
+﻿<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connexion — ARICH Player</title>
+  <meta name="description" content="Connexion et inscription ARICH Player." />
+  <meta name="robots" content="noindex, follow" />
+  <link rel="canonical" href="https://arich.fr/auth.html" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <meta name="theme-color" content="#0A0B0E" id="themeColor" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { gold: '#D49B3E', ink: '#0A0B0E', card: '#111318' },
+          fontFamily: { sans: ['Figtree', 'system-ui', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root, html[data-theme='dark'] {
+      --bg: #0A0B0E;
+      --card: #12141D;
+      --panel: #1A1710;
+      --text: #FFFFFF;
+      --mute: #8E95A5;
+      --faint: #6B7280;
+      --line: rgba(255,255,255,.12);
+      --gold: #D49B3E;
+      --ink: #0A0B0E;
+      --err: #e06b7a;
+      --ok: #3dba8b;
+      --warn: #c9a227;
+      --particle: 212,155,62;
+      --particle-a: .55;
+      --particle-link: .18;
+      --shadow: 0 30px 80px rgba(0,0,0,.5);
+    }
+    html[data-theme='light'] {
+      --bg: #F4F3EE;
+      --card: #FFFFFF;
+      --panel: #EFECE6;
+      --text: #1A1A1A;
+      --mute: #4A4A4A;
+      --faint: #6B6B6B;
+      --line: rgba(26,26,26,.14);
+      --gold: #C48A2A;
+      --ink: #1A1A1A;
+      --err: #c44a5e;
+      --ok: #2f8f6a;
+      --particle: 180,120,40;
+      --particle-a: .28;
+      --particle-link: .12;
+      --shadow: 0 24px 50px rgba(40,28,12,.1);
+    }
+    html { color-scheme: dark; }
+    html[data-theme='light'] { color-scheme: light; }
+    body { background: var(--bg); color: var(--text); }
+    .t-fg { color: var(--text); }
+    .t-mute { color: var(--mute); }
+    .t-faint { color: var(--faint); }
+    .t-gold { color: var(--gold); }
+    .quiet-link { color: var(--mute); background: none; border: 0; cursor: pointer; font: inherit; }
+    .quiet-link:hover { color: var(--gold); }
+    .rule { background: var(--line); }
+    .chip { color: var(--mute); background: transparent; border: 0; cursor: pointer; font: inherit; }
+    .chip:hover, .chip.is-active { color: var(--text); }
+    .theme-btn { display: grid; place-items: center; }
+    .theme-btn svg { display: none; }
+    html[data-theme='dark'] .icon-sun { display: block; }
+    html[data-theme='light'] .icon-moon { display: block; }
+    .boot { background: var(--bg); }
+    .shell {
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .btn-shimmer::after { display: none; }
+    }
+
+    .boot { transition: opacity .35s, visibility .35s; }
+    .boot.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    .shell { min-height: 600px; }
+    .pane { min-height: 600px; }
+    .overlay {
+      position: absolute; top: 0; bottom: 0; left: 50%; width: 50%;
+      z-index: 5; overflow: hidden; background: var(--panel);
+    }
+    .overlay-inner { height: 100%; width: 200%; display: flex; }
+    .overlay-copy { width: 50%; height: 100%; color: var(--text); }
+
+    .notch { position: relative; }
+    .notch input {
+      width: 100%; height: 48px; padding: 0 14px;
+      border: 1px solid var(--line); border-radius: 10px;
+      background: transparent; color: var(--text); font-size: 14px; outline: none;
+      transition: border-color .2s;
+    }
+    .notch input.has-eye { padding-right: 42px; }
+    .notch label {
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      padding: 0 6px; font-size: 14px; color: var(--mute);
+      pointer-events: none; background: var(--card);
+      transition: top .18s ease, font-size .18s ease, color .18s ease;
+    }
+    .notch:focus-within input { border-color: var(--gold); }
+    .notch:focus-within label,
+    .notch.is-filled label {
+      top: 0; font-size: 11px; color: var(--gold); font-weight: 600;
+    }
+
+    .eye {
+      position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+      width: 32px; height: 32px; border: 0; background: none;
+      color: var(--faint); cursor: pointer; display: grid; place-items: center; border-radius: 8px;
+    }
+    .eye:hover, .eye[aria-pressed='true'] { color: var(--gold); }
+
+    .btn-ghost {
+      height: 42px; border-radius: 10px; border: 1px solid var(--line);
+      background: transparent; color: var(--text); font-weight: 500; font-size: 14px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      transition: border-color .2s, box-shadow .25s, transform .25s;
+    }
+    .btn-ghost:hover { border-color: rgba(212,155,62,.45); }
+    .js-google.gmail-hot {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 1px rgba(212,155,62,.35), 0 0 22px rgba(212,155,62,.28);
+      transform: scale(1.03);
+    }
+    html[data-theme='light'] .js-google.gmail-hot {
+      box-shadow: 0 0 0 1px rgba(196,138,42,.4), 0 8px 20px rgba(196,138,42,.18);
+    }
+    .gmail-hint { display: none; font-size: 12px; color: var(--gold); margin: -8px 0 12px; }
+    .gmail-hint.show { display: block; }
+
+    .btn-shimmer {
+      position: relative; overflow: hidden;
+      height: 46px; border: 0; border-radius: 10px; cursor: pointer;
+      background: var(--gold); color: #0A0B0E; font-weight: 700; font-size: 14px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+    }
+    .btn-shimmer::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.42) 50%, transparent 65%);
+      transform: translateX(-130%);
+    }
+    .btn-shimmer:hover::after { animation: shimmer .75s ease; }
+    @keyframes shimmer { to { transform: translateX(130%); } }
+    .btn-shimmer:disabled { opacity: .5; cursor: not-allowed; }
+    .spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; animation: spin .6s linear infinite; display: none; }
+    .btn-shimmer.loading .spin, .btn-ghost.loading .spin { display: block; }
+    .btn-shimmer.loading .blbl, .btn-ghost.loading .blbl { display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .pill {
+      height: 32px; padding: 0 14px; border-radius: 999px; cursor: pointer;
+      border: 1px solid var(--line); background: transparent;
+      color: var(--mute); font-size: 12px; font-weight: 600;
+      transition: border-color .2s, color .2s, background .2s;
+    }
+    .pill:hover { border-color: var(--gold); color: var(--gold); background: rgba(212,155,62,.08); }
+
+    .btn-outline {
+      height: 42px; min-width: 148px; padding: 0 20px; border-radius: 10px; cursor: pointer;
+      border: 1px solid rgba(212,155,62,.5); background: transparent; color: var(--text); font-weight: 600;
+      transition: background .2s, color .2s;
+    }
+    .btn-outline:hover { background: var(--gold); color: #0A0B0E; }
+
+    .msg { display: none; margin-bottom: 12px; font-size: 13px; }
+    .msg.show { display: block; }
+    .msg.error { color: var(--err); }
+    .msg.success { color: var(--ok); }
+    .msg.info { color: var(--gold); }
+
+    .pw-strength { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .bars { display: flex; gap: 3px; height: 2px; flex: 1; }
+    .bar { flex: 1; border-radius: 1px; background: var(--line); }
+    .bar.s1 { background: var(--err); } .bar.s2 { background: var(--warn); } .bar.s3 { background: var(--ok); }
+    .strength-lbl { font-size: 11px; color: var(--faint); min-width: 3.5em; }
+
+    .extra {
+      display: none; position: absolute; inset: 0; z-index: 8;
+      background: var(--card); color: var(--text); padding: 44px 40px;
+      flex-direction: column; justify-content: center; align-items: center;
+    }
+    .extra > * { width: min(380px, 100%); }
+    .extra.show { display: flex; }
+    .extra h1 { color: var(--text); }
+    .pane h1 { color: var(--text); }
+
+    .redirect { display: none; background: var(--bg); color: var(--text); }
+    .redirect.show { display: flex; }
+    .redirect-bar { background: var(--line); }
+    .redirect-bar > span { display: block; height: 100%; width: 0; background: var(--gold); animation: prog 1.6s ease forwards; }
+    @keyframes prog { to { width: 100%; } }
+
+    .otp-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: end; }
+    .otp-row .btn-shimmer { width: auto; min-width: 108px; padding: 0 16px; }
+
+    .legal-link { color: var(--mute); text-decoration: underline; }
+    .foot a { color: var(--faint); text-decoration: none; }
+    .foot a:hover { color: var(--mute); }
+
+    .mobile-switch { display: none; }
+    @media (max-width: 767px) {
+      .shell { min-height: 0; }
+      .pane { min-height: 0; }
+      .pane-signup { display: none; }
+      .shell.is-signup .pane-login { display: none; }
+      .shell.is-signup .pane-signup { display: flex; }
+      .overlay { display: none; }
+      .mobile-switch { display: flex; }
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+  <canvas id="fx" class="pointer-events-none fixed inset-0 z-0"></canvas>
+  <div class="boot fixed inset-0 z-[200] grid place-items-center" id="boot">
+    <img src="/logo-fg.png" alt="" width="28" height="28" class="rounded-md" />
+  </div>
+
+  <header class="relative z-20 mx-auto flex max-w-[1040px] items-center justify-between px-6 pt-5">
+    <a href="/" class="t-fg inline-flex items-center gap-2.5 text-sm font-semibold tracking-wide no-underline">
+      <img src="/logo-fg.png" alt="" width="22" height="22" class="rounded" />ARICH
+    </a>
+    <div class="flex items-center gap-1">
+      <button type="button" class="chip h-8 px-2.5 text-[13px]" id="langFr">FR</button>
+      <button type="button" class="chip h-8 px-2.5 text-[13px]" id="langEn">EN</button>
+      <button type="button" class="chip theme-btn h-8 w-8" id="themeToggle" aria-label="Theme">
+        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 14.5A8.5 8.5 0 1110.5 3 7 7 0 0021 14.5z"/></svg>
+      </button>
+      <a class="chip h-8 px-2.5 text-[13px] no-underline" href="/" data-i18n="nav_home">Accueil</a>
+    </div>
+  </header>
+
+  <div class="redirect fixed inset-0 z-[120] flex-col items-center justify-center gap-3 px-6 text-center" id="redirect" role="status">
+    <div class="text-xl" style="color:var(--ok)">✓</div>
+    <h2 class="t-fg text-lg font-semibold" data-i18n="redirect_title">Connexion réussie</h2>
+    <p id="redirect-sub" class="t-mute text-sm" data-i18n="redirect_sub_web">Redirection en cours…</p>
+    <div class="redirect-bar h-px w-28 overflow-hidden"><span></span></div>
+    <button type="button" class="btn-shimmer mt-2 hidden max-w-[220px]" id="btn-open-app"><span data-i18n="redirect_open">Ouvrir l’application</span></button>
+  </div>
+
+  <main class="relative z-10 grid min-h-[calc(100vh-72px)] place-items-center px-5 py-8" id="main">
+    <div class="shell relative grid w-full max-w-[920px] grid-cols-1 overflow-hidden rounded-2xl backdrop-blur md:grid-cols-2" id="shell">
+
+      <section class="pane flex w-full max-w-[460px] flex-col justify-center px-8 py-10 md:px-10" id="paneLogin">
+        <h1 class="stagger mb-1.5 text-2xl font-semibold tracking-tight" data-i18n="login_title">Connexion</h1>
+        <p class="stagger mb-7 t-mute text-sm" data-i18n="login_lede">Retrouvez vos playlists et votre licence.</p>
+        <div class="msg" id="login-msg" role="alert"></div>
+        <div class="stagger mb-5 grid grid-cols-2 gap-2">
+          <button type="button" class="btn-ghost js-google" id="btn-google">
+            <span class="spin"></span>
+            <span class="blbl inline-flex items-center gap-2">
+              <svg class="h-4 w-4" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+              Google
+            </span>
+          </button>
+          <button type="button" class="btn-ghost" id="btn-facebook">
+            <span class="spin"></span>
+            <span class="blbl inline-flex items-center gap-2">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.89v2.26h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07z"/></svg>
+              Facebook
+            </span>
+          </button>
+        </div>
+        <p class="gmail-hint" data-i18n="gmail_hint">Compte Gmail détecté — plus rapide avec Google.</p>
+        <div class="stagger mb-5 flex items-center gap-3">
+          <span class="rule h-px flex-1"></span>
+          <span class="t-faint text-xs" data-i18n="or">ou</span>
+          <span class="rule h-px flex-1"></span>
+        </div>
+        <div class="stagger notch mb-4" data-notch>
+          <input id="login-email" type="email" autocomplete="email" inputmode="email" placeholder=" " />
+          <label for="login-email" data-i18n="email">E-mail</label>
+        </div>
+        <div class="stagger notch mb-2" data-notch>
+          <input id="login-pw" type="password" class="has-eye" autocomplete="current-password" placeholder=" " />
+          <label for="login-pw" data-i18n="password">Mot de passe</label>
+          <button type="button" class="eye" data-toggle-pw="login-pw" aria-label="Show password">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div class="stagger mb-4 flex justify-end">
+          <button type="button" class="quiet-link text-[13px]" id="forgotLink" data-i18n="forgot_link">Mot de passe oublié ?</button>
+        </div>
+        <button type="button" class="stagger btn-shimmer" id="btn-login">
+          <span class="spin"></span><span class="blbl" data-i18n="login_cta">Se connecter</span>
+        </button>
+        <div class="stagger mt-5 flex gap-2">
+          <button type="button" class="pill" data-extra="magic" data-i18n="jump_magic">Magic link</button>
+          <button type="button" class="pill" data-extra="phone" data-i18n="jump_phone">SMS</button>
+        </div>
+        <p class="mobile-switch mt-5 items-center gap-1.5 t-mute text-[13px]">
+          <span data-i18n="no_account">Pas de compte ?</span>
+          <button type="button" class="t-gold" data-mode="signup" data-i18n="signup_cta_short">S’inscrire</button>
+        </p>
+      </section>
+
+      <section class="pane flex w-full max-w-[460px] flex-col justify-center px-8 py-10 md:px-10" id="paneSignup">
+        <h1 class="stagger mb-1.5 text-2xl font-semibold tracking-tight" data-i18n="signup_title">Créer un compte</h1>
+        <p class="stagger mb-7 t-mute text-sm" data-i18n="signup_lede">Un compte pour synchroniser playlists et licence.</p>
+        <div class="msg" id="signup-msg" role="alert"></div>
+        <div class="stagger mb-5 grid grid-cols-2 gap-2">
+          <button type="button" class="btn-ghost js-google" id="btn-google-up">
+            <span class="spin"></span>
+            <span class="blbl inline-flex items-center gap-2">
+              <svg class="h-4 w-4" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+              Google
+            </span>
+          </button>
+          <button type="button" class="btn-ghost" id="btn-facebook-up">
+            <span class="spin"></span>
+            <span class="blbl inline-flex items-center gap-2">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.89v2.26h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07z"/></svg>
+              Facebook
+            </span>
+          </button>
+        </div>
+        <p class="gmail-hint" data-i18n="gmail_hint">Compte Gmail détecté — plus rapide avec Google.</p>
+        <div class="stagger mb-5 flex items-center gap-3">
+          <span class="rule h-px flex-1"></span>
+          <span class="t-faint text-xs" data-i18n="or">ou</span>
+          <span class="rule h-px flex-1"></span>
+        </div>
+        <div class="stagger notch mb-4" data-notch>
+          <input id="signup-email" type="email" autocomplete="email" inputmode="email" placeholder=" " />
+          <label for="signup-email" data-i18n="email">E-mail</label>
+        </div>
+        <div class="stagger notch mb-4" data-notch>
+          <input id="signup-pw" type="password" class="has-eye" autocomplete="new-password" placeholder=" " />
+          <label for="signup-pw" data-i18n="password">Mot de passe</label>
+          <button type="button" class="eye" data-toggle-pw="signup-pw" aria-label="Show password">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div class="pw-strength mb-3">
+          <div class="bars"><div class="bar" id="bar1"></div><div class="bar" id="bar2"></div><div class="bar" id="bar3"></div></div>
+          <div class="strength-lbl" id="strength-lbl"></div>
+        </div>
+        <div class="stagger notch mb-5" data-notch>
+          <input id="signup-pw2" type="password" class="has-eye" autocomplete="new-password" placeholder=" " />
+          <label for="signup-pw2" data-i18n="password_confirm">Confirmer</label>
+          <button type="button" class="eye" data-toggle-pw="signup-pw2" aria-label="Show password">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <button type="button" class="stagger btn-shimmer" id="btn-signup">
+          <span class="spin"></span><span class="blbl" data-i18n="signup_cta">Créer mon compte</span>
+        </button>
+        <p class="stagger t-faint mt-4 text-xs" data-i18n-html="signup_legal">En créant un compte, vous acceptez la <a class="legal-link" href="/privacy-policy.html">politique de confidentialité</a>.</p>
+        <p class="mobile-switch mt-5 items-center gap-1.5 t-mute text-[13px]">
+          <span data-i18n="has_account">Déjà un compte ?</span>
+          <button type="button" class="t-gold" data-mode="login" data-i18n="login_cta_short">Se connecter</button>
+        </p>
+      </section>
+
+      <div class="overlay" id="overlay">
+        <div class="overlay-inner" id="overlayInner">
+          <div class="overlay-copy flex flex-col justify-center px-11 py-12">
+            <p class="mb-2 t-gold text-xs font-semibold uppercase tracking-[0.18em]">ARICH</p>
+            <h2 class="mb-3 text-[1.65rem] font-semibold tracking-tight" data-i18n="overlay_signup_t">Nouveau ici ?</h2>
+            <p class="mb-6 max-w-[28ch] t-mute text-sm leading-relaxed" data-i18n="overlay_signup_p">Créez un compte pour lier vos appareils et votre licence.</p>
+            <button type="button" class="btn-outline w-fit" data-mode="signup" data-i18n="signup_cta_short">S’inscrire</button>
+          </div>
+          <div class="overlay-copy flex flex-col justify-center px-11 py-12">
+            <p class="mb-2 t-gold text-xs font-semibold uppercase tracking-[0.18em]">ARICH</p>
+            <h2 class="mb-3 text-[1.65rem] font-semibold tracking-tight" data-i18n="overlay_login_t">Déjà un compte ?</h2>
+            <p class="mb-6 max-w-[28ch] t-mute text-sm leading-relaxed" data-i18n="overlay_login_p">Revenez à votre espace ARICH.</p>
+            <button type="button" class="btn-outline w-fit" data-mode="login" data-i18n="login_cta">Se connecter</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="extra" id="extra-forgot">
+        <h1 class="mb-1.5 text-2xl font-semibold" data-i18n="forgot_title">Mot de passe oublié</h1>
+        <p class="mb-7 t-mute text-sm" data-i18n="forgot_lede">Nous enverrons un lien de réinitialisation.</p>
+        <div class="msg" id="forgot-msg" role="alert"></div>
+        <div class="notch mb-5" data-notch>
+          <input id="forgot-email" type="email" autocomplete="email" placeholder=" " />
+          <label for="forgot-email" data-i18n="email">E-mail</label>
+        </div>
+        <button type="button" class="btn-shimmer" id="btn-forgot"><span class="spin"></span><span class="blbl" data-i18n="forgot_cta">Envoyer le lien</span></button>
+        <p class="mt-4"><button type="button" class="quiet-link text-[13px]" data-extra-close data-i18n="back_login">← Retour</button></p>
+      </div>
+      <div class="extra" id="extra-magic">
+        <h1 class="mb-1.5 text-2xl font-semibold" data-i18n="magic_title">Magic link</h1>
+        <p class="mb-7 t-mute text-sm" data-i18n="magic_hint">Un lien unique par e-mail, sans mot de passe.</p>
+        <div class="msg" id="magic-msg" role="alert"></div>
+        <div class="notch mb-5" data-notch>
+          <input id="magic-email" type="email" autocomplete="email" placeholder=" " />
+          <label for="magic-email" data-i18n="email">E-mail</label>
+        </div>
+        <button type="button" class="btn-shimmer" id="btn-magic"><span class="spin"></span><span class="blbl" data-i18n="magic_cta">Envoyer le lien</span></button>
+        <p class="mt-4"><button type="button" class="quiet-link text-[13px]" data-extra-close data-i18n="back_login">← Retour</button></p>
+      </div>
+      <div class="extra" id="extra-phone">
+        <h1 class="mb-1.5 text-2xl font-semibold" data-i18n="phone_title">Téléphone</h1>
+        <p class="mb-7 t-mute text-sm" data-i18n="phone_hint">Format international, ex. +33612345678.</p>
+        <div class="msg" id="phone-msg" role="alert"></div>
+        <div class="notch mb-5" data-notch>
+          <input id="phone-input" type="tel" autocomplete="tel" inputmode="tel" placeholder=" " />
+          <label for="phone-input" data-i18n="phone">Numéro</label>
+        </div>
+        <button type="button" class="btn-shimmer" id="btn-phone-send"><span class="spin"></span><span class="blbl" data-i18n="phone_send">Envoyer le SMS</span></button>
+        <div class="otp-row mt-4" id="otpRow" hidden>
+          <div class="notch" data-notch>
+            <input id="phone-otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder=" " />
+            <label for="phone-otp" data-i18n="otp">Code</label>
+          </div>
+          <button type="button" class="btn-shimmer" id="btn-phone-verify"><span class="spin"></span><span class="blbl" data-i18n="phone_verify">Vérifier</span></button>
+        </div>
+        <p class="mt-4"><button type="button" class="quiet-link text-[13px]" data-extra-close data-i18n="back_login">← Retour</button></p>
+      </div>
+      <div class="extra" id="extra-reset">
+        <h1 class="mb-1.5 text-2xl font-semibold" data-i18n="reset_title">Nouveau mot de passe</h1>
+        <p class="mb-7 t-mute text-sm" data-i18n="pw_hint">8 caractères minimum.</p>
+        <div class="msg" id="reset-msg" role="alert"></div>
+        <div class="notch mb-4" data-notch>
+          <input id="reset-pw" type="password" class="has-eye" autocomplete="new-password" placeholder=" " />
+          <label for="reset-pw" data-i18n="password_new">Nouveau mot de passe</label>
+          <button type="button" class="eye" data-toggle-pw="reset-pw"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <div class="pw-strength mb-4">
+          <div class="bars"><div class="bar" id="rbar1"></div><div class="bar" id="rbar2"></div><div class="bar" id="rbar3"></div></div>
+          <div class="strength-lbl" id="rstrength-lbl"></div>
+        </div>
+        <div class="notch mb-5" data-notch>
+          <input id="reset-pw2" type="password" class="has-eye" autocomplete="new-password" placeholder=" " />
+          <label for="reset-pw2" data-i18n="password_confirm">Confirmer</label>
+          <button type="button" class="eye" data-toggle-pw="reset-pw2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <button type="button" class="btn-shimmer" id="btn-reset"><span class="spin"></span><span class="blbl" data-i18n="reset_cta">Mettre à jour</span></button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="foot relative z-10 flex flex-wrap justify-center gap-5 px-6 pb-6 text-xs">
+    <a href="/privacy-policy.html" data-i18n="footer_privacy">Confidentialité</a>
+    <a href="/data-deletion.html" data-i18n="footer_deletion">Suppression des données</a>
+    <a href="mailto:contact@arich.fr">contact@arich.fr</a>
+  </footer>
+
+  <script>
+    const I18N = {
+      fr: {
+        doc_title: 'Connexion — ARICH Player', nav_home: 'Accueil',
+        login_title: 'Connexion', login_lede: 'Retrouvez vos playlists et votre licence.',
+        signup_title: 'Créer un compte', signup_lede: 'Un compte pour synchroniser playlists et licence.',
+        overlay_login_t: 'Déjà un compte ?', overlay_login_p: 'Revenez à votre espace ARICH.',
+        overlay_signup_t: 'Nouveau ici ?', overlay_signup_p: 'Créez un compte pour lier vos appareils et votre licence.',
+        email: 'E-mail', password: 'Mot de passe', password_confirm: 'Confirmer', password_new: 'Nouveau mot de passe',
+        or: 'ou', login_cta: 'Se connecter', login_cta_short: 'Se connecter',
+        signup_cta: 'Créer mon compte', signup_cta_short: 'S’inscrire',
+        no_account: 'Pas de compte ?', has_account: 'Déjà un compte ?',
+        forgot_link: 'Mot de passe oublié ?', forgot_title: 'Mot de passe oublié',
+        forgot_lede: 'Nous enverrons un lien de réinitialisation.', forgot_cta: 'Envoyer le lien',
+        back_login: '← Retour', pw_hint: '8 caractères minimum',
+        magic_title: 'Magic link', magic_hint: 'Un lien unique par e-mail, sans mot de passe.', magic_cta: 'Envoyer le lien',
+        jump_magic: 'Magic link', jump_phone: 'SMS',
+        phone_title: 'Téléphone', phone: 'Numéro', phone_hint: 'Format international, ex. +33612345678.',
+        phone_send: 'Envoyer le SMS', phone_verify: 'Vérifier', otp: 'Code',
+        reset_title: 'Nouveau mot de passe', reset_cta: 'Mettre à jour',
+        signup_legal: 'En créant un compte, vous acceptez la <a class="legal-link" href="/privacy-policy.html">politique de confidentialité</a>.',
+        footer_privacy: 'Confidentialité', footer_deletion: 'Suppression des données',
+        redirect_title: 'Connexion réussie', redirect_sub_web: 'Redirection en cours…',
+        redirect_sub_app: 'Retour vers l’application ARICH…', redirect_sub_watch: 'Retour vers Watch Together…',
+        redirect_sub_space: 'Redirection vers votre espace…', redirect_sub_manual: 'L’application ne s’est pas ouverte ?',
+        redirect_open: 'Ouvrir l’application',
+        strength_weak: 'Faible', strength_mid: 'Moyen', strength_strong: 'Fort',
+        err_fill: 'Veuillez remplir tous les champs.', err_email: 'Veuillez entrer votre e-mail.',
+        err_phone: 'Numéro invalide.', err_otp: 'Entrez le code reçu.',
+        err_mismatch: 'Les mots de passe ne correspondent pas.', err_short: '8 caractères minimum.',
+        ok_confirm_email: 'E-mail de confirmation envoyé.', ok_magic: 'Magic link envoyé.',
+        ok_sms: 'Code SMS envoyé.', ok_reset_sent: 'E-mail envoyé.', ok_pw_updated: 'Mot de passe mis à jour.',
+        switch_exists: 'Ce compte existe déjà. Connectez-vous.',
+        switch_unknown: 'Aucun compte pour cet e-mail. Créez-en un.',
+        gmail_hint: 'Compte Gmail détecté — plus rapide avec Google.',
+      },
+      en: {
+        doc_title: 'Sign in — ARICH Player', nav_home: 'Home',
+        login_title: 'Sign in', login_lede: 'Access your playlists and license.',
+        signup_title: 'Create an account', signup_lede: 'One account to sync playlists and license.',
+        overlay_login_t: 'Already have an account?', overlay_login_p: 'Sign in to your ARICH space.',
+        overlay_signup_t: 'New here?', overlay_signup_p: 'Create an account to link your devices and license.',
+        email: 'Email', password: 'Password', password_confirm: 'Confirm', password_new: 'New password',
+        or: 'or', login_cta: 'Sign in', login_cta_short: 'Sign in',
+        signup_cta: 'Create account', signup_cta_short: 'Sign up',
+        no_account: 'No account?', has_account: 'Already have an account?',
+        forgot_link: 'Forgot password?', forgot_title: 'Forgot password',
+        forgot_lede: 'We’ll send a reset link.', forgot_cta: 'Send link',
+        back_login: '← Back', pw_hint: 'At least 8 characters',
+        magic_title: 'Magic link', magic_hint: 'A one-time email link — no password.', magic_cta: 'Send link',
+        jump_magic: 'Magic link', jump_phone: 'SMS',
+        phone_title: 'Phone', phone: 'Number', phone_hint: 'International format, e.g. +33612345678.',
+        phone_send: 'Send SMS', phone_verify: 'Verify', otp: 'Code',
+        reset_title: 'New password', reset_cta: 'Update password',
+        signup_legal: 'By creating an account, you agree to the <a class="legal-link" href="/privacy-policy.html">privacy policy</a>.',
+        footer_privacy: 'Privacy', footer_deletion: 'Data deletion',
+        redirect_title: 'Signed in', redirect_sub_web: 'Redirecting…',
+        redirect_sub_app: 'Returning to the ARICH app…', redirect_sub_watch: 'Returning to Watch Together…',
+        redirect_sub_space: 'Redirecting to your dashboard…', redirect_sub_manual: 'App didn’t open automatically?',
+        redirect_open: 'Open the app',
+        strength_weak: 'Weak', strength_mid: 'Fair', strength_strong: 'Strong',
+        err_fill: 'Please fill in all fields.', err_email: 'Please enter your email.',
+        err_phone: 'Invalid number.', err_otp: 'Enter the code you received.',
+        err_mismatch: 'Passwords do not match.', err_short: 'At least 8 characters.',
+        ok_confirm_email: 'Confirmation email sent.', ok_magic: 'Magic link sent.',
+        ok_sms: 'SMS code sent.', ok_reset_sent: 'Email sent.', ok_pw_updated: 'Password updated.',
+        switch_exists: 'This account already exists. Sign in.',
+        switch_unknown: 'No account for this email. Create one.',
+        gmail_hint: 'Gmail detected — faster with Google.',
+      },
+    }
+
+    let lang = 'fr'
+    let mode = 'login'
+    let currentView = 'login'
+    const SUPABASE_URL = 'https://aynucieohuowgkwyftiy.supabase.co'
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk'
+    const THIS_PAGE_URL = 'https://arich.fr/auth.html'
+    const APP_DEEP_LINK = 'com.arich.iptv://auth-callback'
+    const WEB_REDIRECT = 'https://arich.fr/manage-playlist.html'
+    const { createClient } = supabase
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON)
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    function t(key) { return (I18N[lang] && I18N[lang][key]) || I18N.fr[key] || key }
+    function applyLang(next) {
+      lang = next === 'en' ? 'en' : 'fr'
+      document.documentElement.lang = lang
+      document.title = t('doc_title')
+      document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.getAttribute('data-i18n')) })
+      document.querySelectorAll('[data-i18n-html]').forEach((el) => { el.innerHTML = t(el.getAttribute('data-i18n-html')) })
+      document.getElementById('langFr')?.classList.toggle('is-active', lang === 'fr')
+      document.getElementById('langEn')?.classList.toggle('is-active', lang === 'en')
+      try { localStorage.setItem('arich_lang', lang) } catch (_) {}
+    }
+
+    function isDesktop() { return matchMedia('(min-width: 768px)').matches }
+    function syncNotches() {
+      document.querySelectorAll('[data-notch]').forEach((wrap) => {
+        const input = wrap.querySelector('input')
+        wrap.classList.toggle('is-filled', !!(input && input.value))
+      })
+    }
+    function checkGmail(email) {
+      const hit = /@gmail\.com$/i.test((email || '').trim())
+      document.querySelectorAll('.js-google').forEach((btn) => btn.classList.toggle('gmail-hot', hit))
+      document.querySelectorAll('.gmail-hint').forEach((el) => el.classList.toggle('show', hit))
+    }
+    function staggerPane(paneId) {
+      if (reduceMotion || !window.gsap) return
+      const items = document.getElementById(paneId)?.querySelectorAll('.stagger')
+      if (!items?.length) return
+      gsap.fromTo(items, { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.42, stagger: 0.055, ease: 'power2.out', delay: 0.12 })
+    }
+    function slideOverlay(toSignup) {
+      const overlay = document.getElementById('overlay')
+      const inner = document.getElementById('overlayInner')
+      if (!overlay || !inner || !isDesktop()) return
+      if (reduceMotion || !window.gsap) {
+        overlay.style.left = toSignup ? '0%' : '50%'
+        inner.style.transform = toSignup ? 'translateX(-50%)' : 'translateX(0)'
+        return
+      }
+      gsap.to(overlay, { left: toSignup ? '0%' : '50%', duration: 0.72, ease: 'power3.inOut' })
+      gsap.to(inner, { xPercent: toSignup ? -50 : 0, duration: 0.72, ease: 'power3.inOut' })
+    }
+
+    function setMode(next, { email, info } = {}) {
+      mode = next === 'signup' ? 'signup' : 'login'
+      currentView = mode
+      document.getElementById('shell').classList.toggle('is-signup', mode === 'signup')
+      closeExtras()
+      if (email) {
+        document.getElementById('login-email').value = email
+        document.getElementById('signup-email').value = email
+      }
+      syncNotches()
+      checkGmail(document.getElementById('login-email').value)
+      slideOverlay(mode === 'signup')
+      staggerPane(mode === 'signup' ? 'paneSignup' : 'paneLogin')
+      if (info === 'exists') showMsg('login', t('switch_exists'), 'info')
+      if (info === 'unknown') showMsg('signup', t('switch_unknown'), 'info')
+      const focusId = mode === 'signup' ? 'signup-email' : 'login-email'
+      setTimeout(() => document.getElementById(focusId)?.focus(), 480)
+    }
+
+    function showMsg(id, text, type = 'error') {
+      const el = document.getElementById(id + '-msg')
+      if (!el) return
+      el.textContent = text
+      el.className = 'msg ' + type + ' show'
+    }
+    function clearMsg(id) {
+      const el = document.getElementById(id + '-msg')
+      if (el) { el.className = 'msg'; el.textContent = '' }
+    }
+    function setLoading(btnId, on) {
+      const btn = document.getElementById(btnId)
+      if (!btn) return
+      btn.disabled = on
+      btn.classList.toggle('loading', on)
+    }
+    function closeExtras() {
+      document.querySelectorAll('.extra').forEach((el) => el.classList.remove('show'))
+    }
+    function openExtra(name) {
+      closeExtras()
+      document.getElementById('extra-' + name)?.classList.add('show')
+      currentView = name
+      if (name === 'forgot') {
+        const v = document.getElementById('login-email').value.trim()
+        if (v) document.getElementById('forgot-email').value = v
+      }
+      if (name === 'magic') {
+        const v = document.getElementById('login-email').value.trim() || document.getElementById('signup-email').value.trim()
+        if (v) document.getElementById('magic-email').value = v
+      }
+      syncNotches()
+    }
+
+    function getNextRedirectUrl() {
+      const next = new URLSearchParams(location.search).get('next')
+      if (!next) return null
+      try {
+        const url = new URL(next, location.origin)
+        if (url.origin !== location.origin) return null
+        return url.href
+      } catch (_) { return null }
+    }
+    function isAndroid() { return /android/i.test(navigator.userAgent) }
+    function isIos() { return /iphone|ipad|ipod/i.test(navigator.userAgent) }
+    function shouldOpenApp() {
+      return isAndroid() || isIos() || sessionStorage.getItem('arich_from_app') === '1'
+    }
+    async function buildAppDeepLink() {
+      const hash = location.hash || ''
+      const search = location.search || ''
+      if (hash.includes('access_token') && hash.includes('refresh_token')) return APP_DEEP_LINK + hash
+      if (search.includes('code=')) return APP_DEEP_LINK + search
+      try {
+        const { data: { session } } = await sb.auth.getSession()
+        if (session?.access_token && session?.refresh_token) {
+          const q = new URLSearchParams({
+            access_token: session.access_token, refresh_token: session.refresh_token,
+            token_type: session.token_type || 'bearer', type: 'email',
+          })
+          if (session.expires_in != null) q.set('expires_in', String(session.expires_in))
+          return `${APP_DEEP_LINK}#${q.toString()}`
+        }
+      } catch (e) { console.warn('[auth] deep link', e) }
+      return APP_DEEP_LINK + (hash || search)
+    }
+    async function redirectAfterAuth() {
+      const overlay = document.getElementById('redirect')
+      const main = document.getElementById('main')
+      const sub = document.getElementById('redirect-sub')
+      if (overlay) overlay.classList.add('show')
+      if (main) main.style.visibility = 'hidden'
+      const nextUrl = getNextRedirectUrl()
+      const fromApp = sessionStorage.getItem('arich_from_app') === '1'
+      if (nextUrl && !fromApp) {
+        if (sub) sub.textContent = t('redirect_sub_web')
+        setTimeout(() => { location.href = nextUrl }, 900)
+        return
+      }
+      if (shouldOpenApp()) {
+        if (sub) sub.textContent = t('redirect_sub_app')
+        const deepLink = await buildAppDeepLink()
+        setTimeout(() => { location.href = deepLink }, 600)
+        setTimeout(() => {
+          const btn = document.getElementById('btn-open-app')
+          if (btn) { btn.style.display = 'inline-flex'; btn.classList.remove('hidden') }
+          if (sub) sub.textContent = t('redirect_sub_manual')
+        }, 2800)
+      } else {
+        if (sub) sub.textContent = nextUrl ? t('redirect_sub_watch') : t('redirect_sub_space')
+        setTimeout(() => { location.href = nextUrl || WEB_REDIRECT }, 1500)
+      }
+    }
+
+    function togglePw(id, btn) {
+      const inp = document.getElementById(id)
+      if (!inp) return
+      inp.type = inp.type === 'password' ? 'text' : 'password'
+      btn?.setAttribute('aria-pressed', inp.type === 'text' ? 'true' : 'false')
+    }
+    function checkStrength(val, prefix = '') {
+      const p = prefix ? 'r' : ''
+      const b1 = document.getElementById(p + 'bar1'), b2 = document.getElementById(p + 'bar2'), b3 = document.getElementById(p + 'bar3')
+      const lbl = document.getElementById(p + 'strength-lbl')
+      if (!b1 || !lbl) return
+      ;[b1, b2, b3].forEach((b) => { b.className = 'bar' })
+      if (!val) { lbl.textContent = ''; return }
+      let s = 0
+      if (val.length >= 8) s++
+      if (val.length >= 12 || /[A-Z]/.test(val)) s++
+      if (/[0-9]/.test(val) && /[^A-Za-z0-9]/.test(val)) s++
+      const labels = [t('strength_weak'), t('strength_mid'), t('strength_strong')]
+      const colors = ['var(--err)', 'var(--warn)', 'var(--ok)']
+      const idx = Math.min(Math.max(s, 1), 3) - 1
+      lbl.textContent = labels[idx]; lbl.style.color = colors[idx]
+      ;[b1, b2, b3].forEach((b, i) => { if (i <= idx) b.classList.add('s' + (idx + 1)) })
+    }
+    function translateError(msg) {
+      if (!msg) return lang === 'en' ? 'Something went wrong.' : 'Une erreur est survenue.'
+      const m = msg.toLowerCase()
+      if (m.includes('invalid login credentials') || m.includes('invalid credentials')) {
+        return lang === 'en' ? 'Incorrect email or password.' : 'E-mail ou mot de passe incorrect.'
+      }
+      if (m.includes('email not confirmed')) return lang === 'en' ? 'Confirm your email first.' : 'Confirmez votre e-mail avant de vous connecter.'
+      if (m.includes('already registered')) return t('switch_exists')
+      if (m.includes('password should be at least')) return t('err_short')
+      if (m.includes('invalid email')) return lang === 'en' ? 'Invalid email.' : 'E-mail invalide.'
+      if (m.includes('rate limit') || m.includes('too many')) return lang === 'en' ? 'Too many attempts.' : 'Trop de tentatives.'
+      if (m.includes('network') || m.includes('fetch')) return lang === 'en' ? 'Network error.' : 'Erreur réseau.'
+      return msg
+    }
+    function isExistingUserError(msg) {
+      const m = (msg || '').toLowerCase()
+      return m.includes('already registered') || m.includes('user already') || m.includes('already been registered')
+    }
+    function isUnknownUserError(msg) {
+      const m = (msg || '').toLowerCase()
+      return m.includes('user not found') || m.includes('no user') || m.includes('email not found')
+    }
+    async function emailRegistered(email) {
+      try {
+        const { data, error } = await sb.rpc('email_registered', { p_email: email })
+        if (error) return null
+        return !!data
+      } catch (_) { return null }
+    }
+
+    async function oauth(provider, btnId) {
+      if (shouldOpenApp()) sessionStorage.setItem('arich_from_app', '1')
+      setLoading(btnId, true)
+      const { error } = await sb.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: THIS_PAGE_URL,
+          queryParams: provider === 'google' ? { access_type: 'offline', prompt: 'consent' } : undefined,
+        },
+      })
+      if (error) {
+        setLoading(btnId, false)
+        showMsg(mode === 'signup' ? 'signup' : 'login', translateError(error.message))
+      }
+    }
+
+    async function doLogin() {
+      clearMsg('login')
+      const email = document.getElementById('login-email').value.trim()
+      const pw = document.getElementById('login-pw').value
+      if (!email || !pw) { showMsg('login', t('err_fill')); return }
+      setLoading('btn-login', true)
+      const { data, error } = await sb.auth.signInWithPassword({ email, password: pw })
+      setLoading('btn-login', false)
+      if (error) {
+        const unknown = isUnknownUserError(error.message)
+        const invalid = /invalid login credentials|invalid credentials/i.test(error.message || '')
+        if (unknown || invalid) {
+          const exists = unknown ? false : await emailRegistered(email)
+          if (exists === false) {
+            setMode('signup', { email, info: 'unknown' })
+            return
+          }
+        }
+        showMsg('login', translateError(error.message))
+        return
+      }
+      if (data.session) redirectAfterAuth()
+    }
+
+    async function doSignup() {
+      clearMsg('signup')
+      const email = document.getElementById('signup-email').value.trim()
+      const pw = document.getElementById('signup-pw').value
+      const pw2 = document.getElementById('signup-pw2').value
+      if (!email || !pw || !pw2) { showMsg('signup', t('err_fill')); return }
+      if (pw !== pw2) { showMsg('signup', t('err_mismatch')); return }
+      if (pw.length < 8) { showMsg('signup', t('err_short')); return }
+      setLoading('btn-signup', true)
+      const { data, error } = await sb.auth.signUp({ email, password: pw, options: { emailRedirectTo: THIS_PAGE_URL } })
+      setLoading('btn-signup', false)
+      if (error) {
+        if (isExistingUserError(error.message)) {
+          setMode('login', { email, info: 'exists' })
+          return
+        }
+        showMsg('signup', translateError(error.message))
+        return
+      }
+      const identities = data.user?.identities || []
+      if (data.user && identities.length === 0 && !data.session) {
+        setMode('login', { email, info: 'exists' })
+        return
+      }
+      if (data.user && !data.session) { showMsg('signup', t('ok_confirm_email'), 'success'); return }
+      if (data.session) redirectAfterAuth()
+    }
+
+    async function doMagic() {
+      clearMsg('magic')
+      const email = document.getElementById('magic-email').value.trim()
+      if (!email) { showMsg('magic', t('err_email')); return }
+      if (shouldOpenApp()) sessionStorage.setItem('arich_from_app', '1')
+      setLoading('btn-magic', true)
+      const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: THIS_PAGE_URL, shouldCreateUser: true } })
+      setLoading('btn-magic', false)
+      if (error) { showMsg('magic', translateError(error.message)); return }
+      showMsg('magic', t('ok_magic'), 'success')
+    }
+    async function doPhoneSend() {
+      clearMsg('phone')
+      const phone = document.getElementById('phone-input').value.trim()
+      if (!phone || phone.length < 8) { showMsg('phone', t('err_phone')); return }
+      if (shouldOpenApp()) sessionStorage.setItem('arich_from_app', '1')
+      setLoading('btn-phone-send', true)
+      const { error } = await sb.auth.signInWithOtp({ phone })
+      setLoading('btn-phone-send', false)
+      if (error) { showMsg('phone', translateError(error.message)); return }
+      document.getElementById('otpRow').hidden = false
+      showMsg('phone', t('ok_sms'), 'success')
+    }
+    async function doPhoneVerify() {
+      clearMsg('phone')
+      const phone = document.getElementById('phone-input').value.trim()
+      const token = document.getElementById('phone-otp').value.trim()
+      if (!token) { showMsg('phone', t('err_otp')); return }
+      setLoading('btn-phone-verify', true)
+      const { data, error } = await sb.auth.verifyOtp({ phone, token, type: 'sms' })
+      setLoading('btn-phone-verify', false)
+      if (error) { showMsg('phone', translateError(error.message)); return }
+      if (data.session) redirectAfterAuth()
+    }
+    async function doForgot() {
+      clearMsg('forgot')
+      const email = document.getElementById('forgot-email').value.trim()
+      if (!email) { showMsg('forgot', t('err_email')); return }
+      setLoading('btn-forgot', true)
+      const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: THIS_PAGE_URL })
+      setLoading('btn-forgot', false)
+      if (error) { showMsg('forgot', translateError(error.message)); return }
+      showMsg('forgot', t('ok_reset_sent'), 'success')
+    }
+    async function doReset() {
+      clearMsg('reset')
+      const pw = document.getElementById('reset-pw').value
+      const pw2 = document.getElementById('reset-pw2').value
+      if (!pw || !pw2) { showMsg('reset', t('err_fill')); return }
+      if (pw !== pw2) { showMsg('reset', t('err_mismatch')); return }
+      if (pw.length < 8) { showMsg('reset', t('err_short')); return }
+      setLoading('btn-reset', true)
+      const { error } = await sb.auth.updateUser({ password: pw })
+      setLoading('btn-reset', false)
+      if (error) { showMsg('reset', translateError(error.message)); return }
+      showMsg('reset', t('ok_pw_updated'), 'success')
+      setTimeout(redirectAfterAuth, 1800)
+    }
+
+    async function checkSession() {
+      const hash = location.hash, search = location.search
+      if (hash && hash.includes('type=recovery')) { openExtra('reset'); return }
+      const hasToken = (hash && hash.includes('access_token')) || (search && search.includes('code='))
+      if (hasToken) {
+        await new Promise((r) => setTimeout(r, 450))
+        const { data: { session } } = await sb.auth.getSession()
+        if (session) redirectAfterAuth()
+      }
+    }
+    sb.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session && currentView !== 'reset') redirectAfterAuth()
+      if (event === 'PASSWORD_RECOVERY') openExtra('reset')
+    })
+
+    ;(() => {
+      const KEY = 'arich_theme'
+      const apply = (theme) => {
+        const next = theme === 'light' ? 'light' : 'dark'
+        document.documentElement.dataset.theme = next
+        document.documentElement.style.colorScheme = next
+        const meta = document.getElementById('themeColor')
+        if (meta) meta.content = next === 'light' ? '#F4F3EE' : '#0A0B0E'
+      }
+      const saved = localStorage.getItem(KEY)
+      apply(saved === 'light' || saved === 'dark' ? saved : 'dark')
+      document.getElementById('themeToggle')?.addEventListener('click', () => {
+        const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light'
+        localStorage.setItem(KEY, next)
+        apply(next)
+      })
+    })()
+
+    document.getElementById('langFr')?.addEventListener('click', () => applyLang('fr'))
+    document.getElementById('langEn')?.addEventListener('click', () => applyLang('en'))
+    document.querySelectorAll('[data-mode]').forEach((el) => {
+      el.addEventListener('click', () => {
+        const email = document.getElementById('login-email').value.trim() || document.getElementById('signup-email').value.trim()
+        setMode(el.getAttribute('data-mode'), { email })
+      })
+    })
+    document.getElementById('btn-google')?.addEventListener('click', () => oauth('google', 'btn-google'))
+    document.getElementById('btn-google-up')?.addEventListener('click', () => oauth('google', 'btn-google-up'))
+    document.getElementById('btn-facebook')?.addEventListener('click', () => oauth('facebook', 'btn-facebook'))
+    document.getElementById('btn-facebook-up')?.addEventListener('click', () => oauth('facebook', 'btn-facebook-up'))
+    document.getElementById('btn-login')?.addEventListener('click', doLogin)
+    document.getElementById('btn-signup')?.addEventListener('click', doSignup)
+    document.getElementById('btn-magic')?.addEventListener('click', doMagic)
+    document.getElementById('btn-phone-send')?.addEventListener('click', doPhoneSend)
+    document.getElementById('btn-phone-verify')?.addEventListener('click', doPhoneVerify)
+    document.getElementById('btn-forgot')?.addEventListener('click', doForgot)
+    document.getElementById('btn-reset')?.addEventListener('click', doReset)
+    document.getElementById('forgotLink')?.addEventListener('click', () => openExtra('forgot'))
+    document.querySelectorAll('[data-extra]').forEach((el) => el.addEventListener('click', () => openExtra(el.getAttribute('data-extra'))))
+    document.querySelectorAll('[data-extra-close]').forEach((el) => el.addEventListener('click', () => { closeExtras(); currentView = mode }))
+    document.getElementById('btn-open-app')?.addEventListener('click', async () => { location.href = await buildAppDeepLink() })
+    document.querySelectorAll('[data-toggle-pw]').forEach((btn) => btn.addEventListener('click', () => togglePw(btn.getAttribute('data-toggle-pw'), btn)))
+    document.getElementById('signup-pw')?.addEventListener('input', (e) => checkStrength(e.target.value))
+    document.getElementById('reset-pw')?.addEventListener('input', (e) => checkStrength(e.target.value, 'reset'))
+    document.querySelectorAll('[data-notch] input').forEach((input) => {
+      const sync = () => { input.closest('[data-notch]')?.classList.toggle('is-filled', !!input.value) }
+      input.addEventListener('input', sync)
+      input.addEventListener('blur', sync)
+    })
+    const onEmail = (e) => {
+      const v = e.target.value
+      const other = e.target.id === 'login-email' ? 'signup-email' : 'login-email'
+      document.getElementById(other).value = v
+      syncNotches()
+      checkGmail(v)
+    }
+    document.getElementById('login-email')?.addEventListener('input', onEmail)
+    document.getElementById('signup-email')?.addEventListener('input', onEmail)
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' || e.target?.tagName !== 'INPUT') return
+      if (currentView === 'login') doLogin()
+      else if (currentView === 'signup') doSignup()
+      else if (currentView === 'magic') doMagic()
+      else if (currentView === 'phone') document.getElementById('otpRow').hidden ? doPhoneSend() : doPhoneVerify()
+      else if (currentView === 'forgot') doForgot()
+      else if (currentView === 'reset') doReset()
+    })
+
+    ;(function particles() {
+      const canvas = document.getElementById('fx')
+      if (!canvas || reduceMotion) return
+      const ctx = canvas.getContext('2d')
+      const mouse = { x: -9999, y: -9999 }
+      let dots = [], raf = 0
+      function resize() {
+        canvas.width = innerWidth
+        canvas.height = innerHeight
+        const n = Math.min(78, Math.floor((canvas.width * canvas.height) / 16000))
+        dots = Array.from({ length: n }, () => ({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
+          r: Math.random() * 1.4 + 0.4,
+        }))
+      }
+      function tick() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        const cs = getComputedStyle(document.documentElement)
+        const rgb = (cs.getPropertyValue('--particle').trim() || '212,155,62')
+        const a = parseFloat(cs.getPropertyValue('--particle-a')) || 0.55
+        const linkA = parseFloat(cs.getPropertyValue('--particle-link')) || 0.18
+        const link = 118
+        for (let i = 0; i < dots.length; i++) {
+          const d = dots[i]
+          const dx = d.x - mouse.x, dy = d.y - mouse.y
+          const dist = Math.hypot(dx, dy)
+          if (dist < 130 && dist > 0.1) {
+            d.vx += (dx / dist) * 0.04
+            d.vy += (dy / dist) * 0.04
+          }
+          d.vx *= 0.98; d.vy *= 0.98
+          d.x += d.vx; d.y += d.vy
+          if (d.x < 0 || d.x > canvas.width) d.vx *= -1
+          if (d.y < 0 || d.y > canvas.height) d.vy *= -1
+          ctx.beginPath()
+          ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2)
+          ctx.fillStyle = `rgba(${rgb},${a})`
+          ctx.fill()
+          for (let j = i + 1; j < dots.length; j++) {
+            const o = dots[j]
+            const dd = Math.hypot(d.x - o.x, d.y - o.y)
+            if (dd < link) {
+              ctx.beginPath()
+              ctx.moveTo(d.x, d.y)
+              ctx.lineTo(o.x, o.y)
+              ctx.strokeStyle = `rgba(${rgb},${(1 - dd / link) * linkA})`
+              ctx.lineWidth = 1
+              ctx.stroke()
+            }
+          }
+        }
+        raf = requestAnimationFrame(tick)
+      }
+      addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY })
+      addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999 })
+      addEventListener('resize', resize)
+      resize(); tick()
+      addEventListener('pagehide', () => cancelAnimationFrame(raf))
+    })()
+
+    ;(() => {
+      const saved = localStorage.getItem('arich_lang')
+      const browser = (navigator.language || 'fr').toLowerCase().startsWith('en') ? 'en' : 'fr'
+      applyLang(saved === 'en' || saved === 'fr' ? saved : browser)
+      const finish = () => {
+        document.getElementById('boot')?.classList.add('is-done')
+        staggerPane('paneLogin')
+      }
+      if (document.readyState === 'complete') setTimeout(finish, 280)
+      else addEventListener('load', () => setTimeout(finish, 280))
+      setTimeout(finish, 1400)
+    })()
+    checkSession()
+  </script>
+</body>
+</html>

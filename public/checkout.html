@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paiement — ARICH Player</title>
+  <meta name="description" content="Finaliser l’achat de votre licence ARICH Player." />
+  <meta name="robots" content="noindex, follow" />
+  <link rel="canonical" href="https://arich.fr/checkout.html" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <meta name="theme-color" content="#0D1017" id="themeColor" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #07090d; --text: #F0EFEC; --mute: rgba(240,239,236,.58); --faint: rgba(240,239,236,.34);
+      --line: rgba(240,239,236,.12); --line2: rgba(240,239,236,.18);
+      --glass: rgba(18,22,30,.55); --glass2: rgba(18,22,30,.82);
+      --input: rgba(255,255,255,.045); --copper: #C58A2A; --copper2: #D4A04A;
+      --grad: linear-gradient(135deg,#C58A2A,#D4A04A); --ink: #0a0c10;
+      --err: #ff6b8a; --ok: #36d9a0; --ez: cubic-bezier(.22,1,.36,1);
+      --pad: clamp(16px,3.5vw,32px); --max: 1080px;
+    }
+    html[data-theme='light'] {
+      --bg: #F4F1EA; --text: #14120e; --mute: rgba(20,18,14,.58); --faint: rgba(20,18,14,.36);
+      --line: rgba(20,18,14,.1); --line2: rgba(20,18,14,.16);
+      --glass: rgba(255,252,246,.7); --glass2: rgba(255,252,246,.92);
+      --input: rgba(20,18,14,.04); --copper: #A87220; --copper2: #C58A2A; --err: #c44a5e;
+    }
+    html { color-scheme: dark; }
+    html[data-theme='light'] { color-scheme: light; }
+    body {
+      min-height: 100vh; background: var(--bg); color: var(--text);
+      font-family: Figtree, system-ui, sans-serif; line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    .scene { position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 0%, rgba(197,138,42,.16), transparent 55%),
+        radial-gradient(ellipse 45% 35% at 100% 80%, rgba(60,90,140,.07), transparent 50%),
+        var(--bg);
+    }
+    .boot {
+      position: fixed; inset: 0; z-index: 100; display: grid; place-items: center;
+      background: var(--bg); transition: opacity .45s var(--ez), visibility .45s;
+    }
+    .boot.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
+    .boot span {
+      font-family: Syne, sans-serif; font-size: 11px; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--mute);
+    }
+
+    .nav {
+      position: relative; z-index: 10;
+      display: flex; justify-content: center; padding: 16px var(--pad) 0;
+    }
+    .nav-pill {
+      width: min(var(--max), 100%); min-height: 54px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 8px 10px 8px 16px; border-radius: 999px;
+      background: var(--glass); border: 1px solid var(--line2);
+      backdrop-filter: blur(24px) saturate(1.4);
+    }
+    .brand {
+      display: inline-flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--text);
+      font-family: Syne, sans-serif; font-weight: 700; font-size: 12px; letter-spacing: .16em;
+    }
+    .brand img { width: 28px; height: 28px; border-radius: 8px; }
+    .nav-end { display: flex; align-items: center; gap: 8px; }
+    .chip {
+      appearance: none; border: 1px solid var(--line); background: transparent;
+      color: var(--mute); font: inherit; font-size: 12px; font-weight: 600;
+      height: 34px; padding: 0 12px; border-radius: 999px; cursor: pointer;
+      text-decoration: none; display: inline-flex; align-items: center;
+    }
+    .chip:hover { color: var(--text); border-color: rgba(197,138,42,.45); }
+    .chip.is-icon { width: 34px; padding: 0; justify-content: center; }
+    .chip.is-active { color: var(--text); border-color: rgba(197,138,42,.5); background: rgba(197,138,42,.12); }
+    .lang { display: inline-flex; padding: 2px; gap: 2px; border: 1px solid var(--line); border-radius: 999px; }
+    .lang .chip { border: 0; height: 30px; }
+
+    .page {
+      position: relative; z-index: 2;
+      width: min(var(--max), 100%);
+      margin: 0 auto;
+      padding: 28px var(--pad) 56px;
+    }
+    .page h1 {
+      font-family: Syne, sans-serif; font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+      letter-spacing: -.035em; margin-bottom: 8px;
+    }
+    .lede { color: var(--mute); font-size: 15px; max-width: 42ch; margin-bottom: 28px; }
+
+    .grid {
+      display: grid; grid-template-columns: 1.05fr .95fr; gap: 22px; align-items: start;
+    }
+    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+
+    .card {
+      border-radius: 22px; border: 1px solid var(--line2);
+      background: var(--glass2);
+      backdrop-filter: blur(28px) saturate(1.5);
+      box-shadow: 0 24px 60px rgba(0,0,0,.35);
+      padding: clamp(22px, 3vw, 32px);
+    }
+    html[data-theme='light'] .card { box-shadow: 0 18px 48px rgba(40,28,12,.1); }
+
+    .account {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px; border-radius: 16px;
+      border: 1px solid var(--line); background: var(--input);
+      margin-bottom: 22px;
+    }
+    .account-av {
+      width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
+      display: grid; place-items: center; font-weight: 700;
+      background: var(--grad); color: var(--ink); font-family: Syne, sans-serif;
+    }
+    .account strong { display: block; font-size: 14px; }
+    .account span { font-size: 13px; color: var(--mute); }
+
+    .plans { display: grid; gap: 10px; margin-bottom: 22px; }
+    .plan {
+      appearance: none; width: 100%; text-align: left; cursor: pointer;
+      border: 1px solid var(--line2); background: var(--input);
+      border-radius: 16px; padding: 16px 18px; color: var(--text);
+      display: grid; grid-template-columns: 1fr auto; gap: 8px 16px;
+      transition: border-color .2s, background .2s, transform .2s;
+    }
+    .plan:hover { border-color: rgba(197,138,42,.4); }
+    .plan.is-on {
+      border-color: rgba(197,138,42,.65);
+      background: rgba(197,138,42,.1);
+      box-shadow: 0 0 0 1px rgba(197,138,42,.2);
+    }
+    .plan-t { font-family: Syne, sans-serif; font-weight: 700; font-size: 16px; }
+    .plan-b { grid-column: 1; font-size: 13px; color: var(--mute); }
+    .plan-p {
+      grid-row: 1 / span 2; align-self: center;
+      font-family: Syne, sans-serif; font-weight: 800; font-size: 22px; letter-spacing: -.03em;
+    }
+    .plan-p small { font-size: 13px; font-weight: 600; color: var(--mute); margin-left: 2px; }
+
+    .field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 16px; }
+    .field label { font-size: 12px; font-weight: 600; color: var(--mute); letter-spacing: .04em; text-transform: uppercase; }
+    .field input {
+      width: 100%; padding: 14px 16px; border-radius: 12px;
+      border: 1px solid var(--line2); background: var(--input); color: var(--text);
+      font: inherit; font-size: 16px; outline: none;
+    }
+    #deviceKey {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: .14em; text-transform: uppercase; font-weight: 650;
+    }
+    .field input:focus {
+      border-color: rgba(197,138,42,.55);
+      box-shadow: 0 0 0 3px rgba(197,138,42,.14);
+    }
+    .hint { font-size: 12.5px; color: var(--faint); }
+
+    .msg {
+      display: none; margin-bottom: 14px; padding: 12px 14px; border-radius: 12px;
+      font-size: 13.5px; border: 1px solid transparent;
+    }
+    .msg.show { display: block; }
+    .msg.error { background: rgba(255,107,138,.1); border-color: rgba(255,107,138,.22); color: var(--err); }
+    .msg.info { background: rgba(197,138,42,.1); border-color: rgba(197,138,42,.22); color: var(--copper2); }
+
+    .btn {
+      width: 100%; min-height: 52px; border: none; border-radius: 14px;
+      font: inherit; font-size: 15.5px; font-weight: 700; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      transition: transform .15s, filter .2s, opacity .2s;
+    }
+    .btn:disabled { opacity: .55; cursor: not-allowed; }
+    .btn-primary { background: var(--grad); color: var(--ink); box-shadow: 0 10px 28px rgba(197,138,42,.28); }
+    .btn-primary:not(:disabled):hover { filter: brightness(1.05); transform: translateY(-1px); }
+    .spin {
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 2px solid currentColor; border-top-color: transparent;
+      animation: spin .65s linear infinite; display: none;
+    }
+    .btn.loading .spin { display: block; }
+    .btn.loading .blbl { display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .summary h2 {
+      font-family: Syne, sans-serif; font-size: 1.15rem; margin-bottom: 18px; letter-spacing: -.02em;
+    }
+    .row {
+      display: flex; justify-content: space-between; gap: 12px;
+      padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14px;
+    }
+    .row span:first-child { color: var(--mute); }
+    .row.total {
+      border: 0; padding-top: 16px; font-size: 16px; font-weight: 700;
+      font-family: Syne, sans-serif;
+    }
+    .secure {
+      margin-top: 18px; text-align: center; font-size: 12px; color: var(--faint);
+    }
+    .legal {
+      margin-top: 14px; font-size: 12px; color: var(--faint); line-height: 1.5; text-align: center;
+    }
+    .legal a { color: var(--mute); }
+    .foot {
+      margin-top: 28px; display: flex; flex-wrap: wrap; gap: 12px 18px;
+      font-size: 12px; color: var(--faint);
+    }
+    .foot a { color: var(--mute); text-decoration: none; }
+    .foot a:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="boot" id="boot"><span data-i18n="loading">Chargement</span></div>
+  <div class="scene" aria-hidden="true"></div>
+
+  <header class="nav">
+    <div class="nav-pill">
+      <a class="brand" href="/"><img src="/logo-fg.png" alt="" width="28" height="28" /><span>ARICH</span></a>
+      <div class="nav-end">
+        <div class="lang" role="group" aria-label="Language">
+          <button type="button" class="chip is-active" id="langFr">FR</button>
+          <button type="button" class="chip" id="langEn">EN</button>
+        </div>
+        <button type="button" class="chip is-icon" id="themeToggle" aria-label="Theme">◐</button>
+        <a class="chip" href="/#pricing" data-i18n="back">Tarifs</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page" id="main" hidden>
+    <h1 data-i18n="title">Paiement</h1>
+    <p class="lede" data-i18n="lede">Choisissez votre licence, liez votre appareil, puis finalisez sur Stripe.</p>
+
+    <div class="grid">
+      <section class="card">
+        <div class="account" id="accountBox">
+          <div class="account-av" id="avatar">A</div>
+          <div>
+            <strong id="userName">—</strong>
+            <span id="userEmail">—</span>
+          </div>
+        </div>
+
+        <div class="plans" role="radiogroup" aria-label="Plan">
+          <button type="button" class="plan" data-plan="yearly" role="radio" aria-checked="false">
+            <span class="plan-t" data-i18n="plan_year">Annuel</span>
+            <span class="plan-p">3€<small data-i18n="per_year">/an</small></span>
+            <span class="plan-b" data-i18n="plan_year_b">Accès complet, renouvellement automatique</span>
+          </button>
+          <button type="button" class="plan is-on" data-plan="lifetime" role="radio" aria-checked="true">
+            <span class="plan-t" data-i18n="plan_life">À vie</span>
+            <span class="plan-p">5€</span>
+            <span class="plan-b" data-i18n="plan_life_b">Un paiement unique, accès permanent</span>
+          </button>
+        </div>
+
+        <div class="field">
+          <label for="deviceKey" data-i18n="key_label">Clé appareil</label>
+          <input id="deviceKey" type="text" autocomplete="off" spellcheck="false" placeholder="A2DBA1F8" maxlength="32" />
+          <p class="hint" data-i18n="key_hint">Dans l’app : Paramètres → Licence</p>
+        </div>
+
+        <div class="msg" id="msg" role="alert"></div>
+
+        <button type="button" class="btn btn-primary" id="payBtn">
+          <span class="spin" aria-hidden="true"></span>
+          <span class="blbl" data-i18n="pay">Payer maintenant</span>
+        </button>
+        <p class="secure" data-i18n="secure">Paiement sécurisé via Stripe Checkout</p>
+        <p class="legal" data-i18n-html="legal">En continuant, vous acceptez la <a href="/privacy-policy.html">politique de confidentialité</a>.</p>
+      </section>
+
+      <aside class="card summary">
+        <h2 data-i18n="summary">Récapitulatif</h2>
+        <div class="row"><span data-i18n="sum_plan">Licence</span><span id="sumPlan">—</span></div>
+        <div class="row"><span data-i18n="sum_account">Compte</span><span id="sumEmail">—</span></div>
+        <div class="row"><span data-i18n="sum_device">Appareil</span><span id="sumDevice">—</span></div>
+        <div class="row total"><span data-i18n="sum_total">Total</span><span id="sumTotal">—</span></div>
+        <p class="hint" style="margin-top:16px" data-i18n="sum_note">La licence est activée sur la clé appareil après paiement confirmé.</p>
+      </aside>
+    </div>
+
+    <div class="foot">
+      <a href="/">Home</a>
+      <a href="/auth.html" data-i18n="account">Compte</a>
+      <a href="mailto:contact@arich.fr">contact@arich.fr</a>
+    </div>
+  </main>
+
+  <script>
+    const SUPABASE_URL = 'https://aynucieohuowgkwyftiy.supabase.co'
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk'
+
+    const I18N = {
+      fr: {
+        loading: 'Chargement', title: 'Paiement',
+        lede: 'Choisissez votre licence, liez votre appareil, puis finalisez sur Stripe.',
+        back: 'Tarifs', account: 'Compte',
+        plan_year: 'Annuel', plan_year_b: 'Accès complet, renouvellement automatique',
+        plan_life: 'À vie', plan_life_b: 'Un paiement unique, accès permanent',
+        per_year: '/an', key_label: 'Clé appareil',
+        key_hint: 'Dans l’app : Paramètres → Licence',
+        pay: 'Payer maintenant', paying: 'Redirection…',
+        secure: 'Paiement sécurisé via Stripe Checkout',
+        legal: 'En continuant, vous acceptez la <a href="/privacy-policy.html">politique de confidentialité</a>.',
+        summary: 'Récapitulatif', sum_plan: 'Licence', sum_account: 'Compte',
+        sum_device: 'Appareil', sum_total: 'Total',
+        sum_note: 'La licence est activée sur la clé appareil après paiement confirmé.',
+        err_key: 'Entrez la clé appareil affichée dans l’app.',
+        err_net: 'Erreur réseau. Réessayez.',
+        need_auth: 'Connexion requise pour payer.',
+      },
+      en: {
+        loading: 'Loading', title: 'Checkout',
+        lede: 'Pick your license, link your device, then finish on Stripe.',
+        back: 'Pricing', account: 'Account',
+        plan_year: 'Yearly', plan_year_b: 'Full access, automatic renewal',
+        plan_life: 'Lifetime', plan_life_b: 'One payment, permanent access',
+        per_year: '/yr', key_label: 'Device key',
+        key_hint: 'In the app: Settings → License',
+        pay: 'Pay now', paying: 'Redirecting…',
+        secure: 'Secure payment via Stripe Checkout',
+        legal: 'By continuing, you agree to the <a href="/privacy-policy.html">privacy policy</a>.',
+        summary: 'Summary', sum_plan: 'License', sum_account: 'Account',
+        sum_device: 'Device', sum_total: 'Total',
+        sum_note: 'The license activates on this device key after payment is confirmed.',
+        err_key: 'Enter the device key shown in the app.',
+        err_net: 'Network error. Try again.',
+        need_auth: 'Sign in required to pay.',
+      },
+    }
+
+    let lang = 'fr'
+    let plan = 'lifetime'
+    let session = null
+
+    const PLANS = {
+      yearly: { amount: 3, period: { fr: '/an', en: '/yr' }, label: { fr: 'Annuel', en: 'Yearly' } },
+      lifetime: { amount: 5, period: { fr: '', en: '' }, label: { fr: 'À vie', en: 'Lifetime' } },
+    }
+
+    function t(k) { return (I18N[lang] && I18N[lang][k]) || I18N.fr[k] || k }
+    function applyLang(next) {
+      lang = next === 'en' ? 'en' : 'fr'
+      document.documentElement.lang = lang
+      document.title = `${t('title')} — ARICH Player`
+      document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.getAttribute('data-i18n')) })
+      document.querySelectorAll('[data-i18n-html]').forEach((el) => { el.innerHTML = t(el.getAttribute('data-i18n-html')) })
+      document.getElementById('langFr')?.classList.toggle('is-active', lang === 'fr')
+      document.getElementById('langEn')?.classList.toggle('is-active', lang === 'en')
+      syncSummary()
+      try { localStorage.setItem('arich_lang', lang) } catch (_) {}
+    }
+
+    function authRedirect() {
+      const next = `/checkout.html?plan=${encodeURIComponent(plan)}`
+      location.replace(`/auth.html?next=${encodeURIComponent(next)}`)
+    }
+
+    function setPlan(id) {
+      plan = id === 'yearly' ? 'yearly' : 'lifetime'
+      document.querySelectorAll('.plan').forEach((el) => {
+        const on = el.dataset.plan === plan
+        el.classList.toggle('is-on', on)
+        el.setAttribute('aria-checked', on ? 'true' : 'false')
+      })
+      const url = new URL(location.href)
+      url.searchParams.set('plan', plan)
+      history.replaceState(null, '', url)
+      syncSummary()
+    }
+
+    function syncSummary() {
+      const p = PLANS[plan]
+      document.getElementById('sumPlan').textContent = p.label[lang]
+      document.getElementById('sumTotal').textContent = `${p.amount}€${p.period[lang] || ''}`
+      const key = document.getElementById('deviceKey').value.trim().toUpperCase()
+      document.getElementById('sumDevice').textContent = key || '—'
+      document.getElementById('sumEmail').textContent = session?.user?.email || '—'
+    }
+
+    function showMsg(text, type = 'error') {
+      const el = document.getElementById('msg')
+      el.textContent = text
+      el.className = `msg ${type} show`
+    }
+
+    async function pay() {
+      const key = document.getElementById('deviceKey').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '')
+      if (!key || key.length < 6) {
+        showMsg(t('err_key'))
+        document.getElementById('deviceKey').focus()
+        return
+      }
+      if (!session?.access_token) {
+        authRedirect()
+        return
+      }
+      const btn = document.getElementById('payBtn')
+      btn.disabled = true
+      btn.classList.add('loading')
+      document.querySelector('#payBtn .blbl').textContent = t('paying')
+      try {
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: SUPABASE_ANON,
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ plan, deviceKey: key }),
+        })
+        const data = await res.json().catch(() => ({}))
+        if (!res.ok || data.error || !data.url) {
+          showMsg(data.error || t('err_net'))
+          btn.disabled = false
+          btn.classList.remove('loading')
+          document.querySelector('#payBtn .blbl').textContent = t('pay')
+          return
+        }
+        location.href = data.url
+      } catch {
+        showMsg(t('err_net'))
+        btn.disabled = false
+        btn.classList.remove('loading')
+        document.querySelector('#payBtn .blbl').textContent = t('pay')
+      }
+    }
+
+    ;(() => {
+      const KEY = 'arich_theme'
+      const apply = (theme) => {
+        const next = theme === 'light' ? 'light' : 'dark'
+        document.documentElement.dataset.theme = next
+        document.documentElement.style.colorScheme = next
+        const meta = document.getElementById('themeColor')
+        if (meta) meta.content = next === 'light' ? '#F4F1EA' : '#0D1017'
+      }
+      const saved = localStorage.getItem(KEY)
+      apply(saved === 'light' || saved === 'dark' ? saved : (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'))
+      document.getElementById('themeToggle')?.addEventListener('click', () => {
+        const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light'
+        localStorage.setItem(KEY, next)
+        apply(next)
+      })
+    })()
+
+    document.getElementById('langFr')?.addEventListener('click', () => applyLang('fr'))
+    document.getElementById('langEn')?.addEventListener('click', () => applyLang('en'))
+    document.querySelectorAll('.plan').forEach((el) => el.addEventListener('click', () => setPlan(el.dataset.plan)))
+    document.getElementById('deviceKey')?.addEventListener('input', syncSummary)
+    document.getElementById('payBtn')?.addEventListener('click', pay)
+    document.getElementById('deviceKey')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') pay() })
+
+    ;(async () => {
+      const params = new URLSearchParams(location.search)
+      const qPlan = (params.get('plan') || 'lifetime').toLowerCase()
+      plan = qPlan === 'yearly' ? 'yearly' : 'lifetime'
+
+      const savedLang = localStorage.getItem('arich_lang')
+      const browser = (navigator.language || 'fr').toLowerCase().startsWith('en') ? 'en' : 'fr'
+      applyLang(savedLang === 'en' || savedLang === 'fr' ? savedLang : browser)
+      setPlan(plan)
+
+      const { createClient } = supabase
+      const sb = createClient(SUPABASE_URL, SUPABASE_ANON)
+      const { data } = await sb.auth.getSession()
+      session = data.session
+
+      if (!session?.user) {
+        authRedirect()
+        return
+      }
+
+      const email = session.user.email || ''
+      const name = session.user.user_metadata?.full_name || session.user.user_metadata?.name || email.split('@')[0] || 'ARICH'
+      document.getElementById('userName').textContent = name
+      document.getElementById('userEmail').textContent = email
+      document.getElementById('avatar').textContent = (name || 'A').slice(0, 1).toUpperCase()
+      syncSummary()
+
+      document.getElementById('main').hidden = false
+      document.getElementById('boot')?.classList.add('is-done')
+    })()
+  </script>
+</body>
+</html>

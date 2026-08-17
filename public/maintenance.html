@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Site en maintenance — ARICH Player</title>
+  <meta name="description" content="ARICH Player — site en maintenance. Le site web est temporairement indisponible. L’application reste disponible." />
+  <meta name="robots" content="noindex, follow" />
+  <meta name="theme-color" content="#0B0D10" />
+  <link rel="canonical" href="https://arich.fr/" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <style>
+    :root {
+      --bg: #07090d;
+      --bg2: #0b0d10;
+      --text: #f0efec;
+      --mute: rgba(240,239,236,.58);
+      --faint: rgba(240,239,236,.34);
+      --line: rgba(240,239,236,.12);
+      --copper: #c58a2a;
+      --copper2: #d4a04a;
+      --ink: #0a0c10;
+      --grad: linear-gradient(165deg, #d4a04a, #c58a2a);
+      --ease: cubic-bezier(.22,1,.36,1);
+      --font: 'Figtree', system-ui, sans-serif;
+      --display: 'Syne', system-ui, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--bg);
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    #stage {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 70% 55% at 62% 42%, rgba(110,72,36,.22), transparent 58%),
+        radial-gradient(ellipse 50% 40% at 18% 78%, rgba(40,28,18,.18), transparent 60%),
+        linear-gradient(180deg, #05070b 0%, #0b0d10 48%, #07090d 100%);
+    }
+    #stage canvas { display: block; width: 100% !important; height: 100% !important; }
+    .vignette {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background:
+        radial-gradient(ellipse 75% 70% at 50% 45%, transparent 30%, rgba(0,0,0,.55) 100%),
+        linear-gradient(180deg, rgba(0,0,0,.35) 0%, transparent 18%, transparent 72%, rgba(0,0,0,.55) 100%);
+    }
+    .grain {
+      position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: .045;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 220px; mix-blend-mode: soft-light;
+    }
+    .ui {
+      position: relative; z-index: 5;
+      min-height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      padding: clamp(18px, 3vw, 28px) clamp(18px, 4vw, 40px);
+      pointer-events: none;
+    }
+    .ui a, .ui button { pointer-events: auto; }
+
+    .top {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      animation: rise .9s var(--ease) both;
+    }
+    .brand {
+      display: inline-flex; align-items: center; gap: 12px;
+      text-decoration: none; color: var(--text);
+      font-family: var(--display); font-weight: 700; font-size: 15px;
+      letter-spacing: .02em;
+    }
+    .brand img {
+      width: 34px; height: 34px; border-radius: 9px;
+      box-shadow: 0 6px 22px rgba(197,138,42,.35);
+    }
+    .top-right { display: flex; align-items: center; gap: 10px; }
+    .lang {
+      display: inline-flex; padding: 3px;
+      border: 1px solid var(--line); border-radius: 999px;
+      background: rgba(240,239,236,.03);
+    }
+    .lang button {
+      border: 0; background: transparent; color: var(--faint);
+      font: 600 11px/1 var(--font); letter-spacing: .08em;
+      padding: 8px 11px; border-radius: 999px; cursor: pointer;
+      transition: color .2s, background .2s;
+    }
+    .lang button.is-on {
+      color: var(--ink); background: var(--grad);
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 14px; border-radius: 999px;
+      border: 1px solid rgba(197,138,42,.45);
+      background: rgba(197,138,42,.14);
+      color: var(--copper2); font-size: 11px; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+    }
+    .badge i {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--copper2);
+      box-shadow: 0 0 0 0 rgba(212,160,74,.55);
+      animation: pulse 1.8s ease-out infinite;
+    }
+
+    .banner {
+      position: relative; z-index: 6;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 10px 16px;
+      background: linear-gradient(90deg, rgba(197,138,42,.18), rgba(197,138,42,.08) 40%, rgba(197,138,42,.18));
+      border-bottom: 1px solid rgba(197,138,42,.28);
+      color: var(--copper2);
+      font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      text-align: center;
+      pointer-events: none;
+    }
+    .banner b { color: var(--text); font-weight: 800; letter-spacing: .12em; }
+
+    .center {
+      display: grid;
+      grid-template-columns: minmax(280px, 460px) 1fr;
+      align-items: center;
+      gap: clamp(24px, 5vw, 64px);
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: 24px 0;
+    }
+    .copy { animation: rise 1s .12s var(--ease) both; max-width: 34rem; }
+    .eyebrow {
+      font-size: 11px; font-weight: 700; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--copper); margin-bottom: 16px;
+    }
+    h1 {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: clamp(34px, 6vw, 58px);
+      line-height: 1.05;
+      letter-spacing: -.035em;
+      margin-bottom: 16px;
+    }
+    h1 em {
+      font-style: normal;
+      background: var(--grad);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .lede {
+      color: var(--mute); font-size: clamp(15px, 1.6vw, 17px);
+      line-height: 1.65; margin-bottom: 18px; max-width: 40ch;
+    }
+    .notice {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 12px 14px; margin-bottom: 22px;
+      border-radius: 12px;
+      border: 1px solid rgba(197,138,42,.28);
+      background: rgba(197,138,42,.08);
+      color: #e6c48a; font-size: 13.5px; line-height: 1.5;
+    }
+    .notice strong { color: var(--text); font-weight: 700; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 22px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 13px 20px; border-radius: 999px;
+      font-size: 14px; font-weight: 600; text-decoration: none;
+      transition: transform .25s var(--ease), box-shadow .25s, border-color .2s, background .2s;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      color: var(--ink); background: var(--grad);
+      box-shadow: 0 10px 36px rgba(197,138,42,.32);
+    }
+    .btn-primary:hover { box-shadow: 0 14px 42px rgba(197,138,42,.42); }
+    .btn-ghost {
+      color: var(--text); border: 1px solid var(--line);
+      background: rgba(240,239,236,.03);
+    }
+    .btn-ghost:hover { border-color: rgba(197,138,42,.45); }
+    .meta {
+      display: flex; flex-wrap: wrap; gap: 14px 20px;
+      color: var(--faint); font-size: 12.5px;
+    }
+    .meta span { display: inline-flex; align-items: center; gap: 7px; }
+    .meta b { color: var(--mute); font-weight: 600; }
+
+    .stage-hint {
+      justify-self: end; align-self: end;
+      color: var(--faint); font-size: 11px; letter-spacing: .12em;
+      text-transform: uppercase; margin-bottom: 8%; margin-right: 4%;
+      animation: rise 1.1s .25s var(--ease) both;
+      opacity: .7;
+    }
+
+    .bottom {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 12px; color: var(--faint); font-size: 12.5px;
+      animation: rise 1s .2s var(--ease) both;
+      border-top: 1px solid rgba(240,239,236,.06);
+      padding-top: 16px;
+    }
+    .bottom a { color: var(--mute); text-decoration: none; border-bottom: 1px solid transparent; }
+    .bottom a:hover { color: var(--text); border-bottom-color: rgba(197,138,42,.4); }
+    .clock { font-variant-numeric: tabular-nums; color: var(--mute); }
+
+    .loader {
+      position: fixed; inset: 0; z-index: 20;
+      display: grid; place-items: center;
+      gap: 14px;
+      background: #05070b;
+      transition: opacity .7s var(--ease), visibility .7s;
+    }
+    .loader.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loader-mark {
+      width: 56px; height: 56px; border-radius: 14px; overflow: hidden;
+      box-shadow: 0 0 0 1px rgba(197,138,42,.25), 0 20px 60px rgba(197,138,42,.2);
+      animation: breathe 1.6s ease-in-out infinite;
+    }
+    .loader-mark img { width: 100%; height: 100%; object-fit: cover; }
+    .loader-label {
+      color: var(--faint); font-size: 11px; font-weight: 600;
+      letter-spacing: .16em; text-transform: uppercase;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(212,160,74,.5); }
+      70% { box-shadow: 0 0 0 10px rgba(212,160,74,0); }
+      100% { box-shadow: 0 0 0 0 rgba(212,160,74,0); }
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.04); filter: brightness(1.08); }
+    }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .center { grid-template-columns: 1fr; min-height: 58vh; }
+      .stage-hint { display: none; }
+      #stage { position: fixed; }
+      .copy { text-align: left; }
+    }
+    @media (max-width: 560px) {
+      h1 { font-size: 34px; }
+      .actions { width: 100%; }
+      .btn { flex: 1 1 auto; }
+      .banner { font-size: 11px; letter-spacing: .04em; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+      .badge i { animation: none; }
+      .loader-mark { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader-mark"><img src="/logo-fg.png" alt="" width="56" height="56" /></div>
+    <p class="loader-label" data-i18n="loading">Chargement</p>
+  </div>
+
+  <div id="stage" aria-hidden="true"></div>
+  <div class="vignette"></div>
+  <div class="grain"></div>
+
+  <div class="banner" role="status" aria-live="polite">
+    <b data-i18n="banner_strong">MAINTENANCE</b>
+    <span data-i18n="banner">— Site temporairement indisponible</span>
+  </div>
+
+  <div class="ui">
+    <header class="top">
+      <a class="brand" href="https://arich.fr/">
+        <img src="/logo-fg.png" alt="" width="34" height="34" />
+        ARICH
+      </a>
+      <div class="top-right">
+        <div class="lang" role="group" aria-label="Language">
+          <button type="button" data-lang="fr" class="is-on">FR</button>
+          <button type="button" data-lang="en">EN</button>
+        </div>
+        <div class="badge"><i></i><span data-i18n="badge">Maintenance</span></div>
+      </div>
+    </header>
+
+    <main class="center">
+      <div class="copy">
+        <p class="eyebrow" data-i18n="eyebrow">Site en maintenance</p>
+        <h1 data-i18n-html="title">Site en<br /><em>maintenance</em></h1>
+        <p class="lede" data-i18n="lede">Nous mettons arich.fr à jour. La page d’accueil revient très bientôt.</p>
+        <div class="notice">
+          <span aria-hidden="true">⚠</span>
+          <p data-i18n-html="notice"><strong>Maintenance en cours.</strong> Le site web est temporairement inaccessible. L’application ARICH Player reste disponible.</p>
+        </div>
+        <div class="actions">
+          <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=com.arich.iptv" data-i18n="cta_play">Ouvrir Google Play</a>
+          <a class="btn btn-ghost" href="https://github.com/chari-ismael/arich-player/releases/latest" data-i18n="cta_apk">Télécharger l’APK</a>
+        </div>
+        <div class="meta">
+          <span><b data-i18n="meta_status_label">Statut</b> · <span data-i18n="meta_status">Maintenance</span></span>
+          <span><b data-i18n="meta_app_label">App</b> · <span data-i18n="meta_app">Toujours en ligne</span></span>
+        </div>
+      </div>
+      <p class="stage-hint" data-i18n="hint">Engrenages · ARICH</p>
+    </main>
+
+    <footer class="bottom">
+      <p><span data-i18n="footer">Questions</span> — <a href="mailto:contact@arich.fr">contact@arich.fr</a></p>
+      <p class="clock" id="clock" aria-live="polite"></p>
+    </footer>
+  </div>
+
+  <script type="module">
+    const LANG_KEY = 'arich_lang'
+    const FR_COUNTRIES = new Set([
+      'FR', 'BE', 'CH', 'LU', 'MC', 'CA',
+      'SN', 'CI', 'CM', 'MA', 'DZ', 'TN', 'MG', 'HT', 'GF', 'GP', 'MQ', 'RE', 'YT', 'NC', 'PF',
+    ])
+    const FR_TZ = /^(Europe\/(Paris|Brussels|Luxembourg|Monaco)|Indian\/Reunion|America\/(Martinique|Guadeloupe|Cayenne)|Pacific\/(Noumea|Tahiti)|Africa\/(Casablanca|Algiers|Tunis|Dakar|Abidjan|Douala)|Indian\/Antananarivo)/
+
+    const i18n = {
+      fr: {
+        doc_title: 'Site en maintenance — ARICH Player',
+        meta_desc: 'ARICH Player — site en maintenance. Le site web est temporairement indisponible. L’application reste disponible.',
+        loading: 'Chargement',
+        banner_strong: 'MAINTENANCE',
+        banner: '— Site temporairement indisponible',
+        badge: 'Maintenance',
+        eyebrow: 'Site en maintenance',
+        title: 'Site en<br /><em>maintenance</em>',
+        lede: 'Nous mettons arich.fr à jour. La page d’accueil revient très bientôt.',
+        notice: '<strong>Maintenance en cours.</strong> Le site web est temporairement inaccessible. L’application ARICH Player reste disponible.',
+        cta_play: 'Ouvrir Google Play',
+        cta_apk: 'Télécharger l’APK',
+        meta_status_label: 'Statut',
+        meta_status: 'Maintenance',
+        meta_app_label: 'App',
+        meta_app: 'Toujours en ligne',
+        hint: 'Engrenages · ARICH',
+        footer: 'Questions',
+      },
+      en: {
+        doc_title: 'Website under maintenance — ARICH Player',
+        meta_desc: 'ARICH Player — website under maintenance. The site is temporarily unavailable. The app remains available.',
+        loading: 'Loading',
+        banner_strong: 'MAINTENANCE',
+        banner: '— Website temporarily unavailable',
+        badge: 'Maintenance',
+        eyebrow: 'Website under maintenance',
+        title: 'Website under<br /><em>maintenance</em>',
+        lede: 'We’re updating arich.fr. The homepage will be back very soon.',
+        notice: '<strong>Maintenance in progress.</strong> The website is temporarily unavailable. The ARICH Player app remains available.',
+        cta_play: 'Open Google Play',
+        cta_apk: 'Download APK',
+        meta_status_label: 'Status',
+        meta_status: 'Maintenance',
+        meta_app_label: 'App',
+        meta_app: 'Still online',
+        hint: 'Gears · ARICH',
+        footer: 'Questions',
+      },
+    }
+
+    const normLang = (v) => {
+      if (!v) return null
+      const s = String(v).toLowerCase().trim()
+      if (s === 'fr' || s.startsWith('fr-') || s.startsWith('fr_')) return 'fr'
+      if (s === 'en' || s.startsWith('en-') || s.startsWith('en_')) return 'en'
+      return null
+    }
+
+    const fromQuery = () => {
+      try {
+        return normLang(new URLSearchParams(location.search).get('lang'))
+      } catch {
+        return null
+      }
+    }
+
+    const fromStorage = () => {
+      try {
+        return normLang(localStorage.getItem(LANG_KEY))
+      } catch {
+        return null
+      }
+    }
+
+    const fromNavigator = () => {
+      const list = [...(navigator.languages || []), navigator.language].filter(Boolean)
+      for (const l of list) {
+        const n = normLang(l)
+        if (n) return n
+      }
+      return null
+    }
+
+    const fromTimezone = () => {
+      try {
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''
+        if (FR_TZ.test(tz)) return 'fr'
+        if (/^(America\/(New_York|Chicago|Los_Angeles|Toronto)|Europe\/(London|Dublin)|Australia\/)/.test(tz)) return 'en'
+      } catch { /* ignore */ }
+      return null
+    }
+
+    const detectSync = () =>
+      fromQuery() || fromStorage() || fromNavigator() || fromTimezone() || 'fr'
+
+    let lang = detectSync()
+    let langLocked = !!(fromQuery() || fromStorage())
+
+    const metaDesc = document.querySelector('meta[name="description"]')
+    const clockEl = document.getElementById('clock')
+
+    function tick() {
+      if (!clockEl) return
+      const now = new Date()
+      clockEl.textContent = now.toLocaleString(lang === 'fr' ? 'fr-FR' : 'en-GB', {
+        weekday: 'short', day: '2-digit', month: 'short',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+      })
+    }
+
+    const applyLang = () => {
+      const dict = i18n[lang] || i18n.fr
+      document.documentElement.lang = lang
+      document.title = dict.doc_title
+      if (metaDesc) metaDesc.setAttribute('content', dict.meta_desc)
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        const key = el.dataset.i18n
+        if (dict[key] != null) el.textContent = dict[key]
+      })
+      document.querySelectorAll('[data-i18n-html]').forEach((el) => {
+        const key = el.dataset.i18nHtml
+        if (dict[key] != null) el.innerHTML = dict[key]
+      })
+      document.querySelectorAll('.lang button').forEach((btn) => {
+        btn.classList.toggle('is-on', btn.dataset.lang === lang)
+      })
+      tick()
+    }
+
+    const setLang = (next, persist = true) => {
+      const n = normLang(next) || 'fr'
+      if (n === lang) {
+        if (persist) {
+          try { localStorage.setItem(LANG_KEY, n) } catch { /* ignore */ }
+        }
+        return
+      }
+      lang = n
+      if (persist) {
+        langLocked = true
+        try { localStorage.setItem(LANG_KEY, n) } catch { /* ignore */ }
+      }
+      applyLang()
+    }
+
+    document.querySelectorAll('.lang button').forEach((btn) => {
+      btn.addEventListener('click', () => setLang(btn.dataset.lang, true))
+    })
+    applyLang()
+    setInterval(tick, 1000)
+
+    // Optional IP country (only if user hasn't chosen / no query)
+    ;(async () => {
+      if (langLocked) return
+      const ctrl = new AbortController()
+      const kill = setTimeout(() => ctrl.abort(), 1800)
+      try {
+        const res = await fetch('https://ipapi.co/json/', { signal: ctrl.signal, cache: 'no-store' })
+        if (!res.ok) throw new Error('ip')
+        const data = await res.json()
+        const cc = String(data.country_code || data.country || '').toUpperCase()
+        if (!cc) return
+        const guessed = FR_COUNTRIES.has(cc) ? 'fr' : 'en'
+        if (!langLocked) setLang(guessed, false)
+      } catch {
+        try {
+          const res2 = await fetch('https://www.cloudflare.com/cdn-cgi/trace', { signal: AbortSignal.timeout(1200) })
+          const text = await res2.text()
+          const m = text.match(/loc=([A-Z]{2})/i)
+          if (m && !langLocked) {
+            const cc = m[1].toUpperCase()
+            setLang(FR_COUNTRIES.has(cc) ? 'fr' : 'en', false)
+          }
+        } catch { /* keep sync detect */ }
+      } finally {
+        clearTimeout(kill)
+      }
+    })()
+
+    import * as THREE from 'three'
+    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
+
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+    const root = document.getElementById('stage')
+    const loaderEl = document.getElementById('loader')
+
+    const clamp = (v, a, b) => Math.min(b, Math.max(a, v))
+    const lerp = (a, b, t) => a + (b - a) * t
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' })
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75))
+    renderer.setSize(innerWidth, innerHeight)
+    renderer.outputColorSpace = THREE.SRGBColorSpace
+    renderer.toneMapping = THREE.ACESFilmicToneMapping
+    renderer.toneMappingExposure = 1.05
+    root.appendChild(renderer.domElement)
+
+    const scene = new THREE.Scene()
+    scene.fog = new THREE.FogExp2(0x07090d, 0.038)
+
+    const camera = new THREE.PerspectiveCamera(36, innerWidth / innerHeight, 0.1, 80)
+    const camBase = { x: 0.2, y: 0.55, z: 5.2 }
+    camera.position.set(camBase.x, camBase.y, camBase.z)
+    const lookTarget = new THREE.Vector3(0.35, 0.35, 0)
+    camera.lookAt(lookTarget)
+
+    const pmrem = new THREE.PMREMGenerator(renderer)
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
+
+    const key = new THREE.DirectionalLight(0xffd19a, 1.9)
+    key.position.set(3.5, 4.5, 2.8)
+    scene.add(key)
+    const rim = new THREE.DirectionalLight(0xc58a2a, 1.2)
+    rim.position.set(-3.2, 1.8, -2.2)
+    scene.add(rim)
+    scene.add(new THREE.AmbientLight(0x2a241c, 0.5))
+    const copperGlow = new THREE.PointLight(0xc58a2a, 14, 14, 2)
+    copperGlow.position.set(0.4, 1.2, 1.6)
+    scene.add(copperGlow)
+
+    // Soft dust only — no ground disc / yellow ring
+    const moteCount = reduced ? 40 : 140
+    const moteGeo = new THREE.BufferGeometry()
+    const motePos = new Float32Array(moteCount * 3)
+    for (let i = 0; i < moteCount; i++) {
+      motePos[i * 3] = (Math.random() - 0.5) * 9
+      motePos[i * 3 + 1] = Math.random() * 4.5 - 0.4
+      motePos[i * 3 + 2] = (Math.random() - 0.5) * 9
+    }
+    moteGeo.setAttribute('position', new THREE.BufferAttribute(motePos, 3))
+    const motes = new THREE.Points(
+      moteGeo,
+      new THREE.PointsMaterial({ color: 0xd4a04a, size: 0.012, transparent: true, opacity: 0.35, depthAttenuation: true })
+    )
+    scene.add(motes)
+
+    const pivot = new THREE.Group()
+    pivot.position.set(0.55, 0.15, 0)
+    scene.add(pivot)
+    const turntable = new THREE.Group()
+    pivot.add(turntable)
+
+    /** Procedural spur gear — light, copper, no network lag */
+    function createGear({ teeth = 16, radius = 1, thickness = 0.22, hole = 0.18, rim = 0.72 } = {}) {
+      const shape = new THREE.Shape()
+      const outer = radius
+      const rootR = radius * rim
+      const tipW = (Math.PI * 2) / teeth / 4
+      for (let i = 0; i < teeth; i++) {
+        const a0 = (i / teeth) * Math.PI * 2
+        const a1 = a0 + tipW * 0.55
+        const a2 = a0 + tipW * 1.45
+        const a3 = a0 + tipW * 2
+        const a4 = a0 + (Math.PI * 2) / teeth
+        const p = (r, a) => [Math.cos(a) * r, Math.sin(a) * r]
+        const [x0, y0] = p(rootR, a0)
+        if (i === 0) shape.moveTo(x0, y0)
+        else shape.lineTo(x0, y0)
+        shape.lineTo(...p(outer, a1))
+        shape.lineTo(...p(outer, a2))
+        shape.lineTo(...p(rootR, a3))
+        shape.lineTo(...p(rootR, a4))
+      }
+      shape.closePath()
+      const holePath = new THREE.Path()
+      holePath.absarc(0, 0, hole, 0, Math.PI * 2, true)
+      shape.holes.push(holePath)
+
+      const geo = new THREE.ExtrudeGeometry(shape, {
+        depth: thickness,
+        bevelEnabled: true,
+        bevelThickness: 0.018,
+        bevelSize: 0.014,
+        bevelSegments: 1,
+        curveSegments: 1,
+      })
+      geo.center()
+      return geo
+    }
+
+    const matDark = new THREE.MeshStandardMaterial({
+      color: 0x2a241c, metalness: 0.92, roughness: 0.28,
+      envMapIntensity: 1.1,
+    })
+    const matCopper = new THREE.MeshStandardMaterial({
+      color: 0xc58a2a, metalness: 0.95, roughness: 0.22,
+      emissive: 0x3a2208, emissiveIntensity: 0.22,
+      envMapIntensity: 1.2,
+    })
+    const matBright = new THREE.MeshStandardMaterial({
+      color: 0xd4a04a, metalness: 0.9, roughness: 0.18,
+      emissive: 0x4a2e0a, emissiveIntensity: 0.18,
+      envMapIntensity: 1.25,
+    })
+
+    const gears = []
+    function addGear({ teeth, radius, thickness, hole, rim, x, y, z, mat, speed, meshRot = 0 }) {
+      const mesh = new THREE.Mesh(createGear({ teeth, radius, thickness, hole, rim }), mat)
+      mesh.position.set(x, y, z)
+      mesh.rotation.z = meshRot
+      turntable.add(mesh)
+      const hub = new THREE.Mesh(
+        new THREE.CylinderGeometry(hole * 1.35, hole * 1.35, thickness * 1.15, 20),
+        matCopper
+      )
+      hub.rotation.x = Math.PI / 2
+      hub.position.copy(mesh.position)
+      turntable.add(hub)
+      gears.push({ mesh, speed, teeth })
+      return mesh
+    }
+
+    // Meshing layout — tooth ratios keep relative speeds coherent
+    addGear({ teeth: 28, radius: 1.15, thickness: 0.2, hole: 0.16, rim: 0.78, x: 0, y: 0, z: 0, mat: matCopper, speed: 1 })
+    addGear({ teeth: 16, radius: 0.68, thickness: 0.18, hole: 0.12, rim: 0.76, x: 1.55, y: 0.35, z: 0.12, mat: matBright, speed: -28 / 16 })
+    addGear({ teeth: 12, radius: 0.5, thickness: 0.16, hole: 0.1, rim: 0.74, x: -1.28, y: 0.55, z: -0.08, mat: matDark, speed: -28 / 12 })
+    addGear({ teeth: 20, radius: 0.82, thickness: 0.17, hole: 0.13, rim: 0.77, x: 0.55, y: -1.15, z: 0.18, mat: matDark, speed: -28 / 20 })
+    addGear({ teeth: 10, radius: 0.4, thickness: 0.14, hole: 0.09, rim: 0.72, x: 1.95, y: -0.55, z: -0.05, mat: matCopper, speed: (28 / 16) * (16 / 10) })
+
+    // Axle accents
+    const axle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.04, 2.4, 12),
+      matBright
+    )
+    axle.rotation.z = Math.PI / 2
+    axle.position.set(0.35, 0.05, 0.35)
+    turntable.add(axle)
+
+    const pointer = { x: 0, y: 0, tx: 0, ty: 0, active: false }
+    const onPointerMove = (e) => {
+      pointer.tx = clamp((e.clientX / innerWidth) * 2 - 1, -1, 1)
+      pointer.ty = clamp((e.clientY / innerHeight) * 2 - 1, -1, 1)
+      pointer.active = true
+    }
+    const onPointerLeave = () => {
+      pointer.active = false
+      pointer.tx = 0
+      pointer.ty = 0
+    }
+    addEventListener('pointermove', onPointerMove, { passive: true })
+    document.addEventListener('pointerleave', onPointerLeave)
+    addEventListener('blur', onPointerLeave)
+    addEventListener('touchmove', (e) => { const t = e.touches[0]; if (t) onPointerMove(t) }, { passive: true })
+    addEventListener('touchend', onPointerLeave, { passive: true })
+    addEventListener('touchcancel', onPointerLeave, { passive: true })
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight
+      camera.updateProjectionMatrix()
+      renderer.setSize(innerWidth, innerHeight)
+    })
+
+    // Instant — no GLB download
+    requestAnimationFrame(() => loaderEl.classList.add('is-done'))
+    setTimeout(() => loaderEl.classList.add('is-done'), 1200)
+
+    let idleYaw = 0
+    const clock3 = new THREE.Clock()
+    const yawAmp = 0.38
+    const pitchAmp = 0.14
+    let gearSpin = 0
+
+    function frame() {
+      const dt = Math.min(clock3.getDelta(), 0.05)
+      const t = clock3.elapsedTime
+      const smooth = 1 - Math.exp(-dt * (pointer.active ? 7 : 4.2))
+
+      pointer.x = lerp(pointer.x, pointer.tx, smooth)
+      pointer.y = lerp(pointer.y, pointer.ty, smooth)
+
+      const spinRate = reduced ? 0 : (pointer.active ? 0.03 : 0.07)
+      idleYaw += spinRate * dt
+
+      const targetYaw = idleYaw + pointer.x * yawAmp
+      const targetPitch = clamp(-pointer.y * pitchAmp, -pitchAmp, pitchAmp)
+      turntable.rotation.y = lerp(turntable.rotation.y, targetYaw, 1 - Math.exp(-dt * 5))
+      turntable.rotation.x = clamp(lerp(turntable.rotation.x, targetPitch, 1 - Math.exp(-dt * 5)), -0.2, 0.2)
+      turntable.rotation.z = 0
+
+      pivot.position.y = reduced ? 0.15 : 0.15 + Math.sin(t * 0.6) * 0.03
+
+      const gearRate = reduced ? 0 : (pointer.active ? 0.55 : 0.95)
+      gearSpin += gearRate * dt
+      for (const g of gears) {
+        g.mesh.rotation.z = gearSpin * g.speed
+      }
+
+      copperGlow.intensity = reduced ? 14 : 13 + Math.sin(t * 1.15) * 2
+      motes.rotation.y = reduced ? 0 : t * 0.015
+
+      if (!reduced) {
+        camera.position.x = lerp(camera.position.x, camBase.x + pointer.x * 0.07, 1 - Math.exp(-dt * 3))
+        camera.position.y = lerp(camera.position.y, camBase.y + pointer.y * -0.035, 1 - Math.exp(-dt * 3))
+      } else {
+        camera.position.set(camBase.x, camBase.y, camBase.z)
+      }
+      camera.lookAt(lookTarget)
+
+      renderer.render(scene, camera)
+      requestAnimationFrame(frame)
+    }
+    frame()
+  </script>
+</body>
+</html>

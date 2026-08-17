@@ -1,0 +1,937 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ARICH Player — Lecteur IPTV Android &amp; TV | Xtream &amp; M3U</title>
+  <meta name="description" content="ARICH Player : lecteur IPTV premium pour Android et Android TV. Xtream Codes &amp; M3U, films, séries, live TV. Essai 14 jours — dès 3 €/an. Aucun contenu fourni." />
+  <meta name="keywords" content="ARICH Player, lecteur IPTV, Xtream Codes, M3U, Android TV, lecteur Android IPTV, Watch Together, playlist IPTV" />
+  <meta name="author" content="ARICH" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="bingbot" content="index, follow" />
+  <meta name="theme-color" content="#0D1017" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="application-name" content="ARICH Player" />
+  <meta name="apple-mobile-web-app-title" content="ARICH" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="google-site-verification" content="jirKy2q6VohRM8uXDo8NUFqDf-JzYBiEuX9nPXn4SoQ" />
+  <link rel="canonical" href="https://arich.fr/" />
+  <link rel="alternate" hreflang="fr" href="https://arich.fr/" />
+  <link rel="alternate" hreflang="en" href="https://arich.fr/?lang=en" />
+  <link rel="alternate" hreflang="x-default" href="https://arich.fr/" />
+
+  <!-- Favicon / app icons -->
+  <link rel="icon" href="/favicon.ico?v=2" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- Open Graph (Google / social preview) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ARICH Player" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:url" content="https://arich.fr/" />
+  <meta property="og:title" content="ARICH Player — Le cinéma, chez vous. Sans le bruit." />
+  <meta property="og:description" content="Lecteur IPTV premium pour Android &amp; Android TV. Xtream Codes et M3U. Essai 14 jours. Dès 3 €/an." />
+  <meta property="og:image" content="https://arich.fr/og-image.jpg" />
+  <meta property="og:image:secure_url" content="https://arich.fr/og-image.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="ARICH Player — lecteur IPTV Android et Android TV" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ARICH Player — Lecteur IPTV Android &amp; TV" />
+  <meta name="twitter:description" content="Xtream Codes &amp; M3U. Films, séries, live TV. Essai 14 jours — dès 3 €/an." />
+  <meta name="twitter:image" content="https://arich.fr/og-image.jpg" />
+  <meta name="twitter:image:alt" content="ARICH Player" />
+
+  <!-- AI / answer-engine discovery -->
+  <link rel="alternate" type="text/plain" href="/llms.txt" title="LLMs" />
+  <meta name="ai-content-declaration" content="human-authored product website" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://arich.fr/#organization",
+        "name": "ARICH",
+        "url": "https://arich.fr/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://arich.fr/logo-fg.png",
+          "width": 1024,
+          "height": 1024
+        },
+        "email": "contact@arich.fr",
+        "sameAs": [
+          "https://play.google.com/store/apps/details?id=com.arich.iptv",
+          "https://github.com/chari-ismael/arich-player"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://arich.fr/#website",
+        "url": "https://arich.fr/",
+        "name": "ARICH Player",
+        "description": "Lecteur IPTV premium pour Android et Android TV. Xtream Codes et M3U.",
+        "publisher": { "@id": "https://arich.fr/#organization" },
+        "inLanguage": ["fr", "en"],
+        "image": "https://arich.fr/og-image.jpg"
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://arich.fr/#webpage",
+        "url": "https://arich.fr/",
+        "name": "ARICH Player — Lecteur IPTV Android & TV",
+        "isPartOf": { "@id": "https://arich.fr/#website" },
+        "about": { "@id": "https://arich.fr/#app" },
+        "description": "ARICH Player : lecteur IPTV premium pour Android et Android TV. Xtream Codes & M3U. Essai 14 jours.",
+        "inLanguage": "fr",
+        "primaryImageOfPage": {
+          "@type": "ImageObject",
+          "url": "https://arich.fr/og-image.jpg",
+          "width": 1200,
+          "height": 630
+        }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://arich.fr/#app",
+        "name": "ARICH Player",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Android, Android TV",
+        "description": "Lecteur IPTV pour Android et Android TV. Connectez vos accès Xtream Codes ou playlists M3U. ARICH ne fournit aucun contenu.",
+        "url": "https://arich.fr/",
+        "image": "https://arich.fr/og-image.jpg",
+        "screenshot": "https://arich.fr/media/home-phone.png",
+        "author": { "@id": "https://arich.fr/#organization" },
+        "publisher": { "@id": "https://arich.fr/#organization" },
+        "offers": [
+          {
+            "@type": "Offer",
+            "name": "Essai",
+            "price": "0",
+            "priceCurrency": "EUR",
+            "description": "Essai gratuit 14 jours"
+          },
+          {
+            "@type": "Offer",
+            "name": "Annuel",
+            "price": "3",
+            "priceCurrency": "EUR",
+            "description": "Licence annuelle"
+          },
+          {
+            "@type": "Offer",
+            "name": "À vie",
+            "price": "5",
+            "priceCurrency": "EUR",
+            "description": "Licence à vie"
+          }
+        ],
+        "downloadUrl": "https://github.com/chari-ismael/arich-player/releases/latest",
+        "installUrl": "https://play.google.com/store/apps/details?id=com.arich.iptv",
+        "softwareVersion": "3.0.18",
+        "inLanguage": ["fr", "en"],
+        "featureList": [
+          "Xtream Codes",
+          "Playlists M3U",
+          "Live TV",
+          "Films et séries",
+          "EPG",
+          "Watch Together",
+          "Android TV"
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://arich.fr/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "ARICH fournit-il des films ou des chaînes ?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Non. ARICH est un lecteur. Vous connectez vos propres accès Xtream ou playlists M3U."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Comment fonctionne l’essai de 14 jours ?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Vous testez l’app librement. Ensuite, choisissez l’offre annuelle (3 €) ou à vie (5 €)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Sur quels appareils ça marche ?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Android et Android TV. APK via GitHub, ou Google Play lorsque disponible."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "C’est quoi Watch Together ?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Une lecture synchronisée à distance : le même flux, au même moment."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Comment vous joindre ?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Via le formulaire sur arich.fr, ou contact@arich.fr. Réponse sous 24–48 h ouvrées."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div id="boot" class="boot" aria-hidden="true">
+    <canvas id="bootCanvas" class="boot__canvas"></canvas>
+    <div class="boot-mark" id="bootMark">
+      <div class="boot-mark__construct" id="bootConstruct" aria-hidden="true"></div>
+      <img id="bootMarkImg" class="boot-mark__img" src="/logo-fg.png" alt="" width="120" height="120" decoding="async" />
+    </div>
+  </div>
+
+  <!-- Couches d’ambiance -->
+  <div class="bg-layers" aria-hidden="true">
+    <div class="bg-halo bg-halo--1"></div>
+    <div class="bg-halo bg-halo--2"></div>
+    <div class="bg-halo bg-halo--3"></div>
+    <div class="bg-grain"></div>
+  </div>
+  <canvas id="fx" class="fx" aria-hidden="true"></canvas>
+
+  <div id="app" class="app is-booting">
+    <a class="skip-link" href="#main">Aller au contenu</a>
+
+    <header class="nav" id="nav">
+      <div class="nav__inner" id="navPill">
+        <div class="nav__liquid" id="navLiquid" aria-hidden="true"></div>
+        <a class="nav__brand" href="#top">
+          <img id="navBrandMark" class="nav__mark" src="/logo-fg.png" alt="ARICH" width="32" height="32" />
+          <span>ARICH</span>
+        </a>
+
+        <nav class="nav__links nav__links--desktop" aria-label="Navigation" id="navLinks">
+          <span class="nav__links-pill" id="navLinksPill" aria-hidden="true"></span>
+          <a href="#top" data-i18n="nav_home">Accueil</a>
+          <a href="#features" data-i18n="nav_features">Fonctionnalités</a>
+          <a href="#browse" data-i18n="nav_browse">Parcourir</a>
+          <a href="#faq" data-i18n="nav_faq">FAQ</a>
+          <a href="#contact" data-i18n="nav_contact">Contact</a>
+          <a href="#pricing" data-i18n="nav_pricing">Tarifs</a>
+        </nav>
+
+        <div class="nav__end">
+          <div class="lang" role="group" aria-label="Language">
+            <button type="button" data-lang-btn="fr">FR</button>
+            <button type="button" data-lang-btn="en">EN</button>
+          </div>
+          <button type="button" class="theme-toggle" id="themeToggle" aria-label="Thème" title="Thème">
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M21 14.5A8.5 8.5 0 0 1 9.5 3 7 7 0 1 0 21 14.5Z"/>
+            </svg>
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <circle cx="12" cy="12" r="4"/>
+              <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+            </svg>
+          </button>
+          <a class="nav__account" href="/auth.html" data-i18n="nav_account">Compte</a>
+          <a class="btn btn--copper btn--glow nav__cta" href="#install" data-i18n="nav_download">Télécharger</a>
+          <button type="button" class="nav__burger" id="navBurger" aria-expanded="false" aria-controls="navDrawer" data-i18n-aria="nav_menu" aria-label="Menu">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+      <nav class="nav__drawer" id="navDrawer" aria-label="Menu" hidden>
+        <a href="#top" data-i18n="nav_home">Accueil</a>
+        <a href="#features" data-i18n="nav_features">Fonctionnalités</a>
+        <a href="#browse" data-i18n="nav_browse">Parcourir</a>
+        <a href="#faq" data-i18n="nav_faq">FAQ</a>
+        <a href="#contact" data-i18n="nav_contact">Contact</a>
+        <a href="#pricing" data-i18n="nav_pricing">Tarifs</a>
+        <a class="nav__drawer-cta" href="#install" data-i18n="nav_download">Télécharger</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <!-- â•-â•-â•- HERO â•-â•-â•- -->
+      <section class="hero" id="top">
+        <div class="hero__copy">
+          <p class="eyebrow" data-i18n="hero_over">Lecteur média premium</p>
+          <h1 class="hero__title" id="heroTitle" aria-label="Le cinéma, chez vous. Sans le bruit.">
+            <span class="type-line" data-type="0" data-i18n="hero_title_1">Le cinéma,</span>
+            <span class="type-line" data-type="1" data-i18n="hero_title_2">chez vous.</span>
+            <em class="type-line type-line--accent" data-type="2" data-i18n="hero_title_3">Sans le bruit.</em>
+          </h1>
+          <noscript>
+            <h1>Le cinéma, chez vous. Sans le bruit.</h1>
+          </noscript>
+          <p class="hero__lede" data-i18n="hero_lede">
+            Votre bibliothèque, vos chaînes, vos films et séries.
+          </p>
+          <div class="hero__actions">
+            <a class="btn btn--copper btn--lg btn--glow" href="#install">
+              <span class="btn__icon" aria-hidden="true">↓</span>
+              <span data-i18n="hero_cta">Télécharger l'app</span>
+            </a>
+            <a class="btn btn--ghost" href="#browse" data-i18n="hero_secondary">Découvrir</a>
+          </div>
+          <p class="hero__trial" data-i18n="hero_trial">14 jours gratuits · sans engagement</p>
+        </div>
+
+        <div class="hero__stage" id="heroStage">
+          <div class="hero__compose" id="heroCompose">
+            <!-- Desktop mockup -->
+            <div class="device device--desktop hero__desktop">
+              <div class="device__glow"></div>
+              <div class="device__bezel">
+                <div class="device__screen">
+                  <video
+                    class="lazy-video"
+                    data-src="/media/video/home-land.mp4"
+                    poster="/media/home-land.png"
+                    muted
+                    playsinline
+                    loop
+                    preload="auto"
+                    aria-hidden="true"
+                  ></video>
+                </div>
+              </div>
+              <div class="device__stand"></div>
+              <div class="device__base"></div>
+            </div>
+            <!-- Phone superposé -->
+            <div class="device device--phone hero__phone" id="heroPhone">
+              <div class="device__glow device__glow--phone"></div>
+              <div class="device__bezel">
+                <div class="device__notch"></div>
+                <div class="device__screen">
+                  <video
+                    class="lazy-video"
+                    data-src="/media/video/home-port.mp4"
+                    poster="/media/home-phone.png"
+                    muted
+                    playsinline
+                    loop
+                    preload="auto"
+                    aria-hidden="true"
+                  ></video>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- â•-â•-â•- PARCOURIR — scrub â•-â•-â•- -->
+      <section class="browse" id="browse">
+        <div class="browse__pin" id="browsePin">
+          <div class="browse__sticky">
+            <header class="section-head section-head--compact">
+              <p class="eyebrow" data-i18n="browse_over">Parcourir</p>
+              <h2 data-i18n="browse_title">Naviguez. Explorez. Regardez.</h2>
+              <p class="section-head__sub" data-i18n="browse_sub">Faites défiler pour parcourir l’expérience.</p>
+            </header>
+            <div class="browse__track" aria-hidden="true">
+              <div class="browse__progress" id="browseProgress"></div>
+            </div>
+            <div class="browse__labels" id="browseLabels" role="tablist">
+              <button type="button" class="is-active" data-browse="0" data-i18n="browse_home">Accueil</button>
+              <button type="button" data-browse="1" data-i18n="browse_films">Films</button>
+              <button type="button" data-browse="2" data-i18n="browse_series">Séries</button>
+              <button type="button" data-browse="3" data-i18n="browse_live">Live</button>
+              <button type="button" data-browse="4" data-i18n="browse_playlists">Playlists</button>
+            </div>
+            <div class="browse__viewport">
+              <div class="browse__rail" id="browseRail">
+                <figure class="browse__card">
+                  <div class="device device--phone device--phone-lg">
+                    <div class="device__bezel">
+                      <div class="device__notch"></div>
+                      <div class="device__screen">
+                        <img src="/media/home-phone.png" alt="Accueil ARICH" loading="lazy" width="540" height="1170" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+                <figure class="browse__card">
+                  <div class="device device--phone device--phone-lg">
+                    <div class="device__bezel">
+                      <div class="device__notch"></div>
+                      <div class="device__screen">
+                        <img src="/media/films-grid-phone.png" alt="Grille Films" loading="lazy" width="540" height="1170" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+                <figure class="browse__card">
+                  <div class="device device--phone device--phone-lg">
+                    <div class="device__bezel">
+                      <div class="device__notch"></div>
+                      <div class="device__screen">
+                        <img src="/media/series-phone.png" alt="Séries sur l’accueil" loading="lazy" width="540" height="1170" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+                <figure class="browse__card browse__card--land">
+                  <div class="device device--desktop device--sm">
+                    <div class="device__bezel">
+                      <div class="device__screen">
+                        <img src="/media/live-direct-land.png?v=6" alt="Live TV Direct" loading="lazy" width="1170" height="520" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+                <figure class="browse__card">
+                  <div class="device device--phone device--phone-lg">
+                    <div class="device__bezel">
+                      <div class="device__notch"></div>
+                      <div class="device__screen">
+                        <img src="/media/playlist-add-phone.png" alt="Ajouter une playlist" loading="lazy" width="540" height="1170" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- â•-â•-â•- FEATURES — intro + player + scroll morph â•-â•-â•- -->
+      <section class="features" id="features">
+        <header class="section-head">
+          <p class="eyebrow" data-i18n="feat_over">Fonctionnalités</p>
+          <h2 data-i18n="feat_title">Conçu pour regarder. Pas pour gérer.</h2>
+          <p class="section-head__sub" data-i18n="feat_sub">Une seule expérience. Plusieurs gestes.</p>
+        </header>
+
+        <!-- Fluidité + Player en avant -->
+        <div class="feat-intro">
+          <article class="feat-intro__fluid">
+            <div class="feat-intro__copy">
+              <p class="feat-intro__tag" data-i18n="feat_fluid_t">Fluidité absolue</p>
+              <h3 data-i18n="feat_fluid_b">Transitions sobres, zapping immédiat, interface qui s’efface.</h3>
+            </div>
+            <div class="device device--desktop device--sm">
+              <div class="device__glow"></div>
+              <div class="device__bezel">
+                <div class="device__screen">
+                  <img src="/media/home-land.png?v=6" alt="Navigation fluide" loading="lazy" />
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="feat-intro__player" id="player">
+            <div class="feat-intro__copy feat-intro__copy--center">
+              <p class="feat-intro__tag" data-i18n="stage_player_t">Le player</p>
+              <p data-i18n="stage_player_b">Contrôles discrets. Focus sur l’image.</p>
+            </div>
+            <div class="device device--phone-land">
+              <div class="device__glow device__glow--land" aria-hidden="true"></div>
+              <div class="device__bezel">
+                <div class="device__island" aria-hidden="true"></div>
+                <div class="device__screen">
+                  <video
+                    class="lazy-video"
+                    data-src="/media/video/player-land.mp4"
+                    poster="/media/player-land.png"
+                    muted
+                    playsinline
+                    loop
+                    preload="none"
+                    aria-label="Démonstration du player"
+                  ></video>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- Scroll morph : fonctionnalités -->
+        <div class="featflow" id="featPin">
+          <div class="featflow__sticky">
+            <p class="featflow__hint" data-i18n="featflow_hint">Faites défiler pour explorer</p>
+            <div class="featflow__stage">
+              <div class="featflow__stack" id="featStack">
+                <figure class="featflow__slide is-active" data-feat="0">
+                  <div class="device device--phone device--phone-lg">
+                    <div class="device__bezel">
+                      <div class="device__notch"></div>
+                      <div class="device__screen">
+                        <img src="/media/playlist-add-phone.png?v=6" alt="" loading="lazy" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+                <figure class="featflow__slide" data-feat="1">
+                  <div class="device device--desktop device--sm">
+                    <div class="device__bezel">
+                      <div class="device__screen">
+                        <img src="/media/player-menu-land.png?v=6" alt="" loading="lazy" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+                <figure class="featflow__slide" data-feat="2">
+                  <div class="device device--phone device--phone-lg">
+                    <div class="device__bezel">
+                      <div class="device__notch"></div>
+                      <div class="device__screen">
+                        <img src="/media/download-phone.png?v=6" alt="" loading="lazy" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+                <figure class="featflow__slide" data-feat="3">
+                  <div class="device device--phone device--phone-lg">
+                    <div class="device__bezel">
+                      <div class="device__notch"></div>
+                      <div class="device__screen">
+                        <img src="/media/lang-phone.png?v=6" alt="" loading="lazy" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+                <figure class="featflow__slide" data-feat="4">
+                  <div class="device device--phone device--phone-lg">
+                    <div class="device__bezel">
+                      <div class="device__notch"></div>
+                      <div class="device__screen">
+                        <img src="/media/theme-phone.png?v=6" alt="" loading="lazy" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+                <figure class="featflow__slide" data-feat="5">
+                  <div class="device device--phone device--phone-lg">
+                    <div class="device__bezel">
+                      <div class="device__notch"></div>
+                      <div class="device__screen">
+                        <img src="/media/films-grid-phone.png?v=6" alt="" loading="lazy" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+              </div>
+
+              <aside class="featflow__float" id="featFloat" aria-live="polite">
+                <p class="featflow__float-tag" id="featFloatTag"></p>
+                <h3 class="featflow__float-title" id="featFloatTitle"></h3>
+                <p class="featflow__float-body" id="featFloatBody"></p>
+              </aside>
+            </div>
+            <div class="featflow__dots" id="featDots" role="tablist" aria-label="Fonctionnalités"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- â•-â•-â•- STAGE Films / Live â•-â•-â•- -->
+      <section class="stage" id="showcase">
+        <p class="eyebrow stage__eyebrow" data-i18n="stage_over">Mise en scène</p>
+
+        <article class="stage__block stage__block--films">
+          <div class="stage__copy">
+            <h2 data-i18n="stage_films_t">Films & séries</h2>
+            <p data-i18n="stage_films_b">Affiches immersives, fiches détaillées.</p>
+          </div>
+          <div class="stage__visual">
+            <div class="device device--desktop">
+              <div class="device__glow"></div>
+              <div class="device__bezel">
+                <div class="device__screen">
+                  <img src="/media/home-land.png?v=5" alt="Accueil films et séries" loading="lazy" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="stage__block stage__block--live">
+          <div class="stage__visual">
+            <div class="device device--desktop">
+              <div class="device__glow"></div>
+              <div class="device__bezel">
+                <div class="device__screen">
+                  <img src="/media/live-direct-land.png?v=6" alt="Live TV — grilles chaînes Direct" width="2340" height="1041" loading="lazy" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="stage__copy">
+            <h2 data-i18n="stage_live_t">Live TV</h2>
+            <p data-i18n="stage_live_b">Guide EPG, zapping, favoris.</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- â•-â•-â•- NEED â•-â•-â•- -->
+      <section class="need" id="product">
+        <header class="section-head section-head--center">
+          <p class="eyebrow" data-i18n="need_over">Produit</p>
+          <h2 data-i18n="need_title">Tout ce dont vous avez besoin. Rien de plus.</h2>
+          <p class="section-head__sub" data-i18n="need_sub">Xtream · M3U · multi-playlists · 4K · Android & TV</p>
+        </header>
+        <div class="need__compose">
+          <div class="device device--desktop">
+            <div class="device__bezel">
+              <div class="device__screen">
+                <img src="/media/hero-tv.png" alt="" loading="lazy" />
+              </div>
+            </div>
+          </div>
+          <div class="device device--phone need__phone">
+            <div class="device__bezel">
+              <div class="device__notch"></div>
+              <div class="device__screen">
+                <img src="/media/home-phone.png" alt="" loading="lazy" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- â•-â•-â•- INSTALL â•-â•-â•- -->
+      <section class="install" id="install">
+        <header class="section-head">
+          <p class="eyebrow" data-i18n="inst_over">Installation</p>
+          <h2 data-i18n="inst_title">Trois étapes.</h2>
+          <p class="section-head__sub" data-i18n="inst_sub">Prêt en une minute.</p>
+        </header>
+
+        <ol class="steps" id="installSteps">
+          <li class="steps__item is-on" data-step="0">
+            <span class="steps__n">01</span>
+            <div>
+              <h3 data-i18n="inst_1_t">Téléchargez</h3>
+              <p data-i18n="inst_1_b">APK GitHub ou Google Play.</p>
+            </div>
+          </li>
+          <li class="steps__item" data-step="1">
+            <span class="steps__n">02</span>
+            <div>
+              <h3 data-i18n="inst_2_t">Connectez</h3>
+              <p data-i18n="inst_2_b">Xtream ou M3U.</p>
+            </div>
+          </li>
+          <li class="steps__item" data-step="2">
+            <span class="steps__n">03</span>
+            <div>
+              <h3 data-i18n="inst_3_t">Regardez</h3>
+              <p data-i18n="inst_3_b">Vos contenus.</p>
+            </div>
+          </li>
+        </ol>
+        <div class="steps__rail" aria-hidden="true"><span class="steps__fill" id="stepsFill"></span></div>
+
+        <div class="install__compose">
+          <div class="install__download">
+            <h3 class="install__dl-title" data-i18n="inst_dl_title">Téléchargez ARICH PLAYER</h3>
+            <p class="install__dl-sub" data-i18n="inst_dl_sub">Installez l'application en quelques secondes et profitez de votre contenu sur Android.</p>
+            <div class="install__buttons">
+              <a class="btn btn--copper btn--lg btn--glow" id="dlApk" href="#">
+                <span class="btn__icon" aria-hidden="true">↓</span>
+                <span data-i18n="dl_apk">Télécharger l'APK</span>
+              </a>
+              <a class="btn btn--ghost" id="dlPlay" href="#" target="_blank" rel="noopener" data-i18n="dl_play">Google Play</a>
+            </div>
+            <p class="install__meta" data-i18n="inst_meta">Android 8+ · v3.0.10</p>
+            <div class="install__qr" id="installQr">
+              <div class="install__qr-frame">
+                <img id="qrImg" src="" alt="QR code download" width="96" height="96" loading="lazy" />
+                <span class="install__qr-scan" aria-hidden="true"></span>
+              </div>
+              <p data-i18n="inst_qr">Sur ordinateur ? Scannez pour télécharger</p>
+            </div>
+          </div>
+          <div class="install__visual">
+            <div class="device device--phone install__phone">
+              <div class="device__glow device__glow--phone" aria-hidden="true"></div>
+              <div class="device__bezel">
+                <div class="device__notch"></div>
+                <div class="device__screen">
+                  <img src="/media/welcome-phone.png" alt="" loading="lazy" width="540" height="1170" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- â•-â•-â•- PRICING â•-â•-â•- -->
+      <section class="pricing" id="pricing">
+        <header class="section-head section-head--center">
+          <p class="eyebrow" data-i18n="price_over">Tarifs</p>
+          <h2 data-i18n="price_title">Deux offres. Zéro surprise.</h2>
+          <p class="section-head__sub" data-i18n="price_sub">Licence application uniquement — aucun contenu fourni.</p>
+        </header>
+
+        <div class="pricing__trial">
+          <div class="pricing__trial-card">
+            <strong id="trialDays">14</strong>
+            <div>
+              <p data-i18n="price_trial">jours d’essai</p>
+              <span data-i18n="price_trial_hint">Sans engagement. Testez avant de choisir.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pricing__cards">
+          <article class="price-card" data-plan-card="yearly">
+            <header class="price-card__head">
+              <h3 data-i18n="price_year_t">Annuel</h3>
+              <p class="price-card__desc" data-i18n="price_year_b">Accès complet, renouvellement simple.</p>
+            </header>
+            <p class="price-card__amount">
+              <span id="priceYearAmt">3</span><span class="price-card__cur">€</span>
+              <span class="price-card__per" id="priceYearPer">/ an</span>
+            </p>
+            <ul class="price-card__feats">
+              <li data-i18n="price_f_app">Application Android &amp; Android TV</li>
+              <li data-i18n="price_f_xtream">Xtream Codes &amp; M3U</li>
+              <li data-i18n="price_f_updates">Mises à jour incluses</li>
+              <li data-i18n="price_f_support">Support par email</li>
+            </ul>
+            <a class="btn btn--ghost" href="/checkout.html?plan=yearly" data-plan="yearly" data-i18n="price_cta">Activer</a>
+          </article>
+
+          <article class="price-card price-card--reco" data-plan-card="lifetime">
+            <span class="price-card__badge" data-i18n="price_reco">Meilleur choix</span>
+            <header class="price-card__head">
+              <h3 data-i18n="price_life_t">À vie</h3>
+              <p class="price-card__desc" data-i18n="price_life_b">Un paiement. Accès pour toujours.</p>
+            </header>
+            <p class="price-card__amount">
+              <span id="priceLifeAmt">5</span><span class="price-card__cur">€</span>
+              <span class="price-card__per" id="priceLifePer">à vie</span>
+            </p>
+            <ul class="price-card__feats">
+              <li data-i18n="price_f_app">Application Android &amp; Android TV</li>
+              <li data-i18n="price_f_xtream">Xtream Codes &amp; M3U</li>
+              <li data-i18n="price_f_updates">Mises à jour incluses</li>
+              <li data-i18n="price_f_support">Support par email</li>
+              <li data-i18n="price_f_once">Aucun renouvellement</li>
+            </ul>
+            <a class="btn btn--copper" href="/checkout.html?plan=lifetime" data-plan="lifetime" data-i18n="price_cta">Activer</a>
+          </article>
+        </div>
+        <p class="pricing__note" data-i18n="price_note">Vous apportez vos propres playlists. ARICH ne vend aucun contenu.</p>
+      </section>
+
+      <!-- â•-â•-â•- FAQ â•-â•-â•- -->
+      <section class="faq" id="faq">
+        <header class="section-head section-head--center">
+          <p class="eyebrow" data-i18n="faq_over">FAQ</p>
+          <h2 data-i18n="faq_title">Les vraies questions</h2>
+          <p class="section-head__sub" data-i18n="faq_sub">Réponses courtes. Sans jargon.</p>
+        </header>
+
+        <div class="faq__tabs" id="faqTabs" role="tablist" aria-label="FAQ">
+          <button type="button" class="is-active" role="tab" aria-selected="true" data-faq-cat="all" data-i18n="faq_cat_all">Tout</button>
+          <button type="button" role="tab" aria-selected="false" data-faq-cat="app" data-i18n="faq_cat_app">Application</button>
+          <button type="button" role="tab" aria-selected="false" data-faq-cat="install" data-i18n="faq_cat_install">Installation</button>
+          <button type="button" role="tab" aria-selected="false" data-faq-cat="billing" data-i18n="faq_cat_billing">Tarifs</button>
+          <button type="button" role="tab" aria-selected="false" data-faq-cat="support" data-i18n="faq_cat_support">Support</button>
+        </div>
+
+        <div class="faq__list" id="faqList">
+          <details class="faq__item" data-cat="app">
+            <summary><span data-i18n="faq_1_q">ARICH fournit-il des films ou des chaînes ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_1_a">Non. ARICH est un lecteur. Vous connectez vos propres accès Xtream ou playlists M3U.</div></div>
+          </details>
+          <details class="faq__item" data-cat="billing">
+            <summary><span data-i18n="faq_2_q">Comment fonctionne l’essai de 14 jours ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_2_a">Vous testez l’app librement. Ensuite, choisissez l’offre annuelle (3 €) ou à vie (5 €).</div></div>
+          </details>
+          <details class="faq__item" data-cat="install">
+            <summary><span data-i18n="faq_3_q">Sur quels appareils ça marche ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_3_a">Android et Android TV. APK via GitHub, ou Google Play lorsque disponible.</div></div>
+          </details>
+          <details class="faq__item" data-cat="install">
+            <summary><span data-i18n="faq_7_q">Comment installer sur Android TV ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_7_a">Téléchargez l’APK, transférez-le sur la TV (clé USB ou Downloader), puis autorisez l’installation depuis des sources inconnues.</div></div>
+          </details>
+          <details class="faq__item" data-cat="app">
+            <summary><span data-i18n="faq_4_q">Puis-je regarder hors ligne ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_4_a">Oui, via le téléchargement local — selon ce que votre playlist autorise.</div></div>
+          </details>
+          <details class="faq__item" data-cat="app">
+            <summary><span data-i18n="faq_5_q">C’est quoi Watch Together ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_5_a">Une lecture synchronisée à distance : le même flux, au même moment.</div></div>
+          </details>
+          <details class="faq__item" data-cat="billing">
+            <summary><span data-i18n="faq_8_q">Que se passe-t-il après l’achat ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_8_a">Vous activez la licence sur l’appareil via la Device Key (Paramètres → Appareil). Aucun contenu n’est livré avec l’achat.</div></div>
+          </details>
+          <details class="faq__item" data-cat="support">
+            <summary><span data-i18n="faq_6_q">Comment vous joindre ?</span><i class="faq__chev" aria-hidden="true"></i></summary>
+            <div class="faq__a"><div class="faq__a-inner" data-i18n="faq_6_a">Le formulaire ci-dessous, ou contact@arich.fr. On répond sous 24–48 h ouvrées.</div></div>
+          </details>
+        </div>
+      </section>
+
+      <!-- â•-â•-â•- CONTACT â•-â•-â•- -->
+      <section class="contact" id="contact">
+        <div class="contact__layout">
+          <header class="contact__intro">
+            <p class="eyebrow" data-i18n="contact_over">Contact</p>
+            <h2 data-i18n="contact_title">On est là.</h2>
+            <p class="contact__lede" data-i18n="contact_sub">Bug, question, idée — écrivez. On lit chaque message.</p>
+            <ul class="contact__trust">
+              <li>
+                <strong data-i18n="contact_trust_1_t">24–48 h</strong>
+                <span data-i18n="contact_trust_1_b">Délai de réponse moyen</span>
+              </li>
+              <li>
+                <strong>contact@arich.fr</strong>
+                <span data-i18n="contact_trust_2_b">Aussi par email direct</span>
+              </li>
+              <li>
+                <strong data-i18n="contact_trust_3_t">FR · EN</strong>
+                <span data-i18n="contact_trust_3_b">Support bilingue</span>
+              </li>
+            </ul>
+          </header>
+
+          <form class="contact__form" id="contactForm" novalidate>
+            <div class="contact__row">
+              <div class="contact__field" data-field>
+                <label for="contactName"><span data-i18n="contact_name">Nom</span></label>
+                <input type="text" name="name" id="contactName" required autocomplete="name" maxlength="80" data-i18n-placeholder="contact_ph_name" placeholder="Votre prénom ou nom" />
+                <span class="contact__err" aria-live="polite"></span>
+              </div>
+              <div class="contact__field" data-field>
+                <label for="contactEmail"><span data-i18n="contact_email">Email</span></label>
+                <input type="email" name="email" id="contactEmail" required autocomplete="email" maxlength="120" data-i18n-placeholder="contact_ph_email" placeholder="vous@exemple.com" />
+                <span class="contact__err" aria-live="polite"></span>
+              </div>
+            </div>
+
+            <div class="contact__field" data-field>
+              <label for="contactTopic"><span data-i18n="contact_topic">Type de demande</span></label>
+              <select name="topic" id="contactTopic" required>
+                <option value="" disabled selected data-i18n="contact_topic_placeholder">Choisissez un sujet…</option>
+                <option value="app" data-i18n="contact_topic_app">Question sur l’application</option>
+                <option value="install" data-i18n="contact_topic_install">Installation / Android TV</option>
+                <option value="billing" data-i18n="contact_topic_billing">Abonnement / paiement</option>
+                <option value="bug" data-i18n="contact_topic_bug">Problème technique</option>
+                <option value="partner" data-i18n="contact_topic_partner">Partenariat</option>
+                <option value="other" data-i18n="contact_topic_other">Autre</option>
+              </select>
+              <span class="contact__err" aria-live="polite"></span>
+            </div>
+
+            <div class="contact__field" data-field>
+              <label for="contactSubject"><span data-i18n="contact_subject">Sujet</span></label>
+              <input type="text" name="subject" id="contactSubject" required maxlength="120" data-i18n-placeholder="contact_ph_subject" placeholder="En une ligne…" />
+              <span class="contact__err" aria-live="polite"></span>
+            </div>
+
+            <div class="contact__field" data-field>
+              <label for="contactMessage"><span data-i18n="contact_message">Message</span></label>
+              <textarea name="message" id="contactMessage" rows="6" required maxlength="2000" data-i18n-placeholder="contact_ph_message" placeholder="Expliquez ce qui vous amène…"></textarea>
+              <span class="contact__err" aria-live="polite"></span>
+            </div>
+
+            <p class="contact__hint" data-i18n="contact_hint">Le message part vers contact@arich.fr. On répond sous 24–48 h ouvrées.</p>
+            <p class="contact__status" id="contactStatus" role="status" aria-live="polite"></p>
+
+            <button type="submit" class="btn btn--copper btn--lg contact__submit" id="contactSubmit">
+              <span class="contact__submit-spin" aria-hidden="true"></span>
+              <span data-contact-label data-i18n="contact_send">Envoyer le message</span>
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- â•-â•-â•- AFTER CONTACT / CTA â•-â•-â•- -->
+      <section class="final-cta" id="cta">
+        <div class="final-cta__glow" aria-hidden="true"></div>
+        <div class="final-cta__inner">
+          <div class="final-cta__mark" aria-hidden="true">
+            <img src="/logo-fg.png" alt="" width="64" height="64" />
+          </div>
+          <p class="eyebrow" data-i18n="cta_over">Ensuite</p>
+          <h2 data-i18n="cta_title">À vous de regarder.</h2>
+          <p data-i18n="cta_sub">Installez ARICH. 14 jours pour essayer, sans engagement.</p>
+          <div class="final-cta__actions">
+            <a class="btn btn--copper btn--lg" href="#install">
+              <span class="btn__icon" aria-hidden="true">↓</span>
+              <span data-i18n="cta_btn">Télécharger l'app</span>
+            </a>
+            <a class="btn btn--ghost" href="#pricing" data-i18n="cta_secondary">Voir les tarifs</a>
+          </div>
+          <ul class="final-cta__meta">
+            <li data-i18n="cta_m1">Android 8+</li>
+            <li data-i18n="cta_m2">Licence app seule</li>
+            <li data-i18n="cta_m3">Vos playlists</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <img src="/logo-fg.png" alt="" width="44" height="44" />
+          <div>
+            <strong>ARICH Player</strong>
+            <p data-i18n="footer_tag">Streaming premium · Xtream & M3U</p>
+          </div>
+        </div>
+        <div>
+          <h4 data-i18n="footer_product">Produit</h4>
+          <a href="#features" data-i18n="nav_features">Fonctionnalités</a>
+          <a href="#faq" data-i18n="nav_faq">FAQ</a>
+          <a href="#contact" data-i18n="nav_contact">Contact</a>
+          <a href="#pricing" data-i18n="nav_pricing">Tarifs</a>
+          <a href="/auth.html" data-i18n="nav_account">Compte</a>
+        </div>
+        <div>
+          <h4 data-i18n="footer_legal">Légal</h4>
+          <a href="/privacy-policy.html" data-i18n="footer_privacy">Confidentialité</a>
+          <a href="#contact" data-i18n="footer_contact">Contact</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span data-i18n="footer_copy">© 2026 ARICH Player</span>
+      </div>
+    </footer>
+
+    <button type="button" class="scroll-top" id="scrollTop" aria-label="Haut de page">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+        <path d="M12 19V5M5 12l7-7 7 7"/>
+      </svg>
+    </button>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,191 @@
+/* ARICH shared theme — secondary pages (auth, account, admin, TV, legal)
+   Aligns with landing DA: #0D1017 / #C58A2A / #F0EFEC · Syne + Figtree */
+
+:root {
+  --arich-bg: #080a0f;
+  --arich-bg2: #0d1017;
+  --arich-surface: rgba(240, 239, 236, 0.04);
+  --arich-surface2: rgba(240, 239, 236, 0.07);
+  --arich-line: rgba(240, 239, 236, 0.1);
+  --arich-line2: rgba(240, 239, 236, 0.18);
+  --arich-text: #f0efec;
+  --arich-mute: rgba(240, 239, 236, 0.55);
+  --arich-faint: rgba(240, 239, 236, 0.32);
+  --arich-copper: #c58a2a;
+  --arich-copper2: #d4a04a;
+  --arich-ink: #0a0c10;
+  --arich-grad: linear-gradient(165deg, #d4a04a, #c58a2a);
+  --arich-danger: #e07a6a;
+  --arich-ok: #5a9a72;
+  --arich-font: 'Figtree', system-ui, sans-serif;
+  --arich-display: 'Syne', system-ui, sans-serif;
+  --arich-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Remap legacy SaaS tokens used by admin / manage / TV pages */
+  --bg: var(--arich-bg) !important;
+  --bg2: var(--arich-bg2) !important;
+  --bg3: #11151e !important;
+  --text: var(--arich-text) !important;
+  --sub: var(--arich-mute) !important;
+  --muted: var(--arich-faint) !important;
+  --v: var(--arich-copper) !important;
+  --violet: var(--arich-copper) !important;
+  --pink: var(--arich-copper2) !important;
+  --accent: var(--arich-copper) !important;
+  --accent2: var(--arich-copper2) !important;
+  --grad: var(--arich-grad) !important;
+  --gradient: var(--arich-grad) !important;
+  --surface: var(--arich-surface) !important;
+  --surface2: var(--arich-surface2) !important;
+  --surfaceHi: rgba(240, 239, 236, 0.06) !important;
+  --glass: var(--arich-surface) !important;
+  --glass2: var(--arich-surface2) !important;
+  --border: var(--arich-line) !important;
+  --border2: var(--arich-line2) !important;
+  --card: #12161f !important;
+  --input-bg: rgba(240, 239, 236, 0.045) !important;
+}
+
+html {
+  background: var(--arich-bg);
+}
+
+body {
+  font-family: var(--arich-font) !important;
+  color: var(--arich-text) !important;
+  background: var(--arich-bg) !important;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3,
+.logo-text, .logo-name, .auth-title, .nav-brand,
+.ph-left h1, .card-title, .redirect-title, .success-title {
+  font-family: var(--arich-display) !important;
+}
+
+/* Soften leftover pink/purple atmosphere → copper */
+.o1, .orb-1, .bg-orbs .o1,
+.o2, .orb-2, .bg-orbs .o2 {
+  background: radial-gradient(circle, rgba(197, 138, 42, 0.14), transparent 62%) !important;
+}
+.o3, .orb-3, .bg-orbs .o3 {
+  background: radial-gradient(circle, rgba(60, 90, 140, 0.08), transparent 62%) !important;
+}
+.glow-bot {
+  background: radial-gradient(circle, rgba(197, 138, 42, 0.1) 0%, transparent 70%) !important;
+}
+
+/* Brand wordmarks */
+.nav-brand em,
+.logo-name em,
+.auth-title em {
+  background: var(--arich-grad) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* Focus rings → copper */
+input:focus,
+textarea:focus,
+select:focus,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  border-color: rgba(197, 138, 42, 0.55) !important;
+  box-shadow: 0 0 0 3px rgba(197, 138, 42, 0.12) !important;
+}
+
+/* Active nav / sidebar */
+.s-item.on,
+.s-item.active {
+  color: var(--arich-text) !important;
+  background: rgba(197, 138, 42, 0.14) !important;
+  border-color: rgba(197, 138, 42, 0.2) !important;
+}
+.nav-pill {
+  color: var(--arich-copper2) !important;
+  background: rgba(197, 138, 42, 0.1) !important;
+  border-color: rgba(197, 138, 42, 0.22) !important;
+}
+
+/* Primary CTAs — copper fill, dark ink (landing DA) */
+.auth-btn,
+.btn-primary,
+.primary-btn,
+button.grad,
+.tab.active {
+  background: var(--arich-grad) !important;
+  box-shadow: 0 6px 24px rgba(197, 138, 42, 0.32) !important;
+  color: var(--arich-ink) !important;
+}
+
+/* Letter “gem” logos → copper mark, dark ink */
+.nav-gem,
+.auth-gem,
+.logo-gem,
+.logo-icon,
+.nav-av,
+.nav-avatar,
+.profile-av,
+.udet-avatar {
+  background: var(--arich-grad) !important;
+  color: var(--arich-ink) !important;
+  box-shadow: 0 4px 18px rgba(197, 138, 42, 0.4) !important;
+}
+
+/* Purple leftover text accents (badges / chips / info) → copper */
+.b-purple,
+.badge.b-purple,
+.msg-info,
+.chip.on {
+  color: var(--arich-copper2) !important;
+  background: rgba(197, 138, 42, 0.12) !important;
+}
+.msg-info {
+  border-color: rgba(197, 138, 42, 0.22) !important;
+}
+.chip.on {
+  border-color: rgba(197, 138, 42, 0.4) !important;
+}
+
+.forgot a,
+.tv-badge,
+.tv-connecting {
+  color: var(--arich-copper2) !important;
+}
+
+/* Custom cursor accents on TV/privacy pages */
+#cursor {
+  background: var(--arich-copper) !important;
+}
+body:has(a:hover) #cursor,
+body:has(button:hover) #cursor {
+  background: var(--arich-copper2) !important;
+}
+
+/* Spinners that used purple brand */
+.big-spin {
+  border-color: rgba(197, 138, 42, 0.22) !important;
+  border-top-color: var(--arich-copper) !important;
+}
+
+.prog-fill,
+.redirect-loader-bar {
+  background: var(--arich-grad) !important;
+}
+
+/* Step UI (tv-pair) */
+.step-circle.active,
+.step-line.active {
+  background: var(--arich-grad) !important;
+  color: var(--arich-ink) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

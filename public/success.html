@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paiement confirmé — ARICH Player</title>
+  <meta name="robots" content="noindex, follow" />
+  <meta name="theme-color" content="#0B0D10" />
+  <link rel="icon" href="/favicon.ico?v=2" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0B0D10;
+      --text: #F0EFEC;
+      --muted: rgba(240, 239, 236, 0.58);
+      --copper: #C58A2A;
+      --line: rgba(240, 239, 236, 0.12);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100%; }
+    body {
+      font-family: Figtree, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(900px 480px at 50% -10%, rgba(197, 138, 42, 0.22), transparent 55%),
+        radial-gradient(700px 420px at 80% 100%, rgba(197, 138, 42, 0.08), transparent 50%),
+        var(--bg);
+      display: grid;
+      place-items: center;
+      padding: 32px 20px;
+      -webkit-font-smoothing: antialiased;
+    }
+    main {
+      width: min(520px, 100%);
+      text-align: center;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+      margin-bottom: 36px;
+    }
+    .brand img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--line);
+    }
+    .brand span {
+      font-family: Syne, sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      font-size: 13px;
+    }
+    h1 {
+      font-family: Syne, sans-serif;
+      font-size: clamp(1.8rem, 5vw, 2.4rem);
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+    p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.55;
+      margin-bottom: 12px;
+    }
+    .hint {
+      margin-top: 8px;
+      font-size: 0.95rem;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 28px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 22px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: 1px solid transparent;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn--copper {
+      background: linear-gradient(135deg, #C58A2A, #D4A04A);
+      color: #120e08;
+    }
+    .btn--ghost {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--line);
+    }
+    .session {
+      margin-top: 28px;
+      font-size: 0.75rem;
+      color: rgba(240, 239, 236, 0.35);
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="brand" href="/">
+      <img src="/logo-fg.png" alt="" width="44" height="44" />
+      <span>ARICH</span>
+    </a>
+    <h1 id="title">Paiement confirmé</h1>
+    <p id="copy">Votre licence est en cours d’activation sur l’appareil lié à votre Device Key.</p>
+    <p class="hint" id="hint">Rouvrez ARICH Player — la licence se met à jour automatiquement.</p>
+    <div class="actions">
+      <a class="btn btn--copper" href="https://play.google.com/store/apps/details?id=com.arich.iptv">Ouvrir Play Store</a>
+      <a class="btn btn--ghost" href="/#pricing">Retour au site</a>
+    </div>
+    <p class="session" id="session" hidden></p>
+  </main>
+  <script>
+    (function () {
+      const params = new URLSearchParams(location.search)
+      const lang = (params.get('lang') || navigator.language || 'fr').toLowerCase().startsWith('en') ? 'en' : 'fr'
+      const sessionId = params.get('session_id') || params.get('session')
+      const copy = {
+        fr: {
+          title: 'Paiement confirmé',
+          copy: 'Votre licence est en cours d’activation sur l’appareil lié à votre Device Key.',
+          hint: 'Rouvrez ARICH Player — la licence se met à jour automatiquement.',
+        },
+        en: {
+          title: 'Payment confirmed',
+          copy: 'Your license is being activated on the device linked to your Device Key.',
+          hint: 'Reopen ARICH Player — the license refreshes automatically.',
+        },
+      }[lang]
+      document.documentElement.lang = lang
+      document.getElementById('title').textContent = copy.title
+      document.getElementById('copy').textContent = copy.copy
+      document.getElementById('hint').textContent = copy.hint
+      if (sessionId) {
+        const el = document.getElementById('session')
+        el.hidden = false
+        el.textContent = 'Ref: ' + sessionId
+      }
+    })()
+  </script>
+</body>
+</html>

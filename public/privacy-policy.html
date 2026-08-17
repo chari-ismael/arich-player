@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Politique de confidentialité — ARICH Player</title>
+  <link rel="canonical" href="https://arich.fr/privacy-policy.html" />
+  <meta name="description" content="Politique de confidentialité ARICH Player : données collectées, bases légales RGPD, conservation, droits et suppression." />
+  <meta name="robots" content="index, follow" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <meta name="theme-color" content="#0D1017" />
+  <link rel="stylesheet" href="/arich-theme.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080a0f;
+      --bg2: #0d1017;
+      --surface: #12161f;
+      --text: #F0EFEC;
+      --mute: rgba(240,239,236,0.58);
+      --faint: rgba(240,239,236,0.34);
+      --line: rgba(240,239,236,0.1);
+      --copper: #C58A2A;
+      --copper2: #D4A04A;
+      --grad: linear-gradient(165deg, #D4A04A, #C58A2A);
+      --ink: #0a0c10;
+      --ok: #5a9a72;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Figtree', system-ui, sans-serif;
+      line-height: 1.7;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .atmosphere {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse 70% 45% at 50% -10%, rgba(197,138,42,0.14), transparent 55%),
+        radial-gradient(ellipse 40% 30% at 90% 20%, rgba(60,90,140,0.06), transparent 50%),
+        var(--bg);
+    }
+
+    .wrap { position: relative; z-index: 1; }
+
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 28px;
+      background: rgba(8,10,15,0.78);
+      backdrop-filter: blur(20px) saturate(1.2);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-brand {
+      display: inline-flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--text);
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px;
+      letter-spacing: -0.02em;
+    }
+    .nav-brand img {
+      width: 30px; height: 30px; border-radius: 8px;
+      box-shadow: 0 4px 14px rgba(197,138,42,0.35);
+    }
+    .nav-links { display: flex; align-items: center; gap: 8px; }
+    .nav-link {
+      text-decoration: none; color: var(--mute); font-size: 13px; font-weight: 500;
+      padding: 8px 14px; border-radius: 999px; border: 1px solid transparent;
+      transition: color .2s, border-color .2s, background .2s;
+    }
+    .nav-link:hover { color: var(--text); border-color: var(--line); }
+    .nav-link.is-accent {
+      color: var(--ink); background: var(--grad); border: none;
+      box-shadow: 0 4px 16px rgba(197,138,42,0.3);
+    }
+    .nav-link.is-accent:hover { color: var(--ink); }
+
+    .shell {
+      width: min(920px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 56px 0 88px;
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky; top: 88px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .toc-label {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--faint); margin-bottom: 10px;
+    }
+    .toc a {
+      text-decoration: none; color: var(--mute); font-size: 13px;
+      padding: 7px 10px; border-radius: 8px; border-left: 2px solid transparent;
+      transition: color .2s, background .2s, border-color .2s;
+    }
+    .toc a:hover, .toc a:focus-visible {
+      color: var(--text); background: rgba(240,239,236,0.04);
+      border-left-color: var(--copper);
+      outline: none;
+    }
+
+    .doc { min-width: 0; }
+
+    .hero { margin-bottom: 36px; }
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--copper2); margin-bottom: 14px;
+    }
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(28px, 4.5vw, 42px);
+      letter-spacing: -0.035em;
+      line-height: 1.12;
+      margin-bottom: 14px;
+    }
+    .lede {
+      color: var(--mute); font-size: 16px; max-width: 54ch; margin-bottom: 12px;
+    }
+    .meta { font-size: 13px; color: var(--faint); }
+
+    .callout {
+      margin: 0 0 40px;
+      padding: 20px 22px;
+      border-radius: 14px;
+      background: rgba(90,154,114,0.08);
+      border: 1px solid rgba(90,154,114,0.22);
+    }
+    .callout p { color: #a8cbb6; font-size: 14px; line-height: 1.65; }
+    .callout strong { color: #c8e0d2; font-weight: 600; }
+
+    section {
+      padding: 28px 0;
+      border-top: 1px solid var(--line);
+      scroll-margin-top: 96px;
+    }
+    section:first-of-type { border-top: none; padding-top: 0; }
+
+    h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px; font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 14px;
+    }
+    h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px; font-weight: 700;
+      margin: 18px 0 8px;
+      color: var(--text);
+    }
+
+    .prose { color: var(--mute); font-size: 14.5px; }
+    .prose p + p { margin-top: 12px; }
+    .prose strong { color: var(--text); font-weight: 600; }
+    .prose a {
+      color: var(--copper2);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(212,160,74,0.35);
+      transition: border-color .2s;
+    }
+    .prose a:hover { border-bottom-color: var(--copper2); }
+
+    ul.clean {
+      list-style: none; margin-top: 12px;
+    }
+    ul.clean li {
+      position: relative;
+      padding: 10px 0 10px 18px;
+      border-bottom: 1px solid var(--line);
+      color: var(--mute); font-size: 14.5px;
+    }
+    ul.clean li:last-child { border-bottom: none; }
+    ul.clean li::before {
+      content: '';
+      position: absolute; left: 0; top: 18px;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--copper);
+    }
+
+    .table-wrap {
+      margin-top: 16px; overflow-x: auto;
+      border: 1px solid var(--line); border-radius: 12px;
+    }
+    table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+      min-width: 520px;
+    }
+    th {
+      text-align: left; padding: 11px 14px;
+      background: rgba(240,239,236,0.04);
+      color: var(--faint); font-weight: 600;
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    td {
+      padding: 12px 14px; border-top: 1px solid var(--line);
+      color: var(--mute); vertical-align: top;
+    }
+    td:first-child { color: var(--text); font-weight: 500; }
+
+    .tag {
+      display: inline-block; padding: 2px 8px; border-radius: 999px;
+      font-size: 11px; font-weight: 600;
+    }
+    .tag-cloud { background: rgba(197,138,42,0.12); color: var(--copper2); }
+    .tag-local { background: rgba(90,154,114,0.14); color: #7eb892; }
+
+    .actions {
+      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px;
+    }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 11px 18px; border-radius: 999px;
+      font-size: 13.5px; font-weight: 600; text-decoration: none;
+      transition: transform .2s var(--ease), box-shadow .2s, background .2s;
+    }
+    .btn-primary {
+      color: var(--ink); background: var(--grad);
+      box-shadow: 0 6px 20px rgba(197,138,42,0.28);
+    }
+    .btn-primary:hover { transform: translateY(-1px); }
+    .btn-ghost {
+      color: var(--text); border: 1px solid var(--line);
+      background: rgba(240,239,236,0.03);
+    }
+    .btn-ghost:hover { border-color: rgba(197,138,42,0.4); }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px;
+      text-align: center;
+      color: var(--faint); font-size: 13px;
+    }
+    footer a { color: var(--mute); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+    footer .row { margin-top: 8px; }
+
+    @media (max-width: 820px) {
+      .shell { grid-template-columns: 1fr; gap: 28px; width: min(720px, calc(100% - 32px)); padding-top: 40px; }
+      .toc {
+        position: static;
+        flex-direction: row; flex-wrap: wrap; gap: 6px;
+        padding-bottom: 8px;
+      }
+      .toc-label { width: 100%; margin-bottom: 4px; }
+      .toc a { border-left: none; background: rgba(240,239,236,0.04); }
+    }
+    @media (max-width: 520px) {
+      nav { padding: 12px 16px; }
+      .nav-link:not(.is-accent) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="atmosphere" aria-hidden="true"></div>
+  <div class="wrap">
+
+    <nav>
+      <a class="nav-brand" href="/">
+        <img src="/logo-fg.png" alt="" width="30" height="30" />
+        ARICH Player
+      </a>
+      <div class="nav-links">
+        <a class="nav-link" href="/data-deletion.html">Suppression des données</a>
+        <a class="nav-link is-accent" href="/">Retour au site</a>
+      </div>
+    </nav>
+
+    <div class="shell">
+      <aside class="toc" aria-label="Sommaire">
+        <div class="toc-label">Sommaire</div>
+        <a href="#responsable">Responsable</a>
+        <a href="#donnees">Données</a>
+        <a href="#finalites">Finalités</a>
+        <a href="#bases">Bases légales</a>
+        <a href="#conservation">Conservation</a>
+        <a href="#destinataires">Destinataires</a>
+        <a href="#droits">Vos droits</a>
+        <a href="#suppression">Suppression</a>
+        <a href="#securite">Sécurité</a>
+        <a href="#cookies">Cookies</a>
+        <a href="#mineurs">Mineurs</a>
+        <a href="#modifications">Modifications</a>
+      </aside>
+
+      <article class="doc">
+        <header class="hero">
+          <p class="eyebrow">Documents légaux</p>
+          <h1>Politique de confidentialité</h1>
+          <p class="lede">Comment ARICH Player traite vos données personnelles — de façon claire, limitée au nécessaire, conformément au RGPD.</p>
+          <p class="meta">Dernière mise à jour : 9 août 2026</p>
+        </header>
+
+        <div class="callout">
+          <p><strong>En bref.</strong> Nous collectons uniquement les données techniques nécessaires au fonctionnement de l’application (appareil, licence, sessions). Nous ne vendons pas vos données. Pas de publicité ciblée. Vos identifiants IPTV restent sur votre appareil.</p>
+        </div>
+
+        <section id="responsable">
+          <h2>1. Responsable du traitement</h2>
+          <div class="prose">
+            <p>Le responsable du traitement des données est <strong>ARICH</strong>, éditeur de l’application <strong>ARICH Player</strong> (lecteur multimédia IPTV pour Android et Android TV).</p>
+            <p>Contact : <a href="mailto:contact@arich.fr">contact@arich.fr</a> · Site : <a href="https://arich.fr/">arich.fr</a></p>
+            <p>ARICH Player permet de lire des flux vidéo à partir de <strong>vos propres accès</strong> (Xtream Codes ou playlists M3U). L’application ne fournit aucun contenu média.</p>
+          </div>
+        </section>
+
+        <section id="donnees">
+          <h2>2. Données collectées</h2>
+          <div class="prose">
+            <p>Nous ne collectons que les données nécessaires au service :</p>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Donnée</th>
+                  <th>Finalité</th>
+                  <th>Stockage</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Android ID / Device Key</td>
+                  <td>Activation et vérification de licence</td>
+                  <td><span class="tag tag-cloud">Serveurs</span></td>
+                </tr>
+                <tr>
+                  <td>Modèle / marque appareil</td>
+                  <td>Support et compatibilité</td>
+                  <td><span class="tag tag-cloud">Serveurs</span></td>
+                </tr>
+                <tr>
+                  <td>Version Android / application</td>
+                  <td>Diagnostic, mises à jour</td>
+                  <td><span class="tag tag-cloud">Serveurs</span></td>
+                </tr>
+                <tr>
+                  <td>Adresse IP / pays (approximatif)</td>
+                  <td>Sécurité, anti-fraude, stats agrégées</td>
+                  <td><span class="tag tag-cloud">Serveurs</span></td>
+                </tr>
+                <tr>
+                  <td>Sessions d’utilisation</td>
+                  <td>Amélioration du service, installations actives</td>
+                  <td><span class="tag tag-cloud">Serveurs</span></td>
+                </tr>
+                <tr>
+                  <td>Adresse e-mail (si compte)</td>
+                  <td>Authentification, support, infos de service</td>
+                  <td><span class="tag tag-cloud">Serveurs</span></td>
+                </tr>
+                <tr>
+                  <td>Identifiants IPTV</td>
+                  <td>Connexion à vos playlists</td>
+                  <td><span class="tag tag-local">Local seul</span></td>
+                </tr>
+                <tr>
+                  <td>Favoris &amp; historique</td>
+                  <td>Reprise de lecture, accès rapide</td>
+                  <td><span class="tag tag-local">Local seul</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="prose" style="margin-top:14px;">
+            <p>Nous <strong>ne collectons pas</strong> : contenu de vos playlists sur nos serveurs, mots de passe IPTV, données de paiement en clair (traitées par le prestataire de paiement le cas échéant), localisation GPS précise, contacts, photos, micro ou caméra.</p>
+          </div>
+        </section>
+
+        <section id="finalites">
+          <h2>3. Finalités du traitement</h2>
+          <ul class="clean">
+            <li>Fournir le service (licence, synchronisation compte, lecture locale)</li>
+            <li>Assurer la sécurité et prévenir la fraude / abus de licence</li>
+            <li>Améliorer la stabilité et la compatibilité de l’application</li>
+            <li>Répondre au support et aux demandes RGPD</li>
+            <li>Respecter nos obligations légales (comptabilité, litiges)</li>
+          </ul>
+        </section>
+
+        <section id="bases">
+          <h2>4. Bases légales (RGPD)</h2>
+          <div class="prose">
+            <p><strong>Exécution du contrat</strong> (art. 6.1.b) — identifiant d’appareil et données de licence nécessaires pour activer et maintenir votre accès au lecteur.</p>
+            <p><strong>Intérêt légitime</strong> (art. 6.1.f) — sessions techniques, IP / pays approximatif, diagnostics, pour sécuriser le service et l’améliorer, sans porter atteinte à vos droits.</p>
+            <p><strong>Consentement</strong> (art. 6.1.a) — création d’un compte avec adresse e-mail ; vous pouvez retirer votre consentement en demandant la suppression du compte.</p>
+            <p><strong>Obligation légale</strong> (art. 6.1.c) — conservation limitée de certaines données de facturation / licence si la loi l’exige.</p>
+          </div>
+        </section>
+
+        <section id="conservation">
+          <h2>5. Durées de conservation</h2>
+          <div class="prose">
+            <p><strong>Données d’appareil</strong> — tant que l’appareil est enregistré ; suppression sur demande ou après inactivité prolongée du compte / appareil.</p>
+            <p><strong>Données de licence</strong> — jusqu’à 2 ans après expiration, pour obligations comptables et litiges éventuels.</p>
+            <p><strong>Sessions d’utilisation</strong> — 12 mois maximum, puis suppression automatique.</p>
+            <p><strong>Compte e-mail</strong> — jusqu’à suppression du compte ou demande d’effacement.</p>
+            <p>Les données strictement locales (IPTV, favoris) sont effacées lorsque vous désinstallez l’application ou videz ses données.</p>
+          </div>
+        </section>
+
+        <section id="destinataires">
+          <h2>6. Destinataires et sous-traitants</h2>
+          <div class="prose">
+            <p>Vos données serveur sont hébergées chez <strong>Supabase</strong> (infrastructure PostgreSQL, chiffrement en transit et au repos). L’accès est limité par des contrôles techniques (notamment Row Level Security).</p>
+            <p>Nous ne vendons pas vos données et ne les partageons pas avec des régies publicitaires. Des prestataires techniques (hébergement, e-mail transactionnel, paiement le cas échéant) peuvent traiter des données pour notre compte, uniquement pour les finalités décrites ici.</p>
+            <p>En cas de transfert hors de l’Espace économique européen, des garanties appropriées (clauses contractuelles types ou mécanismes équivalents) sont mises en place par nos sous-traitants.</p>
+          </div>
+        </section>
+
+        <section id="droits">
+          <h2>7. Vos droits</h2>
+          <div class="prose">
+            <p>Conformément au RGPD, vous disposez des droits suivants :</p>
+          </div>
+          <ul class="clean">
+            <li><strong>Accès</strong> — obtenir une copie des données que nous détenons</li>
+            <li><strong>Rectification</strong> — corriger des données inexactes</li>
+            <li><strong>Effacement</strong> — demander la suppression (« droit à l’oubli »)</li>
+            <li><strong>Limitation</strong> — restreindre certains traitements</li>
+            <li><strong>Portabilité</strong> — recevoir vos données dans un format courant</li>
+            <li><strong>Opposition</strong> — vous opposer aux traitements fondés sur l’intérêt légitime</li>
+          </ul>
+          <div class="prose" style="margin-top:14px;">
+            <p>Pour exercer ces droits : <a href="mailto:contact@arich.fr">contact@arich.fr</a> ou via la <a href="/data-deletion.html">page de suppression des données</a>. Nous répondons dans un délai d’un mois.</p>
+            <p>Vous pouvez aussi introduire une réclamation auprès de la <a href="https://www.cnil.fr/" rel="noopener noreferrer" target="_blank">CNIL</a>.</p>
+          </div>
+        </section>
+
+        <section id="suppression">
+          <h2>8. Suppression des données</h2>
+          <div class="prose">
+            <p>Vous pouvez demander la suppression de votre compte et des données personnelles associées via notre formulaire dédié. Certaines données peuvent être conservées temporairement lorsqu’une obligation légale l’impose (ex. facturation).</p>
+          </div>
+          <div class="actions">
+            <a class="btn btn-primary" href="/data-deletion.html">Demander la suppression</a>
+            <a class="btn btn-ghost" href="mailto:contact@arich.fr?subject=Demande%20RGPD%20%E2%80%94%20ARICH%20Player">Écrire à contact@arich.fr</a>
+          </div>
+        </section>
+
+        <section id="securite">
+          <h2>9. Sécurité</h2>
+          <div class="prose">
+            <p>Mesures en place : chiffrement TLS en transit, chiffrement au repos chez l’hébergeur, contrôle d’accès, politiques RLS, minimisation des données. Aucun mot de passe IPTV ne transit ni n’est stocké sur nos serveurs.</p>
+            <p>Aucune mesure n’étant infaillible, nous vous invitons à nous signaler tout incident suspect à <a href="mailto:contact@arich.fr">contact@arich.fr</a>.</p>
+          </div>
+        </section>
+
+        <section id="cookies">
+          <h2>10. Cookies et site web</h2>
+          <div class="prose">
+            <p>Le site <strong>arich.fr</strong> utilise des cookies ou stockages techniques strictement nécessaires au fonctionnement (session, préférences de langue le cas échéant). Nous n’utilisons pas de cookies publicitaires ni de trackers comportementaux tiers (type Meta / Google Analytics) sur le site produit.</p>
+          </div>
+        </section>
+
+        <section id="mineurs">
+          <h2>11. Protection des mineurs</h2>
+          <div class="prose">
+            <p>ARICH Player n’est pas destiné aux personnes de moins de <strong>15 ans</strong>. Nous ne collectons pas sciemment de données de mineurs. Si vous pensez qu’un mineur nous a transmis des données, contactez-nous pour suppression.</p>
+          </div>
+        </section>
+
+        <section id="modifications">
+          <h2>12. Modifications</h2>
+          <div class="prose">
+            <p>Nous pouvons mettre à jour cette politique. En cas de changement substantiel, une information sera diffusée dans l’application et/ou par e-mail si vous avez un compte. La date en tête de page fait foi.</p>
+          </div>
+        </section>
+      </article>
+    </div>
+
+    <footer>
+      <p>© 2026 ARICH Player · Lecteur multimédia uniquement · Aucun contenu fourni</p>
+      <p class="row">
+        <a href="/">Accueil</a> ·
+        <a href="/data-deletion.html">Suppression des données</a> ·
+        <a href="/auth.html">Compte</a> ·
+        <a href="mailto:contact@arich.fr">Contact</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

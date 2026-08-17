@@ -286,6 +286,51 @@ textarea{resize:vertical;min-height:80px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.09);border-radius:2px}
 ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.16)}
+
+/* ── Dashboard Hero ──────────────────────────────── */
+.dash-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:26px}
+.dash-hero__title{font-family:'Syne',sans-serif;font-size:clamp(20px,3vw,26px);font-weight:700;letter-spacing:-.03em;line-height:1.2;margin:0}
+.dash-hero__wave{display:inline-block;width:24px;height:24px;vertical-align:middle;background:var(--grad);mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Ctext y='28' font-size='28'%3E👋%3C/text%3E%3C/svg%3E") center/contain no-repeat;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Ctext y='28' font-size='28'%3E👋%3C/text%3E%3C/svg%3E") center/contain no-repeat;animation:waveHand 2.5s ease-in-out 1;transform-origin:70% 70%}
+@keyframes waveHand{0%,60%,100%{transform:rotate(0)}10%{transform:rotate(14deg)}20%{transform:rotate(-8deg)}30%{transform:rotate(14deg)}40%{transform:rotate(-4deg)}50%{transform:rotate(10deg)}}
+.dash-hero__sub{font-size:12.5px;color:var(--sub);margin:4px 0 0}
+.dash-hero__actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* ── KPI Enhanced ────────────────────────────────── */
+.kpi__head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;position:relative;z-index:1}
+.kpi--hero{grid-column:span 2}
+.kpi-bar{height:3px;border-radius:2px;background:rgba(255,255,255,.06);margin-top:10px;overflow:hidden}
+.kpi-bar__fill{height:100%;border-radius:2px;background:var(--grad);transition:width 1.2s var(--ez)}
+
+/* ── Charts layout ───────────────────────────────── */
+.dash-charts{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-bottom:18px}
+.dash-chart-card{overflow:hidden}
+.dash-chart-card__head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.dash-donut-wrap{display:flex;flex-direction:column;gap:12px}
+.dash-donut-legend{display:flex;flex-wrap:wrap;gap:8px 16px}
+.dash-donut-legend__item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--sub)}
+.dash-donut-legend__dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* ── Feed grid ───────────────────────────────────── */
+.dash-feed-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.dash-feed{overflow:hidden;display:flex;flex-direction:column}
+.dash-feed__head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.dash-feed__list{flex:1;display:flex;flex-direction:column}
+.dash-feed__list .mrow{padding:10px 0;border-bottom:1px solid var(--border);transition:background .15s}
+.dash-feed__list .mrow:hover{background:rgba(255,255,255,.02);margin:0 -22px;padding:10px 22px;border-radius:8px}
+.dash-feed__list .mrow:last-child{border-bottom:none}
+
+/* ── Quick actions ───────────────────────────────── */
+.dash-quick__grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.dash-quick__btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;background:var(--glass);border:1px solid var(--border);border-radius:var(--r12);cursor:pointer;font-family:'Figtree',sans-serif;font-size:11px;font-weight:500;color:var(--sub);transition:all .2s var(--ez);text-align:center}
+.dash-quick__btn:hover{color:var(--text);background:var(--glass2);border-color:rgba(197,138,42,.3);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.dash-quick__btn:active{transform:scale(.96)}
+.dash-quick__icon{font-size:20px;line-height:1}
+
+/* ── Responsive dashboard ────────────────────────── */
+@media(max-width:1100px){.dash-feed-grid{grid-template-columns:1fr 1fr}.dash-quick{grid-column:span 2}}
+@media(max-width:960px){.dash-charts{grid-template-columns:1fr}.kpi--hero{grid-column:span 1}}
+@media(max-width:768px){.dash-feed-grid{grid-template-columns:1fr}.dash-quick{grid-column:span 1}.dash-quick__grid{grid-template-columns:repeat(3,1fr)}.dash-hero__title{font-size:18px}}
+@media(max-width:480px){.dash-quick__grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -425,9 +470,12 @@ textarea{resize:vertical;min-height:80px}
 
 <!-- ══════ DASHBOARD ══════ -->
 <section class="sec active" id="sec-dashboard">
-  <div class="ph">
-    <div class="ph-left"><h1>Dashboard 🚀</h1><p>Vue temps réel — <span id="dash-date"></span></p></div>
-    <div class="ph-actions">
+  <div class="dash-hero">
+    <div class="dash-hero__left">
+      <h1 class="dash-hero__title">Bonjour <span id="dash-admin-name">Admin</span> <span class="dash-hero__wave" aria-hidden="true"></span></h1>
+      <p class="dash-hero__sub"><span id="dash-date"></span> — Voici ce qui se passe avec ARICH Player.</p>
+    </div>
+    <div class="dash-hero__actions">
       <div id="maint-btn-wrap"></div>
       <button class="btn btn-ghost btn-sm" onclick="refreshDashboard()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
@@ -435,37 +483,114 @@ textarea{resize:vertical;min-height:80px}
       </button>
     </div>
   </div>
+
   <div id="maintenance-banner" style="display:none;" class="maintenance-bar">
     <span style="font-size:24px;">🔧</span>
     <div style="flex:1"><div style="font-weight:600;color:var(--r);margin-bottom:3px;">Mode maintenance ACTIF</div><div style="font-size:12px;color:var(--sub);" id="maint-msg-display"></div></div>
     <button class="btn btn-danger btn-sm" onclick="toggleMaintenance(false)">Désactiver</button>
   </div>
+
+  <!-- KPI strip -->
   <div class="kpi-grid" id="dash-kpis">
-    <div class="kpi enter" style="--kline:var(--grad)"><span class="kpi-icon">📱</span><div class="kpi-val" id="d-devices">–</div><div class="kpi-label">Devices total</div><div class="kpi-delta delta-up" id="d-devices-d">+0 ce mois</div></div>
-    <div class="kpi enter" style="--kline:var(--grad3)"><span class="kpi-icon">✅</span><div class="kpi-val" id="d-active-lic">–</div><div class="kpi-label">Licences actives</div><div class="kpi-delta delta-neu">trial inclus</div></div>
-    <div class="kpi enter" style="--kline:var(--grad)"><span class="kpi-icon">💰</span><div class="kpi-val" id="d-revenue">–</div><div class="kpi-label">Revenus payments</div><div class="kpi-delta delta-up" id="d-rev-d">total</div></div>
-    <div class="kpi enter" style="--kline:linear-gradient(135deg,#FFD60A,#FF6B00)"><span class="kpi-icon">⏰</span><div class="kpi-val" id="d-expiring">–</div><div class="kpi-label">Licences expirant</div><div class="kpi-delta delta-dn">Dans 7 jours</div></div>
-    <div class="kpi enter" style="--kline:var(--grad2)"><span class="kpi-icon">📥</span><div class="kpi-val" id="d-installs">–</div><div class="kpi-label">Installations</div><div class="kpi-delta delta-neu">devices</div></div>
-    <div class="kpi enter" style="--kline:linear-gradient(135deg,#E07A6A,#C58A2A)"><span class="kpi-icon">🚫</span><div class="kpi-val" id="d-banned">–</div><div class="kpi-label">Devices bannis</div><div class="kpi-delta delta-neu">Total</div></div>
+    <div class="kpi kpi--hero enter" style="--kline:var(--grad)">
+      <div class="kpi__head"><span class="kpi-icon">📱</span><span class="kpi-delta delta-up" id="d-devices-d">+0 ce mois</span></div>
+      <div class="kpi-val" id="d-devices">–</div>
+      <div class="kpi-label">Devices total</div>
+      <div class="kpi-bar"><div class="kpi-bar__fill" style="width:0%"></div></div>
+    </div>
+    <div class="kpi enter" style="--kline:var(--grad3)">
+      <div class="kpi__head"><span class="kpi-icon">✅</span><span class="kpi-delta delta-neu">trial inclus</span></div>
+      <div class="kpi-val" id="d-active-lic">–</div>
+      <div class="kpi-label">Licences actives</div>
+    </div>
+    <div class="kpi enter" style="--kline:var(--grad)">
+      <div class="kpi__head"><span class="kpi-icon">💰</span><span class="kpi-delta delta-up" id="d-rev-d">total</span></div>
+      <div class="kpi-val" id="d-revenue">–</div>
+      <div class="kpi-label">Revenus payments</div>
+    </div>
+    <div class="kpi kpi--warn enter" style="--kline:linear-gradient(135deg,#FFD60A,#FF6B00)">
+      <div class="kpi__head"><span class="kpi-icon">⏰</span><span class="kpi-delta delta-dn">Dans 7 jours</span></div>
+      <div class="kpi-val" id="d-expiring">–</div>
+      <div class="kpi-label">Licences expirant</div>
+    </div>
+    <div class="kpi enter" style="--kline:var(--grad2)">
+      <div class="kpi__head"><span class="kpi-icon">📥</span><span class="kpi-delta delta-neu">devices</span></div>
+      <div class="kpi-val" id="d-installs">–</div>
+      <div class="kpi-label">Installations</div>
+    </div>
+    <div class="kpi enter" style="--kline:linear-gradient(135deg,#E07A6A,#C58A2A)">
+      <div class="kpi__head"><span class="kpi-icon">🚫</span><span class="kpi-delta delta-neu">Total</span></div>
+      <div class="kpi-val" id="d-banned">–</div>
+      <div class="kpi-label">Devices bannis</div>
+    </div>
   </div>
-  <div class="grid2" style="margin-bottom:18px;">
-    <div class="card">
-      <div class="card-title">Nouveaux devices — 30j</div>
+
+  <!-- Charts row -->
+  <div class="dash-charts">
+    <div class="card dash-chart-card">
+      <div class="dash-chart-card__head">
+        <div class="card-title">Nouveaux devices</div>
+        <span class="badge b-gray">30 jours</span>
+      </div>
       <div class="chart-wrap"><canvas id="chart-dash-line"></canvas></div>
     </div>
-    <div class="card">
-      <div class="card-title">Répartition licences</div>
-      <div class="chart-wrap" style="height:190px;"><canvas id="chart-dash-donut"></canvas></div>
+    <div class="card dash-chart-card">
+      <div class="dash-chart-card__head">
+        <div class="card-title">Répartition licences</div>
+      </div>
+      <div class="dash-donut-wrap">
+        <div class="chart-wrap" style="height:190px;"><canvas id="chart-dash-donut"></canvas></div>
+        <div class="dash-donut-legend" id="dash-donut-legend"></div>
+      </div>
     </div>
   </div>
-  <div class="grid2">
-    <div class="card">
-      <div class="card-title">Derniers devices enregistrés</div>
-      <div id="recent-devices-list"></div>
+
+  <!-- Bottom row: activity feed -->
+  <div class="dash-feed-grid">
+    <div class="card dash-feed">
+      <div class="dash-feed__head">
+        <div class="card-title">Derniers devices</div>
+        <button class="btn btn-ghost btn-xs" onclick="show('devices')">Voir tout</button>
+      </div>
+      <div id="recent-devices-list" class="dash-feed__list"></div>
     </div>
-    <div class="card">
-      <div class="card-title">Actions récentes</div>
-      <div id="recent-logs-list"></div>
+    <div class="card dash-feed">
+      <div class="dash-feed__head">
+        <div class="card-title">Actions récentes</div>
+        <button class="btn btn-ghost btn-xs" onclick="show('logs')">Voir tout</button>
+      </div>
+      <div id="recent-logs-list" class="dash-feed__list"></div>
+    </div>
+    <div class="card dash-feed dash-quick">
+      <div class="dash-feed__head">
+        <div class="card-title">Actions rapides</div>
+      </div>
+      <div class="dash-quick__grid">
+        <button class="dash-quick__btn" onclick="show('broadcast')">
+          <span class="dash-quick__icon">📡</span>
+          <span>Broadcast</span>
+        </button>
+        <button class="dash-quick__btn" onclick="show('notifs')">
+          <span class="dash-quick__icon">🔔</span>
+          <span>Notif push</span>
+        </button>
+        <button class="dash-quick__btn" onclick="show('promos')">
+          <span class="dash-quick__icon">🎟️</span>
+          <span>Promo</span>
+        </button>
+        <button class="dash-quick__btn" onclick="openModal('modal-add-license')">
+          <span class="dash-quick__icon">🎫</span>
+          <span>Nouv. licence</span>
+        </button>
+        <button class="dash-quick__btn" onclick="show('config')">
+          <span class="dash-quick__icon">⚙️</span>
+          <span>Config</span>
+        </button>
+        <button class="dash-quick__btn" onclick="show('killswitch')">
+          <span class="dash-quick__icon">🛑</span>
+          <span>Kill switch</span>
+        </button>
+      </div>
     </div>
   </div>
 </section>
@@ -1162,6 +1287,9 @@ function launchApp() {
   document.getElementById('nav-av').textContent = (adminUser.username||adminUser.email||'A')[0].toUpperCase();
   document.getElementById('nav-em').textContent = adminUser.email || adminUser.username || '';
   const today = new Date(); document.getElementById('dash-date').textContent = today.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  const h = today.getHours();
+  const greetingEl = document.getElementById('dash-admin-name');
+  if (greetingEl) greetingEl.textContent = h < 12 ? 'Admin' : h < 18 ? 'Admin' : 'Admin';
   loadDashboard();
 }
 
@@ -1253,28 +1381,32 @@ async function loadDashboard() {
 
     const rd = document.getElementById('recent-devices-list');
     const last5 = [...devices].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,5);
-    rd.innerHTML = last5.length ? last5.map(d => `
-      <div class="mrow">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div style="width:28px;height:28px;border-radius:8px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">📱</div>
-          <div>
-            <div style="font-size:12.5px;font-weight:500;">${esc(d.device_name||d.device_model||'—')}</div>
-            <div style="font-size:10.5px;color:var(--muted);">${d.created_at?timeAgo(d.created_at):'—'}</div>
+    rd.innerHTML = last5.length ? last5.map((d,i) => `
+      <div class="mrow" style="animation:enterUp .35s var(--ez) ${i*0.06}s both">
+        <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+          <div style="width:32px;height:32px;border-radius:10px;background:${d.is_banned?'rgba(255,45,85,.12)':'rgba(197,138,42,.12)'};display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">${d.is_banned?'🚫':'📱'}</div>
+          <div style="min-width:0;">
+            <div style="font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(d.device_name||d.device_model||'Inconnu')}</div>
+            <div style="font-size:10.5px;color:var(--muted);margin-top:1px">${d.created_at?timeAgo(d.created_at):'—'}</div>
           </div>
         </div>
         ${d.is_banned?'<span class="badge b-red">Banni</span>':'<span class="badge b-green b-dot">Actif</span>'}
-      </div>`).join('') : '<div style="color:var(--muted);font-size:13px;padding:12px 0;">Aucun device.</div>';
+      </div>`).join('') : '<div class="empty" style="padding:24px"><span class="empty-icon">📱</span><h3>Aucun device</h3><p>Les nouveaux devices apparaîtront ici.</p></div>';
 
     const rl = document.getElementById('recent-logs-list');
     const logs = logsRes.data || [];
     const li = {ban_device:'🚫',unban_device:'✅',delete_device:'🗑️',add_note:'📝',add_license:'🎫',save_config:'⚙️',send_notification:'🔔'};
-    rl.innerHTML = logs.length ? logs.map(l=>`
-      <div class="mrow">
-        <div>
-          <div style="font-size:12.5px;font-weight:500;">${li[l.action]||'📋'} ${esc(l.action||'—')}</div>
-          <div style="font-size:10.5px;color:var(--muted);">${esc(l.target_user||'')} · ${l.created_at?timeAgo(l.created_at):'—'}</div>
+    const la = {ban_device:'bannir',unban_device:'débannir',delete_device:'supprimer',add_note:'note',add_license:'licence',save_config:'config',send_notification:'notification'};
+    rl.innerHTML = logs.length ? logs.map((l,i) => `
+      <div class="mrow" style="animation:enterUp .35s var(--ez) ${i*0.06}s both">
+        <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+          <div style="width:32px;height:32px;border-radius:10px;background:var(--glass2);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">${li[l.action]||'📋'}</div>
+          <div style="min-width:0;">
+            <div style="font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(la[l.action]||l.action||'—')}</div>
+            <div style="font-size:10.5px;color:var(--muted);margin-top:1px">${esc(l.target_user||'Système')} · ${l.created_at?timeAgo(l.created_at):'—'}</div>
+          </div>
         </div>
-      </div>`).join('') : '<div style="color:var(--muted);font-size:13px;padding:12px 0;">Aucune action récente.</div>';
+      </div>`).join('') : '<div class="empty" style="padding:24px"><span class="empty-icon">📋</span><h3>Aucune action</h3><p>Les actions admin apparaîtront ici.</p></div>';
 
   } catch(e) { toast('❌ Dashboard : '+e.message); }
 }
@@ -1296,17 +1428,25 @@ function renderDashCharts(devices, lics) {
   const activeC   = lics.filter(l=>l.status==='active').length;
   const expiredC  = lics.filter(l=>l.status==='expired').length;
   const otherC    = lics.length - trialC - activeC - expiredC;
+  const donutData = [
+    {label:'Trial',value:trialC,bg:'rgba(10,132,255,0.7)',bd:'#0A84FF'},
+    {label:'Actives',value:activeC,bg:'rgba(48,209,88,0.7)',bd:'#30D158'},
+    {label:'Expirées',value:expiredC,bg:'rgba(255,45,85,0.6)',bd:'#FF2D55'},
+    {label:'Autres',value:Math.max(otherC,0),bg:'rgba(255,255,255,0.12)',bd:'rgba(255,255,255,0.15)'}
+  ];
   charts.dashDonut = new Chart(document.getElementById('chart-dash-donut'), {
     type:'doughnut', data:{
-      labels:['Trial','Actives','Expirées','Autres'],
-      datasets:[{ data:[trialC,activeC,expiredC,Math.max(otherC,0)],
-        backgroundColor:['rgba(10,132,255,0.7)','rgba(48,209,88,0.7)','rgba(255,45,85,0.6)','rgba(255,255,255,0.12)'],
-        borderColor:['#0A84FF','#30D158','#FF2D55','rgba(255,255,255,0.15)'],
+      labels:donutData.map(d=>d.label),
+      datasets:[{ data:donutData.map(d=>d.value),
+        backgroundColor:donutData.map(d=>d.bg),
+        borderColor:donutData.map(d=>d.bd),
         borderWidth:2, hoverOffset:8 }]
     }, options:{ responsive:true, maintainAspectRatio:false, cutout:'68%',
-      plugins:{ legend:{ position:'bottom', labels:{ color:'rgba(240,240,248,0.45)', font:{family:'Figtree',size:11}, padding:12 }}}
+      plugins:{ legend:{ display:false }}
     }
   });
+  const legend = document.getElementById('dash-donut-legend');
+  if (legend) legend.innerHTML = donutData.map(d => `<div class="dash-donut-legend__item"><span class="dash-donut-legend__dot" style="background:${d.bd}"></span>${d.label} <strong style="color:var(--text);margin-left:2px">${d.value}</strong></div>`).join('');
 }
 
 function refreshDashboard() { dashLoaded=false; destroyCharts(); loadDashboard(); }

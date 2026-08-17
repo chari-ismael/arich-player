@@ -43,24 +43,29 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Figtree
 .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.025;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
 
 /* AUTH */
-#auth-screen{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;background:var(--bg);transition:opacity .5s var(--ez),transform .5s var(--ez);}
-#auth-screen.hide{opacity:0;transform:scale(1.03);pointer-events:none}
-.auth-card{width:100%;max-width:400px;margin:0 16px;background:rgba(255,255,255,0.03);border:1px solid var(--border2);border-radius:var(--r24);padding:2.6rem 2.2rem;backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);box-shadow:0 32px 80px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.07);animation:cardIn .6s var(--ez) both;}
-@keyframes cardIn{from{opacity:0;transform:translateY(24px) scale(0.97)}to{opacity:1;transform:none}}
-.auth-gem{width:56px;height:56px;border-radius:16px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#0a0c10;margin:0 auto 1.2rem;box-shadow:0 8px 28px rgba(197,138,42,0.55);animation:gemPulse 3s ease-in-out infinite;overflow:hidden;}
-.auth-gem img{width:100%;height:100%;object-fit:cover}
-@keyframes gemPulse{0%,100%{box-shadow:0 8px 28px rgba(197,138,42,0.55)}50%{box-shadow:0 8px 40px rgba(197,138,42,0.85)}}
-.auth-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;text-align:center;letter-spacing:-.03em}
-.auth-sub{text-align:center;color:var(--muted);font-size:.83rem;margin:.4rem 0 1.8rem}
-.auth-field{margin-bottom:1rem}
-.auth-field label{display:block;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.4rem}
-.auth-field input{width:100%;padding:.75rem 1rem;background:var(--glass);border:1px solid var(--border);border-radius:var(--r12);color:var(--text);font-size:.9rem;font-family:'Figtree',sans-serif;outline:none;transition:all .22s var(--ez);}
-.auth-field input:focus{border-color:rgba(197,138,42,.5);box-shadow:0 0 0 3px rgba(197,138,42,.12);background:var(--glass2)}
-.auth-btn{width:100%;padding:.85rem;margin-top:.4rem;background:var(--grad);border:none;border-radius:var(--r12);color:#0a0c10;font-size:.95rem;font-weight:600;font-family:'Figtree',sans-serif;cursor:pointer;transition:all .22s var(--ez);display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 6px 24px rgba(197,138,42,.4);}
-.auth-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 36px rgba(197,138,42,.6)}
-.auth-btn:active{transform:scale(.97)}
-.auth-btn:disabled{opacity:.5;cursor:not-allowed}
-.auth-err{background:rgba(255,45,85,.08);border:1px solid rgba(255,45,85,.2);border-radius:var(--r8);padding:.65rem .9rem;font-size:.82rem;color:var(--r);margin-top:.8rem;display:none;}
+#auth-screen{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;background:var(--bg);transition:opacity .4s var(--ez),transform .4s var(--ez);}
+#auth-screen.hide{opacity:0;transform:translateY(12px);pointer-events:none}
+#auth-screen .bg-orbs,#auth-screen .grain{display:none}
+.auth-wrap{width:100%;max-width:380px;margin:0 20px;animation:authIn .5s var(--ez) both;}
+@keyframes authIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.auth-header{display:flex;align-items:center;gap:12px;margin-bottom:32px;justify-content:center}
+.auth-logo{width:40px;height:40px;border-radius:10px;overflow:hidden;flex-shrink:0}
+.auth-logo img{width:100%;height:100%;object-fit:cover;display:block}
+.auth-wordmark{font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;letter-spacing:-.02em;color:var(--text)}
+.auth-wordmark em{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:normal}
+.auth-label{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-left:6px;padding:3px 8px;border:1px solid var(--border);border-radius:5px}
+.auth-form{display:flex;flex-direction:column;gap:16px}
+.auth-field{display:flex;flex-direction:column;gap:6px}
+.auth-field label{font-size:13px;font-weight:500;color:var(--sub)}
+.auth-field input{width:100%;padding:10px 14px;background:var(--glass2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;font-family:'Figtree',sans-serif;outline:none;transition:border-color .15s,box-shadow .15s;}
+.auth-field input::placeholder{color:var(--muted)}
+.auth-field input:focus{border-color:rgba(197,138,42,.45);box-shadow:0 0 0 3px rgba(197,138,42,.08)}
+.auth-btn{width:100%;padding:11px;margin-top:4px;background:var(--grad);border:none;border-radius:8px;color:#0a0c10;font-size:14px;font-weight:600;font-family:'Figtree',sans-serif;cursor:pointer;transition:opacity .15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.auth-btn:hover:not(:disabled){opacity:.88}
+.auth-btn:active{opacity:.75}
+.auth-btn:disabled{opacity:.45;cursor:not-allowed}
+.auth-err{background:rgba(255,45,85,.06);border:1px solid rgba(255,45,85,.15);border-radius:6px;padding:10px 12px;font-size:13px;color:var(--r);display:none;}
+.auth-footer{text-align:center;margin-top:24px;font-size:11.5px;color:var(--muted)}
 
 /* NAV */
 .nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav);background:rgba(5,7,9,0.82);backdrop-filter:blur(36px) saturate(200%);-webkit-backdrop-filter:blur(36px) saturate(200%);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;}
@@ -291,23 +296,30 @@ textarea{resize:vertical;min-height:80px}
 
 <!-- AUTH -->
 <div id="auth-screen">
-  <div class="auth-card">
-    <div class="auth-gem"><img src="/logo-fg.png" alt="" width="56" height="56" /></div>
-    <div class="auth-title">Admin Panel</div>
-    <div class="auth-sub">ARICH IPTV — Espace administrateur</div>
-    <div class="auth-field">
-      <label>Identifiant</label>
-      <input type="text" id="a-user" placeholder="admin" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('a-pass').focus()">
+  <div class="bg-orbs"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+  <div class="grain"></div>
+  <div class="auth-wrap">
+    <div class="auth-header">
+      <div class="auth-logo"><img src="/logo-fg.png" alt="ARICH" width="40" height="40" /></div>
+      <div class="auth-wordmark"><em>ARICH</em> IPTV</div>
+      <div class="auth-label">Admin</div>
     </div>
-    <div class="auth-field">
-      <label>Mot de passe</label>
-      <input type="password" id="a-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <button class="auth-btn" id="auth-btn" onclick="doLogin()">
-      <span class="spin" id="auth-spin" style="display:none;"></span>
-      <span id="auth-lbl">Accéder au panel →</span>
-    </button>
+    <form class="auth-form" onsubmit="event.preventDefault();doLogin()">
+      <div class="auth-field">
+        <label for="a-user">Identifiant</label>
+        <input type="text" id="a-user" placeholder="admin" autocomplete="username">
+      </div>
+      <div class="auth-field">
+        <label for="a-pass">Mot de passe</label>
+        <input type="password" id="a-pass" placeholder="········" autocomplete="current-password">
+      </div>
+      <button type="submit" class="auth-btn" id="auth-btn">
+        <span class="spin" id="auth-spin" style="display:none;"></span>
+        <span id="auth-lbl">Se connecter</span>
+      </button>
+    </form>
     <div class="auth-err" id="auth-err"></div>
+    <div class="auth-footer">Espace réservé aux administrateurs</div>
   </div>
 </div>
 

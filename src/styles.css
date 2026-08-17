@@ -1770,8 +1770,16 @@ html[data-theme='light'] .theme-toggle .icon-moon { display: none; }
   margin-left: 4px;
 }
 .dl-btn-play {
-  opacity: 0.88;
-  gap: 10px;
+  display: inline-flex;
+  transition: transform 0.3s var(--ease), filter 0.3s;
+}
+.dl-btn-play:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+.dl-btn-play img {
+  height: 48px;
+  width: auto;
 }
 .dl-card__trust {
   display: flex;

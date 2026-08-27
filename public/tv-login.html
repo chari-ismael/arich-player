@@ -505,7 +505,7 @@
         return;
       }
       const { error } = await sb.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/arich_iptv/auth.html',
+        redirectTo: window.location.origin + '/auth.html',
       });
       if (error) { showError(friendlyError(error.message)); return; }
       const box = document.getElementById('errorBox');

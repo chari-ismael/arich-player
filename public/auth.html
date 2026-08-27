@@ -13,7 +13,7 @@
   <meta name="theme-color" content="#0A0B0E" id="themeColor" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -25,6 +25,7 @@
       },
     }
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -65,7 +66,14 @@
     }
     html { color-scheme: dark; }
     html[data-theme='light'] { color-scheme: light; }
-    body { background: var(--bg); color: var(--text); }
+    body {
+      background:
+        radial-gradient(ellipse 80% 55% at 15% -5%, rgba(107, 63, 160, 0.22), transparent 55%),
+        radial-gradient(ellipse 60% 45% at 85% 105%, rgba(212, 155, 62, 0.12), transparent 50%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
     .t-fg { color: var(--text); }
     .t-mute { color: var(--mute); }
     .t-faint { color: var(--faint); }
@@ -80,11 +88,14 @@
     html[data-theme='dark'] .icon-sun { display: block; }
     html[data-theme='light'] .icon-moon { display: block; }
     .boot { background: var(--bg); }
-    .shell {
-      background: var(--card);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
+    html[data-theme='light'] .btn-shimmer {
+      background: #14120e; color: #f4f3ee;
     }
+    html[data-theme='light'] .auth-switch-btn:hover {
+      background: var(--gold); color: #14120e;
+    }
+
+    .shell { display: none; }
     @media (prefers-reduced-motion: reduce) {
       .btn-shimmer::after { display: none; }
     }
@@ -92,19 +103,88 @@
     .boot { transition: opacity .35s, visibility .35s; }
     .boot.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
 
-    .shell { min-height: 600px; }
-    .pane { min-height: 600px; }
-    .overlay {
-      position: absolute; top: 0; bottom: 0; left: 50%; width: 50%;
-      z-index: 5; overflow: hidden; background: var(--panel);
+    .auth-header {
+      position: relative; z-index: 30;
+      max-width: 1320px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 22px clamp(20px, 4vw, 40px) 0;
     }
-    .overlay-inner { height: 100%; width: 200%; display: flex; }
-    .overlay-copy { width: 50%; height: 100%; color: var(--text); }
+    .auth-logo {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: Syne, Figtree, sans-serif; font-weight: 700; font-size: 1.05rem;
+      letter-spacing: -0.02em; color: var(--text); text-decoration: none;
+    }
+    .auth-nav { display: flex; align-items: center; gap: 6px; }
+    .auth-nav a.chip { text-decoration: none; }
+
+    .auth-main {
+      position: relative; z-index: 10;
+      max-width: 1320px; margin: 0 auto;
+      min-height: calc(100vh - 140px);
+      display: grid;
+      grid-template-columns: minmax(300px, 400px) minmax(280px, 1fr) minmax(240px, 320px);
+      gap: clamp(12px, 3vw, 36px);
+      align-items: center;
+      padding: clamp(20px, 4vw, 40px);
+    }
+    .auth-form-wrap {
+      position: relative; z-index: 4;
+      max-width: 400px; width: 100%;
+    }
+    .auth-pane {
+      display: none; flex-direction: column;
+      animation: authIn .5s ease both;
+    }
+    .auth-pane.is-active { display: flex; }
+    @keyframes authIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: none; }
+    }
+    .auth-pane h1 {
+      font-family: Syne, Figtree, sans-serif;
+      font-size: clamp(1.85rem, 3.2vw, 2.35rem);
+      font-weight: 700; letter-spacing: -0.03em; line-height: 1.1;
+      margin-bottom: 10px;
+    }
+    .auth-pane .lede { font-size: 14px; margin-bottom: 28px; max-width: 34ch; }
+
+    .auth-visual {
+      position: relative; z-index: 2;
+      height: min(72vh, 620px); min-height: 360px;
+      display: grid; place-items: center;
+      pointer-events: none;
+    }
+    #auth3d { width: 100%; height: 100%; display: block; }
+
+    .auth-aside {
+      position: relative; z-index: 3;
+      align-self: end; padding-bottom: clamp(24px, 5vh, 64px);
+    }
+    .auth-aside p {
+      font-size: clamp(0.92rem, 1.4vw, 1.02rem);
+      line-height: 1.65; color: var(--mute); max-width: 32ch;
+    }
+    .auth-aside strong { color: var(--text); font-weight: 600; }
+
+    .auth-switch {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      margin-top: 24px; font-size: 13px;
+    }
+    .auth-switch-btn {
+      height: 38px; padding: 0 16px; border-radius: 999px;
+      border: 1px solid rgba(212,155,62,.45); background: transparent;
+      color: var(--text); font-weight: 600; font-size: 13px; cursor: pointer;
+      transition: background .2s, color .2s, border-color .2s;
+    }
+    .auth-switch-btn:hover { background: var(--gold); color: #0A0B0E; border-color: var(--gold); }
+
+    .auth-switch { display: flex; }
+    .mobile-switch { display: none; }
 
     .notch { position: relative; }
     .notch input {
       width: 100%; height: 48px; padding: 0 14px;
-      border: 1px solid var(--line); border-radius: 10px;
+      border: 1px solid var(--line); border-radius: 12px;
       background: transparent; color: var(--text); font-size: 14px; outline: none;
       transition: border-color .2s;
     }
@@ -112,7 +192,7 @@
     .notch label {
       position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
       padding: 0 6px; font-size: 14px; color: var(--mute);
-      pointer-events: none; background: var(--card);
+      pointer-events: none; background: var(--bg);
       transition: top .18s ease, font-size .18s ease, color .18s ease;
     }
     .notch:focus-within input { border-color: var(--gold); }
@@ -148,8 +228,8 @@
 
     .btn-shimmer {
       position: relative; overflow: hidden;
-      height: 46px; border: 0; border-radius: 10px; cursor: pointer;
-      background: var(--gold); color: #0A0B0E; font-weight: 700; font-size: 14px;
+      height: 48px; border: 0; border-radius: 999px; cursor: pointer;
+      background: var(--text); color: var(--bg); font-weight: 700; font-size: 14px;
       display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
     }
     .btn-shimmer::after {
@@ -193,11 +273,10 @@
     .strength-lbl { font-size: 11px; color: var(--faint); min-width: 3.5em; }
 
     .extra {
-      display: none; position: absolute; inset: 0; z-index: 8;
-      background: var(--card); color: var(--text); padding: 44px 40px;
-      flex-direction: column; justify-content: center; align-items: center;
+      display: none; position: absolute; inset: 0; z-index: 12;
+      background: var(--bg); color: var(--text); padding: 8px 0;
+      flex-direction: column; justify-content: center;
     }
-    .extra > * { width: min(380px, 100%); }
     .extra.show { display: flex; }
     .extra h1 { color: var(--text); }
     .pane h1 { color: var(--text); }
@@ -215,29 +294,39 @@
     .foot a { color: var(--faint); text-decoration: none; }
     .foot a:hover { color: var(--mute); }
 
-    .mobile-switch { display: none; }
+    @media (max-width: 1024px) {
+      .auth-main {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        padding-top: 12px;
+      }
+      .auth-visual {
+        position: fixed; inset: 0; z-index: 0;
+        height: 100%; min-height: 0; opacity: 0.42;
+      }
+      .auth-aside { display: none; }
+      .auth-form-wrap { max-width: 420px; margin: 0 auto; }
+    }
     @media (max-width: 767px) {
-      .shell { min-height: 0; }
-      .pane { min-height: 0; }
-      .pane-signup { display: none; }
-      .shell.is-signup .pane-login { display: none; }
-      .shell.is-signup .pane-signup { display: flex; }
-      .overlay { display: none; }
+      .auth-switch { display: none; }
+      .mobile-switch { display: flex; }
+      .auth-pane-signup { display: none !important; }
+      .auth-main.is-signup .auth-pane-login { display: none !important; }
+      .auth-main.is-signup .auth-pane-signup { display: flex !important; }
       .mobile-switch { display: flex; }
     }
   </style>
 </head>
 <body class="min-h-screen font-sans antialiased">
-  <canvas id="fx" class="pointer-events-none fixed inset-0 z-0"></canvas>
   <div class="boot fixed inset-0 z-[200] grid place-items-center" id="boot">
     <img src="/logo-fg.png" alt="" width="28" height="28" class="rounded-md" />
   </div>
 
-  <header class="relative z-20 mx-auto flex max-w-[1040px] items-center justify-between px-6 pt-5">
-    <a href="/" class="t-fg inline-flex items-center gap-2.5 text-sm font-semibold tracking-wide no-underline">
-      <img src="/logo-fg.png" alt="" width="22" height="22" class="rounded" />ARICH
+  <header class="auth-header">
+    <a href="/" class="auth-logo">
+      <img src="/logo-fg.png" alt="" width="24" height="24" class="rounded" />ARICH
     </a>
-    <div class="flex items-center gap-1">
+    <div class="auth-nav">
       <button type="button" class="chip h-8 px-2.5 text-[13px]" id="langFr">FR</button>
       <button type="button" class="chip h-8 px-2.5 text-[13px]" id="langEn">EN</button>
       <button type="button" class="chip theme-btn h-8 w-8" id="themeToggle" aria-label="Theme">
@@ -245,6 +334,7 @@
         <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 14.5A8.5 8.5 0 1110.5 3 7 7 0 0021 14.5z"/></svg>
       </button>
       <a class="chip h-8 px-2.5 text-[13px] no-underline" href="/" data-i18n="nav_home">Accueil</a>
+      <a class="chip h-8 px-2.5 text-[13px] no-underline" href="mailto:contact@arich.fr" data-i18n="nav_support">Support</a>
     </div>
   </header>
 
@@ -256,12 +346,11 @@
     <button type="button" class="btn-shimmer mt-2 hidden max-w-[220px]" id="btn-open-app"><span data-i18n="redirect_open">Ouvrir l’application</span></button>
   </div>
 
-  <main class="relative z-10 grid min-h-[calc(100vh-72px)] place-items-center px-5 py-8" id="main">
-    <div class="shell relative grid w-full max-w-[920px] grid-cols-1 overflow-hidden rounded-2xl backdrop-blur md:grid-cols-2" id="shell">
-
-      <section class="pane flex w-full max-w-[460px] flex-col justify-center px-8 py-10 md:px-10" id="paneLogin">
-        <h1 class="stagger mb-1.5 text-2xl font-semibold tracking-tight" data-i18n="login_title">Connexion</h1>
-        <p class="stagger mb-7 t-mute text-sm" data-i18n="login_lede">Retrouvez vos playlists et votre licence.</p>
+  <main class="auth-main" id="main">
+    <div class="auth-form-wrap" id="formWrap">
+      <section class="auth-pane auth-pane-login is-active" id="paneLogin">
+        <h1 class="stagger" data-i18n="login_title">Connexion</h1>
+        <p class="stagger lede t-mute" data-i18n="login_lede">Retrouvez vos playlists et votre licence.</p>
         <div class="msg" id="login-msg" role="alert"></div>
         <div class="stagger mb-5 grid grid-cols-2 gap-2">
           <button type="button" class="btn-ghost js-google" id="btn-google">
@@ -306,15 +395,19 @@
           <button type="button" class="pill" data-extra="magic" data-i18n="jump_magic">Magic link</button>
           <button type="button" class="pill" data-extra="phone" data-i18n="jump_phone">SMS</button>
         </div>
-        <p class="mobile-switch mt-5 items-center gap-1.5 t-mute text-[13px]">
+        <p class="auth-switch stagger">
+          <span class="t-mute" data-i18n="no_account">Pas de compte ?</span>
+          <button type="button" class="auth-switch-btn" data-mode="signup" data-i18n="signup_cta_short">S’inscrire</button>
+        </p>
+        <p class="mobile-switch mt-3 items-center gap-1.5 t-mute text-[13px]">
           <span data-i18n="no_account">Pas de compte ?</span>
           <button type="button" class="t-gold" data-mode="signup" data-i18n="signup_cta_short">S’inscrire</button>
         </p>
       </section>
 
-      <section class="pane flex w-full max-w-[460px] flex-col justify-center px-8 py-10 md:px-10" id="paneSignup">
-        <h1 class="stagger mb-1.5 text-2xl font-semibold tracking-tight" data-i18n="signup_title">Créer un compte</h1>
-        <p class="stagger mb-7 t-mute text-sm" data-i18n="signup_lede">Un compte pour synchroniser playlists et licence.</p>
+      <section class="auth-pane auth-pane-signup" id="paneSignup">
+        <h1 class="stagger" data-i18n="signup_title">Créer un compte</h1>
+        <p class="stagger lede t-mute" data-i18n="signup_lede">Un compte pour synchroniser playlists et licence.</p>
         <div class="msg" id="signup-msg" role="alert"></div>
         <div class="stagger mb-5 grid grid-cols-2 gap-2">
           <button type="button" class="btn-ghost js-google" id="btn-google-up">
@@ -364,28 +457,15 @@
           <span class="spin"></span><span class="blbl" data-i18n="signup_cta">Créer mon compte</span>
         </button>
         <p class="stagger t-faint mt-4 text-xs" data-i18n-html="signup_legal">En créant un compte, vous acceptez la <a class="legal-link" href="/privacy-policy.html">politique de confidentialité</a>.</p>
-        <p class="mobile-switch mt-5 items-center gap-1.5 t-mute text-[13px]">
+        <p class="auth-switch stagger">
+          <span class="t-mute" data-i18n="has_account">Déjà un compte ?</span>
+          <button type="button" class="auth-switch-btn" data-mode="login" data-i18n="login_cta_short">Se connecter</button>
+        </p>
+        <p class="mobile-switch mt-3 items-center gap-1.5 t-mute text-[13px]">
           <span data-i18n="has_account">Déjà un compte ?</span>
           <button type="button" class="t-gold" data-mode="login" data-i18n="login_cta_short">Se connecter</button>
         </p>
       </section>
-
-      <div class="overlay" id="overlay">
-        <div class="overlay-inner" id="overlayInner">
-          <div class="overlay-copy flex flex-col justify-center px-11 py-12">
-            <p class="mb-2 t-gold text-xs font-semibold uppercase tracking-[0.18em]">ARICH</p>
-            <h2 class="mb-3 text-[1.65rem] font-semibold tracking-tight" data-i18n="overlay_signup_t">Nouveau ici ?</h2>
-            <p class="mb-6 max-w-[28ch] t-mute text-sm leading-relaxed" data-i18n="overlay_signup_p">Créez un compte pour lier vos appareils et votre licence.</p>
-            <button type="button" class="btn-outline w-fit" data-mode="signup" data-i18n="signup_cta_short">S’inscrire</button>
-          </div>
-          <div class="overlay-copy flex flex-col justify-center px-11 py-12">
-            <p class="mb-2 t-gold text-xs font-semibold uppercase tracking-[0.18em]">ARICH</p>
-            <h2 class="mb-3 text-[1.65rem] font-semibold tracking-tight" data-i18n="overlay_login_t">Déjà un compte ?</h2>
-            <p class="mb-6 max-w-[28ch] t-mute text-sm leading-relaxed" data-i18n="overlay_login_p">Revenez à votre espace ARICH.</p>
-            <button type="button" class="btn-outline w-fit" data-mode="login" data-i18n="login_cta">Se connecter</button>
-          </div>
-        </div>
-      </div>
 
       <div class="extra" id="extra-forgot">
         <h1 class="mb-1.5 text-2xl font-semibold" data-i18n="forgot_title">Mot de passe oublié</h1>
@@ -448,6 +528,14 @@
         <button type="button" class="btn-shimmer" id="btn-reset"><span class="spin"></span><span class="blbl" data-i18n="reset_cta">Mettre à jour</span></button>
       </div>
     </div>
+
+    <div class="auth-visual" aria-hidden="true">
+      <canvas id="auth3d"></canvas>
+    </div>
+
+    <aside class="auth-aside">
+      <p data-i18n-html="brand_aside"><strong>ARICH Player</strong> centralise vos playlists, votre licence et vos appareils. Une interface sobre, pensée pour le salon.</p>
+    </aside>
   </main>
 
   <footer class="foot relative z-10 flex flex-wrap justify-center gap-5 px-6 pb-6 text-xs">
@@ -459,7 +547,8 @@
   <script>
     const I18N = {
       fr: {
-        doc_title: 'Connexion — ARICH Player', nav_home: 'Accueil',
+        doc_title: 'Connexion — ARICH Player', nav_home: 'Accueil', nav_support: 'Support',
+        brand_aside: '<strong>ARICH Player</strong> centralise vos playlists, votre licence et vos appareils. Une interface sobre, pensée pour le salon.',
         login_title: 'Connexion', login_lede: 'Retrouvez vos playlists et votre licence.',
         signup_title: 'Créer un compte', signup_lede: 'Un compte pour synchroniser playlists et licence.',
         overlay_login_t: 'Déjà un compte ?', overlay_login_p: 'Revenez à votre espace ARICH.',
@@ -493,7 +582,8 @@
         gmail_hint: 'Compte Gmail détecté — plus rapide avec Google.',
       },
       en: {
-        doc_title: 'Sign in — ARICH Player', nav_home: 'Home',
+        doc_title: 'Sign in — ARICH Player', nav_home: 'Home', nav_support: 'Support',
+        brand_aside: '<strong>ARICH Player</strong> brings your playlists, license and devices together. A calm interface, built for the living room.',
         login_title: 'Sign in', login_lede: 'Access your playlists and license.',
         signup_title: 'Create an account', signup_lede: 'One account to sync playlists and license.',
         overlay_login_t: 'Already have an account?', overlay_login_p: 'Sign in to your ARICH space.',
@@ -570,23 +660,15 @@
       if (!items?.length) return
       gsap.fromTo(items, { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.42, stagger: 0.055, ease: 'power2.out', delay: 0.12 })
     }
-    function slideOverlay(toSignup) {
-      const overlay = document.getElementById('overlay')
-      const inner = document.getElementById('overlayInner')
-      if (!overlay || !inner || !isDesktop()) return
-      if (reduceMotion || !window.gsap) {
-        overlay.style.left = toSignup ? '0%' : '50%'
-        inner.style.transform = toSignup ? 'translateX(-50%)' : 'translateX(0)'
-        return
-      }
-      gsap.to(overlay, { left: toSignup ? '0%' : '50%', duration: 0.72, ease: 'power3.inOut' })
-      gsap.to(inner, { xPercent: toSignup ? -50 : 0, duration: 0.72, ease: 'power3.inOut' })
-    }
+    function slideOverlay() { /* legacy no-op */ }
 
     function setMode(next, { email, info } = {}) {
       mode = next === 'signup' ? 'signup' : 'login'
       currentView = mode
-      document.getElementById('shell').classList.toggle('is-signup', mode === 'signup')
+      const main = document.getElementById('main')
+      main?.classList.toggle('is-signup', mode === 'signup')
+      document.getElementById('paneLogin')?.classList.toggle('is-active', mode === 'login')
+      document.getElementById('paneSignup')?.classList.toggle('is-active', mode === 'signup')
       closeExtras()
       if (email) {
         document.getElementById('login-email').value = email
@@ -594,7 +676,6 @@
       }
       syncNotches()
       checkGmail(document.getElementById('login-email').value)
-      slideOverlay(mode === 'signup')
       staggerPane(mode === 'signup' ? 'paneSignup' : 'paneLogin')
       if (info === 'exists') showMsg('login', t('switch_exists'), 'info')
       if (info === 'unknown') showMsg('signup', t('switch_unknown'), 'info')
@@ -960,66 +1041,65 @@
       else if (currentView === 'reset') doReset()
     })
 
-    ;(function particles() {
-      const canvas = document.getElementById('fx')
-      if (!canvas || reduceMotion) return
-      const ctx = canvas.getContext('2d')
-      const mouse = { x: -9999, y: -9999 }
-      let dots = [], raf = 0
-      function resize() {
-        canvas.width = innerWidth
-        canvas.height = innerHeight
-        const n = Math.min(78, Math.floor((canvas.width * canvas.height) / 16000))
-        dots = Array.from({ length: n }, () => ({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.35,
-          vy: (Math.random() - 0.5) * 0.35,
-          r: Math.random() * 1.4 + 0.4,
-        }))
+    ;(function initAuth3D() {
+      const canvas = document.getElementById('auth3d')
+      if (!canvas || reduceMotion || typeof THREE === 'undefined') return
+
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' })
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2))
+      const scene = new THREE.Scene()
+      const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100)
+      camera.position.set(0, 0.15, 5.4)
+
+      const geo = new THREE.IcosahedronGeometry(1.55, 48)
+      const pos = geo.attributes.position
+      const v = new THREE.Vector3()
+      for (let i = 0; i < pos.count; i++) {
+        v.fromBufferAttribute(pos, i)
+        const wobble = 0.38 * Math.sin(v.x * 2.4 + v.y * 1.8) * Math.cos(v.y * 2.1 + v.z * 1.6)
+        v.normalize().multiplyScalar(1.55 + wobble)
+        pos.setXYZ(i, v.x, v.y, v.z)
       }
-      function tick() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
-        const cs = getComputedStyle(document.documentElement)
-        const rgb = (cs.getPropertyValue('--particle').trim() || '212,155,62')
-        const a = parseFloat(cs.getPropertyValue('--particle-a')) || 0.55
-        const linkA = parseFloat(cs.getPropertyValue('--particle-link')) || 0.18
-        const link = 118
-        for (let i = 0; i < dots.length; i++) {
-          const d = dots[i]
-          const dx = d.x - mouse.x, dy = d.y - mouse.y
-          const dist = Math.hypot(dx, dy)
-          if (dist < 130 && dist > 0.1) {
-            d.vx += (dx / dist) * 0.04
-            d.vy += (dy / dist) * 0.04
-          }
-          d.vx *= 0.98; d.vy *= 0.98
-          d.x += d.vx; d.y += d.vy
-          if (d.x < 0 || d.x > canvas.width) d.vx *= -1
-          if (d.y < 0 || d.y > canvas.height) d.vy *= -1
-          ctx.beginPath()
-          ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2)
-          ctx.fillStyle = `rgba(${rgb},${a})`
-          ctx.fill()
-          for (let j = i + 1; j < dots.length; j++) {
-            const o = dots[j]
-            const dd = Math.hypot(d.x - o.x, d.y - o.y)
-            if (dd < link) {
-              ctx.beginPath()
-              ctx.moveTo(d.x, d.y)
-              ctx.lineTo(o.x, o.y)
-              ctx.strokeStyle = `rgba(${rgb},${(1 - dd / link) * linkA})`
-              ctx.lineWidth = 1
-              ctx.stroke()
-            }
-          }
-        }
+      geo.computeVertexNormals()
+
+      const mesh = new THREE.Mesh(
+        geo,
+        new THREE.MeshPhysicalMaterial({
+          color: 0xb8732a,
+          metalness: 0.88,
+          roughness: 0.2,
+          clearcoat: 1,
+          clearcoatRoughness: 0.06,
+          emissive: 0x2a1206,
+          emissiveIntensity: 0.5,
+        }),
+      )
+      scene.add(mesh)
+
+      const gold = new THREE.PointLight(0xd49b3e, 14, 24)
+      gold.position.set(3.5, 2.2, 4)
+      const violet = new THREE.PointLight(0x7b4fd4, 9, 22)
+      violet.position.set(-3.8, -1.2, 3.5)
+      scene.add(gold, violet, new THREE.AmbientLight(0x140c22, 0.55))
+
+      let raf = 0
+      function resize() {
+        const w = canvas.clientWidth || 1
+        const h = canvas.clientHeight || 1
+        renderer.setSize(w, h, false)
+        camera.aspect = w / h
+        camera.updateProjectionMatrix()
+      }
+      function tick(t) {
+        mesh.rotation.y = t * 0.00032
+        mesh.rotation.x = Math.sin(t * 0.00018) * 0.14
+        mesh.rotation.z = Math.cos(t * 0.00012) * 0.06
+        renderer.render(scene, camera)
         raf = requestAnimationFrame(tick)
       }
-      addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY })
-      addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999 })
       addEventListener('resize', resize)
-      resize(); tick()
+      resize()
+      raf = requestAnimationFrame(tick)
       addEventListener('pagehide', () => cancelAnimationFrame(raf))
     })()
 

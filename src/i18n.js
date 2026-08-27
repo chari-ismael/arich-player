@@ -53,7 +53,6 @@
     feat_hist_t: 'Favoris & historique',
     feat_hist_b:
       'Reprenez où vous étiez. Marquez ce qui compte. Votre parcours, mémorisé.',
-    featflow_hint: 'Faites défiler pour explorer',
 
     stage_over: 'Mise en scène',
     stage_films_t: 'Films & séries',
@@ -250,7 +249,6 @@
     feat_hist_t: 'Favorites & history',
     feat_hist_b:
       'Pick up where you left off. Mark what matters. Your journey, remembered.',
-    featflow_hint: 'Scroll to explore',
 
     stage_over: 'Showcase',
     stage_films_t: 'Movies & series',

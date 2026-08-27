@@ -254,7 +254,7 @@ textarea{resize:vertical;min-height:80px}
   <button class="hamburger" onclick="toggleSB()">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
   </button>
-  <a class="nav-logo" href="https://devhertox.github.io/arich_iptv/">
+  <a class="nav-logo" href="/">
     <div class="nav-gem"><img src="/logo-fg.png" alt="" width="36" height="36" /></div>
     <div class="nav-brand"><em>ARICH</em> IPTV</div>
   </a>
@@ -419,13 +419,13 @@ textarea{resize:vertical;min-height:80px}
         <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;">Plan Annuel</div>
         <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">2,99€<span style="font-size:14px;font-weight:400;-webkit-text-fill-color:var(--sub);color:var(--sub);">/an</span></div>
         <div style="font-size:12.5px;color:var(--sub);line-height:1.6;">✅ Accès illimité · ✅ Toutes les fonctions · ✅ Support prioritaire</div>
-        <a href="https://devhertox.github.io/arich_iptv/#pricing" class="btn btn-ghost btn-sm" style="text-decoration:none;justify-content:center;">Choisir ce plan →</a>
+        <a href="/checkout.html?plan=yearly" class="btn btn-ghost btn-sm" style="text-decoration:none;justify-content:center;">Choisir ce plan →</a>
       </div>
       <div style="background:rgba(197,138,42,0.08);border:1px solid rgba(197,138,42,0.25);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px;">
         <div style="display:flex;align-items:center;gap:8px;"><span style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;">Plan À vie</span><span class="badge b-purple">Populaire</span></div>
         <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">4,99€<span style="font-size:14px;font-weight:400;-webkit-text-fill-color:var(--sub);color:var(--sub);"> une fois</span></div>
         <div style="font-size:12.5px;color:var(--sub);line-height:1.6;">✅ Accès à vie · ✅ Toutes les mises à jour · ✅ Support VIP</div>
-        <a href="https://devhertox.github.io/arich_iptv/#pricing" class="btn btn-primary btn-sm" style="text-decoration:none;justify-content:center;">Choisir ce plan →</a>
+        <a href="/checkout.html?plan=lifetime" class="btn btn-primary btn-sm" style="text-decoration:none;justify-content:center;">Choisir ce plan →</a>
       </div>
     </div>
   </div>
@@ -592,7 +592,7 @@ textarea{resize:vertical;min-height:80px}
 /* ══════════════ CONFIG ══════════════ */
 const SB_URL  = 'https://aynucieohuowgkwyftiy.supabase.co';
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk';
-const AUTH_URL = 'https://devhertox.github.io/arich_iptv/auth.html';
+const AUTH_URL = '/auth.html';
 const ADMIN_EMAILS = ['charibossollati.ismael@gmail.com','ismaelchari.pro@gmail.com'];
 const PLANS = { annual:{label:'Annuel',price:2.99}, lifetime:{label:'À vie',price:4.99}, trial:{label:'Trial',price:0}, none:{label:'Aucun',price:0} };
 const PERKS = {

@@ -14,10 +14,15 @@ export const site = {
   year: 2026,
 }
 
+export const APP_VERSION = '3.0.18'
+
+/** APK releases live on arich-player until republished on arich-iptv-player */
+const RELEASE_REPO = 'chari-ismael/arich-player'
+
 export const downloadLinks = {
-  apk: 'https://github.com/chari-ismael/arich-player/releases/download/v3.0.18/ArichPlayer-v3.0.18.apk',
+  apk: `https://github.com/${RELEASE_REPO}/releases/download/v${APP_VERSION}/ArichPlayer-v${APP_VERSION}.apk`,
   googlePlay: 'https://play.google.com/store/apps/details?id=com.arich.iptv',
-  qrTarget: 'https://github.com/chari-ismael/arich-player/releases/latest',
+  qrTarget: `https://github.com/${RELEASE_REPO}/releases/latest`,
 }
 
 export const pricing = {

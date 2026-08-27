@@ -8,7 +8,8 @@
     "build": "vite build && node tools/apply-maintenance.mjs --off",
     "build:live": "vite build && node tools/apply-maintenance.mjs --off",
     "build:maintenance": "vite build && node tools/apply-maintenance.mjs --on",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy:site": "node tools/deploy-site.mjs"
   },
   "dependencies": {
     "lenis": "^1.2.3"

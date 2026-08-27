@@ -10,7 +10,7 @@
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <meta name="theme-color" content="#0A0B0E" id="themeColor" />
+  <meta name="theme-color" content="#0D1017" id="themeColor" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
@@ -25,27 +25,26 @@
       },
     }
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root, html[data-theme='dark'] {
-      --bg: #0A0B0E;
-      --card: #12141D;
-      --panel: #1A1710;
-      --text: #FFFFFF;
-      --mute: #8E95A5;
-      --faint: #6B7280;
-      --line: rgba(255,255,255,.12);
-      --gold: #D49B3E;
-      --ink: #0A0B0E;
+      --bg: #0D1017;
+      --card: rgba(18, 22, 30, 0.72);
+      --panel: #12161E;
+      --text: #F0EFEC;
+      --mute: rgba(240, 239, 236, 0.58);
+      --faint: rgba(240, 239, 236, 0.34);
+      --line: rgba(240, 239, 236, 0.12);
+      --gold: #C58A2A;
+      --gold2: #F2A51B;
+      --violet: #5a3d8a;
+      --ink: #0D1017;
       --err: #e06b7a;
       --ok: #3dba8b;
       --warn: #c9a227;
-      --particle: 212,155,62;
-      --particle-a: .55;
-      --particle-link: .18;
-      --shadow: 0 30px 80px rgba(0,0,0,.5);
+      --shadow: 0 40px 100px rgba(0,0,0,.55);
     }
     html[data-theme='light'] {
       --bg: #F4F3EE;
@@ -67,12 +66,76 @@
     html { color-scheme: dark; }
     html[data-theme='light'] { color-scheme: light; }
     body {
-      background:
-        radial-gradient(ellipse 80% 55% at 15% -5%, rgba(107, 63, 160, 0.22), transparent 55%),
-        radial-gradient(ellipse 60% 45% at 85% 105%, rgba(212, 155, 62, 0.12), transparent 50%),
-        var(--bg);
+      background: var(--bg);
       color: var(--text);
       min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Cinematic scene (center hero) ── */
+    .auth-scene {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      overflow: hidden;
+    }
+    .auth-scene__glow {
+      position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.55;
+    }
+    .auth-scene__glow--violet {
+      width: min(55vw, 520px); height: min(55vw, 520px);
+      left: 50%; top: 42%; transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(90, 61, 138, 0.55), transparent 68%);
+    }
+    .auth-scene__glow--copper {
+      width: min(42vw, 400px); height: min(42vw, 400px);
+      left: 58%; top: 48%; transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(197, 138, 42, 0.35), transparent 70%);
+    }
+    .auth-scene__grain {
+      position: absolute; inset: 0; opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    #auth3d {
+      position: absolute;
+      left: 50%; top: 50%;
+      width: min(680px, 58vw);
+      height: min(720px, 78vh);
+      transform: translate(-50%, -50%);
+      display: block;
+    }
+    #auth3d.is-live { opacity: 1; }
+    #auth3d:not(.is-live) { opacity: 0; }
+
+    .auth-hero-mark {
+      position: absolute;
+      left: 50%; top: 50%;
+      width: min(320px, 38vw);
+      height: min(320px, 38vw);
+      transform: translate(-50%, -50%);
+      display: grid; place-items: center;
+      perspective: 900px;
+      transition: opacity 0.6s ease;
+    }
+    .auth-hero-mark.is-hidden { opacity: 0; }
+    .auth-hero-mark__glow {
+      position: absolute; inset: 8%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(242, 165, 27, 0.38), transparent 68%);
+      filter: blur(18px);
+      animation: heroPulse 4s ease-in-out infinite;
+    }
+    @keyframes heroPulse {
+      0%, 100% { opacity: 0.75; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.06); }
+    }
+    .auth-hero-mark__img {
+      position: relative; z-index: 1;
+      width: 72%; height: auto;
+      animation: markSpin 22s linear infinite;
+      filter: drop-shadow(0 0 48px rgba(242, 165, 27, 0.35));
+    }
+    @keyframes markSpin {
+      from { transform: rotateY(-18deg) rotateX(10deg); }
+      to { transform: rotateY(342deg) rotateX(10deg); }
     }
     .t-fg { color: var(--text); }
     .t-mute { color: var(--mute); }
@@ -119,17 +182,24 @@
 
     .auth-main {
       position: relative; z-index: 10;
-      max-width: 1320px; margin: 0 auto;
-      min-height: calc(100vh - 140px);
+      max-width: 1280px; margin: 0 auto;
+      min-height: calc(100vh - 120px);
       display: grid;
-      grid-template-columns: minmax(300px, 400px) minmax(280px, 1fr) minmax(240px, 320px);
-      gap: clamp(12px, 3vw, 36px);
+      grid-template-columns: minmax(320px, 420px) 1fr;
+      gap: clamp(24px, 5vw, 48px);
       align-items: center;
-      padding: clamp(20px, 4vw, 40px);
+      padding: clamp(16px, 3vw, 32px) clamp(20px, 4vw, 40px);
     }
     .auth-form-wrap {
       position: relative; z-index: 4;
-      max-width: 400px; width: 100%;
+      width: 100%;
+      padding: clamp(24px, 3vw, 36px);
+      border-radius: 22px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(18px) saturate(1.2);
+      -webkit-backdrop-filter: blur(18px) saturate(1.2);
+      box-shadow: var(--shadow);
     }
     .auth-pane {
       display: none; flex-direction: column;
@@ -142,27 +212,22 @@
     }
     .auth-pane h1 {
       font-family: Syne, Figtree, sans-serif;
-      font-size: clamp(1.85rem, 3.2vw, 2.35rem);
-      font-weight: 700; letter-spacing: -0.03em; line-height: 1.1;
-      margin-bottom: 10px;
+      font-size: clamp(2rem, 3.8vw, 2.75rem);
+      font-weight: 800; letter-spacing: -0.04em; line-height: 1.05;
+      margin-bottom: 12px;
     }
-    .auth-pane .lede { font-size: 14px; margin-bottom: 28px; max-width: 34ch; }
-
-    .auth-visual {
-      position: relative; z-index: 2;
-      height: min(72vh, 620px); min-height: 360px;
-      display: grid; place-items: center;
-      pointer-events: none;
-    }
-    #auth3d { width: 100%; height: 100%; display: block; }
+    .auth-pane .lede { font-size: 15px; margin-bottom: 28px; max-width: 36ch; line-height: 1.5; }
 
     .auth-aside {
       position: relative; z-index: 3;
-      align-self: end; padding-bottom: clamp(24px, 5vh, 64px);
+      align-self: center;
+      justify-self: end;
+      max-width: 340px;
+      padding-right: clamp(0px, 2vw, 24px);
     }
     .auth-aside p {
-      font-size: clamp(0.92rem, 1.4vw, 1.02rem);
-      line-height: 1.65; color: var(--mute); max-width: 32ch;
+      font-size: clamp(0.95rem, 1.5vw, 1.08rem);
+      line-height: 1.7; color: var(--mute);
     }
     .auth-aside strong { color: var(--text); font-weight: 600; }
 
@@ -192,7 +257,7 @@
     .notch label {
       position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
       padding: 0 6px; font-size: 14px; color: var(--mute);
-      pointer-events: none; background: var(--bg);
+      pointer-events: none; background: var(--card);
       transition: top .18s ease, font-size .18s ease, color .18s ease;
     }
     .notch:focus-within input { border-color: var(--gold); }
@@ -209,8 +274,8 @@
     .eye:hover, .eye[aria-pressed='true'] { color: var(--gold); }
 
     .btn-ghost {
-      height: 42px; border-radius: 10px; border: 1px solid var(--line);
-      background: transparent; color: var(--text); font-weight: 500; font-size: 14px;
+      height: 44px; border-radius: 12px; border: 1px solid var(--line);
+      background: rgba(240, 239, 236, 0.03); color: var(--text); font-weight: 500; font-size: 14px;
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
       transition: border-color .2s, box-shadow .25s, transform .25s;
     }
@@ -228,8 +293,10 @@
 
     .btn-shimmer {
       position: relative; overflow: hidden;
-      height: 48px; border: 0; border-radius: 999px; cursor: pointer;
-      background: var(--text); color: var(--bg); font-weight: 700; font-size: 14px;
+      height: 50px; border: 0; border-radius: 999px; cursor: pointer;
+      background: linear-gradient(165deg, var(--gold2), var(--gold));
+      color: var(--ink); font-weight: 700; font-size: 14px;
+      box-shadow: 0 10px 32px rgba(197, 138, 42, 0.35), inset 0 1px 0 rgba(255,255,255,0.25);
       display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
     }
     .btn-shimmer::after {
@@ -298,14 +365,12 @@
       .auth-main {
         grid-template-columns: 1fr;
         min-height: auto;
-        padding-top: 12px;
-      }
-      .auth-visual {
-        position: fixed; inset: 0; z-index: 0;
-        height: 100%; min-height: 0; opacity: 0.42;
+        padding-top: 8px;
       }
       .auth-aside { display: none; }
-      .auth-form-wrap { max-width: 420px; margin: 0 auto; }
+      .auth-form-wrap { max-width: 440px; margin: 0 auto; }
+      #auth3d { width: min(520px, 92vw); height: min(520px, 52vh); opacity: 0.85 !important; }
+      .auth-hero-mark { width: min(240px, 56vw); height: min(240px, 56vw); opacity: 0.55; }
     }
     @media (max-width: 767px) {
       .auth-switch { display: none; }
@@ -337,6 +402,17 @@
       <a class="chip h-8 px-2.5 text-[13px] no-underline" href="mailto:contact@arich.fr" data-i18n="nav_support">Support</a>
     </div>
   </header>
+
+  <div class="auth-scene" aria-hidden="true">
+    <div class="auth-scene__glow auth-scene__glow--violet"></div>
+    <div class="auth-scene__glow auth-scene__glow--copper"></div>
+    <div class="auth-scene__grain"></div>
+    <canvas id="auth3d"></canvas>
+    <div class="auth-hero-mark" id="authHeroMark">
+      <div class="auth-hero-mark__glow"></div>
+      <img class="auth-hero-mark__img" src="/logo-mark.png" alt="" width="320" height="320" />
+    </div>
+  </div>
 
   <div class="redirect fixed inset-0 z-[120] flex-col items-center justify-center gap-3 px-6 text-center" id="redirect" role="status">
     <div class="text-xl" style="color:var(--ok)">✓</div>
@@ -527,10 +603,6 @@
         </div>
         <button type="button" class="btn-shimmer" id="btn-reset"><span class="spin"></span><span class="blbl" data-i18n="reset_cta">Mettre à jour</span></button>
       </div>
-    </div>
-
-    <div class="auth-visual" aria-hidden="true">
-      <canvas id="auth3d"></canvas>
     </div>
 
     <aside class="auth-aside">
@@ -979,7 +1051,7 @@
         document.documentElement.dataset.theme = next
         document.documentElement.style.colorScheme = next
         const meta = document.getElementById('themeColor')
-        if (meta) meta.content = next === 'light' ? '#F4F3EE' : '#0A0B0E'
+        if (meta) meta.content = next === 'light' ? '#F4F1EA' : '#0D1017'
       }
       const saved = localStorage.getItem(KEY)
       apply(saved === 'light' || saved === 'dark' ? saved : 'dark')
@@ -1041,67 +1113,81 @@
       else if (currentView === 'reset') doReset()
     })
 
-    ;(function initAuth3D() {
+    function initAuth3D() {
       const canvas = document.getElementById('auth3d')
-      if (!canvas || reduceMotion || typeof THREE === 'undefined') return
+      const fallback = document.getElementById('authHeroMark')
+      if (!canvas || reduceMotion) return
+      if (typeof THREE === 'undefined') return
 
-      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' })
-      renderer.setPixelRatio(Math.min(devicePixelRatio, 2))
-      const scene = new THREE.Scene()
-      const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100)
-      camera.position.set(0, 0.15, 5.4)
+      try {
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true })
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+        const scene = new THREE.Scene()
+        const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100)
+        camera.position.set(0, 0.1, 5.2)
 
-      const geo = new THREE.IcosahedronGeometry(1.55, 48)
-      const pos = geo.attributes.position
-      const v = new THREE.Vector3()
-      for (let i = 0; i < pos.count; i++) {
-        v.fromBufferAttribute(pos, i)
-        const wobble = 0.38 * Math.sin(v.x * 2.4 + v.y * 1.8) * Math.cos(v.y * 2.1 + v.z * 1.6)
-        v.normalize().multiplyScalar(1.55 + wobble)
-        pos.setXYZ(i, v.x, v.y, v.z)
-      }
-      geo.computeVertexNormals()
+        const geo = new THREE.IcosahedronGeometry(1.5, 5)
+        const pos = geo.attributes.position
+        const v = new THREE.Vector3()
+        for (let i = 0; i < pos.count; i++) {
+          v.fromBufferAttribute(pos, i)
+          const n = 0.42 * Math.sin(v.x * 2.2) * Math.cos(v.y * 2.5) * Math.sin(v.z * 1.7)
+          v.normalize().multiplyScalar(1.5 + n)
+          pos.setXYZ(i, v.x, v.y, v.z)
+        }
+        geo.computeVertexNormals()
 
-      const mesh = new THREE.Mesh(
-        geo,
-        new THREE.MeshPhysicalMaterial({
-          color: 0xb8732a,
-          metalness: 0.88,
-          roughness: 0.2,
-          clearcoat: 1,
-          clearcoatRoughness: 0.06,
-          emissive: 0x2a1206,
-          emissiveIntensity: 0.5,
-        }),
-      )
-      scene.add(mesh)
+        const mesh = new THREE.Mesh(
+          geo,
+          new THREE.MeshStandardMaterial({
+            color: 0xc58a2a,
+            metalness: 0.92,
+            roughness: 0.18,
+            emissive: 0x5a3010,
+            emissiveIntensity: 0.65,
+          }),
+        )
+        scene.add(mesh)
 
-      const gold = new THREE.PointLight(0xd49b3e, 14, 24)
-      gold.position.set(3.5, 2.2, 4)
-      const violet = new THREE.PointLight(0x7b4fd4, 9, 22)
-      violet.position.set(-3.8, -1.2, 3.5)
-      scene.add(gold, violet, new THREE.AmbientLight(0x140c22, 0.55))
+        const ring = new THREE.Mesh(
+          new THREE.TorusGeometry(2.15, 0.03, 12, 120),
+          new THREE.MeshBasicMaterial({ color: 0xf2a51b, transparent: true, opacity: 0.35 }),
+        )
+        ring.rotation.x = Math.PI / 2.4
+        scene.add(ring)
 
-      let raf = 0
-      function resize() {
-        const w = canvas.clientWidth || 1
-        const h = canvas.clientHeight || 1
-        renderer.setSize(w, h, false)
-        camera.aspect = w / h
-        camera.updateProjectionMatrix()
-      }
-      function tick(t) {
-        mesh.rotation.y = t * 0.00032
-        mesh.rotation.x = Math.sin(t * 0.00018) * 0.14
-        mesh.rotation.z = Math.cos(t * 0.00012) * 0.06
-        renderer.render(scene, camera)
+        scene.add(new THREE.AmbientLight(0x2a1838, 0.45))
+        const key = new THREE.PointLight(0xf2a51b, 2.2, 30)
+        key.position.set(4, 3, 5)
+        const rim = new THREE.PointLight(0x7b4fd4, 1.4, 28)
+        rim.position.set(-4, -2, 4)
+        scene.add(key, rim)
+
+        let raf = 0
+        const resize = () => {
+          const w = canvas.clientWidth || canvas.offsetWidth || 680
+          const h = canvas.clientHeight || canvas.offsetHeight || 720
+          renderer.setSize(w, h, false)
+          camera.aspect = w / h
+          camera.updateProjectionMatrix()
+        }
+        const tick = (t) => {
+          mesh.rotation.y = t * 0.00038
+          mesh.rotation.x = Math.sin(t * 0.0002) * 0.12
+          ring.rotation.z = t * 0.00015
+          renderer.render(scene, camera)
+          raf = requestAnimationFrame(tick)
+        }
+        window.addEventListener('resize', resize)
+        resize()
+        canvas.classList.add('is-live')
+        fallback?.classList.add('is-hidden')
         raf = requestAnimationFrame(tick)
+        window.addEventListener('pagehide', () => cancelAnimationFrame(raf))
+      } catch (e) {
+        console.warn('[auth3d]', e)
       }
-      addEventListener('resize', resize)
-      resize()
-      raf = requestAnimationFrame(tick)
-      addEventListener('pagehide', () => cancelAnimationFrame(raf))
-    })()
+    }
 
     ;(() => {
       const saved = localStorage.getItem('arich_lang')
@@ -1109,6 +1195,7 @@
       applyLang(saved === 'en' || saved === 'fr' ? saved : browser)
       const finish = () => {
         document.getElementById('boot')?.classList.add('is-done')
+        initAuth3D()
         staggerPane('paneLogin')
       }
       if (document.readyState === 'complete') setTimeout(finish, 280)

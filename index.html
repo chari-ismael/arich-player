@@ -432,23 +432,8 @@
           <p class="section-head__sub" data-i18n="feat_sub">Une seule expérience. Plusieurs gestes.</p>
         </header>
 
-        <!-- Fluidité + Player en avant -->
-        <div class="feat-intro">
-          <article class="feat-intro__fluid">
-            <div class="feat-intro__copy">
-              <p class="feat-intro__tag" data-i18n="feat_fluid_t">Fluidité absolue</p>
-              <h3 data-i18n="feat_fluid_b">Transitions sobres, zapping immédiat, interface qui s’efface.</h3>
-            </div>
-            <div class="device device--desktop device--sm">
-              <div class="device__glow"></div>
-              <div class="device__bezel">
-                <div class="device__screen">
-                  <img src="/media/home-land.png?v=6" alt="Navigation fluide" loading="lazy" />
-                </div>
-              </div>
-            </div>
-          </article>
-
+        <!-- Player + détail compact -->
+        <div class="feat-intro feat-intro--compact">
           <article class="feat-intro__player" id="player">
             <div class="feat-intro__copy feat-intro__copy--center">
               <p class="feat-intro__tag" data-i18n="stage_player_t">Le player</p>
@@ -475,115 +460,77 @@
           </article>
         </div>
 
-        <!-- Détail fonctionnalités -->
-        <div class="feat-list">
-          <article class="stage__block feat-list__item">
-            <div class="stage__copy">
-              <p class="feat-intro__tag" data-i18n="feat_share_t">Connectez votre playlist</p>
-              <h3 data-i18n="feat_share_t">Connectez votre playlist</h3>
-              <p data-i18n="feat_share_b">Xtream Codes ou fichier M3U. Votre bibliothèque, prête en quelques taps.</p>
+        <div class="feat-spotlight" id="featSpotlight">
+          <div class="feat-spotlight__layout">
+            <div class="feat-spotlight__nav" role="tablist" aria-label="Fonctionnalités">
+              <button type="button" class="feat-spotlight__tab is-active" role="tab" aria-selected="true" data-feat="0">
+                <span class="feat-spotlight__idx" aria-hidden="true">01</span>
+                <span class="feat-spotlight__text">
+                  <strong data-i18n="feat_share_t">Connectez votre playlist</strong>
+                  <small data-i18n="feat_share_s">Xtream Codes ou M3U — prêt en quelques taps.</small>
+                </span>
+              </button>
+              <button type="button" class="feat-spotlight__tab" role="tab" aria-selected="false" data-feat="1">
+                <span class="feat-spotlight__idx" aria-hidden="true">02</span>
+                <span class="feat-spotlight__text">
+                  <strong data-i18n="feat_watch_t">Watch Together</strong>
+                  <small data-i18n="feat_watch_s">Même flux à distance, synchronisé.</small>
+                </span>
+              </button>
+              <button type="button" class="feat-spotlight__tab" role="tab" aria-selected="false" data-feat="2">
+                <span class="feat-spotlight__idx" aria-hidden="true">03</span>
+                <span class="feat-spotlight__text">
+                  <strong data-i18n="feat_offline_t">Téléchargement local</strong>
+                  <small data-i18n="feat_offline_s">Hors réseau, sur l’appareil.</small>
+                </span>
+              </button>
+              <button type="button" class="feat-spotlight__tab" role="tab" aria-selected="false" data-feat="3">
+                <span class="feat-spotlight__idx" aria-hidden="true">04</span>
+                <span class="feat-spotlight__text">
+                  <strong data-i18n="feat_lang_t">Traduction &amp; langues</strong>
+                  <small data-i18n="feat_lang_s">Interface et contenus adaptés.</small>
+                </span>
+              </button>
+              <button type="button" class="feat-spotlight__tab" role="tab" aria-selected="false" data-feat="4">
+                <span class="feat-spotlight__idx" aria-hidden="true">05</span>
+                <span class="feat-spotlight__text">
+                  <strong data-i18n="feat_theme_t">Votre look</strong>
+                  <small data-i18n="feat_theme_s">Trois ambiances sombres.</small>
+                </span>
+              </button>
+              <button type="button" class="feat-spotlight__tab" role="tab" aria-selected="false" data-feat="5">
+                <span class="feat-spotlight__idx" aria-hidden="true">06</span>
+                <span class="feat-spotlight__text">
+                  <strong data-i18n="feat_hist_t">Favoris &amp; historique</strong>
+                  <small data-i18n="feat_hist_s">Reprenez où vous étiez.</small>
+                </span>
+              </button>
             </div>
-            <div class="stage__visual">
-              <div class="device device--phone device--phone-lg">
-                <div class="device__bezel">
-                  <div class="device__notch"></div>
-                  <div class="device__screen">
-                    <img src="/media/playlist-add-phone.png?v=6" alt="Ajouter une playlist Xtream ou M3U" loading="lazy" width="540" height="1170" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </article>
 
-          <article class="stage__block stage__block--live feat-list__item">
-            <div class="stage__visual">
-              <div class="device device--desktop device--sm">
-                <div class="device__glow"></div>
-                <div class="device__bezel">
-                  <div class="device__screen">
-                    <img src="/media/player-menu-land.png?v=6" alt="Watch Together — menu player" loading="lazy" />
-                  </div>
-                </div>
+            <div class="feat-spotlight__stage" role="tabpanel">
+              <div class="feat-spotlight__glow" aria-hidden="true"></div>
+              <div class="feat-spotlight__frame" id="featFrame">
+                <figure class="feat-spotlight__shot is-active" data-feat="0">
+                  <img src="/media/playlist-add-phone.png?v=6" alt="Ajouter une playlist Xtream ou M3U" loading="lazy" width="540" height="1170" />
+                </figure>
+                <figure class="feat-spotlight__shot" data-feat="1">
+                  <img src="/media/player-menu-land.png?v=6" alt="Watch Together" loading="lazy" />
+                </figure>
+                <figure class="feat-spotlight__shot" data-feat="2">
+                  <img src="/media/download-phone.png?v=6" alt="Téléchargement hors ligne" loading="lazy" width="540" height="1170" />
+                </figure>
+                <figure class="feat-spotlight__shot" data-feat="3">
+                  <img src="/media/lang-phone.png?v=6" alt="Langues" loading="lazy" width="540" height="1170" />
+                </figure>
+                <figure class="feat-spotlight__shot" data-feat="4">
+                  <img src="/media/theme-phone.png?v=6" alt="Thèmes" loading="lazy" width="540" height="1170" />
+                </figure>
+                <figure class="feat-spotlight__shot" data-feat="5">
+                  <img src="/media/films-grid-phone.png?v=6" alt="Films et favoris" loading="lazy" width="540" height="1170" />
+                </figure>
               </div>
             </div>
-            <div class="stage__copy">
-              <p class="feat-intro__tag" data-i18n="feat_watch_t">Watch Together</p>
-              <h3 data-i18n="feat_watch_t">Watch Together</h3>
-              <p data-i18n="feat_watch_b">Regardez le même flux à distance, synchronisé. Comme au salon — même séparés.</p>
-            </div>
-          </article>
-
-          <article class="stage__block feat-list__item">
-            <div class="stage__copy">
-              <p class="feat-intro__tag" data-i18n="feat_offline_t">Téléchargement local</p>
-              <h3 data-i18n="feat_offline_t">Téléchargement local</h3>
-              <p data-i18n="feat_offline_b">Sur la fiche, un geste : Télécharger. Le fichier reste sur votre appareil — métro, avion, hors réseau.</p>
-            </div>
-            <div class="stage__visual">
-              <div class="device device--phone device--phone-lg">
-                <div class="device__bezel">
-                  <div class="device__notch"></div>
-                  <div class="device__screen">
-                    <img src="/media/download-phone.png?v=6" alt="Téléchargement hors ligne" loading="lazy" width="540" height="1170" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <article class="stage__block stage__block--live feat-list__item">
-            <div class="stage__visual">
-              <div class="device device--phone device--phone-lg">
-                <div class="device__bezel">
-                  <div class="device__notch"></div>
-                  <div class="device__screen">
-                    <img src="/media/lang-phone.png?v=6" alt="Langues et traduction" loading="lazy" width="540" height="1170" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="stage__copy">
-              <p class="feat-intro__tag" data-i18n="feat_lang_t">Traduction &amp; langues</p>
-              <h3 data-i18n="feat_lang_t">Traduction &amp; langues</h3>
-              <p data-i18n="feat_lang_b">Interface et contenus adaptés. Changez de langue sans quitter l’expérience.</p>
-            </div>
-          </article>
-
-          <article class="stage__block feat-list__item">
-            <div class="stage__copy">
-              <p class="feat-intro__tag" data-i18n="feat_theme_t">Votre look</p>
-              <h3 data-i18n="feat_theme_t">Votre look</h3>
-              <p data-i18n="feat_theme_b">Deep Ink, Slate ou Midnight. Trois ambiances sombres, une même identité.</p>
-            </div>
-            <div class="stage__visual">
-              <div class="device device--phone device--phone-lg">
-                <div class="device__bezel">
-                  <div class="device__notch"></div>
-                  <div class="device__screen">
-                    <img src="/media/theme-phone.png?v=6" alt="Thèmes sombres" loading="lazy" width="540" height="1170" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <article class="stage__block stage__block--live feat-list__item">
-            <div class="stage__visual">
-              <div class="device device--phone device--phone-lg">
-                <div class="device__bezel">
-                  <div class="device__notch"></div>
-                  <div class="device__screen">
-                    <img src="/media/films-grid-phone.png?v=6" alt="Films, favoris et historique" loading="lazy" width="540" height="1170" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="stage__copy">
-              <p class="feat-intro__tag" data-i18n="feat_hist_t">Favoris &amp; historique</p>
-              <h3 data-i18n="feat_hist_t">Favoris &amp; historique</h3>
-              <p data-i18n="feat_hist_b">Reprenez où vous étiez. Marquez ce qui compte. Votre parcours, mémorisé.</p>
-            </div>
-          </article>
+          </div>
         </div>
       </section>
 

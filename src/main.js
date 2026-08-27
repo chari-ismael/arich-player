@@ -259,6 +259,36 @@ browseLabels?.querySelectorAll('button').forEach((btn) => {
   })
 })
 
+/* ── Feature spotlight (tabs, no scroll trap) ─────── */
+function initFeatSpotlight() {
+  const root = document.getElementById('featSpotlight')
+  if (!root) return
+
+  const tabs = [...root.querySelectorAll('.feat-spotlight__tab')]
+  const shots = [...root.querySelectorAll('.feat-spotlight__shot')]
+  const frame = document.getElementById('featFrame')
+  if (!tabs.length || !shots.length) return
+
+  const activate = (index) => {
+    const i = Math.max(0, Math.min(shots.length - 1, index))
+    tabs.forEach((tab, ti) => {
+      const on = ti === i
+      tab.classList.toggle('is-active', on)
+      tab.setAttribute('aria-selected', on ? 'true' : 'false')
+    })
+    shots.forEach((shot, si) => shot.classList.toggle('is-active', si === i))
+    frame?.classList.toggle('feat-spotlight__frame--land', i === 1)
+  }
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => activate(i))
+  })
+
+  activate(0)
+}
+
+initFeatSpotlight()
+
 /* ── Lazy videos (IntersectionObserver) ────────────── */
 function playSafe(v) {
   v.muted = true

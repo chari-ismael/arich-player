@@ -1229,7 +1229,7 @@ html[data-theme='light'] .theme-toggle .icon-moon { display: none; }
 
 /* ── Features intro + scroll morph ─────────────────── */
 .features {
-  padding: clamp(72px, 12vw, 120px) 0 clamp(40px, 6vw, 80px);
+  padding: clamp(72px, 12vw, 120px) 0 clamp(32px, 5vw, 56px);
   max-width: none;
   margin: 0 auto;
 }
@@ -1287,41 +1287,207 @@ html[data-theme='light'] .theme-toggle .icon-moon { display: none; }
 .feat-intro__player .device--phone-land {
   width: min(920px, 100%);
 }
+.feat-intro--compact {
+  max-width: 960px;
+  margin: 0 auto clamp(28px, 5vw, 44px);
+  padding-inline: var(--pad);
+  gap: 16px;
+}
+.feat-intro--compact .device--phone-land {
+  width: min(680px, 100%);
+}
 
-/* Feature rows — static alternance (no sticky scrub) */
-.feat-list {
-  max-width: 1240px;
+/* Spotlight — tabs + single preview (~1 viewport) */
+.feat-spotlight {
+  max-width: 1140px;
   margin: 0 auto;
-  padding: clamp(16px, 4vw, 48px) var(--pad) 0;
+  padding: 0 var(--pad);
 }
-.feat-list__item:last-child {
-  margin-bottom: 0;
+.feat-spotlight__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: clamp(20px, 3vw, 36px);
+  align-items: stretch;
+  min-height: min(520px, 72vh);
+  padding: clamp(18px, 2.5vw, 28px);
+  border-radius: 24px;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(ellipse 80% 60% at 100% 0%, rgba(197, 138, 42, 0.1), transparent 55%),
+    rgba(14, 17, 24, 0.35);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
-.feat-list .stage__copy h3 {
+html[data-theme='light'] .feat-spotlight__layout {
+  background:
+    radial-gradient(ellipse 80% 60% at 100% 0%, rgba(197, 138, 42, 0.08), transparent 55%),
+    rgba(255, 252, 246, 0.75);
+}
+.feat-spotlight__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.feat-spotlight__tab {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 0.28s var(--ease),
+    border-color 0.28s var(--ease),
+    transform 0.28s var(--ease);
+}
+.feat-spotlight__tab:hover {
+  background: rgba(240, 239, 236, 0.04);
+  border-color: var(--line);
+}
+.feat-spotlight__tab.is-active {
+  background: rgba(197, 138, 42, 0.1);
+  border-color: rgba(197, 138, 42, 0.35);
+  transform: translateX(2px);
+}
+.feat-spotlight__idx {
+  flex-shrink: 0;
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--copper-2);
+  opacity: 0.65;
+  padding-top: 3px;
+}
+.feat-spotlight__tab.is-active .feat-spotlight__idx { opacity: 1; }
+.feat-spotlight__text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.feat-spotlight__text strong {
   font-family: var(--display);
-  font-size: clamp(1.45rem, 2.8vw, 2.1rem);
+  font-size: 0.98rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  margin-bottom: 12px;
-  line-height: 1.15;
+  line-height: 1.25;
 }
-.feat-list .stage__copy p:not(.feat-intro__tag) {
+.feat-spotlight__text small {
+  font-size: 12.5px;
+  line-height: 1.4;
   color: var(--mute);
-  font-size: 16px;
-  line-height: 1.55;
-  max-width: 38ch;
+  display: none;
 }
-.feat-list .stage__visual {
-  justify-self: center;
+.feat-spotlight__tab.is-active .feat-spotlight__text small { display: block; }
+
+.feat-spotlight__stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 320px;
+}
+.feat-spotlight__glow {
+  position: absolute;
+  inset: 8% 10%;
+  background: radial-gradient(circle, rgba(197, 138, 42, 0.22), transparent 68%);
+  filter: blur(28px);
+  pointer-events: none;
+}
+.feat-spotlight__frame {
+  position: relative;
+  width: min(240px, 72%);
+  aspect-ratio: 9 / 19.5;
+  border-radius: 28px;
+  padding: 8px;
+  background: linear-gradient(160deg, rgba(255,255,255,0.14), rgba(255,255,255,0.03));
+  border: 1px solid rgba(240, 239, 236, 0.16);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: width 0.45s var(--ease-cinema), aspect-ratio 0.45s var(--ease-cinema);
+}
+.feat-spotlight__frame--land {
+  width: min(420px, 92%);
+  aspect-ratio: 16 / 10;
+  border-radius: 18px;
+}
+.feat-spotlight__frame::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28%;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 2;
+  transition: opacity 0.3s;
+}
+.feat-spotlight__frame--land::before { opacity: 0; }
+.feat-spotlight__shot {
+  position: absolute;
+  inset: 8px;
+  margin: 0;
+  border-radius: 22px;
+  overflow: hidden;
+  opacity: 0;
+  transform: scale(0.97);
+  transition:
+    opacity 0.38s var(--ease-cinema),
+    transform 0.42s var(--ease-cinema);
+  pointer-events: none;
+}
+.feat-spotlight__frame--land .feat-spotlight__shot { border-radius: 12px; }
+.feat-spotlight__shot.is-active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+.feat-spotlight__shot img {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
 }
-.feat-list .device--phone {
-  width: min(260px, 72vw);
-  margin-inline: auto;
+
+@media (max-width: 900px) {
+  .feat-spotlight__layout {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+  .feat-spotlight__nav {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 8px;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .feat-spotlight__nav::-webkit-scrollbar { display: none; }
+  .feat-spotlight__tab {
+    flex: 0 0 auto;
+    min-width: 148px;
+    padding: 10px 12px;
+  }
+  .feat-spotlight__tab.is-active { transform: none; }
+  .feat-spotlight__idx { display: none; }
+  .feat-spotlight__text small { display: none !important; }
+  .feat-spotlight__stage { min-height: 280px; }
 }
-.feat-list .device--desktop {
-  width: min(640px, 100%);
-  margin-inline: auto;
+
+@media (prefers-reduced-motion: reduce) {
+  .feat-spotlight__shot,
+  .feat-spotlight__frame,
+  .feat-spotlight__tab { transition: none; }
 }
 
 /* ── Stage showcase ────────────────────────────────── */

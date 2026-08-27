@@ -37,22 +37,28 @@
     feat_share_t: 'Connectez votre playlist',
     feat_share_b:
       'Xtream Codes ou fichier M3U. Votre bibliothèque, prête en quelques taps.',
+    feat_share_s: 'Xtream Codes ou M3U — prêt en quelques taps.',
     feat_watch_t: 'Watch Together',
     feat_watch_b:
       'Regardez le même flux à distance, synchronisé. Comme au salon — même séparés.',
+    feat_watch_s: 'Même flux à distance, synchronisé.',
     feat_offline_t: 'Téléchargement local',
     feat_offline_b:
       'Sur la fiche, un geste : Télécharger. Le fichier reste sur votre appareil — métro, avion, hors réseau.',
+    feat_offline_s: 'Hors réseau, sur l’appareil.',
     feat_offline_chip: 'Stocké sur l’appareil',
     feat_lang_t: 'Traduction & langues',
     feat_lang_b:
       'Interface et contenus adaptés. Changez de langue sans quitter l’expérience.',
+    feat_lang_s: 'Interface et contenus adaptés.',
     feat_theme_t: 'Votre look',
     feat_theme_b:
       'Deep Ink, Slate ou Midnight. Trois ambiances sombres, une même identité.',
+    feat_theme_s: 'Trois ambiances sombres.',
     feat_hist_t: 'Favoris & historique',
     feat_hist_b:
       'Reprenez où vous étiez. Marquez ce qui compte. Votre parcours, mémorisé.',
+    feat_hist_s: 'Reprenez où vous étiez.',
 
     stage_over: 'Mise en scène',
     stage_films_t: 'Films & séries',
@@ -233,22 +239,28 @@
     feat_share_t: 'Connect your playlist',
     feat_share_b:
       'Xtream Codes or M3U file. Your library, ready in a few taps.',
+    feat_share_s: 'Xtream or M3U — ready in a few taps.',
     feat_watch_t: 'Watch Together',
     feat_watch_b:
       'Watch the same stream remotely, in sync. Living-room vibes — even apart.',
+    feat_watch_s: 'Same stream remotely, in sync.',
     feat_offline_t: 'Local download',
     feat_offline_b:
       'On the detail screen, one tap: Download. The file stays on your device — metro, flight, offline.',
+    feat_offline_s: 'Offline, on your device.',
     feat_offline_chip: 'Stored on device',
     feat_lang_t: 'Translation & languages',
     feat_lang_b:
       'Interface and content adapted. Switch language without leaving the experience.',
+    feat_lang_s: 'Interface and content adapted.',
     feat_theme_t: 'Your look',
     feat_theme_b:
       'Deep Ink, Slate or Midnight. Three dark moods, one identity.',
+    feat_theme_s: 'Three dark moods.',
     feat_hist_t: 'Favorites & history',
     feat_hist_b:
       'Pick up where you left off. Mark what matters. Your journey, remembered.',
+    feat_hist_s: 'Pick up where you left off.',
 
     stage_over: 'Showcase',
     stage_films_t: 'Movies & series',

@@ -14,6 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -21,7 +22,7 @@
       --bg: #0B0B0C;
       --surface: #151515;
       --text: #F2F0EA;
-      --mute: #8A8680;
+      --mute: #85817A;
       --faint: #5C5854;
       --line: rgba(255,255,255,0.07);
       --line-input: rgba(255,255,255,0.08);
@@ -61,36 +62,131 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Background */
-    .auth-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-    .auth-bg__glow {
+    /* ── Desktop-first split layout ── */
+    .auth-stage {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 55fr) minmax(0, 45fr);
+    }
+
+    .auth-visual {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+      background: #080809;
+      border-right: 1px solid var(--line);
+      opacity: 0;
+      transform: scale(0.96);
+      transform-origin: center center;
+    }
+    .auth-visual__fallback {
+      position: absolute; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 90% 70% at 38% 42%, rgba(197,138,42,0.11) 0%, transparent 52%),
+        radial-gradient(ellipse 60% 50% at 62% 58%, rgba(28,28,32,0.95) 0%, transparent 58%),
+        linear-gradient(155deg, #070708 0%, #101012 45%, #080809 100%);
+    }
+    .auth-visual__fallback::before {
+      content: '';
       position: absolute;
-      width: min(90vw, 720px);
-      height: min(90vw, 720px);
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(197,138,42,0.07) 0%, rgba(120,110,100,0.04) 40%, transparent 70%);
-      top: 55%;
-      left: 62%;
-      transform: translate(-50%, -50%);
-      filter: blur(48px);
-      will-change: transform;
-      animation: glowDrift 28s ease-in-out infinite alternate;
+      width: 130%; height: 130%;
+      left: -18%; top: -8%;
+      background:
+        radial-gradient(circle at 42% 46%, rgba(210,210,215,0.07) 0%, transparent 42%),
+        conic-gradient(from 200deg at 44% 50%, rgba(197,138,42,0.14), transparent 28%, rgba(50,50,55,0.22) 55%, transparent 78%);
+      animation: visualDrift 26s ease-in-out infinite alternate;
+      filter: blur(0.5px);
     }
-    @keyframes glowDrift {
-      from { transform: translate(-50%, -50%) scale(1); }
-      to { transform: translate(-48%, -52%) scale(1.06); }
+    .auth-visual__fallback::after {
+      content: '';
+      position: absolute;
+      width: 72%; height: 88%;
+      right: -8%; top: 8%;
+      border-radius: 42% 58% 52% 48% / 48% 42% 58% 52%;
+      background: linear-gradient(135deg, rgba(35,35,38,0.85) 0%, rgba(18,18,20,0.95) 55%, rgba(120,90,50,0.08) 100%);
+      box-shadow: inset -40px -20px 80px rgba(0,0,0,0.55), inset 20px 20px 60px rgba(255,255,255,0.03);
+      animation: blobFloat 18s ease-in-out infinite alternate;
     }
-    .auth-bg__grain {
-      position: absolute; inset: 0; opacity: 0.035;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    @keyframes visualDrift {
+      from { transform: translate(0, 0) rotate(0deg); }
+      to { transform: translate(2%, -1.5%) rotate(4deg); }
+    }
+    @keyframes blobFloat {
+      from { transform: translate(0, 0) rotate(-6deg) scale(1); }
+      to { transform: translate(-2%, 3%) rotate(3deg) scale(1.04); }
+    }
+    #auth3d {
+      position: absolute; inset: 0; z-index: 1;
+      width: 100%; height: 100%;
+      display: block;
+    }
+    .auth-visual__grain {
+      position: absolute; inset: 0; z-index: 2; pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
       mix-blend-mode: overlay;
+    }
+    .auth-visual__vignette {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background:
+        linear-gradient(to right, transparent 55%, rgba(11,11,12,0.92) 100%),
+        linear-gradient(to top, rgba(11,11,12,0.5) 0%, transparent 35%);
+    }
+    .auth-visual__brand {
+      position: absolute; z-index: 3;
+      left: clamp(32px, 5vw, 56px);
+      bottom: clamp(32px, 6vh, 64px);
+      max-width: 28ch;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .auth-visual__brand p {
+      margin: 0 0 8px;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--mute);
+    }
+    .auth-visual__brand h2 {
+      margin: 0;
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
+      font-weight: 600; letter-spacing: -0.03em; line-height: 1.05;
+    }
+    .auth-visual__brand span {
+      display: block; margin-top: 10px;
+      font-size: 13px; color: var(--mute); line-height: 1.5;
+    }
+
+    .auth-right {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
     }
 
     .auth-top {
-      position: fixed; z-index: 20;
-      top: 0; left: 0; right: 0;
+      position: relative; z-index: 20;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 20px clamp(16px, 4vw, 32px);
+      padding: clamp(20px, 3vh, 28px) clamp(24px, 4vw, 40px) 0;
+      flex-shrink: 0;
+    }
+
+    .auth-panel-side {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 24px clamp(24px, 5vw, 48px) 32px;
+    }
+
+    .auth-foot {
+      position: relative; z-index: 20;
+      display: flex; flex-wrap: wrap; gap: 16px;
+      padding: 16px clamp(24px, 5vw, 48px) 24px;
+      font-size: 11px;
+      flex-shrink: 0;
     }
     .auth-logo {
       display: inline-flex; align-items: center; gap: 10px;
@@ -110,23 +206,15 @@
     html[data-theme='dark'] .icon-sun { display: block; }
     html[data-theme='light'] .icon-moon { display: block; }
 
-    .auth-page {
-      position: relative; z-index: 10;
-      min-height: 100vh;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 88px 16px 64px;
-    }
+    .auth-page { display: contents; }
     .auth-shell {
-      width: min(420px, calc(100% - 32px));
+      width: 100%;
+      max-width: 440px;
       opacity: 0;
     }
     .auth-form-wrap {
       position: relative;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: clamp(28px, 5vw, 36px);
+      padding: 0;
     }
 
     .auth-pane {
@@ -309,14 +397,26 @@
     .legal-note { margin-top: 16px; font-size: 11px; color: var(--faint); line-height: 1.5; }
     .legal-link { color: var(--mute); }
 
-    .auth-foot {
-      position: fixed; z-index: 20; bottom: 0; left: 0; right: 0;
-      display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;
-      padding: 16px;
-      font-size: 11px;
-    }
     .auth-foot a { color: var(--faint); text-decoration: none; transition: color 0.15s; }
     .auth-foot a:hover { color: var(--mute); }
+
+    @media (min-width: 1200px) {
+      .auth-stage { grid-template-columns: minmax(0, 55fr) minmax(0, 45fr); }
+      .auth-panel-side { justify-content: flex-start; padding-left: clamp(32px, 6vw, 64px); }
+    }
+    @media (max-width: 1199px) {
+      .auth-stage { grid-template-columns: 48fr 52fr; }
+      .auth-visual__brand h2 { font-size: 1.5rem; }
+    }
+    @media (max-width: 899px) {
+      .auth-stage {
+        grid-template-columns: 1fr;
+        grid-template-rows: min(42vh, 360px) 1fr;
+      }
+      .auth-visual { min-height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+      .auth-visual__brand { left: 24px; bottom: 24px; }
+      .auth-panel-side { padding-top: 8px; }
+    }
 
     .boot {
       position: fixed; inset: 0; z-index: 200;
@@ -367,16 +467,11 @@
       #main.is-signup .auth-pane-signup { display: flex !important; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .auth-bg__glow { animation: none; }
+      .auth-visual__brand, #authVisual, #main, #authLogo { opacity: 1 !important; transform: none !important; }
     }
   </style>
 </head>
 <body>
-  <div class="auth-bg" aria-hidden="true">
-    <div class="auth-bg__glow" id="authBgGlow"></div>
-    <div class="auth-bg__grain"></div>
-  </div>
-
   <div class="boot" id="boot">
     <img src="/logo-fg.png" alt="" width="28" height="28" style="border-radius:6px" />
   </div>
@@ -391,23 +486,38 @@
     </button>
   </div>
 
-  <header class="auth-top">
-    <a href="/" class="auth-logo" id="authLogo">
-      <img src="/logo-fg.png" alt="" width="22" height="22" style="border-radius:5px" />ARICH
-    </a>
-    <div class="auth-nav">
-      <button type="button" class="chip" id="langFr">FR</button>
-      <button type="button" class="chip" id="langEn">EN</button>
-      <button type="button" class="chip theme-btn" id="themeToggle" aria-label="Theme">
-        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 14.5A8.5 8.5 0 1110.5 3 7 7 0 0021 14.5z"/></svg>
-      </button>
-    </div>
-  </header>
+  <div class="auth-stage" id="authStage">
+    <aside class="auth-visual" id="authVisual" aria-hidden="true">
+      <div class="auth-visual__fallback"></div>
+      <canvas id="auth3d"></canvas>
+      <div class="auth-visual__vignette"></div>
+      <div class="auth-visual__grain"></div>
+      <div class="auth-visual__brand" id="authVisualBrand">
+        <p data-i18n="art_kicker">ARICH Player</p>
+        <h2 data-i18n="art_title">Le cinéma, chez vous.</h2>
+        <span data-i18n="art_sub">Playlists, licence et expérience premium.</span>
+      </div>
+    </aside>
 
-  <main class="auth-page">
-    <div class="auth-shell" id="main">
-      <div class="auth-form-wrap" id="formWrap">
+    <div class="auth-right">
+      <header class="auth-top">
+        <a href="/" class="auth-logo" id="authLogo">
+          <img src="/logo-fg.png" alt="" width="22" height="22" style="border-radius:5px" />ARICH
+        </a>
+        <div class="auth-nav">
+          <button type="button" class="chip" id="langFr">FR</button>
+          <button type="button" class="chip" id="langEn">EN</button>
+          <button type="button" class="chip theme-btn" id="themeToggle" aria-label="Theme">
+            <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+            <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 14.5A8.5 8.5 0 1110.5 3 7 7 0 0021 14.5z"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="auth-panel-side">
+        <main class="auth-page">
+          <div class="auth-shell" id="main">
+            <div class="auth-form-wrap" id="formWrap">
         <section class="auth-pane auth-pane-login is-active" id="paneLogin">
           <h1 class="stagger" data-i18n="login_title">Connexion</h1>
           <p class="stagger lede" data-i18n="login_lede">Retrouvez vos playlists et votre licence.</p>
@@ -619,15 +729,18 @@
           </div>
           <button type="button" class="btn-shimmer" id="btn-reset"><span class="spin"></span><span class="blbl" data-i18n="reset_cta">Mettre à jour</span></button>
         </div>
+            </div>
+          </div>
+        </main>
       </div>
-    </div>
-  </main>
 
-  <footer class="auth-foot">
-    <a href="/privacy-policy.html" data-i18n="footer_privacy">Confidentialité</a>
-    <a href="/data-deletion.html" data-i18n="footer_deletion">Suppression des données</a>
-    <a href="mailto:contact@arich.fr">contact@arich.fr</a>
-  </footer>
+      <footer class="auth-foot">
+        <a href="/privacy-policy.html" data-i18n="footer_privacy">Confidentialité</a>
+        <a href="/data-deletion.html" data-i18n="footer_deletion">Suppression des données</a>
+        <a href="mailto:contact@arich.fr">contact@arich.fr</a>
+      </footer>
+    </div>
+  </div>
 
   <script>
     const I18N = {
@@ -667,6 +780,9 @@
         switch_exists: 'Ce compte existe déjà. Connectez-vous.',
         switch_unknown: 'Aucun compte pour cet e-mail. Créez-en un.',
         gmail_hint: 'Compte Gmail détecté — plus rapide avec Google.',
+        art_kicker: 'ARICH Player',
+        art_title: 'Le cinéma, chez vous.',
+        art_sub: 'Playlists, licence et expérience premium.',
       },
       en: {
         doc_title: 'Sign in — ARICH Player',
@@ -704,6 +820,9 @@
         switch_exists: 'This account already exists. Sign in.',
         switch_unknown: 'No account for this email. Create one.',
         gmail_hint: 'Gmail detected — faster with Google.',
+        art_kicker: 'ARICH Player',
+        art_title: 'Cinema, at home.',
+        art_sub: 'Playlists, license, and a premium experience.',
       },
     }
 
@@ -841,7 +960,10 @@
     }
 
     function closeExtras() {
-      document.querySelectorAll('.extra.show').forEach((el) => el.classList.remove('show'))
+      document.querySelectorAll('.extra').forEach((el) => {
+        el.classList.remove('show')
+        el.style.display = ''
+      })
       resetSuccessPanels()
     }
 
@@ -926,6 +1048,7 @@
       const sub = document.getElementById('redirect-sub')
       if (overlay) overlay.classList.add('show')
       if (main) main.style.visibility = 'hidden'
+      document.getElementById('authVisual')?.style.setProperty('visibility', 'hidden')
       document.querySelector('.auth-top')?.style.setProperty('visibility', 'hidden')
       document.querySelector('.auth-foot')?.style.setProperty('visibility', 'hidden')
       const nextUrl = getNextRedirectUrl()
@@ -1147,22 +1270,131 @@
       if (event === 'PASSWORD_RECOVERY') openExtra('reset')
     })
 
-    function initParallax() {
-      if (reduceMotion) return
-      const glow = document.getElementById('authBgGlow')
-      if (!glow) return
-      let tx = 0, ty = 0, cx = 0, cy = 0
-      document.addEventListener('mousemove', (e) => {
-        tx = (e.clientX / window.innerWidth - 0.5) * 14
-        ty = (e.clientY / window.innerHeight - 0.5) * 10
+    function initAuth3D() {
+      const canvas = document.getElementById('auth3d')
+      const visual = document.getElementById('authVisual')
+      if (!canvas || !visual || !window.THREE) return null
+
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false })
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
+      renderer.toneMapping = THREE.ACESFilmicToneMapping
+      renderer.toneMappingExposure = 1.08
+      renderer.outputEncoding = THREE.sRGBEncoding
+
+      const scene = new THREE.Scene()
+      scene.background = new THREE.Color(0x080809)
+      scene.fog = new THREE.FogExp2(0x080809, 0.045)
+
+      const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100)
+      camera.position.set(0.15, 0.25, 4.4)
+
+      const sculpture = new THREE.Group()
+      scene.add(sculpture)
+
+      const knotGeo = new THREE.TorusKnotGeometry(1.02, 0.26, 280, 36, 2, 5)
+      const graphiteMat = new THREE.MeshPhysicalMaterial({
+        color: 0x18181a,
+        metalness: 0.94,
+        roughness: 0.16,
+        clearcoat: 0.45,
+        clearcoatRoughness: 0.22,
       })
-      const tick = () => {
-        cx += (tx - cx) * 0.06
-        cy += (ty - cy) * 0.06
-        glow.style.transform = `translate(calc(-50% + ${cx}px), calc(-50% + ${cy}px))`
-        requestAnimationFrame(tick)
+      const knot = new THREE.Mesh(knotGeo, graphiteMat)
+      knot.rotation.set(0.35, 0.15, 0.12)
+      knot.scale.setScalar(1.18)
+      sculpture.add(knot)
+
+      const ringGeo = new THREE.TorusGeometry(1.72, 0.028, 20, 140, Math.PI * 1.35)
+      const copperMat = new THREE.MeshPhysicalMaterial({
+        color: 0x7a5220,
+        metalness: 1,
+        roughness: 0.2,
+        emissive: 0x2a1a08,
+        emissiveIntensity: 0.1,
+      })
+      const ring = new THREE.Mesh(ringGeo, copperMat)
+      ring.rotation.set(1.05, 0.45, -0.25)
+      sculpture.add(ring)
+
+      const blobGeo = new THREE.IcosahedronGeometry(0.52, 5)
+      const blobMat = new THREE.MeshPhysicalMaterial({
+        color: 0x121214,
+        metalness: 0.88,
+        roughness: 0.1,
+      })
+      const blob = new THREE.Mesh(blobGeo, blobMat)
+      blob.position.set(0.15, -0.12, 0.08)
+      sculpture.add(blob)
+
+      sculpture.position.set(-0.52, -0.05, 0)
+      sculpture.rotation.set(-0.12, 0.42, 0.06)
+      sculpture.scale.setScalar(1.28)
+
+      scene.add(new THREE.AmbientLight(0x141210, 0.32))
+      const keyLight = new THREE.DirectionalLight(0xc58a2a, 0.52)
+      keyLight.position.set(3.5, 2.2, 4.5)
+      scene.add(keyLight)
+      const fillLight = new THREE.DirectionalLight(0x6a7585, 0.16)
+      fillLight.position.set(-4.5, -0.5, 2.5)
+      scene.add(fillLight)
+      const rimLight = new THREE.PointLight(0xc58a2a, 0.32, 14)
+      rimLight.position.set(-2.2, 1.4, -1.8)
+      scene.add(rimLight)
+
+      let mx = 0, my = 0, px = 0, py = 0, t = 0, raf = 0, running = true
+
+      const onMove = (e) => {
+        const rect = visual.getBoundingClientRect()
+        if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) return
+        mx = ((e.clientX - rect.left) / rect.width - 0.5) * 0.14
+        my = ((e.clientY - rect.top) / rect.height - 0.5) * 0.1
       }
-      tick()
+      document.addEventListener('mousemove', onMove)
+
+      const resize = () => {
+        const w = visual.clientWidth
+        const h = visual.clientHeight
+        if (w < 1 || h < 1) return
+        renderer.setSize(w, h, false)
+        camera.aspect = w / h
+        camera.updateProjectionMatrix()
+      }
+      resize()
+      window.addEventListener('resize', resize)
+      if (window.ResizeObserver) new ResizeObserver(resize).observe(visual)
+
+      const animate = () => {
+        if (!running) return
+        raf = requestAnimationFrame(animate)
+        const speed = reduceMotion ? 0.002 : 0.007
+        t += speed
+        px += (mx - px) * 0.045
+        py += (my - py) * 0.045
+
+        sculpture.rotation.y += reduceMotion ? 0.001 : 0.0028
+        sculpture.rotation.x = -0.12 + Math.sin(t * 0.45) * 0.035 + py * 0.35
+        sculpture.rotation.z = 0.06 + Math.cos(t * 0.32) * 0.018
+        sculpture.position.y = -0.08 + Math.sin(t * 0.65) * 0.055
+
+        camera.position.x = 0.15 + px * 0.55
+        camera.position.y = 0.25 + py * 0.35
+        camera.lookAt(-0.1, 0, 0)
+
+        rimLight.position.x = -2.2 + Math.sin(t * 0.38) * 0.75
+        rimLight.position.y = 1.4 + Math.cos(t * 0.28) * 0.45
+        keyLight.intensity = 0.48 + Math.sin(t * 0.22) * 0.07
+
+        renderer.render(scene, camera)
+      }
+      animate()
+
+      return () => {
+        running = false
+        cancelAnimationFrame(raf)
+        document.removeEventListener('mousemove', onMove)
+        window.removeEventListener('resize', resize)
+        renderer.dispose()
+      }
     }
 
     ;(() => {
@@ -1239,16 +1471,24 @@
       const saved = localStorage.getItem('arich_lang')
       const browser = (navigator.language || 'fr').toLowerCase().startsWith('en') ? 'en' : 'fr'
       applyLang(saved === 'en' || saved === 'fr' ? saved : browser)
-      initParallax()
+      initAuth3D()
       const finish = () => {
         document.getElementById('boot')?.classList.add('is-done')
         if (!reduceMotion && window.gsap) {
-          gsap.to('#authLogo', { opacity: 1, duration: 0.7, ease: 'power2.out' })
-          gsap.fromTo('#main', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.75, ease: 'power2.out', delay: 0.1 })
+          gsap.to('#authLogo', { opacity: 1, duration: 0.75, ease: 'power2.out' })
+          gsap.to('#authVisual', { opacity: 1, scale: 1, duration: 0.85, ease: 'power2.out' })
+          gsap.fromTo('#authVisualBrand', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.75, delay: 0.18, ease: 'power2.out' })
+          gsap.fromTo('#main', { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.8, delay: 0.12, ease: 'power2.out' })
           staggerPane('paneLogin')
         } else {
-          document.getElementById('authLogo').style.opacity = '1'
-          document.getElementById('main').style.opacity = '1'
+          const logo = document.getElementById('authLogo')
+          const main = document.getElementById('main')
+          const vis = document.getElementById('authVisual')
+          const brand = document.getElementById('authVisualBrand')
+          if (logo) logo.style.opacity = '1'
+          if (vis) { vis.style.opacity = '1'; vis.style.transform = 'none' }
+          if (brand) brand.style.opacity = '1'
+          if (main) { main.style.opacity = '1'; main.style.transform = 'none' }
         }
       }
       if (document.readyState === 'complete') setTimeout(finish, 200)

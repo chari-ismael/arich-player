@@ -116,9 +116,9 @@
     .auth-visual__fallback {
       position: absolute; inset: 0; z-index: 0; pointer-events: none;
       background:
-        radial-gradient(ellipse 75% 65% at 42% 44%, rgba(90,88,84,0.22) 0%, transparent 58%),
-        radial-gradient(ellipse 55% 50% at 55% 55%, rgba(197,138,42,0.07) 0%, transparent 52%),
-        linear-gradient(160deg, #1a1a1e 0%, #141418 50%, #121214 100%);
+        radial-gradient(ellipse 70% 60% at 44% 46%, rgba(197,138,42,0.06) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 45% at 50% 52%, rgba(40,40,44,0.5) 0%, transparent 58%),
+        linear-gradient(160deg, #0c0c0e 0%, #0a0a0c 55%, #080809 100%);
     }
     .auth-visual__fallback::before {
       content: '';
@@ -254,35 +254,35 @@
     .auth-pane.is-active { display: flex; }
 
     .auth-head {
-      margin-bottom: 18px;
-      padding-left: 14px;
+      margin-bottom: 28px;
+      padding-left: 16px;
       border-left: 2px solid var(--accent);
     }
     .auth-kicker {
-      margin: 0 0 5px;
+      margin: 0 0 8px;
       font-size: 10px; font-weight: 600;
       letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--accent);
     }
     .auth-pane h1 {
-      margin: 0 0 5px;
-      font-size: clamp(1.45rem, 3.4vw, 1.9rem);
-      font-weight: 600; letter-spacing: -0.03em;
-      line-height: 1.1;
+      margin: 0 0 8px;
+      font-size: clamp(1.9rem, 4.5vw, 2.55rem);
+      font-weight: 700; letter-spacing: -0.035em;
+      line-height: 1.05;
     }
     .auth-pane .lede {
       margin: 0;
-      font-size: 13px; color: var(--mute); line-height: 1.5;
+      font-size: 14px; color: var(--mute); line-height: 1.55;
     }
     .auth-pane-signup .auth-head { margin-bottom: 14px; }
     .auth-pane-signup .field { margin-bottom: 10px; }
     .auth-pane-signup .divider { margin: 10px 0; }
     .auth-pane-signup .auth-switch { margin-top: 10px; }
 
-    .auth-fields { margin-top: 16px; }
-    .auth-actions { margin-top: 2px; }
-    .auth-fields .field { margin-bottom: 12px; }
+    .auth-fields { margin-top: 24px; display: flex; flex-direction: column; gap: 2px; }
+    .auth-actions { margin-top: 12px; display: flex; flex-direction: column; gap: 14px; }
+    .auth-fields .field { margin-bottom: 14px; }
     .field-label { display: none; }
 
     .notch { position: relative; }
@@ -299,8 +299,8 @@
       transition: color 0.2s ease, letter-spacing 0.2s ease;
     }
     .notch input {
-      width: 100%; height: 44px;
-      padding: 14px 12px 0;
+      width: 100%; height: 48px;
+      padding: 17px 14px 0;
       border: 1px solid var(--line-input);
       border-radius: 10px;
       background: var(--input-bg);
@@ -309,8 +309,14 @@
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
     }
-    .notch input.has-eye { padding-right: 40px; }
-    .notch input::placeholder { color: transparent; }
+    .notch input.has-eye { padding-right: 44px; }
+    .notch input::placeholder {
+      color: var(--faint);
+      opacity: 0.75;
+      transition: opacity 0.2s ease;
+    }
+    .notch:focus-within input::placeholder { opacity: 0.45; }
+    .notch.is-filled input::placeholder { opacity: 0; }
     .notch:focus-within input {
       border-color: rgba(197,138,42,0.5);
       box-shadow: 0 0 0 3px rgba(197,138,42,0.07);
@@ -330,7 +336,7 @@
     }
     .eye:hover, .eye[aria-pressed='true'] { color: var(--text); transform: translateY(-50%) scale(1.08); }
 
-    .field-row { display: flex; justify-content: flex-end; margin: -2px 0 12px; }
+    .field-row { display: flex; justify-content: flex-end; margin: 2px 0 4px; }
     .quiet-link {
       color: var(--mute); background: none; border: 0; cursor: pointer;
       font: inherit; font-size: 12px; padding: 0;
@@ -388,7 +394,7 @@
 
     .divider {
       display: flex; align-items: center; gap: 12px;
-      margin: 14px 0;
+      margin: 4px 0;
       color: var(--faint); font-size: 11px; letter-spacing: 0.08em; text-transform: lowercase;
     }
     .divider::before, .divider::after {
@@ -396,7 +402,7 @@
     }
 
     .auth-switch {
-      margin-top: 14px;
+      margin-top: 18px;
       font-size: 12px; color: var(--mute); text-align: center;
     }
     .auth-switch-btn {
@@ -625,13 +631,13 @@
           <div class="stagger field" data-notch>
             <div class="notch">
               <label for="login-email" data-i18n="email">E-mail</label>
-              <input id="login-email" type="email" autocomplete="email" inputmode="email" placeholder=" " />
+              <input id="login-email" type="email" autocomplete="email" inputmode="email" data-i18n-placeholder="ph_email" placeholder="vous@exemple.com" />
             </div>
           </div>
           <div class="stagger field" data-notch>
             <div class="notch">
               <label for="login-pw" data-i18n="password">Mot de passe</label>
-              <input id="login-pw" type="password" class="has-eye" autocomplete="current-password" placeholder=" " />
+              <input id="login-pw" type="password" class="has-eye" autocomplete="current-password" data-i18n-placeholder="ph_password" placeholder="••••••••" />
               <button type="button" class="eye" data-toggle-pw="login-pw" aria-label="Show password">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
@@ -694,13 +700,13 @@
             <div class="stagger field" data-notch>
               <div class="notch">
                 <label for="signup-email" data-i18n="email">E-mail</label>
-                <input id="signup-email" type="email" autocomplete="email" inputmode="email" placeholder=" " />
+                <input id="signup-email" type="email" autocomplete="email" inputmode="email" data-i18n-placeholder="ph_email" placeholder="vous@exemple.com" />
               </div>
             </div>
             <div class="stagger field" data-notch>
               <div class="notch">
                 <label for="signup-pw" data-i18n="password">Mot de passe</label>
-                <input id="signup-pw" type="password" class="has-eye" autocomplete="new-password" placeholder=" " />
+                <input id="signup-pw" type="password" class="has-eye" autocomplete="new-password" data-i18n-placeholder="ph_password" placeholder="••••••••" />
                 <button type="button" class="eye" data-toggle-pw="signup-pw" aria-label="Show password">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 </button>
@@ -713,7 +719,7 @@
             <div class="stagger field" data-notch>
               <div class="notch">
                 <label for="signup-pw2" data-i18n="password_confirm">Confirmer</label>
-                <input id="signup-pw2" type="password" class="has-eye" autocomplete="new-password" placeholder=" " />
+                <input id="signup-pw2" type="password" class="has-eye" autocomplete="new-password" data-i18n-placeholder="ph_password" placeholder="••••••••" />
                 <button type="button" class="eye" data-toggle-pw="signup-pw2" aria-label="Show password">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 </button>
@@ -763,7 +769,7 @@
             <div class="field" data-notch>
               <div class="notch">
                 <label for="forgot-email" data-i18n="email">E-mail</label>
-                <input id="forgot-email" type="email" autocomplete="email" placeholder=" " />
+                <input id="forgot-email" type="email" autocomplete="email" data-i18n-placeholder="ph_email" placeholder="vous@exemple.com" />
               </div>
             </div>
             <button type="button" class="btn-shimmer" id="btn-forgot"><span class="spin"></span><span class="blbl" data-i18n="forgot_cta">Envoyer le lien</span></button>
@@ -783,7 +789,7 @@
             <div class="field" data-notch>
               <div class="notch">
                 <label for="magic-email" data-i18n="email">E-mail</label>
-                <input id="magic-email" type="email" autocomplete="email" placeholder=" " />
+                <input id="magic-email" type="email" autocomplete="email" data-i18n-placeholder="ph_email" placeholder="vous@exemple.com" />
               </div>
             </div>
             <button type="button" class="btn-shimmer" id="btn-magic"><span class="spin"></span><span class="blbl" data-i18n="magic_cta">Envoyer le lien</span></button>
@@ -803,14 +809,14 @@
           <div class="field" data-notch>
             <div class="notch">
               <label for="phone-input" data-i18n="phone">Numéro</label>
-              <input id="phone-input" type="tel" autocomplete="tel" inputmode="tel" placeholder=" " />
+              <input id="phone-input" type="tel" autocomplete="tel" inputmode="tel" data-i18n-placeholder="ph_phone" placeholder="+33 6 12 34 56 78" />
             </div>
           </div>
           <button type="button" class="btn-shimmer" id="btn-phone-send"><span class="spin"></span><span class="blbl" data-i18n="phone_send">Envoyer le SMS</span></button>
           <div class="otp-row" id="otpRow" hidden>
             <div class="notch" data-notch>
               <label for="phone-otp" data-i18n="otp">Code</label>
-              <input id="phone-otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder=" " />
+              <input id="phone-otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" data-i18n-placeholder="ph_otp" placeholder="123456" />
             </div>
             <button type="button" class="btn-shimmer" id="btn-phone-verify"><span class="spin"></span><span class="blbl" data-i18n="phone_verify">Vérifier</span></button>
           </div>
@@ -824,7 +830,7 @@
           <div class="field" data-notch>
             <div class="notch">
               <label for="reset-pw" data-i18n="password_new">Nouveau mot de passe</label>
-              <input id="reset-pw" type="password" class="has-eye" autocomplete="new-password" placeholder=" " />
+              <input id="reset-pw" type="password" class="has-eye" autocomplete="new-password" data-i18n-placeholder="ph_password" placeholder="••••••••" />
               <button type="button" class="eye" data-toggle-pw="reset-pw"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
             </div>
           </div>
@@ -835,7 +841,7 @@
           <div class="field" data-notch>
             <div class="notch">
               <label for="reset-pw2" data-i18n="password_confirm">Confirmer</label>
-              <input id="reset-pw2" type="password" class="has-eye" autocomplete="new-password" placeholder=" " />
+              <input id="reset-pw2" type="password" class="has-eye" autocomplete="new-password" data-i18n-placeholder="ph_password" placeholder="••••••••" />
               <button type="button" class="eye" data-toggle-pw="reset-pw2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
             </div>
           </div>
@@ -893,6 +899,10 @@
         switch_unknown: 'Aucun compte pour cet e-mail. Créez-en un.',
         gmail_hint: 'Compte Gmail détecté — plus rapide avec Google.',
         auth_kicker: 'Authentification',
+        ph_email: 'vous@exemple.com',
+        ph_password: '••••••••',
+        ph_phone: '+33 6 12 34 56 78',
+        ph_otp: '123456',
       },
       en: {
         doc_title: 'Sign in — ARICH Player',
@@ -931,6 +941,10 @@
         switch_unknown: 'No account for this email. Create one.',
         gmail_hint: 'Gmail detected — faster with Google.',
         auth_kicker: 'Authentication',
+        ph_email: 'you@example.com',
+        ph_password: '••••••••',
+        ph_phone: '+1 555 123 4567',
+        ph_otp: '123456',
       },
     }
 
@@ -954,6 +968,9 @@
       document.title = t('doc_title')
       document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.getAttribute('data-i18n')) })
       document.querySelectorAll('[data-i18n-html]').forEach((el) => { el.innerHTML = t(el.getAttribute('data-i18n-html')) })
+      document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+        el.placeholder = t(el.getAttribute('data-i18n-placeholder'))
+      })
       document.getElementById('langFr')?.classList.toggle('is-active', lang === 'fr')
       document.getElementById('langEn')?.classList.toggle('is-active', lang === 'en')
       try { localStorage.setItem('arich_lang', lang) } catch (_) {}
@@ -1428,25 +1445,25 @@
       const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false })
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
       renderer.toneMapping = THREE.ACESFilmicToneMapping
-      renderer.toneMappingExposure = 1.38
+      renderer.toneMappingExposure = 1.15
       renderer.outputEncoding = THREE.sRGBEncoding
 
       const scene = new THREE.Scene()
-      scene.background = new THREE.Color(0x1a1a1e)
+      scene.background = new THREE.Color(0x0b0b0c)
 
       const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 100)
-      camera.position.set(0, 0.05, 6.4)
+      camera.position.set(0, 0.05, 6.2)
 
       const sculpture = new THREE.Group()
       scene.add(sculpture)
 
       const formGeo = new THREE.TorusKnotGeometry(0.68, 0.14, 280, 48, 3, 2)
       const formMat = new THREE.MeshPhysicalMaterial({
-        color: 0x8a8a92,
-        metalness: 0.72,
-        roughness: 0.28,
-        clearcoat: 0.35,
-        clearcoatRoughness: 0.2,
+        color: 0x2a2a2e,
+        metalness: 0.9,
+        roughness: 0.22,
+        clearcoat: 0.4,
+        clearcoatRoughness: 0.18,
       })
       const form = new THREE.Mesh(formGeo, formMat)
       form.rotation.set(0.55, 0.2, 0.35)
@@ -1455,27 +1472,32 @@
       sculpture.position.set(-0.05, 0, 0)
       sculpture.scale.setScalar(0.78)
 
-      scene.add(new THREE.AmbientLight(0xc8c4bc, 0.55))
-      const keyLight = new THREE.DirectionalLight(0xfff8f0, 0.75)
+      scene.add(new THREE.AmbientLight(0x3a3834, 0.42))
+      const keyLight = new THREE.DirectionalLight(0xe8e4dc, 0.5)
       keyLight.position.set(4, 3, 5)
       scene.add(keyLight)
-      const fillLight = new THREE.DirectionalLight(0xa8b4c8, 0.35)
+      const fillLight = new THREE.DirectionalLight(0x6a7588, 0.22)
       fillLight.position.set(-5, 0, 3)
       scene.add(fillLight)
-      const rimLight = new THREE.DirectionalLight(0xffffff, 0.55)
+      const rimLight = new THREE.DirectionalLight(0xf0ece4, 0.38)
       rimLight.position.set(0, 2, -4)
       scene.add(rimLight)
-      const accentLight = new THREE.PointLight(0xc58a2a, 0.22, 18)
+      const accentLight = new THREE.PointLight(0xc58a2a, 0.35, 20)
       accentLight.position.set(2.5, -1, 3)
       scene.add(accentLight)
 
       let mx = 0, my = 0, px = 0, py = 0, t = 0, raf = 0, running = true
+      let baseRotY = 0
+      const baseRotX = 0.2
 
       const onMove = (e) => {
         const rect = visual.getBoundingClientRect()
-        if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) return
-        mx = ((e.clientX - rect.left) / rect.width - 0.5) * 0.14
-        my = ((e.clientY - rect.top) / rect.height - 0.5) * 0.1
+        const cx = rect.left + rect.width * 0.5
+        const cy = rect.top + rect.height * 0.5
+        const nx = (e.clientX - cx) / (rect.width * 0.5)
+        const ny = (e.clientY - cy) / (rect.height * 0.5)
+        mx = Math.max(-1, Math.min(1, nx)) * 0.65
+        my = Math.max(-1, Math.min(1, ny)) * 0.5
       }
       document.addEventListener('mousemove', onMove)
 
@@ -1496,19 +1518,27 @@
         raf = requestAnimationFrame(animate)
         const speed = reduceMotion ? 0.002 : 0.007
         t += speed
-        px += (mx - px) * 0.045
-        py += (my - py) * 0.045
+        px += (mx - px) * 0.08
+        py += (my - py) * 0.08
 
-        sculpture.rotation.y += reduceMotion ? 0.001 : 0.0022
-        sculpture.rotation.x = 0.2 + Math.sin(t * 0.4) * 0.025 + py * 0.2
-        sculpture.position.y = Math.sin(t * 0.55) * 0.03
+        baseRotY += reduceMotion ? 0.001 : 0.0016
+        sculpture.rotation.y = baseRotY + px * 0.55
+        sculpture.rotation.x = baseRotX + Math.sin(t * 0.4) * 0.02 + py * 0.42
+        sculpture.rotation.z = px * 0.14
+        sculpture.position.x = -0.05 + px * 0.18
+        sculpture.position.y = Math.sin(t * 0.55) * 0.025 + py * 0.1
 
-        camera.position.x = px * 0.35
-        camera.position.y = 0.05 + py * 0.22
-        camera.lookAt(0, 0, 0)
+        camera.position.x = px * 0.75
+        camera.position.y = 0.05 + py * 0.45
+        camera.lookAt(px * 0.12, py * 0.08, 0)
 
-        accentLight.position.x = 2.5 + Math.sin(t * 0.3) * 0.5
-        keyLight.intensity = 0.72 + Math.sin(t * 0.2) * 0.06
+        accentLight.position.x = 2.5 + px * 3.5
+        accentLight.position.y = -1 + py * 2.5
+        keyLight.position.x = 4 + px * 2.2
+        keyLight.position.y = 3 + py * 1.8
+        rimLight.position.x = px * 1.5
+        rimLight.position.y = 2 + py * 1.2
+        keyLight.intensity = 0.48 + Math.sin(t * 0.2) * 0.05
 
         renderer.render(scene, camera)
       }

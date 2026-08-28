@@ -46,19 +46,28 @@
       --accent-text: #0B0B0C;
       --err: #B04A4A;
       --ok: #4A8068;
+      --visual-bg: #E0DDD6;
+      --input-bg: #F5F3EF;
+      --notch-bg: #F5F3EF;
+    }
+    :root, html[data-theme='dark'] {
+      --visual-bg: #080809;
+      --input-bg: var(--bg);
+      --notch-bg: var(--bg);
     }
     *, *::before, *::after { box-sizing: border-box; }
     html { color-scheme: dark; }
     html[data-theme='light'] { color-scheme: light; }
     body {
       margin: 0;
-      min-height: 100vh;
+      height: 100vh;
+      max-height: 100vh;
+      overflow: hidden;
       background: var(--bg);
       color: var(--text);
       font-family: Inter, system-ui, sans-serif;
       font-size: 15px;
       line-height: 1.5;
-      overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -66,21 +75,35 @@
     .auth-stage {
       position: relative;
       z-index: 1;
-      min-height: 100vh;
+      height: 100vh;
+      max-height: 100vh;
       width: 100%;
       display: grid;
       grid-template-columns: minmax(0, 55fr) minmax(0, 45fr);
+      grid-template-areas: "visual form";
+      overflow: hidden;
+    }
+    .auth-stage.is-signup {
+      grid-template-columns: minmax(0, 45fr) minmax(0, 55fr);
+      grid-template-areas: "form visual";
     }
 
     .auth-visual {
+      grid-area: visual;
       position: relative;
-      min-height: 100vh;
+      height: 100%;
+      min-height: 0;
       overflow: hidden;
-      background: #080809;
+      background: var(--visual-bg);
       border-right: 1px solid var(--line);
       opacity: 0;
       transform: scale(0.96);
       transform-origin: center center;
+      will-change: transform;
+    }
+    .auth-stage.is-signup .auth-visual {
+      border-right: 0;
+      border-left: 1px solid var(--line);
     }
     .auth-visual__fallback {
       position: absolute; inset: 0; z-index: 0; pointer-events: none;
@@ -118,6 +141,13 @@
       from { transform: translate(0, 0) rotate(-6deg) scale(1); }
       to { transform: translate(-2%, 3%) rotate(3deg) scale(1.04); }
     }
+    html[data-theme='light'] .auth-visual__fallback {
+      background:
+        radial-gradient(ellipse 90% 70% at 38% 42%, rgba(197,138,42,0.08) 0%, transparent 52%),
+        radial-gradient(ellipse 60% 50% at 62% 58%, rgba(220,216,208,0.9) 0%, transparent 58%),
+        linear-gradient(155deg, #D8D4CC 0%, #E8E4DC 45%, #E0DDD6 100%);
+    }
+    html[data-theme='light'] .auth-visual__grain { opacity: 0.025; }
     #auth3d {
       position: absolute; inset: 0; z-index: 1;
       width: 100%; height: 100%;
@@ -132,8 +162,14 @@
     .auth-visual__vignette {
       position: absolute; inset: 0; z-index: 1; pointer-events: none;
       background:
-        linear-gradient(to right, transparent 55%, rgba(11,11,12,0.92) 100%),
-        linear-gradient(to top, rgba(11,11,12,0.5) 0%, transparent 35%);
+        linear-gradient(to right, transparent 55%, color-mix(in srgb, var(--bg) 92%, transparent) 100%),
+        linear-gradient(to top, color-mix(in srgb, var(--bg) 50%, transparent) 0%, transparent 35%);
+      transition: background 0.6s ease;
+    }
+    .auth-stage.is-signup .auth-visual__vignette {
+      background:
+        linear-gradient(to left, transparent 55%, color-mix(in srgb, var(--bg) 92%, transparent) 100%),
+        linear-gradient(to top, color-mix(in srgb, var(--bg) 50%, transparent) 0%, transparent 35%);
     }
     .auth-visual__brand {
       position: absolute; z-index: 3;
@@ -150,8 +186,9 @@
     }
     .auth-visual__brand h2 {
       margin: 0;
-      font-size: clamp(1.75rem, 3vw, 2.5rem);
+      font-size: clamp(1.5rem, 2.8vw, 2.25rem);
       font-weight: 600; letter-spacing: -0.03em; line-height: 1.05;
+      color: var(--text);
     }
     .auth-visual__brand span {
       display: block; margin-top: 10px;
@@ -159,32 +196,37 @@
     }
 
     .auth-right {
+      grid-area: form;
       position: relative;
-      min-height: 100vh;
+      height: 100%;
+      min-height: 0;
       display: flex;
       flex-direction: column;
       background: var(--bg);
+      will-change: transform;
     }
 
     .auth-top {
       position: relative; z-index: 20;
       display: flex; align-items: center; justify-content: space-between;
-      padding: clamp(20px, 3vh, 28px) clamp(24px, 4vw, 40px) 0;
+      padding: clamp(14px, 2vh, 22px) clamp(20px, 4vw, 40px) 0;
       flex-shrink: 0;
     }
 
     .auth-panel-side {
       flex: 1;
+      min-height: 0;
       display: flex;
       align-items: center;
       justify-content: flex-start;
-      padding: 24px clamp(24px, 5vw, 48px) 32px;
+      padding: 8px clamp(20px, 4vw, 48px) 4px;
+      overflow: hidden;
     }
 
     .auth-foot {
       position: relative; z-index: 20;
-      display: flex; flex-wrap: wrap; gap: 16px;
-      padding: 16px clamp(24px, 5vw, 48px) 24px;
+      display: flex; flex-wrap: wrap; gap: 12px;
+      padding: 8px clamp(20px, 4vw, 48px) clamp(10px, 1.5vh, 16px);
       font-size: 11px;
       flex-shrink: 0;
     }
@@ -198,9 +240,11 @@
     .chip {
       color: var(--faint); background: none; border: 0; cursor: pointer;
       font: inherit; font-size: 12px; font-weight: 500; letter-spacing: 0.04em;
-      padding: 8px 10px; transition: color 0.15s;
+      padding: 8px 10px; border-radius: 6px;
+      transition: color 0.2s, background 0.2s, transform 0.15s;
     }
     .chip:hover, .chip.is-active { color: var(--text); }
+    .chip:hover { background: color-mix(in srgb, var(--text) 6%, transparent); transform: translateY(-1px); }
     .theme-btn { display: grid; place-items: center; width: 36px; height: 36px; }
     .theme-btn svg { display: none; }
     html[data-theme='dark'] .icon-sun { display: block; }
@@ -222,41 +266,57 @@
     }
     .auth-pane.is-active { display: flex; }
     .auth-pane h1 {
-      margin: 0 0 6px;
-      font-size: clamp(1.5rem, 4vw, 1.75rem);
+      margin: 0 0 4px;
+      font-size: clamp(1.35rem, 3.2vw, 1.65rem);
       font-weight: 600; letter-spacing: -0.03em;
     }
     .auth-pane .lede {
-      margin: 0 0 24px;
-      font-size: 13px; color: var(--mute); line-height: 1.55;
+      margin: 0 0 16px;
+      font-size: 12px; color: var(--mute); line-height: 1.5;
     }
+    .auth-pane-signup .lede { margin-bottom: 12px; }
+    .auth-pane-signup .field { margin-bottom: 10px; }
+    .auth-pane-signup .divider { margin: 10px 0; }
+    .auth-pane-signup .auth-switch { margin-top: 10px; }
 
-    .field { margin-bottom: 16px; }
-    .field-label {
-      display: block; margin-bottom: 8px;
-      font-size: 11px; font-weight: 500; letter-spacing: 0.06em;
-      text-transform: uppercase; color: var(--mute);
-    }
+    .field { margin-bottom: 12px; }
+    .field-label { display: none; }
+
     .notch { position: relative; }
+    .notch label {
+      position: absolute;
+      left: 11px; top: 0;
+      transform: translateY(-50%);
+      font-size: 10px; font-weight: 600; letter-spacing: 0.07em;
+      text-transform: uppercase; color: var(--mute);
+      background: var(--notch-bg);
+      padding: 0 5px;
+      pointer-events: none;
+      z-index: 1;
+      transition: color 0.2s ease, letter-spacing 0.2s ease;
+    }
     .notch input {
-      width: 100%; height: 48px;
-      padding: 0 14px;
+      width: 100%; height: 44px;
+      padding: 14px 12px 0;
       border: 1px solid var(--line-input);
       border-radius: 10px;
-      background: var(--bg);
+      background: var(--input-bg);
       color: var(--text);
       font: inherit; font-size: 14px;
       outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
     }
-    .notch input.has-eye { padding-right: 44px; }
-    .notch input::placeholder { color: var(--faint); }
+    .notch input.has-eye { padding-right: 40px; }
+    .notch input::placeholder { color: transparent; }
     .notch:focus-within input {
-      border-color: rgba(197,138,42,0.45);
-      box-shadow: 0 0 0 3px rgba(197,138,42,0.06);
+      border-color: rgba(197,138,42,0.5);
+      box-shadow: 0 0 0 3px rgba(197,138,42,0.07);
     }
-    .notch label { display: none; }
-    .notch.is-filled label { display: none; }
+    .notch:focus-within label {
+      color: var(--accent);
+      letter-spacing: 0.09em;
+    }
+    .notch:hover label { color: var(--text); }
 
     .eye {
       position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
@@ -265,9 +325,9 @@
       display: grid; place-items: center;
       transition: color 0.15s, transform 0.2s;
     }
-    .eye:hover, .eye[aria-pressed='true'] { color: var(--text); }
+    .eye:hover, .eye[aria-pressed='true'] { color: var(--text); transform: translateY(-50%) scale(1.08); }
 
-    .field-row { display: flex; justify-content: flex-end; margin: -4px 0 20px; }
+    .field-row { display: flex; justify-content: flex-end; margin: -2px 0 12px; }
     .quiet-link {
       color: var(--mute); background: none; border: 0; cursor: pointer;
       font: inherit; font-size: 12px; padding: 0;
@@ -282,39 +342,50 @@
     .quiet-link:hover::after { transform: scaleX(1); }
 
     .btn-shimmer {
-      width: 100%; height: 48px; border: 0; border-radius: 10px;
+      width: 100%; height: 44px; border: 0; border-radius: 10px;
       background: var(--accent); color: var(--accent-text);
-      font: inherit; font-size: 13px; font-weight: 600;
-      letter-spacing: 0.04em; text-transform: uppercase;
+      font: inherit; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.05em; text-transform: uppercase;
       cursor: pointer;
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      transition: background 0.2s, transform 0.15s;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.1) inset;
     }
     .btn-shimmer:hover:not(:disabled) {
       background: var(--accent-hover);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 22px rgba(197,138,42,0.28), 0 1px 0 rgba(255,255,255,0.12) inset;
     }
-    .btn-shimmer:active:not(:disabled) { transform: translateY(0); }
+    .btn-shimmer:active:not(:disabled) { transform: translateY(0); box-shadow: none; }
     .btn-shimmer:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .btn-ghost {
-      width: 100%; height: 48px;
+      width: 100%; height: 44px;
       border: 1px solid var(--line-input);
       border-radius: 10px;
-      background: var(--bg);
+      background: var(--input-bg);
       color: var(--text);
-      font: inherit; font-size: 14px; font-weight: 500;
+      font: inherit; font-size: 13px; font-weight: 500;
       cursor: pointer;
       display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-      transition: border-color 0.2s, background 0.2s;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s;
     }
-    .btn-ghost:hover { border-color: rgba(255,255,255,0.14); background: rgba(255,255,255,0.02); }
-    html[data-theme='light'] .btn-ghost:hover { background: rgba(0,0,0,0.02); }
-    .js-google.gmail-hot { border-color: rgba(197,138,42,0.35); }
+    .btn-ghost:hover {
+      border-color: color-mix(in srgb, var(--text) 18%, transparent);
+      background: color-mix(in srgb, var(--text) 3%, var(--input-bg));
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    }
+    .btn-ghost:active { transform: translateY(0); }
+    .js-google.gmail-hot { border-color: rgba(197,138,42,0.4); box-shadow: 0 0 0 1px rgba(197,138,42,0.12); }
+    .btn-facebook:hover { border-color: rgba(24,119,242,0.45); }
+    .btn-facebook .fb-icon { color: #1877F2; flex-shrink: 0; }
+
+    .oauth-stack { display: flex; flex-direction: column; gap: 8px; }
 
     .divider {
       display: flex; align-items: center; gap: 12px;
-      margin: 22px 0;
+      margin: 14px 0;
       color: var(--faint); font-size: 11px; letter-spacing: 0.08em; text-transform: lowercase;
     }
     .divider::before, .divider::after {
@@ -322,8 +393,8 @@
     }
 
     .auth-switch {
-      margin-top: 24px;
-      font-size: 13px; color: var(--mute); text-align: center;
+      margin-top: 14px;
+      font-size: 12px; color: var(--mute); text-align: center;
     }
     .auth-switch-btn {
       background: none; border: 0; cursor: pointer;
@@ -338,24 +409,28 @@
     }
     .auth-switch-btn:hover::after { transform: scaleX(1); }
 
+    .auth-switch-btn:hover { color: var(--accent); }
+
     .auth-alt {
-      display: flex; justify-content: center; gap: 16px;
-      margin-top: 16px; flex-wrap: wrap;
+      display: flex; justify-content: center; gap: 14px;
+      margin-top: 10px; flex-wrap: wrap;
     }
     .pill {
       background: none; border: 0; cursor: pointer;
-      font: inherit; font-size: 12px; color: var(--faint);
+      font: inherit; font-size: 11px; color: var(--faint);
       padding: 4px 0;
-      transition: color 0.15s;
+      position: relative;
+      transition: color 0.2s, transform 0.15s;
     }
-    .pill:hover { color: var(--mute); }
-    .oauth-secondary {
-      display: flex; justify-content: center; gap: 12px;
-      margin-top: 12px;
+    .pill::after {
+      content: ''; position: absolute; left: 0; right: 0; bottom: 0;
+      height: 1px; background: var(--accent); transform: scaleX(0);
+      transform-origin: left; transition: transform 0.25s ease;
     }
-    .oauth-secondary .pill { font-size: 11px; }
+    .pill:hover { color: var(--text); transform: translateY(-1px); }
+    .pill:hover::after { transform: scaleX(1); }
 
-    .gmail-hint { display: none; font-size: 12px; color: var(--accent); margin: 8px 0 0; }
+    .gmail-hint { display: none; font-size: 11px; color: var(--accent); margin: 4px 0 0; }
     .gmail-hint.show { display: block; }
 
     .msg {
@@ -377,7 +452,7 @@
     }
     .success-panel p { margin: 0 0 20px; font-size: 14px; color: var(--mute); line-height: 1.55; }
 
-    .pw-strength { display: flex; align-items: center; gap: 8px; margin: -8px 0 16px; }
+    .pw-strength { display: flex; align-items: center; gap: 8px; margin: -4px 0 10px; }
     .bars { display: flex; gap: 4px; height: 2px; flex: 1; }
     .bar { flex: 1; background: var(--line); border-radius: 1px; }
     .bar.s1 { background: var(--err); } .bar.s2 { background: var(--accent); opacity: 0.6; } .bar.s3 { background: var(--ok); }
@@ -394,11 +469,25 @@
     }
     .extra .lede { margin: 0 0 24px; font-size: 13px; color: var(--mute); }
 
-    .legal-note { margin-top: 16px; font-size: 11px; color: var(--faint); line-height: 1.5; }
-    .legal-link { color: var(--mute); }
+    .legal-note { margin-top: 10px; font-size: 10px; color: var(--faint); line-height: 1.45; }
+    .legal-link { color: var(--mute); transition: color 0.15s; }
+    .legal-link:hover { color: var(--accent); }
 
     .auth-foot a { color: var(--faint); text-decoration: none; transition: color 0.15s; }
     .auth-foot a:hover { color: var(--mute); }
+
+    @media (max-height: 820px) {
+      .auth-pane h1 { font-size: 1.3rem; }
+      .auth-pane .lede { margin-bottom: 10px; font-size: 11px; }
+      .field { margin-bottom: 9px; }
+      .notch input { height: 40px; font-size: 13px; }
+      .btn-shimmer, .btn-ghost { height: 40px; font-size: 11px; }
+      .divider { margin: 10px 0; }
+      .auth-switch { margin-top: 10px; }
+      .auth-alt { margin-top: 6px; }
+      .auth-visual__brand { bottom: 20px; }
+      .auth-visual__brand h2 { font-size: 1.35rem; }
+    }
 
     @media (min-width: 1200px) {
       .auth-stage { grid-template-columns: minmax(0, 55fr) minmax(0, 45fr); }
@@ -409,13 +498,23 @@
       .auth-visual__brand h2 { font-size: 1.5rem; }
     }
     @media (max-width: 899px) {
+      body { height: auto; max-height: none; overflow-y: auto; }
       .auth-stage {
+        height: auto;
+        max-height: none;
         grid-template-columns: 1fr;
-        grid-template-rows: min(42vh, 360px) 1fr;
+        grid-template-rows: min(38vh, 320px) 1fr;
+        grid-template-areas: "visual" "form";
+        overflow: visible;
       }
-      .auth-visual { min-height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+      .auth-stage.is-signup {
+        grid-template-areas: "visual" "form";
+        grid-template-columns: 1fr;
+      }
+      .auth-visual { min-height: auto; border-right: 0; border-left: 0 !important; border-bottom: 1px solid var(--line); }
+      .auth-right { height: auto; }
       .auth-visual__brand { left: 24px; bottom: 24px; }
-      .auth-panel-side { padding-top: 8px; }
+      .auth-panel-side { padding-top: 8px; overflow: visible; }
     }
 
     .boot {
@@ -523,17 +622,15 @@
           <p class="stagger lede" data-i18n="login_lede">Retrouvez vos playlists et votre licence.</p>
           <div class="msg" id="login-msg" role="alert"></div>
           <div class="stagger field" data-notch>
-            <label class="field-label" for="login-email" data-i18n="email">E-mail</label>
             <div class="notch">
-              <input id="login-email" type="email" autocomplete="email" inputmode="email" placeholder="vous@exemple.com" />
-              <label for="login-email">E-mail</label>
+              <label for="login-email" data-i18n="email">E-mail</label>
+              <input id="login-email" type="email" autocomplete="email" inputmode="email" placeholder=" " />
             </div>
           </div>
           <div class="stagger field" data-notch>
-            <label class="field-label" for="login-pw" data-i18n="password">Mot de passe</label>
             <div class="notch">
-              <input id="login-pw" type="password" class="has-eye" autocomplete="current-password" placeholder="••••••••" />
-              <label for="login-pw">Mot de passe</label>
+              <label for="login-pw" data-i18n="password">Mot de passe</label>
+              <input id="login-pw" type="password" class="has-eye" autocomplete="current-password" placeholder=" " />
               <button type="button" class="eye" data-toggle-pw="login-pw" aria-label="Show password">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
@@ -546,17 +643,23 @@
             <span class="spin"></span><span class="blbl" data-i18n="login_cta">Se connecter</span>
           </button>
           <div class="stagger divider" data-i18n="or">ou</div>
-          <button type="button" class="stagger btn-ghost js-google" id="btn-google">
-            <span class="spin"></span>
-            <span class="blbl" style="display:inline-flex;align-items:center;gap:10px">
-              <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-              <span data-i18n="google_cta">Continuer avec Google</span>
-            </span>
-          </button>
-          <p class="gmail-hint" data-i18n="gmail_hint">Compte Gmail détecté — plus rapide avec Google.</p>
-          <div class="stagger oauth-secondary">
-            <button type="button" class="pill" id="btn-facebook" data-i18n="facebook_cta">Facebook</button>
+          <div class="stagger oauth-stack">
+            <button type="button" class="btn-ghost js-google" id="btn-google">
+              <span class="spin"></span>
+              <span class="blbl" style="display:inline-flex;align-items:center;gap:10px">
+                <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                <span data-i18n="google_cta">Continuer avec Google</span>
+              </span>
+            </button>
+            <button type="button" class="btn-ghost btn-facebook" id="btn-facebook">
+              <span class="spin"></span>
+              <span class="blbl" style="display:inline-flex;align-items:center;gap:10px">
+                <svg class="fb-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                <span data-i18n="facebook_cta">Continuer avec Facebook</span>
+              </span>
+            </button>
           </div>
+          <p class="gmail-hint" data-i18n="gmail_hint">Compte Gmail détecté — plus rapide avec Google.</p>
           <div class="stagger auth-alt">
             <button type="button" class="pill" data-extra="magic" data-i18n="jump_magic">Magic link</button>
             <button type="button" class="pill" data-extra="phone" data-i18n="jump_phone">SMS</button>
@@ -581,17 +684,15 @@
           </div>
           <div id="signup-fields">
             <div class="stagger field" data-notch>
-              <label class="field-label" for="signup-email" data-i18n="email">E-mail</label>
               <div class="notch">
-                <input id="signup-email" type="email" autocomplete="email" inputmode="email" placeholder="vous@exemple.com" />
-                <label for="signup-email">E-mail</label>
+                <label for="signup-email" data-i18n="email">E-mail</label>
+                <input id="signup-email" type="email" autocomplete="email" inputmode="email" placeholder=" " />
               </div>
             </div>
             <div class="stagger field" data-notch>
-              <label class="field-label" for="signup-pw" data-i18n="password">Mot de passe</label>
               <div class="notch">
-                <input id="signup-pw" type="password" class="has-eye" autocomplete="new-password" placeholder="••••••••" />
-                <label for="signup-pw">Mot de passe</label>
+                <label for="signup-pw" data-i18n="password">Mot de passe</label>
+                <input id="signup-pw" type="password" class="has-eye" autocomplete="new-password" placeholder=" " />
                 <button type="button" class="eye" data-toggle-pw="signup-pw" aria-label="Show password">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 </button>
@@ -602,10 +703,9 @@
               <div class="strength-lbl" id="strength-lbl"></div>
             </div>
             <div class="stagger field" data-notch>
-              <label class="field-label" for="signup-pw2" data-i18n="password_confirm">Confirmer</label>
               <div class="notch">
-                <input id="signup-pw2" type="password" class="has-eye" autocomplete="new-password" placeholder="••••••••" />
-                <label for="signup-pw2">Confirmer</label>
+                <label for="signup-pw2" data-i18n="password_confirm">Confirmer</label>
+                <input id="signup-pw2" type="password" class="has-eye" autocomplete="new-password" placeholder=" " />
                 <button type="button" class="eye" data-toggle-pw="signup-pw2" aria-label="Show password">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 </button>
@@ -615,17 +715,23 @@
               <span class="spin"></span><span class="blbl" data-i18n="signup_cta">Créer mon compte</span>
             </button>
             <div class="stagger divider" data-i18n="or">ou</div>
-            <button type="button" class="stagger btn-ghost js-google" id="btn-google-up">
-              <span class="spin"></span>
-              <span class="blbl" style="display:inline-flex;align-items:center;gap:10px">
-                <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                <span data-i18n="google_cta">Continuer avec Google</span>
-              </span>
-            </button>
-            <p class="gmail-hint" data-i18n="gmail_hint">Compte Gmail détecté — plus rapide avec Google.</p>
-            <div class="stagger oauth-secondary">
-              <button type="button" class="pill" id="btn-facebook-up" data-i18n="facebook_cta">Facebook</button>
+            <div class="stagger oauth-stack">
+              <button type="button" class="btn-ghost js-google" id="btn-google-up">
+                <span class="spin"></span>
+                <span class="blbl" style="display:inline-flex;align-items:center;gap:10px">
+                  <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                  <span data-i18n="google_cta">Continuer avec Google</span>
+                </span>
+              </button>
+              <button type="button" class="btn-ghost btn-facebook" id="btn-facebook-up">
+                <span class="spin"></span>
+                <span class="blbl" style="display:inline-flex;align-items:center;gap:10px">
+                  <svg class="fb-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                  <span data-i18n="facebook_cta">Continuer avec Facebook</span>
+                </span>
+              </button>
             </div>
+            <p class="gmail-hint" data-i18n="gmail_hint">Compte Gmail détecté — plus rapide avec Google.</p>
             <p class="legal-note" data-i18n-html="signup_legal">En créant un compte, vous acceptez la <a class="legal-link" href="/privacy-policy.html">politique de confidentialité</a>.</p>
           </div>
           <p class="auth-switch stagger">
@@ -644,10 +750,9 @@
           <div class="msg" id="forgot-msg" role="alert"></div>
           <div id="forgot-form">
             <div class="field" data-notch>
-              <label class="field-label" for="forgot-email" data-i18n="email">E-mail</label>
               <div class="notch">
-                <input id="forgot-email" type="email" autocomplete="email" placeholder="vous@exemple.com" />
-                <label for="forgot-email">E-mail</label>
+                <label for="forgot-email" data-i18n="email">E-mail</label>
+                <input id="forgot-email" type="email" autocomplete="email" placeholder=" " />
               </div>
             </div>
             <button type="button" class="btn-shimmer" id="btn-forgot"><span class="spin"></span><span class="blbl" data-i18n="forgot_cta">Envoyer le lien</span></button>
@@ -665,10 +770,9 @@
           <div class="msg" id="magic-msg" role="alert"></div>
           <div id="magic-form">
             <div class="field" data-notch>
-              <label class="field-label" for="magic-email" data-i18n="email">E-mail</label>
               <div class="notch">
-                <input id="magic-email" type="email" autocomplete="email" placeholder="vous@exemple.com" />
-                <label for="magic-email">E-mail</label>
+                <label for="magic-email" data-i18n="email">E-mail</label>
+                <input id="magic-email" type="email" autocomplete="email" placeholder=" " />
               </div>
             </div>
             <button type="button" class="btn-shimmer" id="btn-magic"><span class="spin"></span><span class="blbl" data-i18n="magic_cta">Envoyer le lien</span></button>
@@ -686,17 +790,16 @@
           <p class="lede" data-i18n="phone_hint">Format international, ex. +33612345678.</p>
           <div class="msg" id="phone-msg" role="alert"></div>
           <div class="field" data-notch>
-            <label class="field-label" for="phone-input" data-i18n="phone">Numéro</label>
             <div class="notch">
-              <input id="phone-input" type="tel" autocomplete="tel" inputmode="tel" placeholder="+33 6 12 34 56 78" />
-              <label for="phone-input">Numéro</label>
+              <label for="phone-input" data-i18n="phone">Numéro</label>
+              <input id="phone-input" type="tel" autocomplete="tel" inputmode="tel" placeholder=" " />
             </div>
           </div>
           <button type="button" class="btn-shimmer" id="btn-phone-send"><span class="spin"></span><span class="blbl" data-i18n="phone_send">Envoyer le SMS</span></button>
           <div class="otp-row" id="otpRow" hidden>
             <div class="notch" data-notch>
-              <input id="phone-otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Code" />
               <label for="phone-otp" data-i18n="otp">Code</label>
+              <input id="phone-otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder=" " />
             </div>
             <button type="button" class="btn-shimmer" id="btn-phone-verify"><span class="spin"></span><span class="blbl" data-i18n="phone_verify">Vérifier</span></button>
           </div>
@@ -708,10 +811,9 @@
           <p class="lede" data-i18n="pw_hint">8 caractères minimum.</p>
           <div class="msg" id="reset-msg" role="alert"></div>
           <div class="field" data-notch>
-            <label class="field-label" for="reset-pw" data-i18n="password_new">Nouveau mot de passe</label>
             <div class="notch">
-              <input id="reset-pw" type="password" class="has-eye" autocomplete="new-password" placeholder="••••••••" />
-              <label for="reset-pw">Nouveau mot de passe</label>
+              <label for="reset-pw" data-i18n="password_new">Nouveau mot de passe</label>
+              <input id="reset-pw" type="password" class="has-eye" autocomplete="new-password" placeholder=" " />
               <button type="button" class="eye" data-toggle-pw="reset-pw"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
             </div>
           </div>
@@ -720,10 +822,9 @@
             <div class="strength-lbl" id="rstrength-lbl"></div>
           </div>
           <div class="field" data-notch>
-            <label class="field-label" for="reset-pw2" data-i18n="password_confirm">Confirmer</label>
             <div class="notch">
-              <input id="reset-pw2" type="password" class="has-eye" autocomplete="new-password" placeholder="••••••••" />
-              <label for="reset-pw2">Confirmer</label>
+              <label for="reset-pw2" data-i18n="password_confirm">Confirmer</label>
+              <input id="reset-pw2" type="password" class="has-eye" autocomplete="new-password" placeholder=" " />
               <button type="button" class="eye" data-toggle-pw="reset-pw2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
             </div>
           </div>
@@ -751,7 +852,7 @@
         email: 'E-mail', password: 'Mot de passe', password_confirm: 'Confirmer', password_new: 'Nouveau mot de passe',
         or: 'ou', login_cta: 'Se connecter', login_cta_short: 'Se connecter',
         signup_cta: 'Créer mon compte', signup_cta_short: 'Créer un compte',
-        google_cta: 'Continuer avec Google', facebook_cta: 'Facebook',
+        google_cta: 'Continuer avec Google', facebook_cta: 'Continuer avec Facebook',
         no_account: 'Pas encore de compte ?', has_account: 'Déjà un compte ?',
         forgot_link: 'Mot de passe oublié ?', forgot_title: 'Mot de passe oublié',
         forgot_lede: 'Nous enverrons un lien de réinitialisation.', forgot_cta: 'Envoyer le lien',
@@ -791,7 +892,7 @@
         email: 'Email', password: 'Password', password_confirm: 'Confirm', password_new: 'New password',
         or: 'or', login_cta: 'Sign in', login_cta_short: 'Sign in',
         signup_cta: 'Create account', signup_cta_short: 'Create account',
-        google_cta: 'Continue with Google', facebook_cta: 'Facebook',
+        google_cta: 'Continue with Google', facebook_cta: 'Continue with Facebook',
         no_account: 'No account yet?', has_account: 'Already have an account?',
         forgot_link: 'Forgot password?', forgot_title: 'Forgot password',
         forgot_lede: 'We’ll send a reset link.', forgot_cta: 'Send link',
@@ -897,10 +998,48 @@
       staggerPane(id)
     }
 
+    function morphStage(toSignup, onDone) {
+      const stage = document.getElementById('authStage')
+      const visual = document.getElementById('authVisual')
+      const right = document.querySelector('.auth-right')
+      const brand = document.getElementById('authVisualBrand')
+      if (!stage || !visual || !right) { onDone?.(); return }
+
+      const targetSignup = !!toSignup
+      if (window.innerWidth < 900 || reduceMotion || !window.gsap) {
+        stage.classList.toggle('is-signup', targetSignup)
+        onDone?.()
+        return
+      }
+      if (stage.classList.contains('is-signup') === targetSignup) {
+        onDone?.()
+        return
+      }
+
+      const vFirst = visual.getBoundingClientRect()
+      const rFirst = right.getBoundingClientRect()
+      stage.classList.toggle('is-signup', targetSignup)
+      const vLast = visual.getBoundingClientRect()
+      const rLast = right.getBoundingClientRect()
+
+      gsap.set(visual, { x: vFirst.left - vLast.left, zIndex: 6 })
+      gsap.set(right, { x: rFirst.left - rLast.left, zIndex: 6 })
+
+      gsap.timeline({
+        onComplete: () => {
+          gsap.set([visual, right], { clearProps: 'x,zIndex' })
+          onDone?.()
+        },
+      })
+        .to([visual, right], { x: 0, duration: 0.82, ease: 'power3.inOut' }, 0)
+        .fromTo(brand, { opacity: 0.55, x: targetSignup ? -16 : 16 }, { opacity: 1, x: 0, duration: 0.55, ease: 'power2.out' }, 0.28)
+    }
+
     function setMode(next, { email, info } = {}) {
       const target = next === 'signup' ? 'signup' : 'login'
       const fromPane = document.querySelector('.auth-pane.is-active')
       const toId = target === 'signup' ? 'paneSignup' : 'paneLogin'
+      const toSignup = target === 'signup'
 
       const apply = () => {
         mode = target
@@ -920,9 +1059,13 @@
         setTimeout(() => document.getElementById(target === 'signup' ? 'signup-email' : 'login-email')?.focus(), 400)
       }
 
+      const afterOut = () => morphStage(toSignup, apply)
+
       if (fromPane && fromPane.id !== toId && !reduceMotion && window.gsap) {
-        transitionOut(fromPane, apply)
-      } else apply()
+        transitionOut(fromPane, afterOut)
+      } else {
+        morphStage(toSignup, apply)
+      }
     }
 
     function showMsg(id, text, type = 'error') {
@@ -1278,68 +1421,78 @@
       const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false })
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
       renderer.toneMapping = THREE.ACESFilmicToneMapping
-      renderer.toneMappingExposure = 1.08
+      renderer.toneMappingExposure = 1.22
       renderer.outputEncoding = THREE.sRGBEncoding
 
       const scene = new THREE.Scene()
       scene.background = new THREE.Color(0x080809)
-      scene.fog = new THREE.FogExp2(0x080809, 0.045)
+      scene.fog = new THREE.FogExp2(0x080809, 0.032)
 
-      const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100)
-      camera.position.set(0.15, 0.25, 4.4)
+      const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100)
+      camera.position.set(0.1, 0.2, 5.6)
 
       const sculpture = new THREE.Group()
       scene.add(sculpture)
 
-      const knotGeo = new THREE.TorusKnotGeometry(1.02, 0.26, 280, 36, 2, 5)
+      const knotGeo = new THREE.TorusKnotGeometry(0.88, 0.2, 360, 48, 2, 5)
       const graphiteMat = new THREE.MeshPhysicalMaterial({
-        color: 0x18181a,
-        metalness: 0.94,
-        roughness: 0.16,
-        clearcoat: 0.45,
-        clearcoatRoughness: 0.22,
+        color: 0x1e1e22,
+        metalness: 0.96,
+        roughness: 0.12,
+        clearcoat: 0.55,
+        clearcoatRoughness: 0.15,
+        reflectivity: 1,
       })
       const knot = new THREE.Mesh(knotGeo, graphiteMat)
       knot.rotation.set(0.35, 0.15, 0.12)
-      knot.scale.setScalar(1.18)
       sculpture.add(knot)
 
-      const ringGeo = new THREE.TorusGeometry(1.72, 0.028, 20, 140, Math.PI * 1.35)
+      const ringGeo = new THREE.TorusGeometry(1.38, 0.022, 24, 160, Math.PI * 1.4)
       const copperMat = new THREE.MeshPhysicalMaterial({
-        color: 0x7a5220,
+        color: 0x8a5c28,
         metalness: 1,
-        roughness: 0.2,
-        emissive: 0x2a1a08,
-        emissiveIntensity: 0.1,
+        roughness: 0.14,
+        emissive: 0x3a2208,
+        emissiveIntensity: 0.14,
       })
       const ring = new THREE.Mesh(ringGeo, copperMat)
       ring.rotation.set(1.05, 0.45, -0.25)
       sculpture.add(ring)
 
-      const blobGeo = new THREE.IcosahedronGeometry(0.52, 5)
+      const ring2Geo = new THREE.TorusGeometry(1.05, 0.014, 16, 120, Math.PI * 0.9)
+      const ring2 = new THREE.Mesh(ring2Geo, copperMat.clone())
+      ring2.material.color.setHex(0x5c4020)
+      ring2.rotation.set(-0.4, 0.8, 0.5)
+      sculpture.add(ring2)
+
+      const blobGeo = new THREE.IcosahedronGeometry(0.38, 6)
       const blobMat = new THREE.MeshPhysicalMaterial({
-        color: 0x121214,
-        metalness: 0.88,
-        roughness: 0.1,
+        color: 0x16161a,
+        metalness: 0.92,
+        roughness: 0.08,
+        clearcoat: 0.3,
       })
       const blob = new THREE.Mesh(blobGeo, blobMat)
-      blob.position.set(0.15, -0.12, 0.08)
+      blob.position.set(0.12, -0.1, 0.06)
       sculpture.add(blob)
 
-      sculpture.position.set(-0.52, -0.05, 0)
+      sculpture.position.set(-0.38, -0.02, 0)
       sculpture.rotation.set(-0.12, 0.42, 0.06)
-      sculpture.scale.setScalar(1.28)
+      sculpture.scale.setScalar(0.92)
 
-      scene.add(new THREE.AmbientLight(0x141210, 0.32))
-      const keyLight = new THREE.DirectionalLight(0xc58a2a, 0.52)
+      scene.add(new THREE.AmbientLight(0x1a1814, 0.38))
+      const keyLight = new THREE.DirectionalLight(0xc58a2a, 0.62)
       keyLight.position.set(3.5, 2.2, 4.5)
       scene.add(keyLight)
-      const fillLight = new THREE.DirectionalLight(0x6a7585, 0.16)
+      const fillLight = new THREE.DirectionalLight(0x8899aa, 0.2)
       fillLight.position.set(-4.5, -0.5, 2.5)
       scene.add(fillLight)
-      const rimLight = new THREE.PointLight(0xc58a2a, 0.32, 14)
+      const rimLight = new THREE.PointLight(0xc58a2a, 0.42, 16)
       rimLight.position.set(-2.2, 1.4, -1.8)
       scene.add(rimLight)
+      const rimLight2 = new THREE.PointLight(0xd4c4a8, 0.18, 12)
+      rimLight2.position.set(2.5, -1.2, 2)
+      scene.add(rimLight2)
 
       let mx = 0, my = 0, px = 0, py = 0, t = 0, raf = 0, running = true
 
@@ -1374,15 +1527,16 @@
         sculpture.rotation.y += reduceMotion ? 0.001 : 0.0028
         sculpture.rotation.x = -0.12 + Math.sin(t * 0.45) * 0.035 + py * 0.35
         sculpture.rotation.z = 0.06 + Math.cos(t * 0.32) * 0.018
-        sculpture.position.y = -0.08 + Math.sin(t * 0.65) * 0.055
+        sculpture.position.y = -0.02 + Math.sin(t * 0.65) * 0.045
 
-        camera.position.x = 0.15 + px * 0.55
-        camera.position.y = 0.25 + py * 0.35
-        camera.lookAt(-0.1, 0, 0)
+        camera.position.x = 0.1 + px * 0.5
+        camera.position.y = 0.2 + py * 0.32
+        camera.lookAt(-0.08, 0, 0)
 
-        rimLight.position.x = -2.2 + Math.sin(t * 0.38) * 0.75
-        rimLight.position.y = 1.4 + Math.cos(t * 0.28) * 0.45
-        keyLight.intensity = 0.48 + Math.sin(t * 0.22) * 0.07
+        rimLight.position.x = -2.2 + Math.sin(t * 0.38) * 0.85
+        rimLight.position.y = 1.4 + Math.cos(t * 0.28) * 0.5
+        keyLight.intensity = 0.58 + Math.sin(t * 0.22) * 0.09
+        rimLight2.position.x = 2.5 + Math.cos(t * 0.31) * 0.6
 
         renderer.render(scene, camera)
       }

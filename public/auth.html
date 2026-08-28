@@ -10,668 +10,648 @@
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <meta name="theme-color" content="#0D1017" id="themeColor" />
+  <meta name="theme-color" content="#0B0B0C" id="themeColor" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: { gold: '#D49B3E', ink: '#0A0B0E', card: '#111318' },
-          fontFamily: { sans: ['Figtree', 'system-ui', 'sans-serif'] },
-        },
-      },
-    }
-  </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root, html[data-theme='dark'] {
-      --bg: #0D1017;
-      --card: rgba(18, 22, 30, 0.72);
-      --panel: #12161E;
-      --text: #F0EFEC;
-      --mute: rgba(240, 239, 236, 0.58);
-      --faint: rgba(240, 239, 236, 0.34);
-      --line: rgba(240, 239, 236, 0.12);
-      --gold: #C58A2A;
-      --gold2: #F2A51B;
-      --violet: #5a3d8a;
-      --ink: #0D1017;
-      --err: #e06b7a;
-      --ok: #3dba8b;
-      --warn: #c9a227;
-      --shadow: 0 40px 100px rgba(0,0,0,.55);
+      --bg: #0B0B0C;
+      --surface: #151515;
+      --text: #F2F0EA;
+      --mute: #8A8680;
+      --faint: #5C5854;
+      --line: rgba(255,255,255,0.07);
+      --line-input: rgba(255,255,255,0.08);
+      --accent: #C58A2A;
+      --accent-hover: #D49A3A;
+      --accent-text: #0B0B0C;
+      --err: #C47070;
+      --ok: #6A9E82;
+      --radius: 12px;
     }
     html[data-theme='light'] {
-      --bg: #F4F3EE;
-      --card: #FFFFFF;
-      --panel: #EFECE6;
-      --text: #1A1A1A;
-      --mute: #4A4A4A;
-      --faint: #6B6B6B;
-      --line: rgba(26,26,26,.14);
-      --gold: #C48A2A;
-      --ink: #1A1A1A;
-      --err: #c44a5e;
-      --ok: #2f8f6a;
-      --particle: 180,120,40;
-      --particle-a: .28;
-      --particle-link: .12;
-      --shadow: 0 24px 50px rgba(40,28,12,.1);
+      --bg: #EDEAE4;
+      --surface: #FFFFFF;
+      --text: #141412;
+      --mute: #6E6A64;
+      --faint: #9A948C;
+      --line: rgba(0,0,0,0.08);
+      --line-input: rgba(0,0,0,0.1);
+      --accent: #A87424;
+      --accent-hover: #C58A2A;
+      --accent-text: #0B0B0C;
+      --err: #B04A4A;
+      --ok: #4A8068;
     }
+    *, *::before, *::after { box-sizing: border-box; }
     html { color-scheme: dark; }
     html[data-theme='light'] { color-scheme: light; }
     body {
+      margin: 0;
+      min-height: 100vh;
       background: var(--bg);
       color: var(--text);
-      min-height: 100vh;
+      font-family: Inter, system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Split card (inspi Blockpulse / Served) ── */
-    .auth-page {
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: clamp(16px, 3vw, 32px);
-      background:
-        radial-gradient(ellipse 70% 50% at 80% 20%, rgba(90, 61, 138, 0.18), transparent 55%),
-        radial-gradient(ellipse 50% 40% at 10% 90%, rgba(197, 138, 42, 0.1), transparent 50%),
-        var(--bg);
+    /* Background */
+    .auth-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .auth-bg__glow {
+      position: absolute;
+      width: min(90vw, 720px);
+      height: min(90vw, 720px);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(197,138,42,0.07) 0%, rgba(120,110,100,0.04) 40%, transparent 70%);
+      top: 55%;
+      left: 62%;
+      transform: translate(-50%, -50%);
+      filter: blur(48px);
+      will-change: transform;
+      animation: glowDrift 28s ease-in-out infinite alternate;
     }
-    .auth-card {
-      position: relative;
-      z-index: 5;
-      display: grid;
-      grid-template-columns: minmax(340px, 1fr) minmax(380px, 1.15fr);
-      width: min(1080px, 100%);
-      min-height: min(720px, calc(100vh - 48px));
-      border-radius: 28px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      background: var(--panel-bg, #0D1017);
+    @keyframes glowDrift {
+      from { transform: translate(-50%, -50%) scale(1); }
+      to { transform: translate(-48%, -52%) scale(1.06); }
     }
-    html[data-theme='light'] .auth-card {
-      --panel-bg: #fff;
-      background: #fff;
-    }
-
-    .auth-panel {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: clamp(28px, 4vw, 44px);
-      background: var(--panel-bg, rgba(13, 16, 23, 0.96));
-      border-right: 1px solid var(--line);
-    }
-    html[data-theme='light'] .auth-panel { background: #fff; }
-
-    .auth-panel__head {
-      position: absolute; top: 0; left: 0; right: 0;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 20px clamp(28px, 4vw, 44px) 0;
-    }
-    .auth-panel__foot {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      display: flex; flex-wrap: wrap; justify-content: center; gap: 14px;
-      padding: 0 clamp(20px, 3vw, 32px) 18px;
-      font-size: 11px;
-    }
-    .auth-panel__foot a { color: var(--faint); text-decoration: none; }
-    .auth-panel__foot a:hover { color: var(--mute); }
-
-    .auth-form-wrap {
-      position: relative;
-      width: 100%;
-      max-width: 400px;
-      margin: 48px auto 36px;
-    }
-
-    .auth-art {
-      position: relative;
-      min-height: 360px;
-      overflow: hidden;
-      background: linear-gradient(168deg, #121018 0%, #0d1017 55%, #100e0a 100%);
-    }
-    .auth-art::after {
-      content: '';
-      position: absolute; inset: 0; z-index: 3; pointer-events: none;
-      opacity: 0.04;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    .auth-bg__grain {
+      position: absolute; inset: 0; opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
       mix-blend-mode: overlay;
     }
-    .auth-art__veil {
-      position: absolute; inset: 0; z-index: 1; pointer-events: none;
-      background:
-        linear-gradient(to top, rgba(13, 16, 23, 0.85) 0%, transparent 42%),
-        linear-gradient(to right, rgba(13, 16, 23, 0.25) 0%, transparent 30%);
-    }
-    #auth3d {
-      position: absolute; inset: 0; z-index: 0;
-      width: 100%; height: 100%; display: block;
-    }
-    .auth-art__fallback {
-      position: absolute; inset: 0; z-index: 0;
-      display: grid; place-items: center;
-      background: linear-gradient(168deg, #121018, #0d1017);
-      transition: opacity 0.5s ease;
-    }
-    .auth-art__fallback.is-hidden { opacity: 0; pointer-events: none; }
-    .auth-art__fallback img {
-      width: min(38%, 180px);
-      animation: markOrbit 12s ease-in-out infinite;
-      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.45));
-    }
-    @keyframes markOrbit {
-      0%, 100% { transform: translate(-12px, 6px) rotate(-6deg); }
-      50% { transform: translate(12px, -8px) rotate(6deg); }
-    }
 
-    .auth-art__content {
-      position: absolute; z-index: 2;
-      left: clamp(24px, 4vw, 40px);
-      right: clamp(24px, 4vw, 40px);
-      bottom: clamp(28px, 5vh, 48px);
+    .auth-top {
+      position: fixed; z-index: 20;
+      top: 0; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px clamp(16px, 4vw, 32px);
     }
-    .auth-art__eyebrow {
-      font-size: 11px; font-weight: 700; letter-spacing: 0.16em;
-      text-transform: uppercase; color: var(--gold2); margin-bottom: 12px;
+    .auth-logo {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 15px; letter-spacing: -0.02em;
+      color: var(--text); text-decoration: none;
+      opacity: 0;
     }
-    .auth-art__title {
-      font-family: Syne, Figtree, sans-serif;
-      font-size: clamp(1.75rem, 3vw, 2.35rem);
-      font-weight: 800; letter-spacing: -0.03em; line-height: 1.08;
-      color: #F0EFEC; margin-bottom: 12px;
+    .auth-nav { display: flex; align-items: center; gap: 2px; }
+    .chip {
+      color: var(--faint); background: none; border: 0; cursor: pointer;
+      font: inherit; font-size: 12px; font-weight: 500; letter-spacing: 0.04em;
+      padding: 8px 10px; transition: color 0.15s;
     }
-    .auth-art__sub {
-      font-size: 14px; line-height: 1.55;
-      color: rgba(240, 239, 236, 0.62); max-width: 36ch; margin-bottom: 18px;
-    }
-    .auth-art__tags {
-      display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0;
-    }
-    .auth-art__tags li {
-      font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
-      padding: 7px 12px; border-radius: 999px;
-      border: 1px solid rgba(242, 165, 27, 0.35);
-      background: rgba(242, 165, 27, 0.08);
-      color: rgba(240, 239, 236, 0.88);
-    }
-    .t-fg { color: var(--text); }
-    .t-mute { color: var(--mute); }
-    .t-faint { color: var(--faint); }
-    .t-gold { color: var(--gold); }
-    .quiet-link { color: var(--mute); background: none; border: 0; cursor: pointer; font: inherit; }
-    .quiet-link:hover { color: var(--gold); }
-    .rule { background: var(--line); }
-    .chip { color: var(--mute); background: transparent; border: 0; cursor: pointer; font: inherit; }
     .chip:hover, .chip.is-active { color: var(--text); }
-    .theme-btn { display: grid; place-items: center; }
+    .theme-btn { display: grid; place-items: center; width: 36px; height: 36px; }
     .theme-btn svg { display: none; }
     html[data-theme='dark'] .icon-sun { display: block; }
     html[data-theme='light'] .icon-moon { display: block; }
-    .boot { background: var(--bg); }
-    html[data-theme='light'] .btn-shimmer {
-      background: #14120e; color: #f4f3ee;
+
+    .auth-page {
+      position: relative; z-index: 10;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 88px 16px 64px;
     }
-    html[data-theme='light'] .auth-switch-btn:hover {
-      background: var(--gold); color: #14120e;
+    .auth-shell {
+      width: min(420px, calc(100% - 32px));
+      opacity: 0;
+    }
+    .auth-form-wrap {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: clamp(28px, 5vw, 36px);
     }
 
-    .shell { display: none; }
-    @media (prefers-reduced-motion: reduce) {
-      .btn-shimmer::after { display: none; }
-    }
-
-    .boot { transition: opacity .35s, visibility .35s; }
-    .boot.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
-
-    .auth-logo {
-      display: inline-flex; align-items: center; gap: 10px;
-      font-family: Syne, Figtree, sans-serif; font-weight: 700; font-size: 1.05rem;
-      letter-spacing: -0.02em; color: var(--text); text-decoration: none;
-    }
-    .auth-nav { display: flex; align-items: center; gap: 4px; }
-
-    .auth-pane h1 {
-      font-family: Syne, Figtree, sans-serif;
-      font-size: clamp(2rem, 3.8vw, 2.75rem);
-      font-weight: 800; letter-spacing: -0.04em; line-height: 1.05;
-      margin-bottom: 12px;
-    }
-    .auth-pane .lede { font-size: 14px; margin-bottom: 24px; max-width: 36ch; line-height: 1.5; }
     .auth-pane {
       display: none; flex-direction: column;
-      animation: authIn .5s ease both;
     }
     .auth-pane.is-active { display: flex; }
-    @keyframes authIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: none; }
+    .auth-pane h1 {
+      margin: 0 0 6px;
+      font-size: clamp(1.5rem, 4vw, 1.75rem);
+      font-weight: 600; letter-spacing: -0.03em;
+    }
+    .auth-pane .lede {
+      margin: 0 0 24px;
+      font-size: 13px; color: var(--mute); line-height: 1.55;
+    }
+
+    .field { margin-bottom: 16px; }
+    .field-label {
+      display: block; margin-bottom: 8px;
+      font-size: 11px; font-weight: 500; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--mute);
+    }
+    .notch { position: relative; }
+    .notch input {
+      width: 100%; height: 48px;
+      padding: 0 14px;
+      border: 1px solid var(--line-input);
+      border-radius: 10px;
+      background: var(--bg);
+      color: var(--text);
+      font: inherit; font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .notch input.has-eye { padding-right: 44px; }
+    .notch input::placeholder { color: var(--faint); }
+    .notch:focus-within input {
+      border-color: rgba(197,138,42,0.45);
+      box-shadow: 0 0 0 3px rgba(197,138,42,0.06);
+    }
+    .notch label { display: none; }
+    .notch.is-filled label { display: none; }
+
+    .eye {
+      position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+      width: 36px; height: 36px; border: 0; background: none;
+      color: var(--faint); cursor: pointer;
+      display: grid; place-items: center;
+      transition: color 0.15s, transform 0.2s;
+    }
+    .eye:hover, .eye[aria-pressed='true'] { color: var(--text); }
+
+    .field-row { display: flex; justify-content: flex-end; margin: -4px 0 20px; }
+    .quiet-link {
+      color: var(--mute); background: none; border: 0; cursor: pointer;
+      font: inherit; font-size: 12px; padding: 0;
+      position: relative; text-decoration: none;
+    }
+    .quiet-link::after {
+      content: ''; position: absolute; left: 0; right: 0; bottom: -1px;
+      height: 1px; background: var(--accent); transform: scaleX(0);
+      transform-origin: left; transition: transform 0.25s ease;
+    }
+    .quiet-link:hover { color: var(--text); }
+    .quiet-link:hover::after { transform: scaleX(1); }
+
+    .btn-shimmer {
+      width: 100%; height: 48px; border: 0; border-radius: 10px;
+      background: var(--accent); color: var(--accent-text);
+      font: inherit; font-size: 13px; font-weight: 600;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-shimmer:hover:not(:disabled) {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+    .btn-shimmer:active:not(:disabled) { transform: translateY(0); }
+    .btn-shimmer:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-ghost {
+      width: 100%; height: 48px;
+      border: 1px solid var(--line-input);
+      border-radius: 10px;
+      background: var(--bg);
+      color: var(--text);
+      font: inherit; font-size: 14px; font-weight: 500;
+      cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.14); background: rgba(255,255,255,0.02); }
+    html[data-theme='light'] .btn-ghost:hover { background: rgba(0,0,0,0.02); }
+    .js-google.gmail-hot { border-color: rgba(197,138,42,0.35); }
+
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 22px 0;
+      color: var(--faint); font-size: 11px; letter-spacing: 0.08em; text-transform: lowercase;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--line);
     }
 
     .auth-switch {
-      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-      margin-top: 24px; font-size: 13px;
+      margin-top: 24px;
+      font-size: 13px; color: var(--mute); text-align: center;
     }
     .auth-switch-btn {
-      height: 38px; padding: 0 16px; border-radius: 999px;
-      border: 1px solid rgba(212,155,62,.45); background: transparent;
-      color: var(--text); font-weight: 600; font-size: 13px; cursor: pointer;
-      transition: background .2s, color .2s, border-color .2s;
+      background: none; border: 0; cursor: pointer;
+      font: inherit; font-size: 13px; font-weight: 500; color: var(--text);
+      padding: 0; margin-left: 4px;
+      position: relative;
     }
-    .auth-switch-btn:hover { background: var(--gold); color: #0A0B0E; border-color: var(--gold); }
+    .auth-switch-btn::after {
+      content: ''; position: absolute; left: 0; right: 0; bottom: 0;
+      height: 1px; background: var(--accent); transform: scaleX(0);
+      transform-origin: left; transition: transform 0.25s;
+    }
+    .auth-switch-btn:hover::after { transform: scaleX(1); }
 
-    .auth-switch { display: flex; }
-    .mobile-switch { display: none; }
+    .auth-alt {
+      display: flex; justify-content: center; gap: 16px;
+      margin-top: 16px; flex-wrap: wrap;
+    }
+    .pill {
+      background: none; border: 0; cursor: pointer;
+      font: inherit; font-size: 12px; color: var(--faint);
+      padding: 4px 0;
+      transition: color 0.15s;
+    }
+    .pill:hover { color: var(--mute); }
+    .oauth-secondary {
+      display: flex; justify-content: center; gap: 12px;
+      margin-top: 12px;
+    }
+    .oauth-secondary .pill { font-size: 11px; }
 
-    .notch { position: relative; }
-    .notch input {
-      width: 100%; height: 48px; padding: 0 14px;
-      border: 1px solid var(--line); border-radius: 12px;
-      background: transparent; color: var(--text); font-size: 14px; outline: none;
-      transition: border-color .2s;
-    }
-    .notch input.has-eye { padding-right: 42px; }
-    .notch label {
-      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-      padding: 0 6px; font-size: 14px; color: var(--mute);
-      pointer-events: none; background: var(--panel-bg, rgba(13, 16, 23, 0.96));
-      transition: top .18s ease, font-size .18s ease, color .18s ease;
-    }
-    .notch:focus-within input { border-color: var(--gold); }
-    .notch:focus-within label,
-    .notch.is-filled label {
-      top: 0; font-size: 11px; color: var(--gold); font-weight: 600;
-    }
-
-    .eye {
-      position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
-      width: 32px; height: 32px; border: 0; background: none;
-      color: var(--faint); cursor: pointer; display: grid; place-items: center; border-radius: 8px;
-    }
-    .eye:hover, .eye[aria-pressed='true'] { color: var(--gold); }
-
-    .btn-ghost {
-      height: 44px; border-radius: 12px; border: 1px solid var(--line);
-      background: rgba(240, 239, 236, 0.03); color: var(--text); font-weight: 500; font-size: 14px;
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      transition: border-color .2s, box-shadow .25s, transform .25s;
-    }
-    .btn-ghost:hover { border-color: rgba(212,155,62,.45); }
-    .js-google.gmail-hot {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 1px rgba(212,155,62,.35), 0 0 22px rgba(212,155,62,.28);
-      transform: scale(1.03);
-    }
-    html[data-theme='light'] .js-google.gmail-hot {
-      box-shadow: 0 0 0 1px rgba(196,138,42,.4), 0 8px 20px rgba(196,138,42,.18);
-    }
-    .gmail-hint { display: none; font-size: 12px; color: var(--gold); margin: -8px 0 12px; }
+    .gmail-hint { display: none; font-size: 12px; color: var(--accent); margin: 8px 0 0; }
     .gmail-hint.show { display: block; }
 
-    .btn-shimmer {
-      position: relative; overflow: hidden;
-      height: 50px; border: 0; border-radius: 999px; cursor: pointer;
-      background: linear-gradient(165deg, var(--gold2), var(--gold));
-      color: var(--ink); font-weight: 700; font-size: 14px;
-      box-shadow: 0 10px 32px rgba(197, 138, 42, 0.35), inset 0 1px 0 rgba(255,255,255,0.25);
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+    .msg {
+      display: none; margin: 0 0 14px;
+      font-size: 12px; line-height: 1.45;
     }
-    .btn-shimmer::after {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.42) 50%, transparent 65%);
-      transform: translateX(-130%);
+    .msg.show { display: block; }
+    .msg.error { color: var(--err); }
+    .msg.success { color: var(--ok); }
+    .msg.info { color: var(--mute); }
+
+    .success-panel {
+      display: none; text-align: center; padding: 12px 0;
     }
-    .btn-shimmer:hover::after { animation: shimmer .75s ease; }
-    @keyframes shimmer { to { transform: translateX(130%); } }
-    .btn-shimmer:disabled { opacity: .5; cursor: not-allowed; }
-    .spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; animation: spin .6s linear infinite; display: none; }
+    .success-panel.show { display: block; }
+    .success-panel h2 {
+      margin: 0 0 10px; font-size: 13px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .success-panel p { margin: 0 0 20px; font-size: 14px; color: var(--mute); line-height: 1.55; }
+
+    .pw-strength { display: flex; align-items: center; gap: 8px; margin: -8px 0 16px; }
+    .bars { display: flex; gap: 4px; height: 2px; flex: 1; }
+    .bar { flex: 1; background: var(--line); border-radius: 1px; }
+    .bar.s1 { background: var(--err); } .bar.s2 { background: var(--accent); opacity: 0.6; } .bar.s3 { background: var(--ok); }
+    .strength-lbl { font-size: 11px; color: var(--faint); min-width: 3em; }
+
+    .extra {
+      display: none; flex-direction: column;
+    }
+    .extra.show { display: flex; }
+    .extra h1 {
+      margin: 0 0 6px;
+      font-size: clamp(1.5rem, 4vw, 1.75rem);
+      font-weight: 600; letter-spacing: -0.03em;
+    }
+    .extra .lede { margin: 0 0 24px; font-size: 13px; color: var(--mute); }
+
+    .legal-note { margin-top: 16px; font-size: 11px; color: var(--faint); line-height: 1.5; }
+    .legal-link { color: var(--mute); }
+
+    .auth-foot {
+      position: fixed; z-index: 20; bottom: 0; left: 0; right: 0;
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;
+      padding: 16px;
+      font-size: 11px;
+    }
+    .auth-foot a { color: var(--faint); text-decoration: none; transition: color 0.15s; }
+    .auth-foot a:hover { color: var(--mute); }
+
+    .boot {
+      position: fixed; inset: 0; z-index: 200;
+      display: grid; place-items: center;
+      background: var(--bg);
+      transition: opacity 0.35s, visibility 0.35s;
+    }
+    .boot.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    .redirect {
+      display: none; position: fixed; inset: 0; z-index: 120;
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 12px; padding: 24px; text-align: center;
+      background: var(--bg);
+    }
+    .redirect.show { display: flex; }
+    .redirect-bar { width: 112px; height: 1px; background: var(--line); overflow: hidden; }
+    .redirect-bar > span {
+      display: block; height: 100%; width: 0;
+      background: var(--accent);
+      animation: prog 1.6s ease forwards;
+    }
+    @keyframes prog { to { width: 100%; } }
+
+    .spin {
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 2px solid currentColor; border-top-color: transparent;
+      animation: spin 0.6s linear infinite; display: none;
+    }
     .btn-shimmer.loading .spin, .btn-ghost.loading .spin { display: block; }
     .btn-shimmer.loading .blbl, .btn-ghost.loading .blbl { display: none; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .pill {
-      height: 32px; padding: 0 14px; border-radius: 999px; cursor: pointer;
-      border: 1px solid var(--line); background: transparent;
-      color: var(--mute); font-size: 12px; font-weight: 600;
-      transition: border-color .2s, color .2s, background .2s;
-    }
-    .pill:hover { border-color: var(--gold); color: var(--gold); background: rgba(212,155,62,.08); }
+    .otp-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; margin-top: 16px; }
+    .otp-row .btn-shimmer { width: auto; min-width: 100px; padding: 0 16px; }
 
-    .btn-outline {
-      height: 42px; min-width: 148px; padding: 0 20px; border-radius: 10px; cursor: pointer;
-      border: 1px solid rgba(212,155,62,.5); background: transparent; color: var(--text); font-weight: 600;
-      transition: background .2s, color .2s;
-    }
-    .btn-outline:hover { background: var(--gold); color: #0A0B0E; }
+    .t-mute { color: var(--mute); }
+    .t-fg { color: var(--text); }
+    .t-gold { color: var(--accent); }
+    .mobile-switch { display: none; }
+    .stagger { opacity: 1; }
 
-    .msg { display: none; margin-bottom: 12px; font-size: 13px; }
-    .msg.show { display: block; }
-    .msg.error { color: var(--err); }
-    .msg.success { color: var(--ok); }
-    .msg.info { color: var(--gold); }
-
-    .pw-strength { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-    .bars { display: flex; gap: 3px; height: 2px; flex: 1; }
-    .bar { flex: 1; border-radius: 1px; background: var(--line); }
-    .bar.s1 { background: var(--err); } .bar.s2 { background: var(--warn); } .bar.s3 { background: var(--ok); }
-    .strength-lbl { font-size: 11px; color: var(--faint); min-width: 3.5em; }
-
-    .extra {
-      display: none; position: absolute; inset: 0; z-index: 12;
-      background: var(--panel-bg, #0D1017); color: var(--text);
-      padding: 48px 0 36px; flex-direction: column; justify-content: center;
-    }
-    .extra.show { display: flex; }
-    .extra h1 { color: var(--text); }
-    .pane h1 { color: var(--text); }
-
-    .redirect { display: none; background: var(--bg); color: var(--text); }
-    .redirect.show { display: flex; }
-    .redirect-bar { background: var(--line); }
-    .redirect-bar > span { display: block; height: 100%; width: 0; background: var(--gold); animation: prog 1.6s ease forwards; }
-    @keyframes prog { to { width: 100%; } }
-
-    .otp-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: end; }
-    .otp-row .btn-shimmer { width: auto; min-width: 108px; padding: 0 16px; }
-
-    .legal-link { color: var(--mute); text-decoration: underline; }
-    .foot { display: none; }
-
-    @media (max-width: 900px) {
-      .auth-card {
-        grid-template-columns: 1fr;
-        min-height: auto;
-      }
-      .auth-art {
-        order: -1;
-        min-height: min(42vh, 340px);
-      }
-      .auth-art__content { bottom: 20px; }
-      .auth-art__title { font-size: 1.5rem; }
-      .auth-panel { border-right: 0; border-top: 1px solid var(--line); }
-      .auth-form-wrap { margin: 40px auto 28px; }
-    }
     @media (max-width: 767px) {
       .auth-switch { display: none; }
-      .mobile-switch { display: flex; }
+      .mobile-switch { display: block; margin-top: 20px; text-align: center; font-size: 13px; color: var(--mute); }
       .auth-pane-signup { display: none !important; }
-      .auth-card.is-signup .auth-pane-login { display: none !important; }
-      .auth-card.is-signup .auth-pane-signup { display: flex !important; }
-      .mobile-switch { display: flex; }
+      #main.is-signup .auth-pane-login { display: none !important; }
+      #main.is-signup .auth-pane-signup { display: flex !important; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .auth-bg__glow { animation: none; }
     }
   </style>
 </head>
-<body class="min-h-screen font-sans antialiased">
-  <div class="boot fixed inset-0 z-[200] grid place-items-center" id="boot">
-    <img src="/logo-fg.png" alt="" width="28" height="28" class="rounded-md" />
+<body>
+  <div class="auth-bg" aria-hidden="true">
+    <div class="auth-bg__glow" id="authBgGlow"></div>
+    <div class="auth-bg__grain"></div>
   </div>
 
-  <div class="redirect fixed inset-0 z-[120] flex-col items-center justify-center gap-3 px-6 text-center" id="redirect" role="status">
-    <div class="text-xl" style="color:var(--ok)">✓</div>
-    <h2 class="t-fg text-lg font-semibold" data-i18n="redirect_title">Connexion réussie</h2>
-    <p id="redirect-sub" class="t-mute text-sm" data-i18n="redirect_sub_web">Redirection en cours…</p>
-    <div class="redirect-bar h-px w-28 overflow-hidden"><span></span></div>
-    <button type="button" class="btn-shimmer mt-2 hidden max-w-[220px]" id="btn-open-app"><span data-i18n="redirect_open">Ouvrir l’application</span></button>
+  <div class="boot" id="boot">
+    <img src="/logo-fg.png" alt="" width="28" height="28" style="border-radius:6px" />
   </div>
 
-  <div class="auth-page">
-    <div class="auth-card" id="main">
-      <div class="auth-panel">
-        <header class="auth-panel__head">
-          <a href="/" class="auth-logo">
-            <img src="/logo-fg.png" alt="" width="22" height="22" class="rounded" />ARICH
-          </a>
-          <div class="auth-nav">
-            <button type="button" class="chip h-8 px-2 text-[13px]" id="langFr">FR</button>
-            <button type="button" class="chip h-8 px-2 text-[13px]" id="langEn">EN</button>
-            <button type="button" class="chip theme-btn h-8 w-8" id="themeToggle" aria-label="Theme">
-              <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-              <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 14.5A8.5 8.5 0 1110.5 3 7 7 0 0021 14.5z"/></svg>
-            </button>
-          </div>
-        </header>
+  <div class="redirect" id="redirect" role="status">
+    <div style="color:var(--ok);font-size:20px">✓</div>
+    <h2 class="t-fg" style="font-size:17px;font-weight:600;margin:0" data-i18n="redirect_title">Connexion réussie</h2>
+    <p id="redirect-sub" class="t-mute" style="font-size:13px;margin:0" data-i18n="redirect_sub_web">Redirection en cours…</p>
+    <div class="redirect-bar"><span></span></div>
+    <button type="button" class="btn-shimmer" style="width:auto;min-width:200px;margin-top:8px;display:none" id="btn-open-app">
+      <span data-i18n="redirect_open">Ouvrir l’application</span>
+    </button>
+  </div>
 
-        <div class="auth-form-wrap" id="formWrap">
-      <section class="auth-pane auth-pane-login is-active" id="paneLogin">
-        <h1 class="stagger" data-i18n="login_title">Connexion</h1>
-        <p class="stagger lede t-mute" data-i18n="login_lede">Retrouvez vos playlists et votre licence.</p>
-        <div class="msg" id="login-msg" role="alert"></div>
-        <div class="stagger mb-5 grid grid-cols-2 gap-2">
-          <button type="button" class="btn-ghost js-google" id="btn-google">
-            <span class="spin"></span>
-            <span class="blbl inline-flex items-center gap-2">
-              <svg class="h-4 w-4" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-              Google
-            </span>
-          </button>
-          <button type="button" class="btn-ghost" id="btn-facebook">
-            <span class="spin"></span>
-            <span class="blbl inline-flex items-center gap-2">
-              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.89v2.26h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07z"/></svg>
-              Facebook
-            </span>
-          </button>
-        </div>
-        <p class="gmail-hint" data-i18n="gmail_hint">Compte Gmail détecté — plus rapide avec Google.</p>
-        <div class="stagger mb-5 flex items-center gap-3">
-          <span class="rule h-px flex-1"></span>
-          <span class="t-faint text-xs" data-i18n="or">ou</span>
-          <span class="rule h-px flex-1"></span>
-        </div>
-        <div class="stagger notch mb-4" data-notch>
-          <input id="login-email" type="email" autocomplete="email" inputmode="email" placeholder=" " />
-          <label for="login-email" data-i18n="email">E-mail</label>
-        </div>
-        <div class="stagger notch mb-2" data-notch>
-          <input id="login-pw" type="password" class="has-eye" autocomplete="current-password" placeholder=" " />
-          <label for="login-pw" data-i18n="password">Mot de passe</label>
-          <button type="button" class="eye" data-toggle-pw="login-pw" aria-label="Show password">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-        <div class="stagger mb-4 flex justify-end">
-          <button type="button" class="quiet-link text-[13px]" id="forgotLink" data-i18n="forgot_link">Mot de passe oublié ?</button>
-        </div>
-        <button type="button" class="stagger btn-shimmer" id="btn-login">
-          <span class="spin"></span><span class="blbl" data-i18n="login_cta">Se connecter</span>
-        </button>
-        <div class="stagger mt-5 flex gap-2">
-          <button type="button" class="pill" data-extra="magic" data-i18n="jump_magic">Magic link</button>
-          <button type="button" class="pill" data-extra="phone" data-i18n="jump_phone">SMS</button>
-        </div>
-        <p class="auth-switch stagger">
-          <span class="t-mute" data-i18n="no_account">Pas de compte ?</span>
-          <button type="button" class="auth-switch-btn" data-mode="signup" data-i18n="signup_cta_short">S’inscrire</button>
-        </p>
-        <p class="mobile-switch mt-3 items-center gap-1.5 t-mute text-[13px]">
-          <span data-i18n="no_account">Pas de compte ?</span>
-          <button type="button" class="t-gold" data-mode="signup" data-i18n="signup_cta_short">S’inscrire</button>
-        </p>
-      </section>
-
-      <section class="auth-pane auth-pane-signup" id="paneSignup">
-        <h1 class="stagger" data-i18n="signup_title">Créer un compte</h1>
-        <p class="stagger lede t-mute" data-i18n="signup_lede">Un compte pour synchroniser playlists et licence.</p>
-        <div class="msg" id="signup-msg" role="alert"></div>
-        <div class="stagger mb-5 grid grid-cols-2 gap-2">
-          <button type="button" class="btn-ghost js-google" id="btn-google-up">
-            <span class="spin"></span>
-            <span class="blbl inline-flex items-center gap-2">
-              <svg class="h-4 w-4" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-              Google
-            </span>
-          </button>
-          <button type="button" class="btn-ghost" id="btn-facebook-up">
-            <span class="spin"></span>
-            <span class="blbl inline-flex items-center gap-2">
-              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.89v2.26h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07z"/></svg>
-              Facebook
-            </span>
-          </button>
-        </div>
-        <p class="gmail-hint" data-i18n="gmail_hint">Compte Gmail détecté — plus rapide avec Google.</p>
-        <div class="stagger mb-5 flex items-center gap-3">
-          <span class="rule h-px flex-1"></span>
-          <span class="t-faint text-xs" data-i18n="or">ou</span>
-          <span class="rule h-px flex-1"></span>
-        </div>
-        <div class="stagger notch mb-4" data-notch>
-          <input id="signup-email" type="email" autocomplete="email" inputmode="email" placeholder=" " />
-          <label for="signup-email" data-i18n="email">E-mail</label>
-        </div>
-        <div class="stagger notch mb-4" data-notch>
-          <input id="signup-pw" type="password" class="has-eye" autocomplete="new-password" placeholder=" " />
-          <label for="signup-pw" data-i18n="password">Mot de passe</label>
-          <button type="button" class="eye" data-toggle-pw="signup-pw" aria-label="Show password">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-        <div class="pw-strength mb-3">
-          <div class="bars"><div class="bar" id="bar1"></div><div class="bar" id="bar2"></div><div class="bar" id="bar3"></div></div>
-          <div class="strength-lbl" id="strength-lbl"></div>
-        </div>
-        <div class="stagger notch mb-5" data-notch>
-          <input id="signup-pw2" type="password" class="has-eye" autocomplete="new-password" placeholder=" " />
-          <label for="signup-pw2" data-i18n="password_confirm">Confirmer</label>
-          <button type="button" class="eye" data-toggle-pw="signup-pw2" aria-label="Show password">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-        <button type="button" class="stagger btn-shimmer" id="btn-signup">
-          <span class="spin"></span><span class="blbl" data-i18n="signup_cta">Créer mon compte</span>
-        </button>
-        <p class="stagger t-faint mt-4 text-xs" data-i18n-html="signup_legal">En créant un compte, vous acceptez la <a class="legal-link" href="/privacy-policy.html">politique de confidentialité</a>.</p>
-        <p class="auth-switch stagger">
-          <span class="t-mute" data-i18n="has_account">Déjà un compte ?</span>
-          <button type="button" class="auth-switch-btn" data-mode="login" data-i18n="login_cta_short">Se connecter</button>
-        </p>
-        <p class="mobile-switch mt-3 items-center gap-1.5 t-mute text-[13px]">
-          <span data-i18n="has_account">Déjà un compte ?</span>
-          <button type="button" class="t-gold" data-mode="login" data-i18n="login_cta_short">Se connecter</button>
-        </p>
-      </section>
-
-      <div class="extra" id="extra-forgot">
-        <h1 class="mb-1.5 text-2xl font-semibold" data-i18n="forgot_title">Mot de passe oublié</h1>
-        <p class="mb-7 t-mute text-sm" data-i18n="forgot_lede">Nous enverrons un lien de réinitialisation.</p>
-        <div class="msg" id="forgot-msg" role="alert"></div>
-        <div class="notch mb-5" data-notch>
-          <input id="forgot-email" type="email" autocomplete="email" placeholder=" " />
-          <label for="forgot-email" data-i18n="email">E-mail</label>
-        </div>
-        <button type="button" class="btn-shimmer" id="btn-forgot"><span class="spin"></span><span class="blbl" data-i18n="forgot_cta">Envoyer le lien</span></button>
-        <p class="mt-4"><button type="button" class="quiet-link text-[13px]" data-extra-close data-i18n="back_login">← Retour</button></p>
-      </div>
-      <div class="extra" id="extra-magic">
-        <h1 class="mb-1.5 text-2xl font-semibold" data-i18n="magic_title">Magic link</h1>
-        <p class="mb-7 t-mute text-sm" data-i18n="magic_hint">Un lien unique par e-mail, sans mot de passe.</p>
-        <div class="msg" id="magic-msg" role="alert"></div>
-        <div class="notch mb-5" data-notch>
-          <input id="magic-email" type="email" autocomplete="email" placeholder=" " />
-          <label for="magic-email" data-i18n="email">E-mail</label>
-        </div>
-        <button type="button" class="btn-shimmer" id="btn-magic"><span class="spin"></span><span class="blbl" data-i18n="magic_cta">Envoyer le lien</span></button>
-        <p class="mt-4"><button type="button" class="quiet-link text-[13px]" data-extra-close data-i18n="back_login">← Retour</button></p>
-      </div>
-      <div class="extra" id="extra-phone">
-        <h1 class="mb-1.5 text-2xl font-semibold" data-i18n="phone_title">Téléphone</h1>
-        <p class="mb-7 t-mute text-sm" data-i18n="phone_hint">Format international, ex. +33612345678.</p>
-        <div class="msg" id="phone-msg" role="alert"></div>
-        <div class="notch mb-5" data-notch>
-          <input id="phone-input" type="tel" autocomplete="tel" inputmode="tel" placeholder=" " />
-          <label for="phone-input" data-i18n="phone">Numéro</label>
-        </div>
-        <button type="button" class="btn-shimmer" id="btn-phone-send"><span class="spin"></span><span class="blbl" data-i18n="phone_send">Envoyer le SMS</span></button>
-        <div class="otp-row mt-4" id="otpRow" hidden>
-          <div class="notch" data-notch>
-            <input id="phone-otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder=" " />
-            <label for="phone-otp" data-i18n="otp">Code</label>
-          </div>
-          <button type="button" class="btn-shimmer" id="btn-phone-verify"><span class="spin"></span><span class="blbl" data-i18n="phone_verify">Vérifier</span></button>
-        </div>
-        <p class="mt-4"><button type="button" class="quiet-link text-[13px]" data-extra-close data-i18n="back_login">← Retour</button></p>
-      </div>
-      <div class="extra" id="extra-reset">
-        <h1 class="mb-1.5 text-2xl font-semibold" data-i18n="reset_title">Nouveau mot de passe</h1>
-        <p class="mb-7 t-mute text-sm" data-i18n="pw_hint">8 caractères minimum.</p>
-        <div class="msg" id="reset-msg" role="alert"></div>
-        <div class="notch mb-4" data-notch>
-          <input id="reset-pw" type="password" class="has-eye" autocomplete="new-password" placeholder=" " />
-          <label for="reset-pw" data-i18n="password_new">Nouveau mot de passe</label>
-          <button type="button" class="eye" data-toggle-pw="reset-pw"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-        </div>
-        <div class="pw-strength mb-4">
-          <div class="bars"><div class="bar" id="rbar1"></div><div class="bar" id="rbar2"></div><div class="bar" id="rbar3"></div></div>
-          <div class="strength-lbl" id="rstrength-lbl"></div>
-        </div>
-        <div class="notch mb-5" data-notch>
-          <input id="reset-pw2" type="password" class="has-eye" autocomplete="new-password" placeholder=" " />
-          <label for="reset-pw2" data-i18n="password_confirm">Confirmer</label>
-          <button type="button" class="eye" data-toggle-pw="reset-pw2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-        </div>
-        <button type="button" class="btn-shimmer" id="btn-reset"><span class="spin"></span><span class="blbl" data-i18n="reset_cta">Mettre à jour</span></button>
-      </div>
-        </div>
-
-        <footer class="auth-panel__foot">
-          <a href="/privacy-policy.html" data-i18n="footer_privacy">Confidentialité</a>
-          <a href="/data-deletion.html" data-i18n="footer_deletion">Suppression des données</a>
-          <a href="mailto:contact@arich.fr">contact@arich.fr</a>
-        </footer>
-      </div>
-
-      <aside class="auth-art" aria-hidden="true">
-        <div class="auth-art__fallback" id="authArtFallback">
-          <img src="/logo-mark.png" alt="" width="240" height="240" />
-        </div>
-        <canvas id="auth3d"></canvas>
-        <div class="auth-art__veil"></div>
-        <div class="auth-art__content">
-          <p class="auth-art__eyebrow">ARICH Player</p>
-          <h2 class="auth-art__title" data-i18n-html="art_title">Le cinéma,<br>chez vous.</h2>
-          <p class="auth-art__sub" data-i18n="art_sub">Vos playlists. Une interface pensée pour le salon.</p>
-          <ul class="auth-art__tags">
-            <li data-i18n="art_tag1">Xtream Codes</li>
-            <li data-i18n="art_tag2">M3U</li>
-            <li data-i18n="art_tag3">Android TV</li>
-          </ul>
-        </div>
-      </aside>
+  <header class="auth-top">
+    <a href="/" class="auth-logo" id="authLogo">
+      <img src="/logo-fg.png" alt="" width="22" height="22" style="border-radius:5px" />ARICH
+    </a>
+    <div class="auth-nav">
+      <button type="button" class="chip" id="langFr">FR</button>
+      <button type="button" class="chip" id="langEn">EN</button>
+      <button type="button" class="chip theme-btn" id="themeToggle" aria-label="Theme">
+        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 14.5A8.5 8.5 0 1110.5 3 7 7 0 0021 14.5z"/></svg>
+      </button>
     </div>
-  </div>
+  </header>
+
+  <main class="auth-page">
+    <div class="auth-shell" id="main">
+      <div class="auth-form-wrap" id="formWrap">
+        <section class="auth-pane auth-pane-login is-active" id="paneLogin">
+          <h1 class="stagger" data-i18n="login_title">Connexion</h1>
+          <p class="stagger lede" data-i18n="login_lede">Retrouvez vos playlists et votre licence.</p>
+          <div class="msg" id="login-msg" role="alert"></div>
+          <div class="stagger field" data-notch>
+            <label class="field-label" for="login-email" data-i18n="email">E-mail</label>
+            <div class="notch">
+              <input id="login-email" type="email" autocomplete="email" inputmode="email" placeholder="vous@exemple.com" />
+              <label for="login-email">E-mail</label>
+            </div>
+          </div>
+          <div class="stagger field" data-notch>
+            <label class="field-label" for="login-pw" data-i18n="password">Mot de passe</label>
+            <div class="notch">
+              <input id="login-pw" type="password" class="has-eye" autocomplete="current-password" placeholder="••••••••" />
+              <label for="login-pw">Mot de passe</label>
+              <button type="button" class="eye" data-toggle-pw="login-pw" aria-label="Show password">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="stagger field-row">
+            <button type="button" class="quiet-link" id="forgotLink" data-i18n="forgot_link">Mot de passe oublié ?</button>
+          </div>
+          <button type="button" class="stagger btn-shimmer" id="btn-login">
+            <span class="spin"></span><span class="blbl" data-i18n="login_cta">Se connecter</span>
+          </button>
+          <div class="stagger divider" data-i18n="or">ou</div>
+          <button type="button" class="stagger btn-ghost js-google" id="btn-google">
+            <span class="spin"></span>
+            <span class="blbl" style="display:inline-flex;align-items:center;gap:10px">
+              <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+              <span data-i18n="google_cta">Continuer avec Google</span>
+            </span>
+          </button>
+          <p class="gmail-hint" data-i18n="gmail_hint">Compte Gmail détecté — plus rapide avec Google.</p>
+          <div class="stagger oauth-secondary">
+            <button type="button" class="pill" id="btn-facebook" data-i18n="facebook_cta">Facebook</button>
+          </div>
+          <div class="stagger auth-alt">
+            <button type="button" class="pill" data-extra="magic" data-i18n="jump_magic">Magic link</button>
+            <button type="button" class="pill" data-extra="phone" data-i18n="jump_phone">SMS</button>
+          </div>
+          <p class="auth-switch stagger">
+            <span data-i18n="no_account">Pas encore de compte ?</span>
+            <button type="button" class="auth-switch-btn" data-mode="signup" data-i18n="signup_cta_short">Créer un compte</button>
+          </p>
+          <p class="mobile-switch">
+            <span data-i18n="no_account">Pas encore de compte ?</span>
+            <button type="button" class="t-gold" style="background:none;border:0;cursor:pointer;font:inherit" data-mode="signup" data-i18n="signup_cta_short">Créer un compte</button>
+          </p>
+        </section>
+
+        <section class="auth-pane auth-pane-signup" id="paneSignup">
+          <h1 class="stagger" data-i18n="signup_title">Créer un compte</h1>
+          <p class="stagger lede" data-i18n="signup_lede">Un compte pour synchroniser playlists et licence.</p>
+          <div class="msg" id="signup-msg" role="alert"></div>
+          <div class="success-panel" id="signup-success">
+            <h2 data-i18n="signup_ok_title">Compte créé</h2>
+            <p data-i18n="signup_ok_sub">Continuez vers ARICH.</p>
+          </div>
+          <div id="signup-fields">
+            <div class="stagger field" data-notch>
+              <label class="field-label" for="signup-email" data-i18n="email">E-mail</label>
+              <div class="notch">
+                <input id="signup-email" type="email" autocomplete="email" inputmode="email" placeholder="vous@exemple.com" />
+                <label for="signup-email">E-mail</label>
+              </div>
+            </div>
+            <div class="stagger field" data-notch>
+              <label class="field-label" for="signup-pw" data-i18n="password">Mot de passe</label>
+              <div class="notch">
+                <input id="signup-pw" type="password" class="has-eye" autocomplete="new-password" placeholder="••••••••" />
+                <label for="signup-pw">Mot de passe</label>
+                <button type="button" class="eye" data-toggle-pw="signup-pw" aria-label="Show password">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="pw-strength">
+              <div class="bars"><div class="bar" id="bar1"></div><div class="bar" id="bar2"></div><div class="bar" id="bar3"></div></div>
+              <div class="strength-lbl" id="strength-lbl"></div>
+            </div>
+            <div class="stagger field" data-notch>
+              <label class="field-label" for="signup-pw2" data-i18n="password_confirm">Confirmer</label>
+              <div class="notch">
+                <input id="signup-pw2" type="password" class="has-eye" autocomplete="new-password" placeholder="••••••••" />
+                <label for="signup-pw2">Confirmer</label>
+                <button type="button" class="eye" data-toggle-pw="signup-pw2" aria-label="Show password">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+            <button type="button" class="stagger btn-shimmer" id="btn-signup">
+              <span class="spin"></span><span class="blbl" data-i18n="signup_cta">Créer mon compte</span>
+            </button>
+            <div class="stagger divider" data-i18n="or">ou</div>
+            <button type="button" class="stagger btn-ghost js-google" id="btn-google-up">
+              <span class="spin"></span>
+              <span class="blbl" style="display:inline-flex;align-items:center;gap:10px">
+                <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                <span data-i18n="google_cta">Continuer avec Google</span>
+              </span>
+            </button>
+            <p class="gmail-hint" data-i18n="gmail_hint">Compte Gmail détecté — plus rapide avec Google.</p>
+            <div class="stagger oauth-secondary">
+              <button type="button" class="pill" id="btn-facebook-up" data-i18n="facebook_cta">Facebook</button>
+            </div>
+            <p class="legal-note" data-i18n-html="signup_legal">En créant un compte, vous acceptez la <a class="legal-link" href="/privacy-policy.html">politique de confidentialité</a>.</p>
+          </div>
+          <p class="auth-switch stagger">
+            <span data-i18n="has_account">Déjà un compte ?</span>
+            <button type="button" class="auth-switch-btn" data-mode="login" data-i18n="login_cta_short">Se connecter</button>
+          </p>
+          <p class="mobile-switch">
+            <span data-i18n="has_account">Déjà un compte ?</span>
+            <button type="button" class="t-gold" style="background:none;border:0;cursor:pointer;font:inherit" data-mode="login" data-i18n="login_cta_short">Se connecter</button>
+          </p>
+        </section>
+
+        <div class="extra" id="extra-forgot">
+          <h1 data-i18n="forgot_title">Mot de passe oublié</h1>
+          <p class="lede" data-i18n="forgot_lede">Nous enverrons un lien de réinitialisation.</p>
+          <div class="msg" id="forgot-msg" role="alert"></div>
+          <div id="forgot-form">
+            <div class="field" data-notch>
+              <label class="field-label" for="forgot-email" data-i18n="email">E-mail</label>
+              <div class="notch">
+                <input id="forgot-email" type="email" autocomplete="email" placeholder="vous@exemple.com" />
+                <label for="forgot-email">E-mail</label>
+              </div>
+            </div>
+            <button type="button" class="btn-shimmer" id="btn-forgot"><span class="spin"></span><span class="blbl" data-i18n="forgot_cta">Envoyer le lien</span></button>
+          </div>
+          <div class="success-panel" id="forgot-success">
+            <h2 data-i18n="forgot_ok_title">E-mail envoyé</h2>
+            <p data-i18n="forgot_ok_sub">Vérifiez votre boîte de réception pour continuer.</p>
+          </div>
+          <p style="margin-top:20px"><button type="button" class="quiet-link" data-extra-close data-i18n="back_login">← Retour</button></p>
+        </div>
+
+        <div class="extra" id="extra-magic">
+          <h1 data-i18n="magic_title">Magic link</h1>
+          <p class="lede" data-i18n="magic_hint">Un lien unique par e-mail, sans mot de passe.</p>
+          <div class="msg" id="magic-msg" role="alert"></div>
+          <div id="magic-form">
+            <div class="field" data-notch>
+              <label class="field-label" for="magic-email" data-i18n="email">E-mail</label>
+              <div class="notch">
+                <input id="magic-email" type="email" autocomplete="email" placeholder="vous@exemple.com" />
+                <label for="magic-email">E-mail</label>
+              </div>
+            </div>
+            <button type="button" class="btn-shimmer" id="btn-magic"><span class="spin"></span><span class="blbl" data-i18n="magic_cta">Envoyer le lien</span></button>
+          </div>
+          <div class="success-panel" id="magic-success">
+            <h2 data-i18n="magic_ok_title">Vérifiez votre e-mail</h2>
+            <p data-i18n="magic_ok_sub">Un lien de connexion vient de vous être envoyé.</p>
+            <button type="button" class="btn-ghost" id="btn-magic-resend" style="margin-top:4px"><span data-i18n="magic_resend">Renvoyer le lien</span></button>
+          </div>
+          <p style="margin-top:20px"><button type="button" class="quiet-link" data-extra-close data-i18n="back_login">← Retour</button></p>
+        </div>
+
+        <div class="extra" id="extra-phone">
+          <h1 data-i18n="phone_title">Téléphone</h1>
+          <p class="lede" data-i18n="phone_hint">Format international, ex. +33612345678.</p>
+          <div class="msg" id="phone-msg" role="alert"></div>
+          <div class="field" data-notch>
+            <label class="field-label" for="phone-input" data-i18n="phone">Numéro</label>
+            <div class="notch">
+              <input id="phone-input" type="tel" autocomplete="tel" inputmode="tel" placeholder="+33 6 12 34 56 78" />
+              <label for="phone-input">Numéro</label>
+            </div>
+          </div>
+          <button type="button" class="btn-shimmer" id="btn-phone-send"><span class="spin"></span><span class="blbl" data-i18n="phone_send">Envoyer le SMS</span></button>
+          <div class="otp-row" id="otpRow" hidden>
+            <div class="notch" data-notch>
+              <input id="phone-otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Code" />
+              <label for="phone-otp" data-i18n="otp">Code</label>
+            </div>
+            <button type="button" class="btn-shimmer" id="btn-phone-verify"><span class="spin"></span><span class="blbl" data-i18n="phone_verify">Vérifier</span></button>
+          </div>
+          <p style="margin-top:20px"><button type="button" class="quiet-link" data-extra-close data-i18n="back_login">← Retour</button></p>
+        </div>
+
+        <div class="extra" id="extra-reset">
+          <h1 data-i18n="reset_title">Nouveau mot de passe</h1>
+          <p class="lede" data-i18n="pw_hint">8 caractères minimum.</p>
+          <div class="msg" id="reset-msg" role="alert"></div>
+          <div class="field" data-notch>
+            <label class="field-label" for="reset-pw" data-i18n="password_new">Nouveau mot de passe</label>
+            <div class="notch">
+              <input id="reset-pw" type="password" class="has-eye" autocomplete="new-password" placeholder="••••••••" />
+              <label for="reset-pw">Nouveau mot de passe</label>
+              <button type="button" class="eye" data-toggle-pw="reset-pw"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            </div>
+          </div>
+          <div class="pw-strength">
+            <div class="bars"><div class="bar" id="rbar1"></div><div class="bar" id="rbar2"></div><div class="bar" id="rbar3"></div></div>
+            <div class="strength-lbl" id="rstrength-lbl"></div>
+          </div>
+          <div class="field" data-notch>
+            <label class="field-label" for="reset-pw2" data-i18n="password_confirm">Confirmer</label>
+            <div class="notch">
+              <input id="reset-pw2" type="password" class="has-eye" autocomplete="new-password" placeholder="••••••••" />
+              <label for="reset-pw2">Confirmer</label>
+              <button type="button" class="eye" data-toggle-pw="reset-pw2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            </div>
+          </div>
+          <button type="button" class="btn-shimmer" id="btn-reset"><span class="spin"></span><span class="blbl" data-i18n="reset_cta">Mettre à jour</span></button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="auth-foot">
+    <a href="/privacy-policy.html" data-i18n="footer_privacy">Confidentialité</a>
+    <a href="/data-deletion.html" data-i18n="footer_deletion">Suppression des données</a>
+    <a href="mailto:contact@arich.fr">contact@arich.fr</a>
+  </footer>
 
   <script>
     const I18N = {
       fr: {
-        doc_title: 'Connexion — ARICH Player', nav_home: 'Accueil', nav_support: 'Support',
-        brand_aside: '<strong>ARICH Player</strong> centralise vos playlists, votre licence et vos appareils. Une interface sobre, pensée pour le salon.',
-        art_title: 'Le cinéma,<br>chez vous.',
-        art_sub: 'Vos playlists. Une interface pensée pour le salon.',
-        art_tag1: 'Xtream Codes', art_tag2: 'M3U', art_tag3: 'Android TV',
+        doc_title: 'Connexion — ARICH Player',
         login_title: 'Connexion', login_lede: 'Retrouvez vos playlists et votre licence.',
         signup_title: 'Créer un compte', signup_lede: 'Un compte pour synchroniser playlists et licence.',
-        overlay_login_t: 'Déjà un compte ?', overlay_login_p: 'Revenez à votre espace ARICH.',
-        overlay_signup_t: 'Nouveau ici ?', overlay_signup_p: 'Créez un compte pour lier vos appareils et votre licence.',
         email: 'E-mail', password: 'Mot de passe', password_confirm: 'Confirmer', password_new: 'Nouveau mot de passe',
         or: 'ou', login_cta: 'Se connecter', login_cta_short: 'Se connecter',
-        signup_cta: 'Créer mon compte', signup_cta_short: 'S’inscrire',
-        no_account: 'Pas de compte ?', has_account: 'Déjà un compte ?',
+        signup_cta: 'Créer mon compte', signup_cta_short: 'Créer un compte',
+        google_cta: 'Continuer avec Google', facebook_cta: 'Facebook',
+        no_account: 'Pas encore de compte ?', has_account: 'Déjà un compte ?',
         forgot_link: 'Mot de passe oublié ?', forgot_title: 'Mot de passe oublié',
         forgot_lede: 'Nous enverrons un lien de réinitialisation.', forgot_cta: 'Envoyer le lien',
+        forgot_ok_title: 'E-mail envoyé', forgot_ok_sub: 'Vérifiez votre boîte de réception pour continuer.',
         back_login: '← Retour', pw_hint: '8 caractères minimum',
         magic_title: 'Magic link', magic_hint: 'Un lien unique par e-mail, sans mot de passe.', magic_cta: 'Envoyer le lien',
+        magic_ok_title: 'Vérifiez votre e-mail', magic_ok_sub: 'Un lien de connexion vient de vous être envoyé.',
+        magic_resend: 'Renvoyer le lien',
         jump_magic: 'Magic link', jump_phone: 'SMS',
         phone_title: 'Téléphone', phone: 'Numéro', phone_hint: 'Format international, ex. +33612345678.',
         phone_send: 'Envoyer le SMS', phone_verify: 'Vérifier', otp: 'Code',
         reset_title: 'Nouveau mot de passe', reset_cta: 'Mettre à jour',
+        signup_ok_title: 'Compte créé', signup_ok_sub: 'Continuez vers ARICH.',
         signup_legal: 'En créant un compte, vous acceptez la <a class="legal-link" href="/privacy-policy.html">politique de confidentialité</a>.',
         footer_privacy: 'Confidentialité', footer_deletion: 'Suppression des données',
         redirect_title: 'Connexion réussie', redirect_sub_web: 'Redirection en cours…',
@@ -689,27 +669,26 @@
         gmail_hint: 'Compte Gmail détecté — plus rapide avec Google.',
       },
       en: {
-        doc_title: 'Sign in — ARICH Player', nav_home: 'Home', nav_support: 'Support',
-        brand_aside: '<strong>ARICH Player</strong> brings your playlists, license and devices together. A calm interface, built for the living room.',
-        art_title: 'Cinema,<br>at home.',
-        art_sub: 'Your playlists. An interface built for the living room.',
-        art_tag1: 'Xtream Codes', art_tag2: 'M3U', art_tag3: 'Android TV',
+        doc_title: 'Sign in — ARICH Player',
         login_title: 'Sign in', login_lede: 'Access your playlists and license.',
         signup_title: 'Create an account', signup_lede: 'One account to sync playlists and license.',
-        overlay_login_t: 'Already have an account?', overlay_login_p: 'Sign in to your ARICH space.',
-        overlay_signup_t: 'New here?', overlay_signup_p: 'Create an account to link your devices and license.',
         email: 'Email', password: 'Password', password_confirm: 'Confirm', password_new: 'New password',
         or: 'or', login_cta: 'Sign in', login_cta_short: 'Sign in',
-        signup_cta: 'Create account', signup_cta_short: 'Sign up',
-        no_account: 'No account?', has_account: 'Already have an account?',
+        signup_cta: 'Create account', signup_cta_short: 'Create account',
+        google_cta: 'Continue with Google', facebook_cta: 'Facebook',
+        no_account: 'No account yet?', has_account: 'Already have an account?',
         forgot_link: 'Forgot password?', forgot_title: 'Forgot password',
         forgot_lede: 'We’ll send a reset link.', forgot_cta: 'Send link',
+        forgot_ok_title: 'Email sent', forgot_ok_sub: 'Check your inbox to continue.',
         back_login: '← Back', pw_hint: 'At least 8 characters',
         magic_title: 'Magic link', magic_hint: 'A one-time email link — no password.', magic_cta: 'Send link',
+        magic_ok_title: 'Check your email', magic_ok_sub: 'A sign-in link was just sent to you.',
+        magic_resend: 'Resend link',
         jump_magic: 'Magic link', jump_phone: 'SMS',
         phone_title: 'Phone', phone: 'Number', phone_hint: 'International format, e.g. +33612345678.',
         phone_send: 'Send SMS', phone_verify: 'Verify', otp: 'Code',
         reset_title: 'New password', reset_cta: 'Update password',
+        signup_ok_title: 'Account created', signup_ok_sub: 'Continue to ARICH.',
         signup_legal: 'By creating an account, you agree to the <a class="legal-link" href="/privacy-policy.html">privacy policy</a>.',
         footer_privacy: 'Privacy', footer_deletion: 'Data deletion',
         redirect_title: 'Signed in', redirect_sub_web: 'Redirecting…',
@@ -741,6 +720,7 @@
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
 
     function t(key) { return (I18N[lang] && I18N[lang][key]) || I18N.fr[key] || key }
+
     function applyLang(next) {
       lang = next === 'en' ? 'en' : 'fr'
       document.documentElement.lang = lang
@@ -752,45 +732,78 @@
       try { localStorage.setItem('arich_lang', lang) } catch (_) {}
     }
 
-    function isDesktop() { return matchMedia('(min-width: 768px)').matches }
     function syncNotches() {
       document.querySelectorAll('[data-notch]').forEach((wrap) => {
         const input = wrap.querySelector('input')
         wrap.classList.toggle('is-filled', !!(input && input.value))
       })
     }
+
     function checkGmail(email) {
       const hit = /@gmail\.com$/i.test((email || '').trim())
       document.querySelectorAll('.js-google').forEach((btn) => btn.classList.toggle('gmail-hot', hit))
       document.querySelectorAll('.gmail-hint').forEach((el) => el.classList.toggle('show', hit))
     }
+
+    function animateView(el, onDone) {
+      if (!el || reduceMotion || !window.gsap) { onDone?.(); return }
+      gsap.fromTo(el, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.32, ease: 'power2.out', onComplete: onDone })
+    }
+
+    function transitionOut(el, onDone) {
+      if (!el || reduceMotion || !window.gsap) { onDone?.(); return }
+      gsap.to(el, { opacity: 0, y: -8, duration: 0.22, ease: 'power2.in', onComplete: onDone })
+    }
+
     function staggerPane(paneId) {
       if (reduceMotion || !window.gsap) return
       const items = document.getElementById(paneId)?.querySelectorAll('.stagger')
       if (!items?.length) return
-      gsap.fromTo(items, { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.42, stagger: 0.055, ease: 'power2.out', delay: 0.12 })
+      gsap.fromTo(items, { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, stagger: 0.04, ease: 'power2.out', delay: 0.08 })
     }
-    function slideOverlay() { /* legacy no-op */ }
+
+    function hidePanesAndExtras() {
+      document.querySelectorAll('.auth-pane.is-active, .extra.show').forEach((el) => {
+        el.classList.remove('is-active', 'show')
+        el.style.display = ''
+      })
+    }
+
+    function showPane(id) {
+      const el = document.getElementById(id)
+      if (!el) return
+      el.style.display = 'flex'
+      el.classList.add('is-active')
+      animateView(el)
+      staggerPane(id)
+    }
 
     function setMode(next, { email, info } = {}) {
-      mode = next === 'signup' ? 'signup' : 'login'
-      currentView = mode
-      const main = document.getElementById('main')
-      main?.classList.toggle('is-signup', mode === 'signup')
-      document.getElementById('paneLogin')?.classList.toggle('is-active', mode === 'login')
-      document.getElementById('paneSignup')?.classList.toggle('is-active', mode === 'signup')
-      closeExtras()
-      if (email) {
-        document.getElementById('login-email').value = email
-        document.getElementById('signup-email').value = email
+      const target = next === 'signup' ? 'signup' : 'login'
+      const fromPane = document.querySelector('.auth-pane.is-active')
+      const toId = target === 'signup' ? 'paneSignup' : 'paneLogin'
+
+      const apply = () => {
+        mode = target
+        currentView = mode
+        document.getElementById('main')?.classList.toggle('is-signup', mode === 'signup')
+        closeExtras()
+        hidePanesAndExtras()
+        if (email) {
+          document.getElementById('login-email').value = email
+          document.getElementById('signup-email').value = email
+        }
+        syncNotches()
+        checkGmail(document.getElementById('login-email').value)
+        showPane(toId)
+        if (info === 'exists') showMsg('login', t('switch_exists'), 'info')
+        if (info === 'unknown') showMsg('signup', t('switch_unknown'), 'info')
+        setTimeout(() => document.getElementById(target === 'signup' ? 'signup-email' : 'login-email')?.focus(), 400)
       }
-      syncNotches()
-      checkGmail(document.getElementById('login-email').value)
-      staggerPane(mode === 'signup' ? 'paneSignup' : 'paneLogin')
-      if (info === 'exists') showMsg('login', t('switch_exists'), 'info')
-      if (info === 'unknown') showMsg('signup', t('switch_unknown'), 'info')
-      const focusId = mode === 'signup' ? 'signup-email' : 'login-email'
-      setTimeout(() => document.getElementById(focusId)?.focus(), 480)
+
+      if (fromPane && fromPane.id !== toId && !reduceMotion && window.gsap) {
+        transitionOut(fromPane, apply)
+      } else apply()
     }
 
     function showMsg(id, text, type = 'error') {
@@ -803,28 +816,76 @@
       const el = document.getElementById(id + '-msg')
       if (el) { el.className = 'msg'; el.textContent = '' }
     }
+
+    function showSuccessPanel(formId, panelId) {
+      document.getElementById(formId)?.style.setProperty('display', 'none')
+      const panel = document.getElementById(panelId)
+      panel?.classList.add('show')
+      animateView(panel)
+    }
+
+    function resetSuccessPanels() {
+      ;['magic-form', 'forgot-form', 'signup-fields'].forEach((id) => {
+        document.getElementById(id)?.style.removeProperty('display')
+      })
+      ;['magic-success', 'forgot-success', 'signup-success'].forEach((id) => {
+        document.getElementById(id)?.classList.remove('show')
+      })
+    }
+
     function setLoading(btnId, on) {
       const btn = document.getElementById(btnId)
       if (!btn) return
       btn.disabled = on
       btn.classList.toggle('loading', on)
     }
+
     function closeExtras() {
-      document.querySelectorAll('.extra').forEach((el) => el.classList.remove('show'))
+      document.querySelectorAll('.extra.show').forEach((el) => el.classList.remove('show'))
+      resetSuccessPanels()
     }
+
     function openExtra(name) {
-      closeExtras()
-      document.getElementById('extra-' + name)?.classList.add('show')
-      currentView = name
-      if (name === 'forgot') {
-        const v = document.getElementById('login-email').value.trim()
-        if (v) document.getElementById('forgot-email').value = v
+      const extra = document.getElementById('extra-' + name)
+      const fromPane = document.querySelector('.auth-pane.is-active')
+
+      const apply = () => {
+        document.querySelectorAll('.extra.show').forEach((el) => el.classList.remove('show'))
+        resetSuccessPanels()
+        hidePanesAndExtras()
+        if (extra) {
+          extra.style.display = 'flex'
+          extra.classList.add('show')
+          animateView(extra)
+        }
+        currentView = name
+        if (name === 'forgot') {
+          const v = document.getElementById('login-email').value.trim()
+          if (v) document.getElementById('forgot-email').value = v
+        }
+        if (name === 'magic') {
+          const v = document.getElementById('login-email').value.trim() || document.getElementById('signup-email').value.trim()
+          if (v) document.getElementById('magic-email').value = v
+        }
+        syncNotches()
       }
-      if (name === 'magic') {
-        const v = document.getElementById('login-email').value.trim() || document.getElementById('signup-email').value.trim()
-        if (v) document.getElementById('magic-email').value = v
+
+      if (fromPane && !reduceMotion && window.gsap) {
+        transitionOut(fromPane, apply)
+      } else apply()
+    }
+
+    function closeToMode() {
+      const extra = document.querySelector('.extra.show')
+      const apply = () => {
+        closeExtras()
+        hidePanesAndExtras()
+        showPane(mode === 'signup' ? 'paneSignup' : 'paneLogin')
+        currentView = mode
       }
-      syncNotches()
+      if (extra && !reduceMotion && window.gsap) {
+        transitionOut(extra, apply)
+      } else apply()
     }
 
     function getNextRedirectUrl() {
@@ -864,7 +925,9 @@
       const main = document.getElementById('main')
       const sub = document.getElementById('redirect-sub')
       if (overlay) overlay.classList.add('show')
-      if (main) { main.style.visibility = 'hidden'; main.closest('.auth-page')?.style.setProperty('visibility', 'hidden') }
+      if (main) main.style.visibility = 'hidden'
+      document.querySelector('.auth-top')?.style.setProperty('visibility', 'hidden')
+      document.querySelector('.auth-foot')?.style.setProperty('visibility', 'hidden')
       const nextUrl = getNextRedirectUrl()
       const fromApp = sessionStorage.getItem('arich_from_app') === '1'
       if (nextUrl && !fromApp) {
@@ -878,7 +941,7 @@
         setTimeout(() => { location.href = deepLink }, 600)
         setTimeout(() => {
           const btn = document.getElementById('btn-open-app')
-          if (btn) { btn.style.display = 'inline-flex'; btn.classList.remove('hidden') }
+          if (btn) btn.style.display = 'inline-flex'
           if (sub) sub.textContent = t('redirect_sub_manual')
         }, 2800)
       } else {
@@ -905,9 +968,8 @@
       if (val.length >= 12 || /[A-Z]/.test(val)) s++
       if (/[0-9]/.test(val) && /[^A-Za-z0-9]/.test(val)) s++
       const labels = [t('strength_weak'), t('strength_mid'), t('strength_strong')]
-      const colors = ['var(--err)', 'var(--warn)', 'var(--ok)']
       const idx = Math.min(Math.max(s, 1), 3) - 1
-      lbl.textContent = labels[idx]; lbl.style.color = colors[idx]
+      lbl.textContent = labels[idx]
       ;[b1, b2, b3].forEach((b, i) => { if (i <= idx) b.classList.add('s' + (idx + 1)) })
     }
     function translateError(msg) {
@@ -919,7 +981,7 @@
       if (m.includes('email not confirmed')) return lang === 'en' ? 'Confirm your email first.' : 'Confirmez votre e-mail avant de vous connecter.'
       if (m.includes('already registered')) return t('switch_exists')
       if (m.includes('password should be at least')) return t('err_short')
-      if (m.includes('invalid email')) return lang === 'en' ? 'Invalid email.' : 'E-mail invalide.'
+      if (m.includes('invalid email')) return lang === 'en' ? 'Invalid email.' : 'Adresse e-mail invalide.'
       if (m.includes('rate limit') || m.includes('too many')) return lang === 'en' ? 'Too many attempts.' : 'Trop de tentatives.'
       if (m.includes('network') || m.includes('fetch')) return lang === 'en' ? 'Network error.' : 'Erreur réseau.'
       return msg
@@ -1004,7 +1066,10 @@
         setMode('login', { email, info: 'exists' })
         return
       }
-      if (data.user && !data.session) { showMsg('signup', t('ok_confirm_email'), 'success'); return }
+      if (data.user && !data.session) {
+        showSuccessPanel('signup-fields', 'signup-success')
+        return
+      }
       if (data.session) redirectAfterAuth()
     }
 
@@ -1017,7 +1082,7 @@
       const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: THIS_PAGE_URL, shouldCreateUser: true } })
       setLoading('btn-magic', false)
       if (error) { showMsg('magic', translateError(error.message)); return }
-      showMsg('magic', t('ok_magic'), 'success')
+      showSuccessPanel('magic-form', 'magic-success')
     }
     async function doPhoneSend() {
       clearMsg('phone')
@@ -1050,7 +1115,7 @@
       const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: THIS_PAGE_URL })
       setLoading('btn-forgot', false)
       if (error) { showMsg('forgot', translateError(error.message)); return }
-      showMsg('forgot', t('ok_reset_sent'), 'success')
+      showSuccessPanel('forgot-form', 'forgot-success')
     }
     async function doReset() {
       clearMsg('reset')
@@ -1082,6 +1147,24 @@
       if (event === 'PASSWORD_RECOVERY') openExtra('reset')
     })
 
+    function initParallax() {
+      if (reduceMotion) return
+      const glow = document.getElementById('authBgGlow')
+      if (!glow) return
+      let tx = 0, ty = 0, cx = 0, cy = 0
+      document.addEventListener('mousemove', (e) => {
+        tx = (e.clientX / window.innerWidth - 0.5) * 14
+        ty = (e.clientY / window.innerHeight - 0.5) * 10
+      })
+      const tick = () => {
+        cx += (tx - cx) * 0.06
+        cy += (ty - cy) * 0.06
+        glow.style.transform = `translate(calc(-50% + ${cx}px), calc(-50% + ${cy}px))`
+        requestAnimationFrame(tick)
+      }
+      tick()
+    }
+
     ;(() => {
       const KEY = 'arich_theme'
       const apply = (theme) => {
@@ -1089,7 +1172,7 @@
         document.documentElement.dataset.theme = next
         document.documentElement.style.colorScheme = next
         const meta = document.getElementById('themeColor')
-        if (meta) meta.content = next === 'light' ? '#F4F1EA' : '#0D1017'
+        if (meta) meta.content = next === 'light' ? '#EDEAE4' : '#0B0B0C'
       }
       const saved = localStorage.getItem(KEY)
       apply(saved === 'light' || saved === 'dark' ? saved : 'dark')
@@ -1115,13 +1198,14 @@
     document.getElementById('btn-login')?.addEventListener('click', doLogin)
     document.getElementById('btn-signup')?.addEventListener('click', doSignup)
     document.getElementById('btn-magic')?.addEventListener('click', doMagic)
+    document.getElementById('btn-magic-resend')?.addEventListener('click', doMagic)
     document.getElementById('btn-phone-send')?.addEventListener('click', doPhoneSend)
     document.getElementById('btn-phone-verify')?.addEventListener('click', doPhoneVerify)
     document.getElementById('btn-forgot')?.addEventListener('click', doForgot)
     document.getElementById('btn-reset')?.addEventListener('click', doReset)
     document.getElementById('forgotLink')?.addEventListener('click', () => openExtra('forgot'))
     document.querySelectorAll('[data-extra]').forEach((el) => el.addEventListener('click', () => openExtra(el.getAttribute('data-extra'))))
-    document.querySelectorAll('[data-extra-close]').forEach((el) => el.addEventListener('click', () => { closeExtras(); currentView = mode }))
+    document.querySelectorAll('[data-extra-close]').forEach((el) => el.addEventListener('click', closeToMode))
     document.getElementById('btn-open-app')?.addEventListener('click', async () => { location.href = await buildAppDeepLink() })
     document.querySelectorAll('[data-toggle-pw]').forEach((btn) => btn.addEventListener('click', () => togglePw(btn.getAttribute('data-toggle-pw'), btn)))
     document.getElementById('signup-pw')?.addEventListener('input', (e) => checkStrength(e.target.value))
@@ -1151,161 +1235,25 @@
       else if (currentView === 'reset') doReset()
     })
 
-    function initAuth3D() {
-      const canvas = document.getElementById('auth3d')
-      const fallback = document.getElementById('authArtFallback')
-      if (!canvas || reduceMotion) return
-      if (typeof THREE === 'undefined') return
-
-      try {
-        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true })
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-        const scene = new THREE.Scene()
-        scene.fog = new THREE.FogExp2(0x0d1017, 0.038)
-        const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 80)
-        camera.position.set(0, 0.35, 7.5)
-        camera.lookAt(0, 0, 0)
-
-        /* Circuit loop — logo travels continuously, passes behind gate */
-        const loop = new THREE.CatmullRomCurve3([
-          new THREE.Vector3(-3.8, -0.55, 0.6),
-          new THREE.Vector3(-2.2, 0.85, 1.4),
-          new THREE.Vector3(0.2, 0.35, -0.9),
-          new THREE.Vector3(2.4, -0.25, 1.1),
-          new THREE.Vector3(3.6, 0.15, -0.4),
-          new THREE.Vector3(1.8, -1.05, 0.2),
-          new THREE.Vector3(-1.2, -0.75, -0.6),
-          new THREE.Vector3(-3.8, -0.55, 0.6),
-        ], true)
-
-        const trackGeo = new THREE.TubeGeometry(loop, 160, 0.018, 8, true)
-        scene.add(new THREE.Mesh(trackGeo, new THREE.MeshBasicMaterial({
-          color: 0xc58a2a, transparent: true, opacity: 0.22,
-        })))
-
-        const gateMat = new THREE.MeshStandardMaterial({
-          color: 0x0a0b0e, metalness: 0.6, roughness: 0.35,
-        })
-        const gateL = new THREE.Mesh(new THREE.BoxGeometry(0.22, 2.6, 0.55), gateMat)
-        gateL.position.set(-0.35, 0.1, 0.55)
-        const gateR = new THREE.Mesh(new THREE.BoxGeometry(0.22, 2.6, 0.55), gateMat)
-        gateR.position.set(1.85, 0.05, 0.55)
-        ;[gateL, gateR].forEach((g) => { g.renderOrder = 5; scene.add(g) })
-
-        const carrier = new THREE.Group()
-        scene.add(carrier)
-
-        const tile = new THREE.Mesh(
-          new THREE.BoxGeometry(1.05, 1.05, 0.28),
-          new THREE.MeshStandardMaterial({
-            color: 0x1a1510, metalness: 0.85, roughness: 0.2,
-            emissive: 0x2a1808, emissiveIntensity: 0.35,
-          }),
-        )
-        tile.renderOrder = 2
-        carrier.add(tile)
-
-        const loader = new THREE.TextureLoader()
-        loader.load('/logo-mark.png', (tex) => {
-          tex.anisotropy = 4
-          const face = new THREE.Mesh(
-            new THREE.PlaneGeometry(0.88, 0.88),
-            new THREE.MeshStandardMaterial({
-              map: tex, transparent: true,
-              metalness: 0.2, roughness: 0.4,
-            }),
-          )
-          face.position.z = 0.145
-          face.renderOrder = 3
-          carrier.add(face)
-          const faceBack = face.clone()
-          faceBack.position.z = -0.145
-          faceBack.rotation.y = Math.PI
-          carrier.add(faceBack)
-        })
-
-        const halo = new THREE.Mesh(
-          new THREE.TorusGeometry(0.72, 0.012, 8, 64),
-          new THREE.MeshBasicMaterial({ color: 0xf2a51b, transparent: true, opacity: 0.35 }),
-        )
-        halo.rotation.x = Math.PI / 2
-        carrier.add(halo)
-
-        const dust = new THREE.Points(
-          (() => {
-            const g = new THREE.BufferGeometry()
-            const n = 120
-            const arr = new Float32Array(n * 3)
-            for (let i = 0; i < n; i++) {
-              arr[i * 3] = (Math.random() - 0.5) * 12
-              arr[i * 3 + 1] = (Math.random() - 0.5) * 6
-              arr[i * 3 + 2] = (Math.random() - 0.5) * 6
-            }
-            g.setAttribute('position', new THREE.BufferAttribute(arr, 3))
-            return g
-          })(),
-          new THREE.PointsMaterial({ color: 0xd4b896, size: 0.028, transparent: true, opacity: 0.4 }),
-        )
-        scene.add(dust)
-
-        scene.add(new THREE.AmbientLight(0x1a1428, 0.55))
-        const key = new THREE.PointLight(0xf2a51b, 2.2, 28)
-        key.position.set(3, 2, 4)
-        const rim = new THREE.PointLight(0x5a4088, 1.3, 24)
-        rim.position.set(-3, -1, 3)
-        scene.add(key, rim)
-
-        let raf = 0
-        const resize = () => {
-          const w = canvas.clientWidth || canvas.offsetWidth || 400
-          const h = canvas.clientHeight || canvas.offsetHeight || 400
-          renderer.setSize(w, h, false)
-          camera.aspect = w / h
-          camera.updateProjectionMatrix()
-        }
-
-        const tick = (now) => {
-          const u = (now * 0.00011) % 1
-          const u2 = (u + 0.002) % 1
-          const pt = loop.getPointAt(u)
-          const ahead = loop.getPointAt(u2)
-          carrier.position.copy(pt)
-          carrier.lookAt(ahead)
-          carrier.rotateOnAxis(new THREE.Vector3(0, 1, 0), Math.PI * 0.5)
-          carrier.rotation.x += 0.018
-          carrier.rotation.z = Math.sin(u * Math.PI * 2) * 0.25
-
-          const behind = pt.z < 0.35 && pt.x > -0.8 && pt.x < 2.5
-          tile.renderOrder = behind ? 1 : 4
-          carrier.children.forEach((c) => { if (c.isMesh) c.renderOrder = behind ? 1 : 4 })
-
-          dust.rotation.y = now * 0.00004
-          renderer.render(scene, camera)
-          raf = requestAnimationFrame(tick)
-        }
-
-        window.addEventListener('resize', resize)
-        resize()
-        fallback?.classList.add('is-hidden')
-        raf = requestAnimationFrame(tick)
-        window.addEventListener('pagehide', () => cancelAnimationFrame(raf))
-      } catch (e) {
-        console.warn('[auth3d]', e)
-      }
-    }
-
     ;(() => {
       const saved = localStorage.getItem('arich_lang')
       const browser = (navigator.language || 'fr').toLowerCase().startsWith('en') ? 'en' : 'fr'
       applyLang(saved === 'en' || saved === 'fr' ? saved : browser)
+      initParallax()
       const finish = () => {
         document.getElementById('boot')?.classList.add('is-done')
-        initAuth3D()
-        staggerPane('paneLogin')
+        if (!reduceMotion && window.gsap) {
+          gsap.to('#authLogo', { opacity: 1, duration: 0.7, ease: 'power2.out' })
+          gsap.fromTo('#main', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.75, ease: 'power2.out', delay: 0.1 })
+          staggerPane('paneLogin')
+        } else {
+          document.getElementById('authLogo').style.opacity = '1'
+          document.getElementById('main').style.opacity = '1'
+        }
       }
-      if (document.readyState === 'complete') setTimeout(finish, 280)
-      else addEventListener('load', () => setTimeout(finish, 280))
-      setTimeout(finish, 1400)
+      if (document.readyState === 'complete') setTimeout(finish, 200)
+      else addEventListener('load', () => setTimeout(finish, 200))
+      setTimeout(finish, 1200)
     })()
     checkSession()
   </script>

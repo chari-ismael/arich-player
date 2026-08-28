@@ -13,7 +13,7 @@
   <meta name="theme-color" content="#0D1017" id="themeColor" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:ital@0;1&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -25,40 +25,43 @@
       },
     }
   </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root, html[data-theme='dark'] {
-      --bg: #0B0C0F;
-      --panel: #0B0C0F;
-      --text: #E8E6E1;
-      --mute: rgba(232, 230, 225, 0.52);
-      --faint: rgba(232, 230, 225, 0.32);
-      --line: rgba(232, 230, 225, 0.11);
-      --accent: #7A9E8E;
-      --warm: #B8B0A4;
-      --ink: #0B0C0F;
-      --cta: #E8E6E1;
-      --cta-text: #0B0C0F;
-      --err: #c96b7a;
-      --ok: #5a9a82;
-      --warn: #a89878;
+      --bg: #0D1017;
+      --card: rgba(18, 22, 30, 0.72);
+      --panel: #12161E;
+      --text: #F0EFEC;
+      --mute: rgba(240, 239, 236, 0.58);
+      --faint: rgba(240, 239, 236, 0.34);
+      --line: rgba(240, 239, 236, 0.12);
+      --gold: #C58A2A;
+      --gold2: #F2A51B;
+      --violet: #5a3d8a;
+      --ink: #0D1017;
+      --err: #e06b7a;
+      --ok: #3dba8b;
+      --warn: #c9a227;
+      --shadow: 0 40px 100px rgba(0,0,0,.55);
     }
     html[data-theme='light'] {
-      --bg: #EDEAE4;
-      --panel: #EDEAE4;
-      --text: #141412;
-      --mute: #5C5852;
-      --faint: #8A847C;
-      --line: rgba(20, 20, 18, 0.14);
-      --accent: #4A7566;
-      --warm: #6E6860;
-      --ink: #141412;
-      --cta: #141412;
-      --cta-text: #EDEAE4;
-      --err: #b04a58;
-      --ok: #3d7a66;
-      --warn: #8a7858;
+      --bg: #F4F3EE;
+      --card: #FFFFFF;
+      --panel: #EFECE6;
+      --text: #1A1A1A;
+      --mute: #4A4A4A;
+      --faint: #6B6B6B;
+      --line: rgba(26,26,26,.14);
+      --gold: #C48A2A;
+      --ink: #1A1A1A;
+      --err: #c44a5e;
+      --ok: #2f8f6a;
+      --particle: 180,120,40;
+      --particle-a: .28;
+      --particle-link: .12;
+      --shadow: 0 24px 50px rgba(40,28,12,.1);
     }
     html { color-scheme: dark; }
     html[data-theme='light'] { color-scheme: light; }
@@ -67,224 +70,178 @@
       color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
-      font-family: 'IBM Plex Serif', Georgia, serif;
-    }
-    body::after {
-      content: '';
-      position: fixed; inset: 0; z-index: 9000; pointer-events: none;
-      opacity: 0.045;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      mix-blend-mode: overlay;
     }
 
-    /* ── Asymmetric full-bleed layout ── */
-    .auth-page { min-height: 100vh; background: var(--bg); }
-    .auth-shell {
+    /* ── Split card (inspi Blockpulse / Served) ── */
+    .auth-page {
       min-height: 100vh;
       display: grid;
-      grid-template-columns: clamp(300px, 34vw, 400px) minmax(0, 1fr);
+      place-items: center;
+      padding: clamp(16px, 3vw, 32px);
+      background:
+        radial-gradient(ellipse 70% 50% at 80% 20%, rgba(90, 61, 138, 0.18), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 10% 90%, rgba(197, 138, 42, 0.1), transparent 50%),
+        var(--bg);
     }
+    .auth-card {
+      position: relative;
+      z-index: 5;
+      display: grid;
+      grid-template-columns: minmax(340px, 1fr) minmax(380px, 1.15fr);
+      width: min(1080px, 100%);
+      min-height: min(720px, calc(100vh - 48px));
+      border-radius: 28px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      background: var(--panel-bg, #0D1017);
+    }
+    html[data-theme='light'] .auth-card {
+      --panel-bg: #fff;
+      background: #fff;
+    }
+
     .auth-panel {
       position: relative;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: clamp(24px, 3vw, 40px);
-      background: var(--panel);
+      padding: clamp(28px, 4vw, 44px);
+      background: var(--panel-bg, rgba(13, 16, 23, 0.96));
       border-right: 1px solid var(--line);
     }
+    html[data-theme='light'] .auth-panel { background: #fff; }
+
     .auth-panel__head {
       position: absolute; top: 0; left: 0; right: 0;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 18px clamp(24px, 3vw, 40px) 0;
+      padding: 20px clamp(28px, 4vw, 44px) 0;
     }
     .auth-panel__foot {
       position: absolute; bottom: 0; left: 0; right: 0;
-      display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 14px;
-      padding: 0 clamp(24px, 3vw, 40px) 16px;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px; letter-spacing: 0.04em;
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 14px;
+      padding: 0 clamp(20px, 3vw, 32px) 18px;
+      font-size: 11px;
     }
     .auth-panel__foot a { color: var(--faint); text-decoration: none; }
     .auth-panel__foot a:hover { color: var(--mute); }
+
     .auth-form-wrap {
       position: relative;
       width: 100%;
-      max-width: 360px;
-      margin: 52px 0 40px;
+      max-width: 400px;
+      margin: 48px auto 36px;
     }
 
-    /* ── Brand / circuit panel (wider, offset weight) ── */
-    .auth-brand {
+    .auth-art {
       position: relative;
-      min-height: 420px;
+      min-height: 360px;
       overflow: hidden;
-      background: #08090b;
+      background:
+        linear-gradient(155deg, #1a1428 0%, #0d1017 42%, #1a1208 100%);
     }
-    html[data-theme='light'] .auth-brand { background: #D8D4CC; }
-
-    .auth-brand__copy {
-      position: absolute; z-index: 8;
-      top: clamp(28px, 6vh, 56px);
-      left: clamp(28px, 4vw, 52px);
-      max-width: 28ch;
-      pointer-events: none;
+    .auth-art__veil {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background:
+        linear-gradient(to top, rgba(13, 16, 23, 0.85) 0%, transparent 42%),
+        linear-gradient(to right, rgba(13, 16, 23, 0.25) 0%, transparent 30%);
     }
-    .auth-brand__eyebrow {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px; font-weight: 500; letter-spacing: 0.18em;
-      text-transform: uppercase; color: var(--warm); margin-bottom: 14px;
+    #auth3d {
+      position: absolute; inset: 0; z-index: 0;
+      width: 100%; height: 100%; display: block;
     }
-    .auth-brand__title {
-      font-family: Syne, sans-serif;
-      font-size: clamp(2rem, 4.2vw, 3.1rem);
-      font-weight: 800; letter-spacing: -0.04em; line-height: 0.98;
-      color: var(--text); margin-bottom: 14px;
-    }
-    .auth-brand__sub {
-      font-family: 'IBM Plex Serif', serif;
-      font-size: 15px; font-style: italic; line-height: 1.55;
-      color: var(--mute); margin-bottom: 22px;
-    }
-    .auth-brand__tags {
-      display: flex; flex-wrap: wrap; gap: 6px; list-style: none; padding: 0; margin: 0;
-    }
-    .auth-brand__tags li {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
-      padding: 6px 10px; border: 1px solid var(--line);
-      color: var(--faint); background: transparent;
-    }
-
-    /* Film perforations — cinema texture */
-    .auth-brand__perfs {
-      position: absolute; z-index: 3; left: 0; right: 0;
-      height: 14px;
-      background: repeating-linear-gradient(90deg,
-        transparent 0, transparent 10px,
-        rgba(232,230,225,0.08) 10px, rgba(232,230,225,0.08) 12px);
-    }
-    .auth-brand__perfs--top { top: 12%; }
-    .auth-brand__perfs--bot { bottom: 18%; opacity: 0.6; }
-
-    /* Coin circuit */
-    .auth-circuit {
-      position: absolute; inset: 0;
-      --rail-y: 68%;
-    }
-    .auth-circuit__rail {
-      position: absolute; left: 0; right: 0; height: 1px;
-      background: var(--line);
-    }
-    .auth-circuit__rail--front { top: calc(var(--rail-y) - 18px); z-index: 5; }
-    .auth-circuit__rail--back  { top: calc(var(--rail-y) + 18px); z-index: 1; opacity: 0.45; }
-
-    .auth-circuit__gate {
-      position: absolute; z-index: 7;
-      top: calc(var(--rail-y) - 72px);
-      left: 58%;
-      width: clamp(72px, 12vw, 110px);
-      height: 144px;
-      background: var(--bg);
-      border-left: 1px solid var(--line);
-      border-right: 1px solid var(--line);
-    }
-    html[data-theme='light'] .auth-circuit__gate { background: #EDEAE4; }
-
-    .auth-circuit__coin {
-      position: absolute; z-index: 6;
-      top: calc(var(--rail-y) - 24px);
-      left: 0;
-      width: 48px; height: 48px;
-      margin-left: -24px;
-      will-change: transform;
-      pointer-events: none;
-      perspective: 220px;
-    }
-    .auth-circuit__coin.is-behind { z-index: 2; opacity: 0.38; filter: blur(0.8px); }
-
-    .coin-cylinder {
-      width: 48px; height: 48px;
-      transform-style: preserve-3d;
-      position: relative;
-    }
-    .coin-face {
-      position: absolute; inset: 0;
+    .auth-art__fallback {
+      position: absolute; inset: 0; z-index: 0;
       display: grid; place-items: center;
-      backface-visibility: hidden;
-      border-radius: 50%;
-      border: 2px solid #5a564e;
-      background: linear-gradient(165deg, #b8b0a4 0%, #7a746a 55%, #5a564e 100%);
-      color: #1a1916;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 22px; font-weight: 500;
-      box-shadow: inset 0 -3px 8px rgba(0,0,0,0.35);
+      background:
+        radial-gradient(circle at 50% 45%, rgba(242, 165, 27, 0.2), transparent 50%),
+        linear-gradient(155deg, #1a1428, #0d1017);
+      transition: opacity 0.5s ease;
     }
-    .coin-face--a { transform: translateZ(5px); }
-    .coin-face--b { transform: rotateY(180deg) translateZ(5px); }
-    .coin-edge {
-      position: absolute; width: 48px; height: 48px;
-      transform: translateZ(-3px);
-      border-radius: 50%;
-      background: repeating-linear-gradient(90deg, #6a645c 0 2px, #8a8478 2px 4px);
+    .auth-art__fallback.is-hidden { opacity: 0; pointer-events: none; }
+    .auth-art__fallback img {
+      width: min(42%, 200px);
+      animation: markFloat 8s ease-in-out infinite;
+      filter: drop-shadow(0 0 60px rgba(242, 165, 27, 0.45));
+    }
+    @keyframes markFloat {
+      0%, 100% { transform: translateY(0) rotate(-4deg); }
+      50% { transform: translateY(-12px) rotate(4deg); }
     }
 
-    .auth-brand__frame {
-      position: absolute; z-index: 4;
-      right: clamp(24px, 5vw, 48px);
-      bottom: clamp(24px, 5vh, 48px);
-      width: clamp(100px, 16vw, 160px);
-      aspect-ratio: 2/3;
-      border: 1px solid var(--line);
-      opacity: 0.35;
+    .auth-art__content {
+      position: absolute; z-index: 2;
+      left: clamp(24px, 4vw, 40px);
+      right: clamp(24px, 4vw, 40px);
+      bottom: clamp(28px, 5vh, 48px);
     }
-    .auth-brand__frame::before {
-      content: '';
-      position: absolute; inset: 8px;
-      border: 1px solid var(--line);
+    .auth-art__eyebrow {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--gold2); margin-bottom: 12px;
+    }
+    .auth-art__title {
+      font-family: Syne, Figtree, sans-serif;
+      font-size: clamp(1.75rem, 3vw, 2.35rem);
+      font-weight: 800; letter-spacing: -0.03em; line-height: 1.08;
+      color: #F0EFEC; margin-bottom: 12px;
+    }
+    .auth-art__sub {
+      font-size: 14px; line-height: 1.55;
+      color: rgba(240, 239, 236, 0.62); max-width: 36ch; margin-bottom: 18px;
+    }
+    .auth-art__tags {
+      display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0;
+    }
+    .auth-art__tags li {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+      padding: 7px 12px; border-radius: 999px;
+      border: 1px solid rgba(242, 165, 27, 0.35);
+      background: rgba(242, 165, 27, 0.08);
+      color: rgba(240, 239, 236, 0.88);
     }
     .t-fg { color: var(--text); }
     .t-mute { color: var(--mute); }
     .t-faint { color: var(--faint); }
-    .t-accent { color: var(--accent); }
-    .quiet-link {
-      color: var(--mute); background: none; border: 0; cursor: pointer;
-      font: inherit; font-family: 'IBM Plex Mono', monospace; font-size: 12px;
-      transition: color 0.15s;
-    }
-    .quiet-link:hover { color: var(--text); }
+    .t-gold { color: var(--gold); }
+    .quiet-link { color: var(--mute); background: none; border: 0; cursor: pointer; font: inherit; }
+    .quiet-link:hover { color: var(--gold); }
     .rule { background: var(--line); }
-    .chip {
-      color: var(--faint); background: transparent; border: 0; cursor: pointer;
-      font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em;
-      transition: color 0.15s;
-    }
+    .chip { color: var(--mute); background: transparent; border: 0; cursor: pointer; font: inherit; }
     .chip:hover, .chip.is-active { color: var(--text); }
     .theme-btn { display: grid; place-items: center; }
     .theme-btn svg { display: none; }
     html[data-theme='dark'] .icon-sun { display: block; }
     html[data-theme='light'] .icon-moon { display: block; }
-    .boot { background: var(--bg); transition: opacity .35s, visibility .35s; }
+    .boot { background: var(--bg); }
+    html[data-theme='light'] .btn-shimmer {
+      background: #14120e; color: #f4f3ee;
+    }
+    html[data-theme='light'] .auth-switch-btn:hover {
+      background: var(--gold); color: #14120e;
+    }
+
+    .shell { display: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .btn-shimmer::after { display: none; }
+    }
+
+    .boot { transition: opacity .35s, visibility .35s; }
     .boot.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
 
     .auth-logo {
       display: inline-flex; align-items: center; gap: 10px;
-      font-family: Syne, sans-serif; font-weight: 700; font-size: 1rem;
+      font-family: Syne, Figtree, sans-serif; font-weight: 700; font-size: 1.05rem;
       letter-spacing: -0.02em; color: var(--text); text-decoration: none;
     }
     .auth-nav { display: flex; align-items: center; gap: 4px; }
 
     .auth-pane h1 {
-      font-family: Syne, sans-serif;
-      font-size: clamp(1.85rem, 3.2vw, 2.5rem);
-      font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
-      margin-bottom: 10px;
+      font-family: Syne, Figtree, sans-serif;
+      font-size: clamp(2rem, 3.8vw, 2.75rem);
+      font-weight: 800; letter-spacing: -0.04em; line-height: 1.05;
+      margin-bottom: 12px;
     }
-    .auth-pane .lede {
-      font-family: 'IBM Plex Serif', serif;
-      font-size: 14px; font-style: italic; margin-bottom: 22px;
-      max-width: 34ch; line-height: 1.55; color: var(--mute);
-    }
+    .auth-pane .lede { font-size: 14px; margin-bottom: 24px; max-width: 36ch; line-height: 1.5; }
     .auth-pane {
       display: none; flex-direction: column;
       animation: authIn .5s ease both;
@@ -300,100 +257,102 @@
       margin-top: 24px; font-size: 13px;
     }
     .auth-switch-btn {
-      height: 36px; padding: 0 14px;
-      border: 1px solid var(--line); background: transparent;
-      color: var(--text); font-family: 'IBM Plex Mono', monospace;
-      font-weight: 500; font-size: 11px; letter-spacing: 0.04em;
-      cursor: pointer; transition: border-color 0.15s, transform 0.1s;
+      height: 38px; padding: 0 16px; border-radius: 999px;
+      border: 1px solid rgba(212,155,62,.45); background: transparent;
+      color: var(--text); font-weight: 600; font-size: 13px; cursor: pointer;
+      transition: background .2s, color .2s, border-color .2s;
     }
-    .auth-switch-btn:hover { border-color: var(--text); }
-    .auth-switch-btn:active { transform: translateY(1px); }
+    .auth-switch-btn:hover { background: var(--gold); color: #0A0B0E; border-color: var(--gold); }
 
+    .auth-switch { display: flex; }
+    .mobile-switch { display: none; }
+
+    .notch { position: relative; }
     .notch input {
-      width: 100%; height: 46px; padding: 0 12px;
-      border: 0; border-bottom: 1px solid var(--line);
-      border-radius: 0; background: transparent;
-      color: var(--text); font-size: 14px; outline: none;
-      font-family: 'IBM Plex Mono', monospace;
-      transition: border-color 0.2s;
+      width: 100%; height: 48px; padding: 0 14px;
+      border: 1px solid var(--line); border-radius: 12px;
+      background: transparent; color: var(--text); font-size: 14px; outline: none;
+      transition: border-color .2s;
     }
-    .notch input.has-eye { padding-right: 40px; }
+    .notch input.has-eye { padding-right: 42px; }
     .notch label {
-      position: absolute; left: 0; top: 50%; transform: translateY(-50%);
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
-      color: var(--faint); pointer-events: none;
-      transition: top 0.18s ease, font-size 0.18s ease, color 0.18s ease;
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      padding: 0 6px; font-size: 14px; color: var(--mute);
+      pointer-events: none; background: var(--panel-bg, rgba(13, 16, 23, 0.96));
+      transition: top .18s ease, font-size .18s ease, color .18s ease;
     }
-    .notch:focus-within input { border-bottom-color: var(--accent); }
+    .notch:focus-within input { border-color: var(--gold); }
     .notch:focus-within label,
     .notch.is-filled label {
-      top: -2px; font-size: 9px; color: var(--accent);
+      top: 0; font-size: 11px; color: var(--gold); font-weight: 600;
     }
-    .eye:hover, .eye[aria-pressed='true'] { color: var(--text); }
+
+    .eye {
+      position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+      width: 32px; height: 32px; border: 0; background: none;
+      color: var(--faint); cursor: pointer; display: grid; place-items: center; border-radius: 8px;
+    }
+    .eye:hover, .eye[aria-pressed='true'] { color: var(--gold); }
 
     .btn-ghost {
-      height: 42px; border-radius: 0; border: 1px solid var(--line);
-      background: transparent; color: var(--text);
-      font-family: 'IBM Plex Mono', monospace; font-weight: 500; font-size: 12px;
+      height: 44px; border-radius: 12px; border: 1px solid var(--line);
+      background: rgba(240, 239, 236, 0.03); color: var(--text); font-weight: 500; font-size: 14px;
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      transition: border-color 0.15s, transform 0.1s;
+      transition: border-color .2s, box-shadow .25s, transform .25s;
     }
-    .btn-ghost:hover { border-color: var(--text); }
-    .btn-ghost:active { transform: translateY(1px); }
-    .js-google.gmail-hot { border-color: var(--accent); }
-    .gmail-hint {
-      display: none; font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px; color: var(--accent); margin: -6px 0 10px;
+    .btn-ghost:hover { border-color: rgba(212,155,62,.45); }
+    .js-google.gmail-hot {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 1px rgba(212,155,62,.35), 0 0 22px rgba(212,155,62,.28);
+      transform: scale(1.03);
     }
+    html[data-theme='light'] .js-google.gmail-hot {
+      box-shadow: 0 0 0 1px rgba(196,138,42,.4), 0 8px 20px rgba(196,138,42,.18);
+    }
+    .gmail-hint { display: none; font-size: 12px; color: var(--gold); margin: -8px 0 12px; }
     .gmail-hint.show { display: block; }
 
     .btn-shimmer {
-      position: relative;
-      height: 48px; border: 0; border-radius: 0; cursor: pointer;
-      background: var(--cta); color: var(--cta-text);
-      font-family: 'IBM Plex Mono', monospace;
-      font-weight: 500; font-size: 12px; letter-spacing: 0.08em;
-      text-transform: uppercase;
-      display: inline-flex; align-items: center; justify-content: center;
-      gap: 8px; width: 100%;
-      transition: transform 0.1s ease, opacity 0.15s;
+      position: relative; overflow: hidden;
+      height: 50px; border: 0; border-radius: 999px; cursor: pointer;
+      background: linear-gradient(165deg, var(--gold2), var(--gold));
+      color: var(--ink); font-weight: 700; font-size: 14px;
+      box-shadow: 0 10px 32px rgba(197, 138, 42, 0.35), inset 0 1px 0 rgba(255,255,255,0.25);
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
     }
-    .btn-shimmer:hover { opacity: 0.92; }
-    .btn-shimmer:active { transform: translateY(1px) scale(0.995); }
-    .btn-shimmer:disabled { opacity: .45; cursor: not-allowed; }
+    .btn-shimmer::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.42) 50%, transparent 65%);
+      transform: translateX(-130%);
+    }
+    .btn-shimmer:hover::after { animation: shimmer .75s ease; }
+    @keyframes shimmer { to { transform: translateX(130%); } }
+    .btn-shimmer:disabled { opacity: .5; cursor: not-allowed; }
     .spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; animation: spin .6s linear infinite; display: none; }
     .btn-shimmer.loading .spin, .btn-ghost.loading .spin { display: block; }
     .btn-shimmer.loading .blbl, .btn-ghost.loading .blbl { display: none; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .notch { position: relative; margin-bottom: 4px; }
-    .eye {
-      position: absolute; right: 0; top: 50%; transform: translateY(-50%);
-      width: 32px; height: 32px; border: 0; background: none;
-      color: var(--faint); cursor: pointer; display: grid; place-items: center;
-    }
-    .auth-switch { display: flex; }
-    .mobile-switch { display: none; }
-    .shell { display: none; }
-    @media (prefers-reduced-motion: reduce) {
-      .auth-circuit__coin { display: none; }
-    }
-
     .pill {
-      height: 30px; padding: 0 12px; border-radius: 0; cursor: pointer;
+      height: 32px; padding: 0 14px; border-radius: 999px; cursor: pointer;
       border: 1px solid var(--line); background: transparent;
-      color: var(--faint); font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase;
-      transition: border-color 0.15s, color 0.15s;
+      color: var(--mute); font-size: 12px; font-weight: 600;
+      transition: border-color .2s, color .2s, background .2s;
     }
-    .pill:hover { border-color: var(--text); color: var(--text); }
+    .pill:hover { border-color: var(--gold); color: var(--gold); background: rgba(212,155,62,.08); }
 
-    .msg { display: none; margin-bottom: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; }
+    .btn-outline {
+      height: 42px; min-width: 148px; padding: 0 20px; border-radius: 10px; cursor: pointer;
+      border: 1px solid rgba(212,155,62,.5); background: transparent; color: var(--text); font-weight: 600;
+      transition: background .2s, color .2s;
+    }
+    .btn-outline:hover { background: var(--gold); color: #0A0B0E; }
+
+    .msg { display: none; margin-bottom: 12px; font-size: 13px; }
     .msg.show { display: block; }
     .msg.error { color: var(--err); }
     .msg.success { color: var(--ok); }
-    .msg.info { color: var(--accent); }
+    .msg.info { color: var(--gold); }
 
     .pw-strength { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
     .bars { display: flex; gap: 3px; height: 2px; flex: 1; }
@@ -403,7 +362,7 @@
 
     .extra {
       display: none; position: absolute; inset: 0; z-index: 12;
-      background: var(--panel); color: var(--text);
+      background: var(--panel-bg, #0D1017); color: var(--text);
       padding: 48px 0 36px; flex-direction: column; justify-content: center;
     }
     .extra.show { display: flex; }
@@ -413,7 +372,7 @@
     .redirect { display: none; background: var(--bg); color: var(--text); }
     .redirect.show { display: flex; }
     .redirect-bar { background: var(--line); }
-    .redirect-bar > span { display: block; height: 100%; width: 0; background: var(--accent); animation: prog 1.6s ease forwards; }
+    .redirect-bar > span { display: block; height: 100%; width: 0; background: var(--gold); animation: prog 1.6s ease forwards; }
     @keyframes prog { to { width: 100%; } }
 
     .otp-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: end; }
@@ -423,26 +382,26 @@
     .foot { display: none; }
 
     @media (max-width: 900px) {
-      .auth-shell {
+      .auth-card {
         grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr;
+        min-height: auto;
       }
-      .auth-brand {
+      .auth-art {
         order: -1;
-        min-height: min(38vh, 280px);
+        min-height: min(42vh, 340px);
       }
-      .auth-brand__copy { max-width: 22ch; }
-      .auth-brand__title { font-size: 1.65rem; }
-      .auth-panel { border-right: 0; border-bottom: 1px solid var(--line); }
-      .auth-form-wrap { margin: 40px 0 28px; }
-      .auth-circuit__gate { left: 52%; }
+      .auth-art__content { bottom: 20px; }
+      .auth-art__title { font-size: 1.5rem; }
+      .auth-panel { border-right: 0; border-top: 1px solid var(--line); }
+      .auth-form-wrap { margin: 40px auto 28px; }
     }
     @media (max-width: 767px) {
       .auth-switch { display: none; }
       .mobile-switch { display: flex; }
       .auth-pane-signup { display: none !important; }
-      .auth-shell.is-signup .auth-pane-login { display: none !important; }
-      .auth-shell.is-signup .auth-pane-signup { display: flex !important; }
+      .auth-card.is-signup .auth-pane-login { display: none !important; }
+      .auth-card.is-signup .auth-pane-signup { display: flex !important; }
+      .mobile-switch { display: flex; }
     }
   </style>
 </head>
@@ -460,7 +419,7 @@
   </div>
 
   <div class="auth-page">
-    <div class="auth-shell" id="main">
+    <div class="auth-card" id="main">
       <div class="auth-panel">
         <header class="auth-panel__head">
           <a href="/" class="auth-logo">
@@ -530,7 +489,7 @@
         </p>
         <p class="mobile-switch mt-3 items-center gap-1.5 t-mute text-[13px]">
           <span data-i18n="no_account">Pas de compte ?</span>
-          <button type="button" class="t-accent" data-mode="signup" data-i18n="signup_cta_short">S’inscrire</button>
+          <button type="button" class="t-gold" data-mode="signup" data-i18n="signup_cta_short">S’inscrire</button>
         </p>
       </section>
 
@@ -592,7 +551,7 @@
         </p>
         <p class="mobile-switch mt-3 items-center gap-1.5 t-mute text-[13px]">
           <span data-i18n="has_account">Déjà un compte ?</span>
-          <button type="button" class="t-accent" data-mode="login" data-i18n="login_cta_short">Se connecter</button>
+          <button type="button" class="t-gold" data-mode="login" data-i18n="login_cta_short">Se connecter</button>
         </p>
       </section>
 
@@ -665,32 +624,22 @@
         </footer>
       </div>
 
-      <aside class="auth-brand" aria-hidden="true">
-        <div class="auth-brand__perfs auth-brand__perfs--top"></div>
-        <div class="auth-brand__perfs auth-brand__perfs--bot"></div>
-        <div class="auth-brand__copy">
-          <p class="auth-brand__eyebrow">ARICH Player</p>
-          <h2 class="auth-brand__title" data-i18n-html="art_title">Le cinéma,<br>chez vous.</h2>
-          <p class="auth-brand__sub" data-i18n="art_sub">Vos playlists. Une interface pensée pour le salon.</p>
-          <ul class="auth-brand__tags">
+      <aside class="auth-art" aria-hidden="true">
+        <div class="auth-art__fallback" id="authArtFallback">
+          <img src="/logo-mark.png" alt="" width="240" height="240" />
+        </div>
+        <canvas id="auth3d"></canvas>
+        <div class="auth-art__veil"></div>
+        <div class="auth-art__content">
+          <p class="auth-art__eyebrow">ARICH Player</p>
+          <h2 class="auth-art__title" data-i18n-html="art_title">Le cinéma,<br>chez vous.</h2>
+          <p class="auth-art__sub" data-i18n="art_sub">Vos playlists. Une interface pensée pour le salon.</p>
+          <ul class="auth-art__tags">
             <li data-i18n="art_tag1">Xtream Codes</li>
             <li data-i18n="art_tag2">M3U</li>
             <li data-i18n="art_tag3">Android TV</li>
           </ul>
         </div>
-        <div class="auth-circuit" id="authCircuit">
-          <div class="auth-circuit__rail auth-circuit__rail--front"></div>
-          <div class="auth-circuit__rail auth-circuit__rail--back"></div>
-          <div class="auth-circuit__gate"></div>
-          <div class="auth-circuit__coin" id="authCoin">
-            <div class="coin-cylinder" id="coinCylinder">
-              <div class="coin-face coin-face--a">₿</div>
-              <div class="coin-edge"></div>
-              <div class="coin-face coin-face--b">₿</div>
-            </div>
-          </div>
-        </div>
-        <div class="auth-brand__frame"></div>
       </aside>
     </div>
   </div>
@@ -1198,44 +1147,115 @@
       else if (currentView === 'reset') doReset()
     })
 
-    function initCoinCircuit() {
-      if (reduceMotion || !window.gsap) return
-      const circuit = document.getElementById('authCircuit')
-      const coin = document.getElementById('authCoin')
-      const cylinder = document.getElementById('coinCylinder')
-      const gate = circuit?.querySelector('.auth-circuit__gate')
-      if (!circuit || !coin || !cylinder) return
+    function initAuth3D() {
+      const canvas = document.getElementById('auth3d')
+      const fallback = document.getElementById('authArtFallback')
+      if (!canvas || reduceMotion) return
+      if (typeof THREE === 'undefined') return
 
-      const syncDepth = () => {
-        if (!gate) return
-        const cx = coin.getBoundingClientRect().left + coin.offsetWidth / 2
-        const gr = gate.getBoundingClientRect()
-        const behind = cx > gr.left + 4 && cx < gr.right - 4
-        coin.classList.toggle('is-behind', behind)
+      try {
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true })
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+        const scene = new THREE.Scene()
+        scene.fog = new THREE.FogExp2(0x0d1017, 0.045)
+        const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100)
+        camera.position.set(0, 0.2, 6.2)
+
+        const hero = new THREE.Group()
+        scene.add(hero)
+
+        const blobGeo = new THREE.IcosahedronGeometry(1.35, 4)
+        const pos = blobGeo.attributes.position
+        const v = new THREE.Vector3()
+        for (let i = 0; i < pos.count; i++) {
+          v.fromBufferAttribute(pos, i)
+          const n = 0.45 * Math.sin(v.x * 2.1) * Math.cos(v.y * 2.4) * Math.sin(v.z * 1.8)
+          v.normalize().multiplyScalar(1.35 + n)
+          pos.setXYZ(i, v.x, v.y, v.z)
+        }
+        blobGeo.computeVertexNormals()
+        const blob = new THREE.Mesh(
+          blobGeo,
+          new THREE.MeshStandardMaterial({
+            color: 0x8a5520,
+            metalness: 0.92,
+            roughness: 0.22,
+            emissive: 0x5a2808,
+            emissiveIntensity: 0.55,
+          }),
+        )
+        hero.add(blob)
+
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0xf2a51b, transparent: true, opacity: 0.4 })
+        ;[[2.3, 0], [2.6, Math.PI / 3], [2.0, -Math.PI / 4]].forEach(([r, tilt]) => {
+          const ring = new THREE.Mesh(new THREE.TorusGeometry(r, 0.025, 8, 100), ringMat)
+          ring.rotation.x = Math.PI / 2 + tilt
+          hero.add(ring)
+        })
+
+        const loader = new THREE.TextureLoader()
+        loader.load('/logo-mark.png', (tex) => {
+          tex.anisotropy = 4
+          const logo = new THREE.Mesh(
+            new THREE.PlaneGeometry(2.1, 2.1),
+            new THREE.MeshStandardMaterial({
+              map: tex,
+              transparent: true,
+              metalness: 0.35,
+              roughness: 0.25,
+              emissive: 0x3a2008,
+              emissiveIntensity: 0.35,
+            }),
+          )
+          logo.position.z = 1.65
+          hero.add(logo)
+        })
+
+        const pCount = 280
+        const pGeo = new THREE.BufferGeometry()
+        const pPos = new Float32Array(pCount * 3)
+        for (let i = 0; i < pCount; i++) {
+          pPos[i * 3] = (Math.random() - 0.5) * 14
+          pPos[i * 3 + 1] = (Math.random() - 0.5) * 10
+          pPos[i * 3 + 2] = (Math.random() - 0.5) * 8 - 2
+        }
+        pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3))
+        const particles = new THREE.Points(
+          pGeo,
+          new THREE.PointsMaterial({ color: 0xf2a51b, size: 0.035, transparent: true, opacity: 0.55 }),
+        )
+        scene.add(particles)
+
+        scene.add(new THREE.AmbientLight(0x2a1838, 0.5))
+        const key = new THREE.PointLight(0xf2a51b, 2.4, 30)
+        key.position.set(4, 3, 5)
+        const rim = new THREE.PointLight(0x7b4fd4, 1.6, 28)
+        rim.position.set(-4, -1, 4)
+        scene.add(key, rim)
+
+        let raf = 0
+        const resize = () => {
+          const w = canvas.clientWidth || canvas.offsetWidth || 400
+          const h = canvas.clientHeight || canvas.offsetHeight || 400
+          renderer.setSize(w, h, false)
+          camera.aspect = w / h
+          camera.updateProjectionMatrix()
+        }
+        const tick = (t) => {
+          hero.rotation.y = t * 0.00028
+          hero.rotation.x = Math.sin(t * 0.00015) * 0.1
+          particles.rotation.y = t * 0.00005
+          renderer.render(scene, camera)
+          raf = requestAnimationFrame(tick)
+        }
+        window.addEventListener('resize', resize)
+        resize()
+        fallback?.classList.add('is-hidden')
+        raf = requestAnimationFrame(tick)
+        window.addEventListener('pagehide', () => cancelAnimationFrame(raf))
+      } catch (e) {
+        console.warn('[auth3d]', e)
       }
-
-      const run = () => {
-        const w = circuit.offsetWidth
-        gsap.set(coin, { x: -56, y: 0 })
-        gsap.set(cylinder, { rotateY: 0 })
-        gsap.timeline({ repeat: -1, onUpdate: syncDepth })
-          .to(coin, { x: w + 56, duration: 10, ease: 'none' }, 0)
-          .to(cylinder, { rotateY: 360 * 14, duration: 10, ease: 'none', transformPerspective: 220 }, 0)
-      }
-      run()
-      window.addEventListener('resize', () => {
-        gsap.killTweensOf([coin, cylinder])
-        run()
-      })
-    }
-
-    function initMicroInteractions() {
-      if (reduceMotion || !window.gsap) return
-      document.querySelectorAll('.btn-shimmer, .btn-ghost, .auth-switch-btn').forEach((btn) => {
-        btn.addEventListener('pointerdown', () => gsap.to(btn, { scale: 0.98, duration: 0.08 }))
-        btn.addEventListener('pointerup', () => gsap.to(btn, { scale: 1, duration: 0.14, ease: 'power2.out' }))
-        btn.addEventListener('pointerleave', () => gsap.to(btn, { scale: 1, duration: 0.14 }))
-      })
     }
 
     ;(() => {
@@ -1244,12 +1264,8 @@
       applyLang(saved === 'en' || saved === 'fr' ? saved : browser)
       const finish = () => {
         document.getElementById('boot')?.classList.add('is-done')
-        initCoinCircuit()
-        initMicroInteractions()
+        initAuth3D()
         staggerPane('paneLogin')
-        if (!reduceMotion && window.gsap) {
-          gsap.from('.auth-brand__copy > *', { y: 14, opacity: 0, duration: 0.45, stagger: 0.07, ease: 'power2.out', delay: 0.15 })
-        }
       }
       if (document.readyState === 'complete') setTimeout(finish, 280)
       else addEventListener('load', () => setTimeout(finish, 280))

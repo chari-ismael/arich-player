@@ -245,6 +245,7 @@
     const params = new URLSearchParams(window.location.search);
     const codeVal = (params.get('code') || params.get('tv_pair') || '').toUpperCase().trim();
     const tvId = (params.get('tv') || '').trim();
+    const stayPage = params.get('stay') === '1';
 
     const codeBadge = document.getElementById('codeBadge');
     const codeInput = document.getElementById('code');
@@ -263,14 +264,19 @@
       return 'com.arich.iptv://tv-pair?' + qs;
     }
 
+    function intentPairUrl() {
+      var fallback = location.origin + '/tv-pair.html?stay=1&code=' + encodeURIComponent(codeVal);
+      if (tvId) fallback += '&tv=' + encodeURIComponent(tvId);
+      return 'intent://tv-pair?code=' + encodeURIComponent(codeVal) +
+        (tvId ? '&tv=' + encodeURIComponent(tvId) : '') +
+        '#Intent;scheme=com.arich.iptv;package=com.arich.iptv;S.browser_fallback_url=' +
+        encodeURIComponent(fallback) + ';end';
+    }
+
     function tryOpenApp() {
       if (!codeVal || codeVal.length < 6) return;
-      var scheme = appPairUrl();
-      var iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      iframe.src = scheme;
-      document.body.appendChild(iframe);
-      setTimeout(function () { iframe.remove(); }, 2500);
+      if (stayPage) return;
+      location.replace(intentPairUrl());
     }
 
     if (codeVal && codeVal.length >= 6) {
@@ -281,7 +287,7 @@
         el.textContent = char;
         codeBadge.appendChild(el);
       });
-      btnOpenApp.onclick = function () { window.location.href = appPairUrl(); };
+      btnOpenApp.onclick = function () { window.location.href = intentPairUrl(); };
       tryOpenApp();
     } else {
       codeBadge.innerHTML = '<div style="color:var(--danger);font-weight:700">Lien invalide (Code manquant)</div>';

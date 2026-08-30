@@ -189,6 +189,9 @@
       <div id="codeBadge" class="code-badge"></div>
       <input type="hidden" id="code" />
 
+      <button type="button" class="btn-submit" id="btnOpenApp">Ouvrir l’application ARICH</button>
+      <p class="subtitle" id="openHint" style="margin-top:12px;margin-bottom:8px">Si l’app ne s’ouvre pas, envoyez Xtream ou M3U ci-dessous.</p>
+
       <label>Adresse e-mail ARICH</label>
       <input type="email" id="auth-email" placeholder="votre.email@exemple.com" required autocomplete="email" />
 
@@ -237,19 +240,38 @@
 
   <script>
     const API_ENDPOINT = 'https://aynucieohuowgkwyftiy.supabase.co/functions/v1/pairing/api/submit';
+    const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk';
 
     const params = new URLSearchParams(window.location.search);
     const codeVal = (params.get('code') || params.get('tv_pair') || '').toUpperCase().trim();
+    const tvId = (params.get('tv') || '').trim();
 
     const codeBadge = document.getElementById('codeBadge');
     const codeInput = document.getElementById('code');
     const btnAuthNext = document.getElementById('btnAuthNext');
     const btnGuestNext = document.getElementById('btnGuestNext');
+    const btnOpenApp = document.getElementById('btnOpenApp');
     const stepAuth = document.getElementById('step-auth');
     const stepPlaylist = document.getElementById('step-playlist');
     const pillStep1 = document.getElementById('pill-step1');
     const pillStep2 = document.getElementById('pill-step2');
     const btnSubmit = document.getElementById('btnSubmit');
+
+    function appPairUrl() {
+      var qs = 'code=' + encodeURIComponent(codeVal);
+      if (tvId) qs += '&tv=' + encodeURIComponent(tvId);
+      return 'com.arich.iptv://tv-pair?' + qs;
+    }
+
+    function tryOpenApp() {
+      if (!codeVal || codeVal.length < 6) return;
+      var scheme = appPairUrl();
+      var iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = scheme;
+      document.body.appendChild(iframe);
+      setTimeout(function () { iframe.remove(); }, 2500);
+    }
 
     if (codeVal && codeVal.length >= 6) {
       codeInput.value = codeVal;
@@ -259,11 +281,14 @@
         el.textContent = char;
         codeBadge.appendChild(el);
       });
+      btnOpenApp.onclick = function () { window.location.href = appPairUrl(); };
+      tryOpenApp();
     } else {
       codeBadge.innerHTML = '<div style="color:var(--danger);font-weight:700">Lien invalide (Code manquant)</div>';
       showMsg('Scannez à nouveau le QR Code affiché sur votre TV.', false);
       btnAuthNext.disabled = true;
       btnGuestNext.disabled = true;
+      btnOpenApp.disabled = true;
     }
 
     function goToStep2() {
@@ -337,7 +362,11 @@
 
       fetch(API_ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': ANON_KEY,
+          'Authorization': 'Bearer ' + ANON_KEY
+        },
         body: JSON.stringify({ code: code, config: config })
       })
       .then(r => r.json())

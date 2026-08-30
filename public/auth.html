@@ -1425,6 +1425,14 @@
     async function checkSession() {
       const hash = location.hash, search = location.search
       if (hash && hash.includes('type=recovery')) { openExtra('reset'); return }
+      const fromApp = sessionStorage.getItem('arich_from_app') === '1' ||
+        new URLSearchParams(search).get('from') === 'app'
+      // PKCE depuis l'app mobile : le navigateur ne peut pas échanger le code
+      // (verifier côté app). Renvoyer immédiatement le code via deep link.
+      if (fromApp && search.includes('code=')) {
+        await redirectAfterAuth()
+        return
+      }
       const hasToken = (hash && hash.includes('access_token')) || (search && search.includes('code='))
       if (hasToken) {
         await new Promise((r) => setTimeout(r, 450))
@@ -1650,6 +1658,21 @@
       if (document.readyState === 'complete') setTimeout(finish, 200)
       else addEventListener('load', () => setTimeout(finish, 200))
       setTimeout(finish, 1200)
+    })()
+    ;(() => {
+      const p = new URLSearchParams(location.search)
+      if (p.get('from') === 'app') sessionStorage.setItem('arich_from_app', '1')
+      const errCode = p.get('error_code') || ''
+      if (p.get('error') === 'invalid_request' && errCode === 'bad_oauth_state') {
+        showMsg('login', lang === 'en'
+          ? 'Sign-in session expired. Close this tab and try again from the ARICH app.'
+          : 'Session de connexion expirée. Fermez cet onglet et réessayez depuis l’application ARICH.')
+        p.delete('error')
+        p.delete('error_code')
+        p.delete('error_description')
+        if (!p.has('from')) p.set('from', 'app')
+        history.replaceState({}, '', location.pathname + '?' + p.toString())
+      }
     })()
     checkSession()
   </script>

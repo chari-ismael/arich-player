@@ -3,369 +3,270 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Arich Player — Lier ma TV</title>
-  <meta name="description" content="Associer votre téléviseur Samsung à votre compte ARICH Player." />
+  <title>ARICH — Lier ma TV</title>
+  <meta name="description" content="Ouvrir ARICH pour envoyer votre playlist à la TV Samsung." />
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <meta name="theme-color" content="#080a0f" />
+  <meta name="theme-color" content="#0a0c11" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:       #080a0f;
-      --card:     #12161f;
-      --border:   rgba(240,239,236,0.12);
-      --gold:     #d4a04a;
-      --gold-dark:#b8862f;
-      --text:     #f0efec;
-      --muted:    rgba(240,239,236,0.55);
-      --input-bg: rgba(240,239,236,0.045);
-      --ink:      #0a0c10;
-      --danger:   #ff6b5e;
-      --success:  #2ecc71;
-    }
-
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Figtree', system-ui, -apple-system, sans-serif;
+      background: #0a0c11;
+      color: #f0efec;
+      font-family: Figtree, system-ui, -apple-system, sans-serif;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 24px;
     }
-
-    body::before {
-      content: '';
-      position: fixed;
-      width: 500px; height: 500px;
-      top: -200px; left: -200px;
-      background: radial-gradient(circle, rgba(212,160,74,.15) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
     .card {
-      position: relative;
-      background: var(--card);
-      border: 1.5px solid var(--border);
-      border-radius: 24px;
-      padding: 40px 36px;
       width: 100%;
-      max-width: 460px;
-      box-shadow: 0 0 60px rgba(212,160,74,.1), 0 32px 80px rgba(0,0,0,.6);
-    }
-
-    .logo-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-    .logo-img { width: 44px; height: 44px; border-radius: 12px; object-fit: cover; }
-    .brand {
-      font-family: 'Syne', sans-serif;
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
-    .brand span { color: var(--gold); }
-    .subtitle { font-size: 14px; color: var(--muted); margin-bottom: 24px; line-height: 1.5; }
-
-    .steps-indicator {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 24px;
-      position: relative;
-    }
-    .step-pill {
-      font-size: 12px;
-      font-weight: 700;
-      padding: 6px 12px;
+      max-width: 420px;
+      background: #12141c;
+      border: 1px solid rgba(240,239,236,.1);
       border-radius: 20px;
-      background: var(--input-bg);
-      border: 1px solid var(--border);
-      color: var(--muted);
+      padding: 32px 28px 28px;
     }
-    .step-pill.active {
-      background: rgba(212,160,74,0.15);
-      border-color: var(--gold);
-      color: var(--gold);
+    .brand {
+      font-family: Syne, sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .28em;
+      color: rgba(240,239,236,.45);
+      margin-bottom: 18px;
     }
-
-    .code-badge {
+    h1 {
+      font-family: Syne, sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .lead { color: rgba(240,239,236,.58); font-size: 15px; line-height: 1.5; margin-bottom: 22px; }
+    .code-row {
       display: flex;
-      gap: 6px;
       justify-content: center;
-      margin-bottom: 20px;
+      margin: 0 0 22px;
     }
     .code-char {
-      width: 38px; height: 46px;
-      background: rgba(212,160,74,0.08);
-      border: 1.5px solid var(--gold);
-      border-radius: 8px;
+      width: 42px; height: 52px;
+      margin: 0 3px;
+      border: 1.5px solid #f2a51b;
+      border-radius: 10px;
+      background: rgba(242,165,27,.08);
       display: flex; align-items: center; justify-content: center;
-      font-size: 22px; font-weight: 800;
-      font-family: 'Courier New', monospace;
-      color: var(--gold);
+      font-family: Syne, sans-serif;
+      font-size: 24px; font-weight: 800;
+      color: #f2a51b;
     }
-
-    label { display: block; font-size: 13px; font-weight: 600; color: rgba(240,239,236,0.8); margin-top: 14px; margin-bottom: 6px; }
-    input, select, button {
+    .code-input {
       width: 100%;
-      padding: 14px;
-      border-radius: 10px;
-      border: 1.5px solid var(--border);
-      background: var(--input-bg);
-      color: #fff;
-      font-size: 15px;
-      font-family: inherit;
-      outline: none;
-    }
-    input:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(212,160,74,0.15); }
-    select option { background: #12161f; color: #fff; }
-
-    .btn-submit {
-      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-      color: var(--ink);
-      font-weight: 700;
-      border: none;
-      margin-top: 24px;
-      cursor: pointer;
-      font-size: 16px;
-      box-shadow: 0 8px 24px rgba(212,160,74,0.3);
-      transition: transform 0.15s, opacity 0.15s;
-    }
-    .btn-submit:hover { opacity: 0.92; }
-    .btn-submit:active { transform: scale(0.98); }
-
-    .btn-secondary {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border);
-      font-weight: 600;
-      margin-top: 10px;
-      cursor: pointer;
-    }
-
-    .msg {
-      margin-top: 20px;
-      padding: 14px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
       text-align: center;
-      display: none;
+      font-family: Syne, sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: .28em;
+      padding: 16px 12px;
+      margin-bottom: 18px;
+      border-radius: 12px;
+      border: 1.5px solid rgba(240,239,236,.12);
+      background: rgba(240,239,236,.04);
+      color: #fff;
+      text-transform: uppercase;
     }
-    .msg.success { background: rgba(46,204,113,0.15); color: var(--success); border: 1px solid var(--success); }
-    .msg.error { background: rgba(255,107,94,0.15); color: var(--danger); border: 1px solid var(--danger); }
-
+    .code-input:focus { outline: none; border-color: #f2a51b; }
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border: 0;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-primary { background: #f2a51b; color: #0a0c11; }
+    .btn-ghost {
+      background: transparent;
+      color: #f0efec;
+      border: 1px solid rgba(240,239,236,.16);
+      margin-top: 10px;
+    }
+    .hint { margin-top: 16px; font-size: 13px; color: rgba(240,239,236,.5); line-height: 1.45; }
+    .msg { margin-top: 14px; font-size: 14px; font-weight: 600; display: none; }
+    .msg.ok { color: #22c55e; display: block; }
+    .msg.err { color: #ef4444; display: block; }
+    details { margin-top: 22px; color: rgba(240,239,236,.5); font-size: 14px; }
+    details summary { cursor: pointer; margin-bottom: 12px; }
+    label { display: block; font-size: 12px; font-weight: 600; margin: 10px 0 6px; color: rgba(240,239,236,.7); }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(240,239,236,.12);
+      background: rgba(240,239,236,.04);
+      color: #fff;
+      font: inherit;
+    }
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="logo-row">
-      <img src="/logo-fg.png" alt="ARICH Logo" class="logo-img" onerror="this.style.display='none'" />
-      <div>
-        <div class="brand">ARICH <span>PLAYER</span></div>
-        <div style="font-size:12px;color:var(--muted)">Liaison TV Samsung</div>
-      </div>
-    </div>
-    
-    <div class="steps-indicator">
-      <div class="step-pill active" id="pill-step1">1. Authentification</div>
-      <div class="step-pill" id="pill-step2">2. Playlist IPTV</div>
-    </div>
+    <div class="brand">ARICH</div>
+    <h1>Lier ma TV</h1>
+    <p class="lead" id="lead">Ouvrez l’application ARICH pour envoyer la playlist déjà enregistrée.</p>
 
-    <!-- ÉTAPE 1 : CONNEXION / INSCRIPTION COMPTE ARICH -->
-    <div id="step-auth">
-      <div class="subtitle">Connectez-vous à votre compte ARICH pour associer votre téléviseur</div>
-      <div style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:6px">CODE TV DÉTECTÉ</div>
-      <div id="codeBadge" class="code-badge"></div>
-      <input type="hidden" id="code" />
+    <div id="codeBadge" class="code-row"></div>
+    <input id="codeManual" class="code-input hidden" maxlength="6" placeholder="ABC123" autocomplete="off" autocapitalize="characters" />
 
-      <button type="button" class="btn-submit" id="btnOpenApp">Ouvrir l’application ARICH</button>
-      <p class="subtitle" id="openHint" style="margin-top:12px;margin-bottom:8px">Si l’app ne s’ouvre pas, envoyez Xtream ou M3U ci-dessous.</p>
+    <button type="button" class="btn btn-primary" id="btnOpenApp">Ouvrir ARICH</button>
+    <button type="button" class="btn btn-ghost" id="btnStay">Je tape le code dans l’app</button>
 
-      <label>Adresse e-mail ARICH</label>
-      <input type="email" id="auth-email" placeholder="votre.email@exemple.com" required autocomplete="email" />
-
-      <label>Mot de passe</label>
-      <input type="password" id="auth-pass" placeholder="••••••••" required />
-
-      <button type="button" class="btn-submit" id="btnAuthNext">Se connecter & Continuer →</button>
-      <button type="button" class="btn-secondary" id="btnGuestNext">Continuer sans compte (Invité)</button>
-    </div>
-
-    <!-- ÉTAPE 2 : CONFIGURATION PLAYLIST -->
-    <div id="step-playlist" class="hidden">
-      <div class="subtitle">Sélectionnez ou ajoutez votre playlist IPTV pour cette TV</div>
-
-      <form id="pairForm">
-        <label>Mode de connexion IPTV</label>
-        <select id="type" onchange="toggleType()">
-          <option value="xtream">Xtream Codes (Serveur + Login)</option>
-          <option value="m3u">Playlist M3U (URL)</option>
-        </select>
-
-        <div id="fields-xtream">
-          <label>Nom du profil (optionnel)</label>
-          <input type="text" id="xtream-name" placeholder="Mon IPTV">
-          <label>URL du serveur</label>
-          <input type="url" id="xtream-server" placeholder="http://serveur-iptv.com">
-          <label>Nom d'utilisateur</label>
-          <input type="text" id="xtream-user" placeholder="Identifiant">
-          <label>Mot de passe</label>
-          <input type="password" id="xtream-pass" placeholder="••••••••">
-        </div>
-
-        <div id="fields-m3u" class="hidden">
-          <label>Nom du profil (optionnel)</label>
-          <input type="text" id="m3u-name" placeholder="Ma Playlist M3U">
-          <label>Lien de la playlist (URL M3U)</label>
-          <input type="url" id="m3u-url" placeholder="http://serveur.com/playlist.m3u">
-        </div>
-
-        <button type="submit" class="btn-submit" id="btnSubmit">Envoyer à la TV 🎬</button>
-      </form>
-    </div>
-
+    <p class="hint" id="hint">Si l’app ne s’ouvre pas : ARICH → Réglages → Lier ma TV, puis ce code.</p>
     <div id="statusMsg" class="msg"></div>
+
+    <details id="fallback">
+      <summary>Pas d’application ? Envoyer Xtream / M3U ici</summary>
+      <form id="pairForm">
+        <label>Type</label>
+        <select id="type">
+          <option value="xtream">Xtream Codes</option>
+          <option value="m3u">Playlist M3U</option>
+        </select>
+        <div id="fields-xtream">
+          <label>Serveur</label>
+          <input id="xtream-server" placeholder="http://serveur.com" />
+          <label>Utilisateur</label>
+          <input id="xtream-user" />
+          <label>Mot de passe</label>
+          <input id="xtream-pass" type="password" />
+        </div>
+        <div id="fields-m3u" class="hidden">
+          <label>URL M3U</label>
+          <input id="m3u-url" placeholder="http://serveur.com/playlist.m3u" />
+        </div>
+        <button type="submit" class="btn btn-primary" id="btnSubmit" style="margin-top:16px">Envoyer à la TV</button>
+      </form>
+    </details>
   </div>
 
   <script>
-    const API_ENDPOINT = 'https://aynucieohuowgkwyftiy.supabase.co/functions/v1/pairing/api/submit';
-    const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk';
+    var API_ENDPOINT = 'https://aynucieohuowgkwyftiy.supabase.co/functions/v1/pairing/api/submit';
+    var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk';
 
-    const params = new URLSearchParams(window.location.search);
-    const codeVal = (params.get('code') || params.get('tv_pair') || '').toUpperCase().trim();
-    const tvId = (params.get('tv') || '').trim();
-    const stayPage = params.get('stay') === '1';
+    var params = new URLSearchParams(window.location.search);
+    var codeVal = (params.get('code') || params.get('tv_pair') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    var tvId = (params.get('tv') || '').trim();
+    var stayPage = params.get('stay') === '1';
 
-    const codeBadge = document.getElementById('codeBadge');
-    const codeInput = document.getElementById('code');
-    const btnAuthNext = document.getElementById('btnAuthNext');
-    const btnGuestNext = document.getElementById('btnGuestNext');
-    const btnOpenApp = document.getElementById('btnOpenApp');
-    const stepAuth = document.getElementById('step-auth');
-    const stepPlaylist = document.getElementById('step-playlist');
-    const pillStep1 = document.getElementById('pill-step1');
-    const pillStep2 = document.getElementById('pill-step2');
-    const btnSubmit = document.getElementById('btnSubmit');
+    var codeBadge = document.getElementById('codeBadge');
+    var codeManual = document.getElementById('codeManual');
+    var btnOpenApp = document.getElementById('btnOpenApp');
+    var btnStay = document.getElementById('btnStay');
+    var hint = document.getElementById('hint');
+
+    function currentCode() {
+      return (codeVal || codeManual.value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    }
 
     function appPairUrl() {
-      var qs = 'code=' + encodeURIComponent(codeVal);
+      var c = currentCode();
+      var qs = 'code=' + encodeURIComponent(c);
       if (tvId) qs += '&tv=' + encodeURIComponent(tvId);
       return 'com.arich.iptv://tv-pair?' + qs;
     }
 
     function intentPairUrl() {
-      var fallback = location.origin + '/tv-pair.html?stay=1&code=' + encodeURIComponent(codeVal);
+      var c = currentCode();
+      var fallback = 'https://arich.fr/tv-pair.html?stay=1&code=' + encodeURIComponent(c);
       if (tvId) fallback += '&tv=' + encodeURIComponent(tvId);
-      return 'intent://tv-pair?code=' + encodeURIComponent(codeVal) +
+      return 'intent://tv-pair?code=' + encodeURIComponent(c) +
         (tvId ? '&tv=' + encodeURIComponent(tvId) : '') +
         '#Intent;scheme=com.arich.iptv;package=com.arich.iptv;S.browser_fallback_url=' +
         encodeURIComponent(fallback) + ';end';
     }
 
-    function tryOpenApp() {
-      if (!codeVal || codeVal.length < 6) return;
-      if (stayPage) return;
-      location.replace(intentPairUrl());
+    function openApp() {
+      var c = currentCode();
+      if (c.length < 6) {
+        showMsg('Entrez le code à 6 lettres affiché sur la TV.', false);
+        return;
+      }
+      codeVal = c;
+      window.location.href = intentPairUrl();
     }
 
-    if (codeVal && codeVal.length >= 6) {
-      codeInput.value = codeVal;
-      codeVal.split('').forEach(char => {
-        const el = document.createElement('div');
+    function renderCode(c) {
+      codeBadge.innerHTML = '';
+      if (!c) return;
+      c.split('').forEach(function (ch) {
+        var el = document.createElement('div');
         el.className = 'code-char';
-        el.textContent = char;
+        el.textContent = ch;
         codeBadge.appendChild(el);
       });
-      btnOpenApp.onclick = function () { window.location.href = intentPairUrl(); };
-      tryOpenApp();
-    } else {
-      codeBadge.innerHTML = '<div style="color:var(--danger);font-weight:700">Lien invalide (Code manquant)</div>';
-      showMsg('Scannez à nouveau le QR Code affiché sur votre TV.', false);
-      btnAuthNext.disabled = true;
-      btnGuestNext.disabled = true;
-      btnOpenApp.disabled = true;
     }
 
-    function goToStep2() {
-      stepAuth.classList.add('hidden');
-      stepPlaylist.classList.remove('hidden');
-      pillStep1.classList.remove('active');
-      pillStep2.classList.add('active');
+    function showMsg(text, ok) {
+      var msg = document.getElementById('statusMsg');
+      msg.textContent = text;
+      msg.className = 'msg ' + (ok ? 'ok' : 'err');
     }
 
-    btnAuthNext.onclick = function() {
-      const email = document.getElementById('auth-email').value.trim();
-      const pass = document.getElementById('auth-pass').value.trim();
-      if (!email || !pass) {
-        showMsg('Veuillez saisir votre email et mot de passe ARICH.', false);
-        return;
-      }
-      showMsg('✓ Compte ARICH identifié !', true);
-      setTimeout(goToStep2, 400);
+    btnOpenApp.onclick = openApp;
+    btnStay.onclick = function () {
+      showMsg('Dans ARICH : Réglages → Lier ma TV, puis le code ci-dessus.', true);
     };
 
-    btnGuestNext.onclick = function() {
-      goToStep2();
-    };
-
-    function toggleType() {
-      const t = document.getElementById('type').value;
+    document.getElementById('type').onchange = function () {
+      var t = this.value;
       document.getElementById('fields-xtream').className = t === 'xtream' ? '' : 'hidden';
       document.getElementById('fields-m3u').className = t === 'm3u' ? '' : 'hidden';
+    };
+
+    if (codeVal.length >= 6) {
+      renderCode(codeVal);
+      if (!stayPage) {
+        setTimeout(openApp, 250);
+      }
+    } else {
+      codeManual.classList.remove('hidden');
+      hint.textContent = 'Tapez le code de la TV, puis Ouvrir ARICH — ou saisissez-le dans l’app : Réglages → Lier ma TV.';
     }
 
-    function showMsg(text, isSuccess) {
-      const msg = document.getElementById('statusMsg');
-      msg.textContent = text;
-      msg.className = 'msg ' + (isSuccess ? 'success' : 'error');
-      msg.style.display = 'block';
-    }
-
-    document.getElementById('pairForm').onsubmit = function(e) {
+    document.getElementById('pairForm').onsubmit = function (e) {
       e.preventDefault();
-      const code = codeInput.value;
-      if (!code || code.length < 6) {
-        showMsg('Code d\'appairage invalide.', false);
+      var code = currentCode();
+      if (code.length < 6) {
+        showMsg('Code d’appairage invalide.', false);
         return;
       }
-
-      const type = document.getElementById('type').value;
-      const config = { type: type };
-      const userEmail = document.getElementById('auth-email').value.trim();
-      if (userEmail) config.arichUser = userEmail;
-
+      var type = document.getElementById('type').value;
+      var config = { type: type };
       if (type === 'xtream') {
-        config.name = document.getElementById('xtream-name').value.trim() || 'Xtream IPTV';
+        config.name = 'Xtream IPTV';
         config.server = document.getElementById('xtream-server').value.trim();
         config.username = document.getElementById('xtream-user').value.trim();
         config.password = document.getElementById('xtream-pass').value.trim();
         if (!config.server || !config.username || !config.password) {
-          showMsg('Veuillez remplir l\'URL du serveur, l\'utilisateur et le mot de passe.', false);
+          showMsg('Remplissez serveur, utilisateur et mot de passe.', false);
           return;
         }
       } else {
-        config.name = document.getElementById('m3u-name').value.trim() || 'Playlist M3U';
+        config.name = 'Playlist M3U';
         config.url = document.getElementById('m3u-url').value.trim();
         if (!config.url) {
-          showMsg('Veuillez entrer le lien M3U.', false);
+          showMsg('Entrez le lien M3U.', false);
           return;
         }
       }
-
-      btnSubmit.disabled = true;
-      btnSubmit.textContent = 'Transmission en cours...';
-
+      var btn = document.getElementById('btnSubmit');
+      btn.disabled = true;
       fetch(API_ENDPOINT, {
         method: 'POST',
         headers: {
@@ -375,20 +276,18 @@
         },
         body: JSON.stringify({ code: code, config: config })
       })
-      .then(r => r.json())
-      .then(res => {
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
         if (res && res.ok) {
-          showMsg('✓ Compte transmis avec succès ! La TV charge votre lecteur.', true);
-          btnSubmit.textContent = 'Transmis ✓';
+          showMsg('Envoyé. Regardez la TV.', true);
+          btn.textContent = 'Transmis';
         } else {
-          btnSubmit.disabled = false;
-          btnSubmit.textContent = 'Envoyer à la TV 🎬';
-          showMsg('Erreur : ' + (res.error || 'Code invalide ou expiré.'), false);
+          btn.disabled = false;
+          showMsg(res && res.error ? String(res.error) : 'Code invalide ou expiré.', false);
         }
       })
-      .catch(() => {
-        btnSubmit.disabled = false;
-        btnSubmit.textContent = 'Envoyer à la TV 🎬';
+      .catch(function () {
+        btn.disabled = false;
         showMsg('Erreur de connexion. Réessayez.', false);
       });
     };

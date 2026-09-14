@@ -14,7 +14,7 @@ export const site = {
   year: 2026,
 }
 
-export const APP_VERSION = '3.0.23'
+export const APP_VERSION = '3.0.24'
 
 /** APK releases are hosted by arich-player (reliable /download route) */
 const RELEASE_REPO = 'chari-ismael/arich-player'

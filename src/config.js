@@ -1,4 +1,4 @@
-﻿// config/site.js — contenu commercial + mapping media (un seul endroit)
+// config/site.js — contenu commercial + mapping media (un seul endroit)
 
 export const site = {
   name: 'ARICH Player',
@@ -14,7 +14,7 @@ export const site = {
   year: 2026,
 }
 
-export const APP_VERSION = '3.0.25'
+export const APP_VERSION = '3.0.26'
 
 /** APK releases are hosted by arich-player (reliable /download route) */
 const RELEASE_REPO = 'chari-ismael/arich-player'

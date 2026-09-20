@@ -5,132 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ARICH</title>
   <meta name="robots" content="noindex, follow" />
-  <meta name="theme-color" content="#0B0D10" />
+  <meta name="theme-color" content="#080a0f" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
-  <link rel="stylesheet" href="/arich-theme.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg: #080a0f; --text: #f0efec; --mute: rgba(240,239,236,.58);
-      --faint: rgba(240,239,236,.34); --line: rgba(240,239,236,.1);
-      --copper: #c58a2a; --copper2: #d4a04a; --ink: #0a0c10;
-      --grad: linear-gradient(165deg, #d4a04a, #c58a2a);
-      --ease: cubic-bezier(.22,1,.36,1);
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      min-height: 100vh; display: grid; place-items: center;
-      font-family: 'Figtree', system-ui, sans-serif; color: var(--text);
-      background:
-        radial-gradient(ellipse 70% 50% at 50% -10%, rgba(197,138,42,.16), transparent 55%),
-        var(--bg);
-      padding: 32px 20px; text-align: center;
-      -webkit-font-smoothing: antialiased;
-    }
-    .wrap { max-width: 440px; animation: up .7s var(--ease) both; }
-    .mark {
-      width: 56px; height: 56px; margin: 0 auto 18px;
-      border-radius: 16px;
-      background: var(--grad);
-      box-shadow: 0 10px 32px rgba(197,138,42,.35);
-    }
-    .code {
-      font-family: 'Syne', sans-serif; font-weight: 800;
-      font-size: clamp(72px, 18vw, 120px); letter-spacing: -.06em; line-height: 1;
-      background: var(--grad); -webkit-background-clip: text; background-clip: text;
-      -webkit-text-fill-color: transparent; margin-bottom: 12px;
-    }
-    h1 {
-      font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700;
-      letter-spacing: -.02em; margin-bottom: 10px;
-    }
-    p { color: var(--mute); font-size: 15px; line-height: 1.6; margin-bottom: 28px; }
-    .slug {
-      display: inline-block; margin-bottom: 18px; padding: 6px 12px;
-      border: 1px solid var(--line); border-radius: 999px;
-      color: var(--copper2); font-size: 13px; font-weight: 600;
-    }
-    .actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-    a, button {
-      display: inline-flex; align-items: center; justify-content: center;
-      padding: 12px 20px; border-radius: 999px; font-size: 14px; font-weight: 600;
-      text-decoration: none; transition: transform .2s var(--ease);
-      font-family: inherit; cursor: pointer; border: 0;
-    }
-    a:hover, button:hover { transform: translateY(-1px); }
-    .primary { color: var(--ink); background: var(--grad); box-shadow: 0 8px 28px rgba(197,138,42,.3); }
-    .ghost { color: var(--text); border: 1px solid var(--line); background: transparent; }
-    @keyframes up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
-  </style>
 </head>
-<body>
-  <div class="wrap" id="app"></div>
+<body style="background:#080a0f;color:#f0efec;font-family:system-ui,sans-serif">
   <script>
     (function () {
       var PKG = 'com.arich.iptv';
-      var PLAY = 'https://play.google.com/store/apps/details?id=' + PKG;
-      var APK = 'https://github.com/chari-ismael/arich-player/releases/latest';
       var segs = location.pathname.replace(/^\/+|\/+$/g, '').split('/').filter(Boolean);
       var head = (segs[0] || '').toLowerCase();
+      var android = /Android/i.test(navigator.userAgent);
+      var web = new URLSearchParams(location.search).get('web') === '1';
       var isLink = head === 'm' || head === 'matchs' || head === 'v' || head === 'f';
+      var path = location.pathname + location.search.replace(/[?&]web=1/, '');
 
-      function pretty(slug) {
-        return decodeURIComponent(slug || '')
-          .replace(/[-_]+/g, ' ')
-          .replace(/\b\w/g, function (c) { return c.toUpperCase(); })
-          .trim();
-      }
-
-      function titleFor() {
-        if (head === 'matchs') {
-          if (segs[1] && segs[1].toLowerCase() === 'live') return 'Matchs en direct';
-          if (segs[1]) return pretty(segs[1]);
-          return 'Matchs du jour';
-        }
-        if (head === 'm') return pretty(segs[2] || segs[1] || 'Match');
-        if (head === 'v') return pretty(segs[3] || 'Sur ARICH');
-        if (head === 'f') return 'Sur ARICH';
-        return '';
-      }
-
-      function openApp() {
-        var path = location.pathname + location.search;
-        var fallback = PLAY;
-        var intent = 'intent://arich.fr' + path +
-          '#Intent;scheme=https;package=' + PKG +
+      function intent(p) {
+        var fallback = 'https://arich.fr' + p + (p.indexOf('?') >= 0 ? '&' : '?') + 'web=1';
+        return 'intent://arich.fr' + p + '#Intent;scheme=https;package=' + PKG +
           ';S.browser_fallback_url=' + encodeURIComponent(fallback) + ';end';
-        window.location.href = intent;
       }
 
-      var root = document.getElementById('app');
-      if (!isLink) {
-        document.title = 'Page introuvable — ARICH';
-        root.innerHTML =
-          '<div class="code">404</div>' +
-          '<h1>Cette page n’existe pas</h1>' +
-          '<p>Le lien est peut‑être ancien, ou la page a déménagé pendant la refonte du site.</p>' +
-          '<div class="actions">' +
-            '<a class="primary" href="/">Retour à l’accueil</a>' +
-            '<a class="ghost" href="mailto:contact@arich.fr">Contact</a>' +
-          '</div>';
+      if (isLink && android && !web) {
+        location.replace(intent(path));
         return;
       }
-
-      var title = titleFor();
-      document.title = title + ' — ARICH';
-      root.innerHTML =
-        '<div class="mark"></div>' +
-        '<div class="slug">arich.fr</div>' +
-        '<h1>' + title.replace(/</g, '') + '</h1>' +
-        '<p>Ouvrez ce lien dans ARICH Player. Si l’app n’est pas installée, téléchargez-la puis revenez ici.</p>' +
-        '<div class="actions">' +
-          '<button class="primary" id="open-app" type="button">Ouvrir dans l’app</button>' +
-          '<a class="ghost" href="' + PLAY + '">Play Store</a>' +
-          '<a class="ghost" href="' + APK + '">Télécharger l’APK</a>' +
-        '</div>';
-      document.getElementById('open-app').addEventListener('click', openApp);
+      if (head === 'm' || head === 'matchs') {
+        var id = head === 'm' ? segs[1] : '';
+        location.replace('/matchs?web=1' + (id ? '&id=' + encodeURIComponent(id) : ''));
+        return;
+      }
+      document.title = isLink ? 'Ouvrir ARICH' : 'Page introuvable — ARICH';
+      document.body.style.cssText = 'min-height:100vh;display:grid;place-items:center;background:#080a0f;color:#f0efec;font-family:Figtree,system-ui,sans-serif;text-align:center;padding:32px';
+      document.body.innerHTML = isLink
+        ? '<div><p style="margin-bottom:16px">Ouvrez ce contenu dans ARICH Player.</p><p><a href="https://play.google.com/store/apps/details?id=' + PKG + '" style="color:#d4a04a">Play Store</a> · <a href="https://github.com/chari-ismael/arich-player/releases/latest" style="color:#d4a04a">APK</a></p></div>'
+        : '<div><h1>404</h1><p>Cette page n’existe pas.</p><p><a href="/" style="color:#d4a04a">Accueil</a></p></div>';
     })();
   </script>
 </body>

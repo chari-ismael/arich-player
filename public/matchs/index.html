@@ -3,81 +3,338 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Matchs du jour — ARICH</title>
-  <meta name="description" content="Les matchs du jour sur ARICH Player. Ouvrez dans l’app pour le score, la chaîne et les compos." />
-  <meta name="robots" content="index, follow" />
-  <meta name="theme-color" content="#0B0D10" />
+  <title>Match Center — ARICH</title>
+  <meta name="description" content="Scores, matchs du jour et lives — Match Center ARICH." />
+  <meta name="theme-color" content="#080a0f" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="canonical" href="https://arich.fr/matchs" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #080a0f; --text: #f0efec; --mute: rgba(240,239,236,.58);
-      --line: rgba(240,239,236,.1); --ink: #0a0c10;
+      --bg: #080a0f; --bg2: #0d1017; --text: #f0efec;
+      --mute: rgba(240,239,236,.58); --faint: rgba(240,239,236,.34);
+      --line: rgba(240,239,236,.1); --copper: #c58a2a; --copper2: #d4a04a;
+      --ink: #0a0c10; --live: #ff3b30;
       --grad: linear-gradient(165deg, #d4a04a, #c58a2a);
       --ease: cubic-bezier(.22,1,.36,1);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: var(--bg); color: var(--text); }
     body {
-      min-height: 100vh; display: grid; place-items: center;
-      font-family: 'Figtree', system-ui, sans-serif; color: var(--text);
-      background:
-        radial-gradient(ellipse 70% 50% at 50% -10%, rgba(197,138,42,.16), transparent 55%),
-        var(--bg);
-      padding: 32px 20px; text-align: center;
+      min-height: 100vh;
+      font-family: Figtree, system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
-    .wrap { max-width: 440px; animation: up .7s var(--ease) both; }
-    .mark {
-      width: 56px; height: 56px; margin: 0 auto 18px;
-      border-radius: 16px; background: var(--grad);
-      box-shadow: 0 10px 32px rgba(197,138,42,.35);
+    a { color: inherit; text-decoration: none; }
+    .top {
+      position: sticky; top: 0; z-index: 20;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 14px 18px 12px;
+      background: rgba(8,10,15,.88); backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
     }
-    .slug {
-      display: inline-block; margin-bottom: 18px; padding: 6px 12px;
-      border: 1px solid var(--line); border-radius: 999px;
-      color: #d4a04a; font-size: 13px; font-weight: 600;
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .brand img { width: 32px; height: 32px; }
+    .brand h1 {
+      font-family: Syne, sans-serif; font-size: 16px; font-weight: 800;
+      letter-spacing: -.02em; white-space: nowrap;
     }
-    h1 {
-      font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700;
-      letter-spacing: -.02em; margin-bottom: 10px;
+    .brand span { display: block; color: var(--mute); font-size: 11px; font-weight: 600; margin-top: 1px; }
+    .open-app {
+      flex: 0 0 auto; border: 0; cursor: pointer; color: var(--ink);
+      background: var(--grad); border-radius: 999px;
+      padding: 10px 14px; font: 700 12.5px Figtree, sans-serif;
+      box-shadow: 0 8px 22px rgba(197,138,42,.28);
     }
-    p { color: var(--mute); font-size: 15px; line-height: 1.6; margin-bottom: 28px; }
-    .actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-    a, button {
-      display: inline-flex; align-items: center; justify-content: center;
-      padding: 12px 20px; border-radius: 999px; font-size: 14px; font-weight: 600;
-      text-decoration: none; transition: transform .2s var(--ease);
-      font-family: inherit; cursor: pointer; border: 0;
+    .tabs {
+      display: flex; gap: 8px; padding: 12px 18px 4px;
     }
-    a:hover, button:hover { transform: translateY(-1px); }
-    .primary { color: var(--ink); background: var(--grad); box-shadow: 0 8px 28px rgba(197,138,42,.3); }
-    .ghost { color: var(--text); border: 1px solid var(--line); background: transparent; }
-    @keyframes up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    .tab {
+      border: 1px solid var(--line); background: transparent; color: var(--mute);
+      border-radius: 999px; padding: 8px 14px; font: 700 12.5px Figtree, sans-serif;
+      cursor: pointer;
+    }
+    .tab.on { color: var(--ink); background: var(--grad); border-color: transparent; }
+    .wrap { width: min(720px, 100%); margin: 0 auto; padding: 8px 0 96px; }
+    .hint {
+      margin: 8px 18px 4px; color: var(--faint); font-size: 12px;
+    }
+    .group { margin: 10px 12px 18px; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: rgba(240,239,236,.03); }
+    .ghead {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 11px 14px 9px; border-bottom: 1px solid var(--line);
+      background: rgba(240,239,236,.03);
+    }
+    .ghead b { font-family: Syne, sans-serif; font-size: 13.5px; }
+    .ghead em { font-style: normal; color: var(--mute); font-size: 11px; font-weight: 600; }
+    .item { border-top: 1px solid rgba(240,239,236,.05); }
+    .item:first-of-type { border-top: 0; }
+    .row {
+      display: grid; grid-template-columns: 52px 1fr auto 1fr;
+      align-items: center; gap: 6px; padding: 11px 12px; cursor: pointer;
+    }
+    .row:active { background: rgba(240,239,236,.04); }
+    .clock { text-align: center; font-size: 11px; font-weight: 800; color: var(--mute); letter-spacing: .02em; }
+    .clock.live { color: var(--live); }
+    .team { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .team.away { flex-direction: row-reverse; text-align: right; }
+    .team img, .badge {
+      width: 22px; height: 22px; object-fit: contain; flex: 0 0 auto;
+    }
+    .badge {
+      display: grid; place-items: center; border-radius: 50%;
+      background: rgba(197,138,42,.16); color: var(--copper2);
+      font-size: 9px; font-weight: 800;
+    }
+    .team span { font-size: 13.5px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .score {
+      min-width: 52px; text-align: center; font-size: 15px; font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+    .score.live { color: var(--live); }
+    .vs { color: var(--mute); font-size: 11px; font-weight: 700; }
+    .bc {
+      grid-column: 2 / -1; padding: 0 12px 10px 70px;
+      color: var(--mute); font-size: 11px; font-weight: 600;
+    }
+    .empty, .err, .load {
+      padding: 48px 24px; text-align: center; color: var(--mute); font-size: 14px;
+    }
+    .spinner {
+      width: 28px; height: 28px; margin: 0 auto 12px; border-radius: 50%;
+      border: 2px solid var(--line); border-top-color: var(--copper2);
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .more {
+      display: block; margin: 0 auto; border: 1px solid var(--line);
+      background: transparent; color: var(--text); border-radius: 999px;
+      padding: 10px 16px; font: 650 13px Figtree, sans-serif; cursor: pointer;
+    }
+    .gate {
+      display: none; position: fixed; inset: 0; place-items: center;
+      background: var(--bg); z-index: 40; text-align: center; padding: 32px;
+    }
+    .gate.on { display: grid; }
+    .gate p { color: var(--mute); margin-top: 10px; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="mark"></div>
-    <div class="slug">arich.fr/matchs</div>
-    <h1>Matchs du jour</h1>
-    <p>Score, chaîne et compos sont dans ARICH Player. Ouvrez l’app, ou installez-la si ce n’est pas encore fait.</p>
-    <div class="actions">
-      <button class="primary" id="open-app" type="button">Ouvrir dans l’app</button>
-      <a class="ghost" href="https://play.google.com/store/apps/details?id=com.arich.iptv">Play Store</a>
-      <a class="ghost" href="https://github.com/chari-ismael/arich-player/releases/latest">Télécharger l’APK</a>
+  <div class="gate" id="gate">
+    <div>
+      <img src="/logo-mark.svg" width="48" height="48" alt="" />
+      <p>Ouverture d’ARICH Player…</p>
     </div>
   </div>
+  <header class="top">
+    <a class="brand" href="/">
+      <img src="/logo-mark.svg" alt="ARICH" />
+      <div>
+        <h1>Match Center</h1>
+        <span>Scores du jour</span>
+      </div>
+    </a>
+    <button class="open-app" id="open-app" type="button">Ouvrir l’app</button>
+  </header>
+  <div class="tabs">
+    <button class="tab on" data-f="all" type="button">Tous</button>
+    <button class="tab" data-f="live" type="button">Live</button>
+  </div>
+  <p class="hint" id="hint"></p>
+  <main class="wrap" id="root">
+    <div class="load"><div class="spinner"></div>Chargement des matchs…</div>
+  </main>
+
   <script>
+  (function () {
+    var PKG = 'com.arich.iptv';
+    var API = 'https://aynucieohuowgkwyftiy.supabase.co/functions/v1/matches-api?path=today';
+    var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk';
+    var ORDER = {
+      'uefa.champions': 0, 'Champions League': 0,
+      'eng.1': 1, 'Premier League': 1,
+      'esp.1': 2, 'LaLiga': 2,
+      'fra.1': 3, 'Ligue 1': 3,
+      'ita.1': 4, 'Serie A': 4,
+      'ger.1': 5, 'Bundesliga': 5,
+      'uefa.europa': 6, 'Europa League': 6
+    };
+    var q = new URLSearchParams(location.search);
+    var liveOnly = location.pathname.indexOf('/live') >= 0 || q.get('live') === '1';
+    var forceWeb = q.get('web') === '1';
+    var android = /Android/i.test(navigator.userAgent);
+    var filter = liveOnly ? 'live' : 'all';
+    var matches = [];
+    var showOther = false;
+
+    function pathForApp() {
+      return (location.pathname.replace(/\/$/, '') || '/matchs') + (liveOnly && location.pathname.indexOf('/live') < 0 ? '/live' : '');
+    }
+    function intentFor(path) {
+      var fallback = 'https://arich.fr' + path + (path.indexOf('?') >= 0 ? '&' : '?') + 'web=1';
+      return 'intent://arich.fr' + path + '#Intent;scheme=https;package=' + PKG +
+        ';S.browser_fallback_url=' + encodeURIComponent(fallback) + ';end';
+    }
+    function openApp(path) {
+      var p = path || pathForApp();
+      if (android) {
+        location.href = intentFor(p);
+        return;
+      }
+      location.href = 'https://play.google.com/store/apps/details?id=' + PKG;
+    }
+
+    if (android && !forceWeb) {
+      document.getElementById('gate').classList.add('on');
+      location.replace(intentFor(pathForApp()));
+      return;
+    }
+
     document.getElementById('open-app').addEventListener('click', function () {
-      var path = location.pathname + location.search;
-      var play = 'https://play.google.com/store/apps/details?id=com.arich.iptv';
-      location.href = 'intent://arich.fr' + path +
-        '#Intent;scheme=https;package=com.arich.iptv;S.browser_fallback_url=' +
-        encodeURIComponent(play) + ';end';
+      openApp(pathForApp());
     });
+    document.querySelectorAll('.tab').forEach(function (btn) {
+      if ((btn.getAttribute('data-f') === 'live') === liveOnly) {
+        document.querySelectorAll('.tab').forEach(function (b) { b.classList.remove('on'); });
+        btn.classList.add('on');
+      }
+      btn.addEventListener('click', function () {
+        filter = btn.getAttribute('data-f');
+        document.querySelectorAll('.tab').forEach(function (b) { b.classList.toggle('on', b === btn); });
+        render();
+      });
+    });
+
+    function slug(s) {
+      return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 32);
+    }
+    function isLive(m) {
+      var s = String(m.status || '').toUpperCase();
+      return s === 'LIVE' || s === 'IN_PLAY' || s === 'HT' || s === 'HALFTIME';
+    }
+    function isFt(m) {
+      var s = String(m.status || '').toUpperCase();
+      return s === 'FINISHED' || s === 'FT' || s === 'AET' || s === 'PEN';
+    }
+    function clock(m) {
+      if (isLive(m)) return m.statusTime || 'LIVE';
+      if (isFt(m)) return 'FT';
+      if (!m.startTime) return '';
+      var d = new Date(m.startTime);
+      if (isNaN(d)) return '';
+      return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    }
+    function initials(name) {
+      return String(name || '').split(/\s+/).slice(0, 2).map(function (w) { return w[0] || ''; }).join('').toUpperCase();
+    }
+    function logo(url, name) {
+      if (url) return '<img src="' + url.replace(/"/g, '') + '" alt="" />';
+      return '<span class="badge">' + initials(name) + '</span>';
+    }
+    function leagueKey(m) {
+      return m.leagueKey || m.league || 'Autre';
+    }
+    function leagueOrder(m) {
+      var k = leagueKey(m);
+      if (ORDER[k] != null) return ORDER[k];
+      if (ORDER[m.league] != null) return ORDER[m.league];
+      return 80;
+    }
+    function isMajor(m) {
+      return leagueOrder(m) <= 6 || (m.importance || 0) >= 75;
+    }
+    function esc(s) {
+      return String(s || '').replace(/[&<>"]/g, function (c) {
+        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c];
+      });
+    }
+
+    function groupsOf(list) {
+      var map = {};
+      list.forEach(function (m) {
+        var k = m.league || 'Autre';
+        if (!map[k]) map[k] = { title: k, country: m.country || '', items: [], order: leagueOrder(m), major: isMajor(m) };
+        map[k].items.push(m);
+        if (leagueOrder(m) < map[k].order) map[k].order = leagueOrder(m);
+      });
+      return Object.keys(map).map(function (k) { return map[k]; })
+        .sort(function (a, b) { return a.order - b.order || a.title.localeCompare(b.title); });
+    }
+
+    function render() {
+      var list = matches.slice();
+      if (filter === 'live') list = list.filter(isLive);
+      var groups = groupsOf(list);
+      var major = groups.filter(function (g) { return g.major; });
+      var other = groups.filter(function (g) { return !g.major; });
+      var shown = major.concat(showOther || major.length === 0 ? other : []);
+      var root = document.getElementById('root');
+      var hint = document.getElementById('hint');
+      hint.textContent = list.length ? list.length + ' matchs' : '';
+      if (!list.length) {
+        root.innerHTML = '<div class="empty">' + (filter === 'live' ? 'Aucun match en direct.' : 'Aucun match aujourd’hui.') + '</div>';
+        return;
+      }
+      root.innerHTML = shown.map(function (g) {
+        return '<section class="group"><div class="ghead"><b>' + esc(g.title) + '</b><em>' + esc(g.country) + '</em></div>' +
+          g.items.map(function (m) {
+            var live = isLive(m);
+            var scored = live || isFt(m);
+            var mid = encodeURIComponent(m.matchId || '');
+            var sl = slug(m.homeTeam) + '-' + slug(m.awayTeam);
+            var bc = (m.broadcasters && m.broadcasters[0] && m.broadcasters[0].name) || '';
+            return '<div class="item"><div class="row" data-id="' + mid + '" data-slug="' + sl + '">' +
+              '<div class="clock' + (live ? ' live' : '') + '">' + esc(clock(m)) + '</div>' +
+              '<div class="team">' + logo(m.homeLogo, m.homeTeam) + '<span>' + esc(m.homeTeam) + '</span></div>' +
+              '<div class="score' + (live ? ' live' : '') + '">' +
+                (scored ? (m.homeScore ?? 0) + ' – ' + (m.awayScore ?? 0) : '<span class="vs">vs</span>') +
+              '</div>' +
+              '<div class="team away">' + logo(m.awayLogo, m.awayTeam) + '<span>' + esc(m.awayTeam) + '</span></div>' +
+              '</div>' + (bc ? '<div class="bc">TV · ' + esc(bc) + '</div>' : '') + '</div>';
+          }).join('') + '</section>';
+      }).join('') +
+        (other.length && !showOther && major.length
+          ? '<button class="more" id="more" type="button">Autres compétitions</button>' : '');
+      var more = document.getElementById('more');
+      if (more) more.onclick = function () { showOther = true; render(); };
+      root.querySelectorAll('.row').forEach(function (row) {
+        row.addEventListener('click', function () {
+          openApp('/m/' + row.getAttribute('data-id') + '/' + row.getAttribute('data-slug'));
+        });
+      });
+      var focusId = q.get('id');
+      if (focusId) {
+        var el = root.querySelector('.row[data-id="' + CSS.escape(focusId) + '"]');
+        if (el) {
+          el.style.background = 'rgba(197,138,42,.12)';
+          el.scrollIntoView({ block: 'center' });
+        }
+      }
+    }
+
+    fetch(API, { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (data) {
+        matches = data.matches || [];
+        render();
+      })
+      .catch(function () {
+        document.getElementById('root').innerHTML = '<div class="err">Impossible de charger les matchs.</div>';
+      });
+
+    setInterval(function () {
+      fetch(API, { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (data) {
+          if (!data || !data.matches) return;
+          matches = data.matches;
+          render();
+        }).catch(function () {});
+    }, 45000);
+  })();
   </script>
 </body>
 </html>

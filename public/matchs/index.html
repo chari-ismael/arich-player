@@ -177,13 +177,17 @@
       return 'intent://arich.fr' + path + '#Intent;scheme=https;package=' + PKG +
         ';S.browser_fallback_url=' + encodeURIComponent(fallback) + ';end';
     }
+    function protocolFor(path) {
+      return 'com.arich.iptv://' + String(path || '/matchs').replace(/^\//, '');
+    }
     function openApp(path) {
       var p = path || pathForApp();
       if (android) {
         location.href = intentFor(p);
         return;
       }
-      location.href = 'https://play.google.com/store/apps/details?id=' + PKG;
+      // Windows / desktop : le protocole est enregistré par l’app, pas le Play Store.
+      location.href = protocolFor(p);
     }
 
     if (android && !forceWeb) {

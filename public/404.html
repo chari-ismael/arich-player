@@ -30,7 +30,14 @@
         return;
       }
       if (head === 'm' || head === 'matchs') {
-        var id = head === 'm' ? segs[1] : '';
+        var id = head === 'm' ? (segs[1] || '') : '';
+        if (!android && !web) {
+          location.href = 'com.arich.iptv://' + segs.join('/');
+          setTimeout(function () {
+            location.replace('/matchs?web=1' + (id ? '&id=' + encodeURIComponent(id) : ''));
+          }, 1200);
+          return;
+        }
         location.replace('/matchs?web=1' + (id ? '&id=' + encodeURIComponent(id) : ''));
         return;
       }

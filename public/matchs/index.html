@@ -287,10 +287,10 @@
           g.items.map(function (m) {
             var live = isLive(m);
             var scored = live || isFt(m);
-            var mid = encodeURIComponent(m.matchId || '');
+            var mid = String(m.matchId || '');
             var sl = slug(m.homeTeam) + '-' + slug(m.awayTeam);
             var bc = (m.broadcasters && m.broadcasters[0] && m.broadcasters[0].name) || '';
-            return '<div class="item"><div class="row" data-id="' + mid + '" data-slug="' + sl + '">' +
+            return '<div class="item"><div class="row" data-id="' + esc(mid) + '" data-slug="' + esc(sl) + '">' +
               '<div class="clock' + (live ? ' live' : '') + '">' + esc(clock(m)) + '</div>' +
               '<div class="team">' + logo(m.homeLogo, m.homeTeam) + '<span>' + esc(m.homeTeam) + '</span></div>' +
               '<div class="score' + (live ? ' live' : '') + '">' +
@@ -306,7 +306,7 @@
       if (more) more.onclick = function () { showOther = true; render(); };
       root.querySelectorAll('.row').forEach(function (row) {
         row.addEventListener('click', function () {
-          openApp('/m/' + row.getAttribute('data-id') + '/' + row.getAttribute('data-slug'));
+          openApp('/m/' + encodeURIComponent(row.getAttribute('data-id') || '') + '/' + (row.getAttribute('data-slug') || ''));
         });
       });
       var focusId = q.get('id');

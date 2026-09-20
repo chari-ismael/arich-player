@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Matchs du jour — ARICH</title>
+  <meta name="description" content="Les matchs du jour sur ARICH Player. Ouvrez dans l’app pour le score, la chaîne et les compos." />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#0B0D10" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="canonical" href="https://arich.fr/matchs" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #080a0f; --text: #f0efec; --mute: rgba(240,239,236,.58);
+      --line: rgba(240,239,236,.1); --ink: #0a0c10;
+      --grad: linear-gradient(165deg, #d4a04a, #c58a2a);
+      --ease: cubic-bezier(.22,1,.36,1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh; display: grid; place-items: center;
+      font-family: 'Figtree', system-ui, sans-serif; color: var(--text);
+      background:
+        radial-gradient(ellipse 70% 50% at 50% -10%, rgba(197,138,42,.16), transparent 55%),
+        var(--bg);
+      padding: 32px 20px; text-align: center;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: 440px; animation: up .7s var(--ease) both; }
+    .mark {
+      width: 56px; height: 56px; margin: 0 auto 18px;
+      border-radius: 16px; background: var(--grad);
+      box-shadow: 0 10px 32px rgba(197,138,42,.35);
+    }
+    .slug {
+      display: inline-block; margin-bottom: 18px; padding: 6px 12px;
+      border: 1px solid var(--line); border-radius: 999px;
+      color: #d4a04a; font-size: 13px; font-weight: 600;
+    }
+    h1 {
+      font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700;
+      letter-spacing: -.02em; margin-bottom: 10px;
+    }
+    p { color: var(--mute); font-size: 15px; line-height: 1.6; margin-bottom: 28px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    a, button {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 12px 20px; border-radius: 999px; font-size: 14px; font-weight: 600;
+      text-decoration: none; transition: transform .2s var(--ease);
+      font-family: inherit; cursor: pointer; border: 0;
+    }
+    a:hover, button:hover { transform: translateY(-1px); }
+    .primary { color: var(--ink); background: var(--grad); box-shadow: 0 8px 28px rgba(197,138,42,.3); }
+    .ghost { color: var(--text); border: 1px solid var(--line); background: transparent; }
+    @keyframes up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="mark"></div>
+    <div class="slug">arich.fr/matchs</div>
+    <h1>Matchs du jour</h1>
+    <p>Score, chaîne et compos sont dans ARICH Player. Ouvrez l’app, ou installez-la si ce n’est pas encore fait.</p>
+    <div class="actions">
+      <button class="primary" id="open-app" type="button">Ouvrir dans l’app</button>
+      <a class="ghost" href="https://play.google.com/store/apps/details?id=com.arich.iptv">Play Store</a>
+      <a class="ghost" href="https://github.com/chari-ismael/arich-player/releases/latest">Télécharger l’APK</a>
+    </div>
+  </div>
+  <script>
+    document.getElementById('open-app').addEventListener('click', function () {
+      var path = location.pathname + location.search;
+      var play = 'https://play.google.com/store/apps/details?id=com.arich.iptv';
+      location.href = 'intent://arich.fr' + path +
+        '#Intent;scheme=https;package=com.arich.iptv;S.browser_fallback_url=' +
+        encodeURIComponent(play) + ';end';
+    });
+  </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Page introuvable — ARICH</title>
+  <title>ARICH</title>
   <meta name="robots" content="noindex, follow" />
   <meta name="theme-color" content="#0B0D10" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -30,6 +30,12 @@
       -webkit-font-smoothing: antialiased;
     }
     .wrap { max-width: 440px; animation: up .7s var(--ease) both; }
+    .mark {
+      width: 56px; height: 56px; margin: 0 auto 18px;
+      border-radius: 16px;
+      background: var(--grad);
+      box-shadow: 0 10px 32px rgba(197,138,42,.35);
+    }
     .code {
       font-family: 'Syne', sans-serif; font-weight: 800;
       font-size: clamp(72px, 18vw, 120px); letter-spacing: -.06em; line-height: 1;
@@ -41,27 +47,91 @@
       letter-spacing: -.02em; margin-bottom: 10px;
     }
     p { color: var(--mute); font-size: 15px; line-height: 1.6; margin-bottom: 28px; }
+    .slug {
+      display: inline-block; margin-bottom: 18px; padding: 6px 12px;
+      border: 1px solid var(--line); border-radius: 999px;
+      color: var(--copper2); font-size: 13px; font-weight: 600;
+    }
     .actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-    a {
+    a, button {
       display: inline-flex; align-items: center; justify-content: center;
       padding: 12px 20px; border-radius: 999px; font-size: 14px; font-weight: 600;
       text-decoration: none; transition: transform .2s var(--ease);
+      font-family: inherit; cursor: pointer; border: 0;
     }
-    a:hover { transform: translateY(-1px); }
+    a:hover, button:hover { transform: translateY(-1px); }
     .primary { color: var(--ink); background: var(--grad); box-shadow: 0 8px 28px rgba(197,138,42,.3); }
-    .ghost { color: var(--text); border: 1px solid var(--line); }
+    .ghost { color: var(--text); border: 1px solid var(--line); background: transparent; }
     @keyframes up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="code">404</div>
-    <h1>Cette page n’existe pas</h1>
-    <p>Le lien est peut‑être ancien, ou la page a déménagé pendant la refonte du site.</p>
-    <div class="actions">
-      <a class="primary" href="/">Retour à l’accueil</a>
-      <a class="ghost" href="mailto:contact@arich.fr">Contact</a>
-    </div>
-  </div>
+  <div class="wrap" id="app"></div>
+  <script>
+    (function () {
+      var PKG = 'com.arich.iptv';
+      var PLAY = 'https://play.google.com/store/apps/details?id=' + PKG;
+      var APK = 'https://github.com/chari-ismael/arich-player/releases/latest';
+      var segs = location.pathname.replace(/^\/+|\/+$/g, '').split('/').filter(Boolean);
+      var head = (segs[0] || '').toLowerCase();
+      var isLink = head === 'm' || head === 'matchs' || head === 'v' || head === 'f';
+
+      function pretty(slug) {
+        return decodeURIComponent(slug || '')
+          .replace(/[-_]+/g, ' ')
+          .replace(/\b\w/g, function (c) { return c.toUpperCase(); })
+          .trim();
+      }
+
+      function titleFor() {
+        if (head === 'matchs') {
+          if (segs[1] && segs[1].toLowerCase() === 'live') return 'Matchs en direct';
+          if (segs[1]) return pretty(segs[1]);
+          return 'Matchs du jour';
+        }
+        if (head === 'm') return pretty(segs[2] || segs[1] || 'Match');
+        if (head === 'v') return pretty(segs[3] || 'Sur ARICH');
+        if (head === 'f') return 'Sur ARICH';
+        return '';
+      }
+
+      function openApp() {
+        var path = location.pathname + location.search;
+        var fallback = PLAY;
+        var intent = 'intent://arich.fr' + path +
+          '#Intent;scheme=https;package=' + PKG +
+          ';S.browser_fallback_url=' + encodeURIComponent(fallback) + ';end';
+        window.location.href = intent;
+      }
+
+      var root = document.getElementById('app');
+      if (!isLink) {
+        document.title = 'Page introuvable — ARICH';
+        root.innerHTML =
+          '<div class="code">404</div>' +
+          '<h1>Cette page n’existe pas</h1>' +
+          '<p>Le lien est peut‑être ancien, ou la page a déménagé pendant la refonte du site.</p>' +
+          '<div class="actions">' +
+            '<a class="primary" href="/">Retour à l’accueil</a>' +
+            '<a class="ghost" href="mailto:contact@arich.fr">Contact</a>' +
+          '</div>';
+        return;
+      }
+
+      var title = titleFor();
+      document.title = title + ' — ARICH';
+      root.innerHTML =
+        '<div class="mark"></div>' +
+        '<div class="slug">arich.fr</div>' +
+        '<h1>' + title.replace(/</g, '') + '</h1>' +
+        '<p>Ouvrez ce lien dans ARICH Player. Si l’app n’est pas installée, téléchargez-la puis revenez ici.</p>' +
+        '<div class="actions">' +
+          '<button class="primary" id="open-app" type="button">Ouvrir dans l’app</button>' +
+          '<a class="ghost" href="' + PLAY + '">Play Store</a>' +
+          '<a class="ghost" href="' + APK + '">Télécharger l’APK</a>' +
+        '</div>';
+      document.getElementById('open-app').addEventListener('click', openApp);
+    })();
+  </script>
 </body>
 </html>

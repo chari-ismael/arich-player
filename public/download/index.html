@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Télécharger ARICH Player — Android, Windows, APK, AAB</title>
+  <meta name="description" content="Téléchargez ARICH Player pour votre appareil : Google Play, APK, AAB, Windows. Versions actuelles et archives." />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#0B0D10" />
+  <link rel="canonical" href="https://arich.fr/download" />
+  <link rel="alternate" hreflang="fr" href="https://arich.fr/download" />
+  <link rel="alternate" hreflang="en" href="https://arich.fr/download?lang=en" />
+  <link rel="icon" href="/favicon.ico?v=2" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://arich.fr/download" />
+  <meta property="og:title" content="Télécharger ARICH Player" />
+  <meta property="og:description" content="Play Store, APK, AAB, Windows — adapté à votre appareil." />
+  <meta property="og:image" content="https://arich.fr/og-image.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "ARICH Player",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Android, Windows",
+    "url": "https://arich.fr/download",
+    "downloadUrl": "https://arich.fr/download",
+    "installUrl": "https://play.google.com/store/apps/details?id=com.arich.iptv",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+  }
+  </script>
+  <style>
+    :root {
+      --bg: #080a0f;
+      --bg2: #0d1017;
+      --text: #f0efec;
+      --mute: rgba(240,239,236,.58);
+      --faint: rgba(240,239,236,.34);
+      --line: rgba(240,239,236,.1);
+      --copper: #c58a2a;
+      --copper2: #d4a04a;
+      --ink: #0a0c10;
+      --ok: #6a9e82;
+      --grad: linear-gradient(165deg, #d4a04a, #c58a2a);
+      --ease: cubic-bezier(.22,1,.36,1);
+      --glass: rgba(240,239,236,.045);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: var(--bg); }
+    body {
+      min-height: 100vh;
+      font-family: Figtree, system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse 70% 45% at 12% -10%, rgba(197,138,42,.18), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 90% 0%, rgba(80,110,180,.08), transparent 50%),
+        var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+    .wrap { width: min(1080px, calc(100% - 40px)); margin: 0 auto; padding: 0 0 80px; }
+    header.top {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 22px 0 8px; gap: 12px;
+    }
+    .brand {
+      display: inline-flex; align-items: center; gap: 10px;
+      text-decoration: none; font-family: Syne, sans-serif;
+      font-weight: 700; letter-spacing: .16em; font-size: 12px;
+    }
+    .brand img { width: 36px; height: 36px; border-radius: 10px; }
+    .top-actions { display: flex; align-items: center; gap: 8px; }
+    .lang, .ghost {
+      border: 1px solid var(--line); background: transparent; color: var(--mute);
+      border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 12px;
+      font-weight: 600; cursor: pointer; text-decoration: none;
+    }
+    .lang.is-on, .ghost:hover { color: var(--text); border-color: rgba(197,138,42,.4); }
+    .hero { padding: 36px 0 8px; }
+    .eyebrow {
+      color: var(--copper2); font-size: 11px; font-weight: 700;
+      letter-spacing: .16em; text-transform: uppercase; margin-bottom: 10px;
+    }
+    h1 {
+      font-family: Syne, sans-serif; font-size: clamp(1.8rem, 4.5vw, 3rem);
+      letter-spacing: -.03em; line-height: 1.08; margin-bottom: 12px;
+    }
+    .lede { color: var(--mute); font-size: 16px; line-height: 1.55; max-width: 46ch; }
+    .detected {
+      display: inline-flex; align-items: center; gap: 8px; margin-top: 18px;
+      padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line);
+      background: var(--glass); font-size: 13px; color: var(--mute);
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px var(--ok); }
+    .grid {
+      display: grid; grid-template-columns: 1.15fr .85fr; gap: 16px; margin-top: 28px;
+    }
+    @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } }
+    .card {
+      border: 1px solid var(--line); border-radius: 22px;
+      background: linear-gradient(180deg, rgba(240,239,236,.06), rgba(240,239,236,.025));
+      padding: 22px; backdrop-filter: blur(18px);
+    }
+    .card.primary { border-color: rgba(197,138,42,.45); box-shadow: 0 18px 50px rgba(197,138,42,.12); }
+    .card h2 { font-family: Syne, sans-serif; font-size: 18px; margin-bottom: 6px; }
+    .card p { color: var(--mute); font-size: 13.5px; line-height: 1.5; margin-bottom: 16px; }
+    .btns { display: flex; flex-wrap: wrap; gap: 10px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 46px; padding: 0 16px; border-radius: 999px; text-decoration: none;
+      font-weight: 700; font-size: 13.5px; border: 1px solid transparent;
+    }
+    .btn--copper { background: var(--grad); color: var(--ink); box-shadow: 0 10px 28px rgba(197,138,42,.28); }
+    .btn--ghost { background: transparent; color: var(--text); border-color: var(--line); }
+    .btn.is-off { opacity: .42; pointer-events: none; }
+    .meta { margin-top: 12px; font-size: 12px; color: var(--faint); }
+    .alts { display: grid; gap: 10px; }
+    .alt {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 12px 14px; border-radius: 16px; border: 1px solid var(--line);
+      background: rgba(0,0,0,.18); text-decoration: none;
+    }
+    .alt strong { display: block; font-size: 14px; }
+    .alt span { color: var(--faint); font-size: 12px; }
+    .chip {
+      font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+      color: var(--copper2); border: 1px solid rgba(197,138,42,.35); border-radius: 999px;
+      padding: 4px 8px; white-space: nowrap;
+    }
+    .section { margin-top: 48px; }
+    .section h2 { font-family: Syne, sans-serif; font-size: 22px; margin-bottom: 8px; }
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 14px; }
+    .filters button {
+      border: 1px solid var(--line); background: transparent; color: var(--mute);
+      border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 12px;
+      font-weight: 600; cursor: pointer;
+    }
+    .filters button.is-on { color: var(--ink); background: var(--grad); border-color: transparent; }
+    .release {
+      border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px;
+      margin-bottom: 10px; background: var(--glass);
+    }
+    .release header { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline; margin-bottom: 8px; }
+    .release h3 { font-size: 15px; }
+    .release time { color: var(--faint); font-size: 12px; }
+    .release .notes { color: var(--mute); font-size: 13px; margin-bottom: 10px; white-space: pre-line; }
+    .files { display: flex; flex-wrap: wrap; gap: 8px; }
+    .file {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px;
+      text-decoration: none; font-size: 12.5px; font-weight: 600;
+    }
+    .file:hover { border-color: rgba(197,138,42,.45); }
+    .empty, .status { color: var(--mute); font-size: 14px; padding: 12px 0; }
+    footer {
+      margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
+      display: flex; flex-wrap: wrap; gap: 14px; color: var(--faint); font-size: 12px;
+    }
+    footer a { color: var(--mute); text-decoration: none; }
+    .hint { font-size: 12px; color: var(--faint); margin-top: 10px; line-height: 1.45; }
+    .os { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .os button {
+      border: 1px solid var(--line); background: transparent; color: var(--mute);
+      border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 12px;
+      font-weight: 600; cursor: pointer;
+    }
+    .os button.is-on { color: var(--ink); background: var(--grad); border-color: transparent; }
+    .badge {
+      font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+      color: var(--ink); background: var(--grad); border-radius: 999px; padding: 3px 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <a class="brand" href="/"><img src="/logo-fg.png" alt="" width="36" height="36" />ARICH</a>
+      <div class="top-actions">
+        <button type="button" class="lang is-on" data-lang="fr">FR</button>
+        <button type="button" class="lang" data-lang="en">EN</button>
+        <a class="ghost" href="/">Site</a>
+      </div>
+    </header>
+
+    <section class="hero">
+      <p class="eyebrow" data-i18n="over">Téléchargement</p>
+      <h1 data-i18n="title">ARICH Player, pour votre appareil.</h1>
+      <p class="lede" data-i18n="lede">Google Play, APK, AAB ou Windows — la page choisit le bon fichier. Les versions précédentes restent disponibles en bas.</p>
+      <div class="detected"><span class="dot"></span><span id="detectedLabel">…</span></div>
+      <div class="os" id="osSwitch" role="tablist" aria-label="Plateforme"></div>
+    </section>
+
+    <div class="grid">
+      <article class="card primary" id="primaryCard"></article>
+      <aside class="card">
+        <h2 data-i18n="others_title">Autres plateformes</h2>
+        <p data-i18n="others_sub">Toujours accessibles, même si ce n’est pas votre appareil.</p>
+        <div class="alts" id="alts"></div>
+      </aside>
+    </div>
+
+    <section class="section" id="archive">
+      <h2 data-i18n="archive_title">Versions précédentes</h2>
+      <p class="lede" data-i18n="archive_sub">Archives GitHub. Utile si une version plus récente pose problème.</p>
+      <div class="filters" id="filters"></div>
+      <div id="archiveList" class="status" data-i18n="loading">Chargement des releases…</div>
+    </section>
+
+    <footer>
+      <a href="/">arich.fr</a>
+      <a href="/privacy-policy.html">Confidentialité</a>
+      <a href="https://github.com/chari-ismael/arich-player/releases">GitHub Releases</a>
+      <a href="mailto:contact@arich.fr">contact@arich.fr</a>
+    </footer>
+  </div>
+
+  <script>
+    const REPO = 'chari-ismael/arich-player'
+    const PLAY = 'https://play.google.com/store/apps/details?id=com.arich.iptv'
+    const GH = 'https://github.com/' + REPO + '/releases'
+    const API = 'https://api.github.com/repos/' + REPO + '/releases?per_page=40'
+    const FALLBACK = {
+      tag: 'v3.0.27',
+      apk: 'https://github.com/' + REPO + '/releases/download/v3.0.27/ArichPlayer-v3.0.27.apk',
+      aab: 'https://github.com/' + REPO + '/releases/download/v3.0.27/ArichPlayer-v3.0.27.aab',
+    }
+
+    const I18N = {
+      fr: {
+        over: 'Téléchargement',
+        title: 'ARICH Player, pour votre appareil.',
+        lede: 'Google Play, APK, AAB ou Windows — la page choisit le bon fichier. Les versions précédentes restent disponibles en bas.',
+        others_title: 'Autres plateformes',
+        others_sub: 'Toujours accessibles, même si ce n’est pas votre appareil.',
+        archive_title: 'Versions précédentes',
+        archive_sub: 'Archives GitHub. Utile si une version plus récente pose problème.',
+        loading: 'Chargement des releases…',
+        detected_android: 'Appareil détecté : Android',
+        detected_tv: 'Appareil détecté : Android TV',
+        detected_win: 'Appareil détecté : Windows',
+        detected_mac: 'Appareil détecté : macOS',
+        detected_linux: 'Appareil détecté : Linux',
+        detected_ios: 'Appareil détecté : iPhone / iPad',
+        detected_other: 'Appareil non reconnu — choisissez une plateforme',
+        rec_android: 'Recommandé pour Android',
+        rec_tv: 'Recommandé pour Android TV',
+        rec_win: 'Recommandé pour Windows',
+        rec_ios: 'Pas d’app iOS pour le moment',
+        rec_mac: 'Pas de build macOS public',
+        rec_linux: 'Pas de build Linux public',
+        rec_other: 'Choisissez votre fichier',
+        play: 'Google Play',
+        apk: 'APK direct',
+        aab: 'AAB direct',
+        exe: 'Windows (.exe)',
+        github: 'Toutes les releases',
+        latest: 'Dernière version',
+        none_win: 'Aucun .exe dans cette release. Le build Windows sera proposé ici dès qu’il est publié.',
+        none_mac: 'Pas de fichier macOS. Utilisez Android, Play Store, ou Windows quand l’exe est disponible.',
+        none_linux: 'Pas de fichier Linux public. Utilisez Android, Play Store, ou Windows quand l’exe est disponible.',
+        none_ios: 'ARICH n’est pas sur l’App Store. Installez-le sur Android, Android TV ou Windows.',
+        os_android: 'Android',
+        os_tv: 'Android TV',
+        os_windows: 'Windows',
+        os_mac: 'macOS',
+        os_linux: 'Linux',
+        os_ios: 'iOS',
+        current: 'Actuelle',
+        pick_os: 'Ce n’est pas le bon appareil ?',
+        aab_hint: 'L’AAB s’installe via Play Console, pas en un tap sur le téléphone.',
+        apk_hint: 'Sideload Android. Autorisez l’installation depuis cette source.',
+        win_hint: 'Installez le .exe, puis épinglez ARICH à la barre des tâches.',
+        play_hint: 'Mises à jour automatiques, recommandé.',
+        size: ' · ',
+        all: 'Tous',
+        filter_apk: 'APK',
+        filter_aab: 'AAB',
+        filter_win: 'Windows',
+        filter_other: 'Autre',
+        empty_filter: 'Aucun fichier de ce type dans l’archive.',
+        error: 'Impossible de joindre GitHub. Liens de secours ci-dessous.',
+      },
+      en: {
+        over: 'Download',
+        title: 'ARICH Player, for your device.',
+        lede: 'Google Play, APK, AAB or Windows — this page picks the right file. Older builds stay listed below.',
+        others_title: 'Other platforms',
+        others_sub: 'Always available, even if this isn’t your device.',
+        archive_title: 'Previous versions',
+        archive_sub: 'GitHub archives. Handy if a newer build misbehaves.',
+        loading: 'Loading releases…',
+        detected_android: 'Detected device: Android',
+        detected_tv: 'Detected device: Android TV',
+        detected_win: 'Detected device: Windows',
+        detected_mac: 'Detected device: macOS',
+        detected_linux: 'Detected device: Linux',
+        detected_ios: 'Detected device: iPhone / iPad',
+        detected_other: 'Device not recognized — pick a platform',
+        rec_android: 'Recommended for Android',
+        rec_tv: 'Recommended for Android TV',
+        rec_win: 'Recommended for Windows',
+        rec_ios: 'No iOS app yet',
+        rec_mac: 'No public macOS build',
+        rec_linux: 'No public Linux build',
+        rec_other: 'Pick your file',
+        play: 'Google Play',
+        apk: 'Direct APK',
+        aab: 'Direct AAB',
+        exe: 'Windows (.exe)',
+        github: 'All releases',
+        latest: 'Latest version',
+        none_win: 'No .exe in this release. The Windows build will appear here once published.',
+        none_mac: 'No macOS file. Use Android, Play Store, or Windows when the exe ships.',
+        none_linux: 'No public Linux file. Use Android, Play Store, or Windows when the exe ships.',
+        none_ios: 'ARICH is not on the App Store. Install it on Android, Android TV or Windows.',
+        os_android: 'Android',
+        os_tv: 'Android TV',
+        os_windows: 'Windows',
+        os_mac: 'macOS',
+        os_linux: 'Linux',
+        os_ios: 'iOS',
+        current: 'Latest',
+        pick_os: 'Wrong device?',
+        aab_hint: 'AAB is for Play Console, not one-tap phone install.',
+        apk_hint: 'Android sideload. Allow installs from this source.',
+        win_hint: 'Install the .exe, then pin ARICH to the taskbar.',
+        play_hint: 'Automatic updates — recommended.',
+        size: ' · ',
+        all: 'All',
+        filter_apk: 'APK',
+        filter_aab: 'AAB',
+        filter_win: 'Windows',
+        filter_other: 'Other',
+        empty_filter: 'No files of this type in the archive.',
+        error: 'Could not reach GitHub. Fallback links below.',
+      },
+    }
+
+    const params = new URLSearchParams(location.search)
+    let lang = (params.get('lang') || localStorage.getItem('arich_lang') || navigator.language || 'fr').toLowerCase().startsWith('en') ? 'en' : 'fr'
+    const t = (k) => (I18N[lang] && I18N[lang][k]) || I18N.fr[k] || k
+
+    function applyLang() {
+      document.documentElement.lang = lang
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        el.textContent = t(el.getAttribute('data-i18n'))
+      })
+      document.querySelectorAll('.lang').forEach((b) => b.classList.toggle('is-on', b.dataset.lang === lang))
+      try { localStorage.setItem('arich_lang', lang) } catch (_) {}
+    }
+
+    function detectDevice() {
+      const forced = (params.get('os') || '').toLowerCase()
+      if (['android','tv','windows','mac','linux','ios'].includes(forced)) return forced
+      const ua = navigator.userAgent || ''
+      const plat = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || ''
+      if (/android/i.test(ua) && /(tv|googletv|appletv|bravia|aftb|aftm|afts|shield|smart-tv|smarttv)/i.test(ua)) return 'tv'
+      if (/android/i.test(ua)) return 'android'
+      if (/iphone|ipad|ipod/i.test(ua)) return 'ios'
+      if (/windows/i.test(ua + plat)) return 'windows'
+      if (/mac/i.test(plat) || /mac os x|macintosh/i.test(ua)) return 'mac'
+      if (/linux/i.test(ua + plat)) return 'linux'
+      return 'other'
+    }
+
+    function kindOf(name) {
+      const n = (name || '').toLowerCase()
+      if (n.endsWith('.apk')) return 'apk'
+      if (n.endsWith('.aab')) return 'aab'
+      if (/\.(exe|msi|msix|appx|appxbundle|msixbundle)$/.test(n)) return 'windows'
+      if (n.endsWith('.zip') && /win|windows|setup|installer/.test(n)) return 'windows'
+      if (/\.(dmg|pkg)$/.test(n)) return 'mac'
+      if (/\.(appimage|deb|rpm)$/.test(n)) return 'linux'
+      if (/\.(txt|md|json|yml|yaml|log|sha256|asc)$/.test(n)) return ''
+      if (/windows|win64|win32/.test(n) && !n.endsWith('.apk') && !n.endsWith('.aab')) return 'windows'
+      return 'other'
+    }
+
+    function bytes(n) {
+      if (!n) return ''
+      const mb = n / (1024 * 1024)
+      return (mb >= 10 ? mb.toFixed(0) : mb.toFixed(1)) + ' Mo'
+    }
+
+    function parseRel(raw) {
+      const tag = (raw.tag_name || '').trim()
+      const version = tag.replace(/^v/i, '')
+      const assets = (raw.assets || []).map((a) => ({
+        name: a.name,
+        url: a.browser_download_url,
+        size: a.size,
+        kind: kindOf(a.name),
+      })).filter((a) => a.kind)
+      const pick = (k) => assets.find((a) => a.kind === k) || null
+      return {
+        tag,
+        version,
+        name: raw.name || tag,
+        published: raw.published_at,
+        notes: (raw.body || '').trim(),
+        htmlUrl: raw.html_url || (GH + '/tag/' + tag),
+        assets,
+        apk: pick('apk'),
+        aab: pick('aab'),
+        windows: pick('windows'),
+        mac: pick('mac'),
+        linux: pick('linux'),
+      }
+    }
+
+    function noteLine(notes) {
+      const line = (notes || '').split('\n').map((l) => l.trim()).find((l) => l && !l.startsWith('#'))
+      return line ? line.replace(/^[-*]\s*/, '').slice(0, 180) : ''
+    }
+
+    let device = detectDevice()
+
+    function setDevice(next) {
+      device = next
+      const u = new URL(location.href)
+      u.searchParams.set('os', next)
+      history.replaceState({}, '', u)
+      document.getElementById('detectedLabel').textContent = t(detectedKey())
+      renderOsSwitch()
+      const latest = allReleases[0]
+      renderPrimary(latest)
+      renderAlts(latest)
+    }
+
+    function btn(href, label, copper) {
+      if (!href) return '<span class="btn btn--ghost is-off">' + label + '</span>'
+      return '<a class="btn ' + (copper ? 'btn--copper' : 'btn--ghost') + '" href="' + href + '"' +
+        (href.startsWith('http') ? ' rel="noopener"' : '') + '>' + label + '</a>'
+    }
+
+    function renderPrimary(latest) {
+      const apk = latest && latest.apk ? latest.apk.url : FALLBACK.apk
+      const aab = latest && latest.aab ? latest.aab.url : FALLBACK.aab
+      const exe = latest && latest.windows ? latest.windows.url : ''
+      const ver = latest ? latest.version : FALLBACK.tag.replace(/^v/, '')
+      const card = document.getElementById('primaryCard')
+      const rec = {
+        android: 'rec_android', tv: 'rec_tv', windows: 'rec_win',
+        ios: 'rec_ios', mac: 'rec_mac', linux: 'rec_linux', other: 'rec_other',
+      }[device] || 'rec_other'
+      let buttons = ''
+      let hint = ''
+      if (device === 'tv') {
+        buttons = btn(apk, t('apk'), true) + btn(PLAY, t('play')) + btn(aab, t('aab'))
+        hint = t('apk_hint')
+      } else if (device === 'android') {
+        buttons = btn(PLAY, t('play'), true) + btn(apk, t('apk')) + btn(aab, t('aab'))
+        hint = t('play_hint')
+      } else if (device === 'windows') {
+        if (exe) {
+          buttons = btn(exe, t('exe'), true) + btn(PLAY, t('play')) + btn(apk, t('apk'))
+          hint = t('win_hint')
+        } else {
+          buttons = btn(apk, t('apk'), true) + btn(PLAY, t('play')) + btn(GH, t('github'))
+          hint = t('none_win')
+        }
+      } else if (device === 'ios') {
+        buttons = btn(PLAY, t('play')) + btn(apk, t('apk')) + btn(GH, t('github'))
+        hint = t('none_ios')
+      } else if (device === 'mac' || device === 'linux') {
+        buttons = btn(PLAY, t('play')) + btn(apk, t('apk')) + (exe ? btn(exe, t('exe'), true) : btn(GH, t('github'), true))
+        hint = device === 'mac' ? t('none_mac') : t('none_linux')
+      } else {
+        buttons = btn(PLAY, t('play'), true) + btn(apk, t('apk')) + btn(aab, t('aab')) + (exe ? btn(exe, t('exe')) : '')
+        hint = t('play_hint')
+      }
+      card.innerHTML =
+        '<p class="eyebrow">' + t('latest') + ' · v' + ver + '</p>' +
+        '<h2>' + t(rec) + '</h2>' +
+        '<p>' + hint + '</p>' +
+        '<div class="btns">' + buttons + '</div>' +
+        '<p class="meta">' + (latest && latest.apk ? bytes(latest.apk.size) : '') +
+          (latest && latest.apk && latest.aab ? ' · AAB ' + bytes(latest.aab.size) : '') + '</p>'
+    }
+
+    function altRow(label, sub, href) {
+      if (!href) return ''
+      return '<a class="alt" href="' + href + '" rel="noopener"><div><strong>' + label + '</strong><span>' + sub + '</span></div><span class="chip">↓</span></a>'
+    }
+
+    function renderAlts(latest) {
+      const apk = latest && latest.apk ? latest.apk.url : FALLBACK.apk
+      const aab = latest && latest.aab ? latest.aab.url : FALLBACK.aab
+      const exe = latest && latest.windows ? latest.windows.url : ''
+      document.getElementById('alts').innerHTML = [
+        altRow(t('play'), 'com.arich.iptv', PLAY),
+        altRow(t('apk'), latest && latest.apk ? bytes(latest.apk.size) : 'Android', apk),
+        altRow(t('aab'), latest && latest.aab ? bytes(latest.aab.size) : 'Android', aab),
+        exe ? altRow(t('exe'), bytes(latest.windows.size), exe) : altRow(t('exe'), t('none_win'), GH),
+        altRow(t('github'), 'GitHub', GH),
+      ].join('')
+    }
+
+    let allReleases = []
+    let filter = 'all'
+
+    function matchesFilter(kind) {
+      if (filter === 'all') return true
+      if (filter === 'other') return kind !== 'apk' && kind !== 'aab' && kind !== 'windows'
+      return kind === filter
+    }
+
+    function renderArchive() {
+      const box = document.getElementById('archiveList')
+      const rows = allReleases.filter((r) => r.assets.some((a) => matchesFilter(a.kind)))
+      if (!rows.length) {
+        box.innerHTML = '<p class="empty">' + t('empty_filter') + '</p>'
+        return
+      }
+      box.innerHTML = rows.map((r, i) => {
+        const files = r.assets.filter((a) => matchesFilter(a.kind))
+        const when = r.published ? new Date(r.published).toLocaleDateString(lang === 'en' ? 'en-GB' : 'fr-FR') : ''
+        const note = noteLine(r.notes)
+        const current = r === allReleases[0]
+          ? ' <span class="badge">' + t('current') + '</span>' : ''
+        return '<article class="release" data-kinds="' + r.assets.map((a) => a.kind).join(' ') + '">' +
+          '<header><h3>' + (r.name || r.tag) + current + '</h3><time>' + when + '</time></header>' +
+          (note ? '<p class="notes">' + note.replace(/</g, '') + '</p>' : '') +
+          '<div class="files">' + files.map((a) =>
+            '<a class="file" href="' + a.url + '" rel="noopener" title="' + a.name.replace(/"/g, '') + '">' +
+              a.kind.toUpperCase() + t('size') + (bytes(a.size) || a.name) + '</a>'
+          ).join('') + '</div></article>'
+      }).join('')
+    }
+
+    function renderFilters() {
+      const keys = [
+        ['all', 'all'],
+        ['apk', 'filter_apk'],
+        ['aab', 'filter_aab'],
+        ['windows', 'filter_win'],
+        ['other', 'filter_other'],
+      ]
+      document.getElementById('filters').innerHTML = keys.map(([id, k]) =>
+        '<button type="button" data-filter="' + id + '" class="' + (filter === id ? 'is-on' : '') + '">' + t(k) + '</button>'
+      ).join('')
+      document.getElementById('filters').onclick = (e) => {
+        const b = e.target.closest('button')
+        if (!b) return
+        filter = b.dataset.filter
+        renderFilters()
+        renderArchive()
+      }
+    }
+
+    function detectedKey() {
+      return ({
+        android: 'detected_android', tv: 'detected_tv', windows: 'detected_win',
+        mac: 'detected_mac', linux: 'detected_linux', ios: 'detected_ios', other: 'detected_other',
+      })[device] || 'detected_other'
+    }
+
+    function renderOsSwitch() {
+      const keys = ['android', 'tv', 'windows', 'mac', 'linux', 'ios']
+      document.getElementById('osSwitch').innerHTML = keys.map((id) =>
+        '<button type="button" role="tab" data-os="' + id + '" class="' + (device === id ? 'is-on' : '') + '" aria-selected="' + (device === id) + '">' + t('os_' + id) + '</button>'
+      ).join('')
+    }
+
+    async function load() {
+      applyLang()
+      document.getElementById('detectedLabel').textContent = t(detectedKey())
+      renderOsSwitch()
+      renderFilters()
+      try {
+        const cached = sessionStorage.getItem('arich_releases')
+        let raw
+        if (cached) {
+          const parsed = JSON.parse(cached)
+          if (Date.now() - parsed.at < 10 * 60 * 1000) raw = parsed.data
+        }
+        if (!raw) {
+          const res = await fetch(API, { headers: { Accept: 'application/vnd.github+json' } })
+          if (!res.ok) throw new Error('http ' + res.status)
+          raw = await res.json()
+          sessionStorage.setItem('arich_releases', JSON.stringify({ at: Date.now(), data: raw }))
+        }
+        allReleases = (raw || []).filter((r) => !r.draft && !r.prerelease).map(parseRel)
+      } catch (_) {
+        allReleases = [parseRel({
+          tag_name: FALLBACK.tag,
+          name: 'ARICH Player ' + FALLBACK.tag,
+          html_url: GH + '/latest',
+          assets: [
+            { name: 'ArichPlayer-v3.0.27.apk', browser_download_url: FALLBACK.apk, size: 0 },
+            { name: 'ArichPlayer-v3.0.27.aab', browser_download_url: FALLBACK.aab, size: 0 },
+          ],
+        })]
+        document.getElementById('archiveList').textContent = t('error')
+      }
+      const latest = allReleases[0]
+      renderPrimary(latest)
+      renderAlts(latest)
+      renderArchive()
+    }
+
+    document.getElementById('osSwitch').addEventListener('click', (e) => {
+      const b = e.target.closest('button')
+      if (!b || !b.dataset.os) return
+      setDevice(b.dataset.os)
+    })
+
+    document.querySelectorAll('.lang').forEach((b) => {
+      b.addEventListener('click', () => {
+        lang = b.dataset.lang
+        const u = new URL(location.href)
+        u.searchParams.set('lang', lang)
+        history.replaceState({}, '', u)
+        load()
+      })
+    })
+
+    load()
+  </script>
+</body>
+</html>

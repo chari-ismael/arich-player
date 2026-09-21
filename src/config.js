@@ -1,20 +1,20 @@
-// config/site.js — contenu commercial + mapping media (un seul endroit)
+﻿// config/site.js â€” contenu commercial + mapping media (un seul endroit)
 
 export const site = {
   name: 'ARICH Player',
   slogan: {
-    fr: ['Le cinéma,', 'chez vous.', 'Sans le bruit.'],
+    fr: ['Le cinÃ©ma,', 'chez vous.', 'Sans le bruit.'],
     en: ['Cinema,', 'at home.', 'Without the noise.'],
   },
   subtitle: {
-    fr: 'Votre bibliothèque, vos chaînes, vos films et séries. Une expérience fluide, pensée pour vous.',
+    fr: 'Votre bibliothÃ¨que, vos chaÃ®nes, vos films et sÃ©ries. Une expÃ©rience fluide, pensÃ©e pour vous.',
     en: 'Your library, channels, movies and series. A fluid experience, designed for you.',
   },
   email: 'contact@arich.fr',
   year: 2026,
 }
 
-export const APP_VERSION = '3.0.26'
+export const APP_VERSION = '3.0.27'
 
 /** APK releases are hosted by arich-player (reliable /download route) */
 const RELEASE_REPO = 'chari-ismael/arich-player'
@@ -22,12 +22,12 @@ const RELEASE_REPO = 'chari-ismael/arich-player'
 export const downloadLinks = {
   apk: `https://github.com/${RELEASE_REPO}/releases/download/v${APP_VERSION}/ArichPlayer-v${APP_VERSION}.apk`,
   googlePlay: 'https://play.google.com/store/apps/details?id=com.arich.iptv',
-  qrTarget: `https://github.com/${RELEASE_REPO}/releases/latest`,
+  qrTarget: 'https://arich.fr/download',
 }
 
 export const pricing = {
   trialDays: 14,
-  currency: '€',
+  currency: 'â‚¬',
   yearly: {
     id: 'yearly',
     price: 3,
@@ -37,8 +37,8 @@ export const pricing = {
   lifetime: {
     id: 'lifetime',
     price: 5,
-    period: { fr: 'à vie', en: 'lifetime' },
-    label: { fr: 'À vie', en: 'Lifetime' },
+    period: { fr: 'Ã  vie', en: 'lifetime' },
+    label: { fr: 'Ã€ vie', en: 'Lifetime' },
     recommended: true,
   },
 }
@@ -57,7 +57,7 @@ export const videos = {
   playerLand: '/media/video/player-land.mp4',
 }
 
-/** Captures réelles — ne pas mélanger les usages */
+/** Captures rÃ©elles â€” ne pas mÃ©langer les usages */
 export const media = {
   homePhone: '/media/home-phone.png',
   homeLand: '/media/home-land.png',
@@ -103,7 +103,7 @@ export const posters = {
 
 export const SUPABASE_URL = 'https://aynucieohuowgkwyftiy.supabase.co'
 
-/** Legacy anon key — required by Edge Functions gateway (create-checkout) */
+/** Legacy anon key â€” required by Edge Functions gateway (create-checkout) */
 export const SUPABASE_ANON_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk'
 
@@ -131,6 +131,7 @@ export const PRICING = {
 export const LINKS = {
   apk: downloadLinks.apk,
   playStore: downloadLinks.googlePlay,
+  download: 'https://arich.fr/download',
   auth: '/auth.html',
   contact: `mailto:${site.email}`,
 }

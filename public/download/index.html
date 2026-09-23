@@ -3,253 +3,815 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Télécharger ARICH Player</title>
-  <meta name="description" content="Installez ARICH Player sur Android, Android TV ou Windows. Le cinéma, chez vous." />
+  <title>Télécharger ARICH PLAYER</title>
+  <meta name="description" content="Télécharger ARICH PLAYER pour Android, Android TV et Windows. Google Play ou APK." />
   <meta name="robots" content="index, follow" />
   <meta name="theme-color" content="#0B0D10" />
+  <meta name="color-scheme" content="dark" />
   <link rel="canonical" href="https://arich.fr/download" />
   <link rel="alternate" hreflang="fr" href="https://arich.fr/download" />
   <link rel="alternate" hreflang="en" href="https://arich.fr/download?lang=en" />
+  <link rel="alternate" hreflang="x-default" href="https://arich.fr/download" />
   <link rel="icon" href="/favicon.ico?v=2" sizes="any" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
   <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ARICH PLAYER" />
   <meta property="og:url" content="https://arich.fr/download" />
-  <meta property="og:title" content="Télécharger ARICH Player" />
-  <meta property="og:description" content="Le cinéma, chez vous. Android, TV, Windows." />
+  <meta property="og:title" content="Télécharger ARICH PLAYER" />
+  <meta property="og:description" content="Android, Android TV et Windows. Google Play ou APK." />
   <meta property="og:image" content="https://arich.fr/og-image.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Télécharger ARICH PLAYER" />
+  <meta name="twitter:description" content="Android, Android TV et Windows. Google Play ou APK." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "name": "ARICH Player",
+    "name": "ARICH PLAYER",
     "applicationCategory": "MultimediaApplication",
-    "operatingSystem": "Android, Windows",
+    "operatingSystem": "Android, Android TV, Windows",
     "url": "https://arich.fr/download",
-    "downloadUrl": "https://arich.fr/download",
+    "downloadUrl": "https://github.com/chari-ismael/arich-player/releases/download/v3.0.27/ArichPlayer-v3.0.27.apk",
     "installUrl": "https://play.google.com/store/apps/details?id=com.arich.iptv",
+    "softwareVersion": "3.0.27",
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
   }
   </script>
   <style>
     :root {
-      --bg: #0B0D10;
-      --text: #F0EFEC;
-      --mute: rgba(240, 239, 236, 0.58);
-      --faint: rgba(240, 239, 236, 0.32);
+      --bg: #0E1014;
+      --bg-deep: #0B0D10;
       --line: rgba(240, 239, 236, 0.1);
+      --line-strong: rgba(240, 239, 236, 0.18);
+      --text: #F0EFEC;
+      --mute: rgba(240, 239, 236, 0.62);
+      --faint: rgba(240, 239, 236, 0.38);
       --copper: #C58A2A;
-      --copper2: #D4A04A;
+      --copper-2: #D4A04A;
+      --copper-dim: rgba(197, 138, 42, 0.18);
+      --font: "Figtree", system-ui, sans-serif;
+      --display: "Syne", system-ui, sans-serif;
+      --pad: clamp(20px, 5vw, 56px);
       --ink: #0a0c10;
-      --grad: linear-gradient(165deg, #d4a04a, #c58a2a);
-      --ease: cubic-bezier(.16, 1, .3, 1);
-      --display: Syne, system-ui, sans-serif;
-      --font: Figtree, system-ui, sans-serif;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { min-height: 100%; background: var(--bg); }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: var(--bg-deep); }
     body {
+      min-height: 100dvh;
       font-family: var(--font);
       color: var(--text);
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(110, 72, 36, 0.16), transparent 55%),
+        var(--bg-deep);
+      line-height: 1.5;
       -webkit-font-smoothing: antialiased;
     }
     a { color: inherit; text-decoration: none; }
-    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+    button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
 
-    .halo {
-      position: fixed; inset: 0; pointer-events: none; z-index: 0;
-      background:
-        radial-gradient(ellipse 70% 50% at 70% 0%, rgba(110, 72, 36, .28), transparent 58%),
-        radial-gradient(ellipse 50% 40% at 10% 100%, rgba(40, 28, 18, .22), transparent 55%),
-        var(--bg);
-    }
-    .halo::after {
-      content: '';
-      position: absolute; inset: 0; opacity: .28; pointer-events: none;
-      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .04 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    :focus-visible {
+      outline: 2px solid var(--copper);
+      outline-offset: 3px;
     }
 
-    .page {
-      position: relative; z-index: 1;
-      min-height: 100vh;
-      display: flex; flex-direction: column;
-      width: min(720px, calc(100% - 40px));
+    .skip-link {
+      position: absolute;
+      left: -999px;
+      top: 0;
+      z-index: 200;
+      padding: 10px 16px;
+      background: var(--copper);
+      color: var(--ink);
+      font-weight: 600;
+    }
+    .skip-link:focus { left: 12px; top: 12px; }
+
+    .wrap {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 20px var(--pad);
+      max-width: 920px;
       margin: 0 auto;
-      padding: 28px 0 48px;
+      width: 100%;
     }
-
-    header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: clamp(40px, 8vh, 72px);
-    }
-    .brand {
-      display: inline-flex; align-items: center; gap: 10px;
-      font-family: var(--display); font-weight: 700;
-      letter-spacing: .2em; font-size: 12px;
-    }
-    .brand img { width: 32px; height: 32px; border-radius: 9px; }
-    .lang { display: flex; gap: 4px; color: var(--faint); font-size: 12px; font-weight: 600; letter-spacing: .08em; }
-    .lang button { padding: 6px 8px; }
-    .lang button.is-on { color: var(--text); }
-
-    main { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 8vh; }
-    .eyebrow {
-      color: var(--copper2); font-size: 11px; font-weight: 700;
-      letter-spacing: .22em; text-transform: uppercase; margin-bottom: 16px;
-    }
-    h1 {
+    .nav__brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
       font-family: var(--display);
-      font-size: clamp(2.4rem, 8vw, 4.4rem);
-      letter-spacing: -.04em; line-height: .95;
-      font-weight: 800;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.16em;
     }
-    h1 em {
-      font-style: italic; font-weight: 700;
-      background: var(--grad);
-      -webkit-background-clip: text; background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .nav__brand img { border-radius: 8px; flex-shrink: 0; }
+    .nav__end {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .lede {
-      margin-top: 18px; max-width: 28ch;
-      color: var(--mute); font-size: 17px; line-height: 1.5;
+    .nav__link {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--mute);
+      padding: 8px 10px;
+    }
+    .nav__link:hover { color: var(--text); }
+    .lang {
+      display: inline-flex;
+      margin-left: 4px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .lang button {
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--faint);
+    }
+    .lang button.is-on {
+      color: var(--ink);
+      background: var(--copper);
     }
 
-    .stage {
-      margin: 36px 0 32px;
-      display: grid; place-items: center;
+    .main {
+      flex: 1;
+      width: min(680px, 100%);
+      margin: 0 auto;
+      padding: 48px var(--pad) 72px;
     }
-    .stage img {
-      width: min(280px, 58vw);
-      border-radius: 28px;
-      box-shadow:
-        0 40px 80px rgba(0, 0, 0, .45),
-        0 0 0 1px var(--line);
+
+    .head { margin-bottom: 22px; }
+    .head__kicker {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--copper);
+      margin-bottom: 10px;
     }
-    .stage.is-wide img { width: min(520px, 86vw); border-radius: 16px; }
+    .head__title {
+      font-family: var(--display);
+      font-size: clamp(1.45rem, 3.4vw, 1.9rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.28em;
+      min-height: 1.25em;
+    }
+    .head__title .type {
+      display: inline;
+      white-space: pre;
+    }
+    .head__title .caret {
+      display: inline-block;
+      width: 0.08em;
+      height: 0.92em;
+      margin-left: 1px;
+      background: var(--copper-2);
+      border-radius: 1px;
+      vertical-align: -0.08em;
+      box-shadow: 0 0 12px rgba(197, 138, 42, 0.55);
+      animation: caretBlink 1.05s steps(1) infinite;
+    }
+    .head__title .caret.is-done {
+      opacity: 0;
+      animation: none;
+      transition: opacity 0.45s var(--ease);
+    }
+    .head__title .name {
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateY(6px);
+      filter: blur(4px);
+      transition:
+        opacity 0.55s var(--ease),
+        transform 0.55s var(--ease),
+        filter 0.55s var(--ease);
+    }
+    .head__title .name.is-on {
+      opacity: 1;
+      transform: none;
+      filter: none;
+    }
+    .head__lede {
+      color: var(--mute);
+      font-size: 16px;
+      max-width: 36ch;
+    }
 
     .cta {
-      display: inline-flex; align-items: center; justify-content: center;
-      min-height: 54px; padding: 0 28px; border-radius: 999px;
-      background: var(--grad); color: var(--ink);
-      font-weight: 700; font-size: 15px;
-      box-shadow: 0 14px 36px rgba(197, 138, 42, .28);
-      transition: transform .4s var(--ease);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px 16px;
+      margin-bottom: 16px;
     }
-    .cta:hover { transform: translateY(-1px); }
-    .cta.is-off { opacity: .4; pointer-events: none; box-shadow: none; }
-
-    .alts {
-      margin-top: 18px;
-      display: flex; flex-wrap: wrap; gap: 6px 18px;
-      color: var(--mute); font-size: 14px; font-weight: 500;
-    }
-    .alts a { color: var(--text); border-bottom: 1px solid rgba(240,239,236,.2); padding-bottom: 1px; }
-    .alts a:hover { border-color: var(--copper2); color: var(--copper2); }
-
-    .note {
-      margin-top: 14px; color: var(--faint); font-size: 13px; max-width: 36ch; line-height: 1.45;
+    .cta__meta {
+      font-size: 13px;
+      color: var(--faint);
+      margin-bottom: 40px;
     }
 
-    footer {
-      margin-top: auto; padding-top: 28px;
-      display: flex; flex-wrap: wrap; gap: 8px 18px;
-      color: var(--faint); font-size: 12px;
+    .btn {
+      --btn-pad-y: 15px;
+      --btn-pad-x: 26px;
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 54px;
+      padding: var(--btn-pad-y) var(--btn-pad-x);
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      transition:
+        transform 0.28s var(--ease),
+        background 0.28s,
+        border-color 0.28s,
+        box-shadow 0.28s;
     }
-    footer a:hover { color: var(--mute); }
-    .ver { margin-left: auto; }
+    .btn > * { position: relative; z-index: 1; }
+    .btn--copper {
+      background: linear-gradient(165deg, var(--copper-2), var(--copper));
+      color: var(--ink);
+      box-shadow:
+        0 8px 28px rgba(197, 138, 42, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    }
+    .btn--copper.btn--glow {
+      animation: ctaPulse 3.2s ease-in-out infinite;
+    }
+    .btn--copper:hover {
+      transform: translateY(-2px) scale(1.015);
+      box-shadow:
+        0 14px 40px rgba(197, 138, 42, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+
+    /* Linear / Apple / Claude-like install CTA */
+    .btn--linear {
+      --btn-pad-y: 12px;
+      --btn-pad-x: 22px;
+      border-radius: 12px;
+      min-height: 46px;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: -0.01em;
+      color: #1a1208;
+      border: 1px solid rgba(255, 236, 200, 0.42);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0) 42%),
+        linear-gradient(165deg, #E8B85A 0%, #D49A35 48%, #B87920 100%);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.35) inset,
+        0 -1px 0 rgba(80, 40, 0, 0.18) inset,
+        0 1px 2px rgba(0, 0, 0, 0.18),
+        0 8px 24px rgba(197, 138, 42, 0.28),
+        0 0 0 0.5px rgba(197, 138, 42, 0.25);
+      animation: none;
+    }
+    .btn--linear::after {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      border-radius: 11px;
+      background: linear-gradient(
+        105deg,
+        transparent 35%,
+        rgba(255, 255, 255, 0.22) 50%,
+        transparent 65%
+      );
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 0;
+      mix-blend-mode: soft-light;
+    }
+    .btn--linear.btn--glow::before {
+      background: linear-gradient(
+        105deg,
+        transparent 38%,
+        rgba(255, 255, 255, 0.55) 50%,
+        transparent 62%
+      );
+    }
+    .btn--linear:hover {
+      transform: translateY(-1.5px);
+      border-color: rgba(255, 245, 220, 0.55);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0) 44%),
+        linear-gradient(165deg, #F0C56A 0%, #DCA43E 48%, #C48424 100%);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.45) inset,
+        0 -1px 0 rgba(80, 40, 0, 0.14) inset,
+        0 2px 4px rgba(0, 0, 0, 0.2),
+        0 14px 36px rgba(197, 138, 42, 0.4),
+        0 0 0 0.5px rgba(212, 160, 74, 0.4);
+    }
+    .btn--linear:active {
+      transform: translateY(0.5px) scale(0.985);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.25) inset,
+        0 2px 8px rgba(197, 138, 42, 0.22);
+    }
+    .btn--linear.btn--sm {
+      --btn-pad-y: 10px;
+      --btn-pad-x: 18px;
+      min-height: 42px;
+      border-radius: 11px;
+      font-size: 13.5px;
+    }
+    .btn--linear.btn--sm::after { border-radius: 10px; }
+    .btn--linear svg {
+      width: 15px;
+      height: 15px;
+      opacity: 0.88;
+    }
+    .btn--ghost {
+      background: rgba(240, 239, 236, 0.03);
+      border: 1px solid var(--line-strong);
+      color: var(--text);
+    }
+    .btn--ghost:hover {
+      border-color: rgba(197, 138, 42, 0.55);
+      background: var(--copper-dim);
+      transform: translateY(-2px);
+    }
+    .btn--glow::before {
+      content: "";
+      position: absolute;
+      inset: -40% -60%;
+      background: linear-gradient(
+        105deg,
+        transparent 40%,
+        rgba(255, 255, 255, 0.3) 50%,
+        transparent 60%
+      );
+      transform: translateX(-45%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .btn--glow:hover::before {
+      animation: btnSheen 0.85s var(--ease) forwards;
+    }
+    .btn--glow:active {
+      transform: translateY(1px) scale(0.985);
+    }
+    .btn--sm {
+      --btn-pad-y: 11px;
+      --btn-pad-x: 20px;
+      min-height: 44px;
+      font-size: 14px;
+    }
+    .btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+    .btn[hidden] { display: none !important; }
+    .btn--soon {
+      background: var(--copper-dim);
+      border: 1px solid rgba(197, 138, 42, 0.35);
+      color: var(--copper-2);
+      cursor: default;
+      pointer-events: none;
+    }
+
+    @keyframes ctaPulse {
+      0%, 100% {
+        box-shadow: 0 8px 28px rgba(197, 138, 42, 0.28), inset 0 1px 0 rgba(255,255,255,0.28);
+      }
+      50% {
+        box-shadow: 0 10px 36px rgba(197, 138, 42, 0.42), inset 0 1px 0 rgba(255,255,255,0.35);
+      }
+    }
+    @keyframes btnSheen {
+      from { transform: translateX(-45%); opacity: 0; }
+      35% { opacity: 1; }
+      to { transform: translateX(45%); opacity: 0; }
+    }
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes caretBlink {
+      0%, 46% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+    .store {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      perspective: 820px;
+      transform: translateZ(0);
+    }
+    .store:focus-visible { outline: none; }
+    .store__img {
+      display: block;
+      height: 58px;
+      width: auto;
+      max-width: min(246px, 78vw);
+      border-radius: 8px;
+      filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.38));
+      transition:
+        transform 0.55s var(--ease),
+        filter 0.55s var(--ease);
+    }
+    .store--sm .store__img { height: 46px; max-width: 196px; }
+    .store__gate,
+    .store__gate span {
+      position: absolute;
+      pointer-events: none;
+    }
+    .store__gate {
+      inset: -7px -9px;
+    }
+    .store__gate span {
+      width: 14px;
+      height: 14px;
+      border: 1.5px solid var(--copper-2);
+      opacity: 0;
+      transition:
+        opacity 0.35s var(--ease),
+        transform 0.5s var(--ease);
+    }
+    .store__gate .tl { top: 0; left: 0; border-right: 0; border-bottom: 0; transform: translate(-6px, -6px); }
+    .store__gate .tr { top: 0; right: 0; border-left: 0; border-bottom: 0; transform: translate(6px, -6px); }
+    .store__gate .bl { bottom: 0; left: 0; border-right: 0; border-top: 0; transform: translate(-6px, 6px); }
+    .store__gate .br { bottom: 0; right: 0; border-left: 0; border-top: 0; transform: translate(6px, 6px); }
+    .store:hover .store__img,
+    .store:focus-visible .store__img {
+      transform: rotateX(9deg) rotateY(-12deg) translateY(-5px) scale(1.045);
+      filter: drop-shadow(0 18px 28px rgba(197, 138, 42, 0.28));
+    }
+    .store:hover .store__gate span,
+    .store:focus-visible .store__gate span {
+      opacity: 1;
+      transform: none;
+    }
+    .store:active .store__img {
+      transform: rotateX(2deg) rotateY(-3deg) scale(0.99);
+    }
+
+    .cta .btn,
+    .cta .store,
+    .plats { animation: riseIn 0.7s var(--ease) both; }
+    .cta > :nth-child(1) { animation-delay: 80ms; }
+    .cta > :nth-child(2) { animation-delay: 140ms; }
+    .cta > :nth-child(3) { animation-delay: 200ms; }
+    .plats { animation-delay: 280ms; }
+    @media (prefers-reduced-motion: reduce) {
+      .btn--copper.btn--glow { animation: none; }
+      .cta .btn, .cta .store, .plats { animation: none; }
+      .store:hover .store__img,
+      .store:focus-visible .store__img { transform: none; }
+      .head__title .caret { animation: none; opacity: 0; }
+      .head__title .name {
+        opacity: 1;
+        transform: none;
+        filter: none;
+        transition: none;
+      }
+    }
+
+    .plats {
+      border-top: 1px solid var(--line);
+    }
+    .plat {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px 24px;
+      align-items: center;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .plat h2 {
+      font-family: var(--display);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .plat p {
+      margin-top: 4px;
+      color: var(--mute);
+      font-size: 14px;
+    }
+    .plat__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .footer {
+      padding: 20px var(--pad) 28px;
+      border-top: 1px solid var(--line);
+    }
+    .footer__row {
+      max-width: 920px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 20px;
+      align-items: center;
+      font-size: 13px;
+      color: var(--faint);
+    }
+    .footer a:hover { color: var(--text); }
+    .footer .end { margin-left: auto; }
+
+    @media (max-width: 640px) {
+      .nav { padding-top: 16px; }
+      .cta { flex-direction: column; align-items: stretch; }
+      .cta .btn { width: 100%; }
+      .cta .store { justify-content: center; }
+      .cta .store__img { height: 54px; }
+      .plat {
+        grid-template-columns: 1fr;
+        padding: 20px 0;
+      }
+      .plat__actions { justify-content: stretch; }
+      .plat__actions .btn { flex: 1 1 140px; }
+      .footer .end { margin-left: 0; }
+    }
   </style>
 </head>
 <body>
-  <div class="halo" aria-hidden="true"></div>
-  <div class="page">
-    <header>
-      <a class="brand" href="/"><img src="/logo-fg.png" alt="" width="32" height="32" />ARICH</a>
-      <div class="lang">
-        <button type="button" data-lang="fr">FR</button>
-        <button type="button" data-lang="en">EN</button>
+  <a class="skip-link" href="#main">Aller au contenu</a>
+
+  <div class="wrap">
+    <header class="nav">
+      <a class="nav__brand" href="/">
+        <img src="/logo-fg.png" alt="" width="32" height="32" />
+        <span>ARICH</span>
+      </a>
+      <div class="nav__end">
+        <a class="nav__link" href="/" data-i18n="nav_home">Accueil</a>
+        <a class="nav__link" href="/auth.html" data-i18n="nav_account">Compte</a>
+        <div class="lang" role="group" aria-label="Language">
+          <button type="button" data-lang="fr">FR</button>
+          <button type="button" data-lang="en">EN</button>
+        </div>
       </div>
     </header>
 
-    <main>
-      <p class="eyebrow" id="kicker">Télécharger</p>
-      <h1 id="title">Le cinéma,<br /><em>chez vous.</em></h1>
-      <p class="lede" id="lede">Une app. Votre bibliothèque. Rien d’autre à l’écran.</p>
+    <main class="main" id="main">
+      <header class="head">
+        <p class="head__kicker" data-i18n="kicker">Application</p>
+        <h1 class="head__title" id="pageTitle">
+          <span class="type" id="titleType"></span><span class="caret" id="titleCaret" aria-hidden="true"></span>
+          <span class="name" id="titleName">ARICH PLAYER</span>
+        </h1>
+        <p class="head__lede" data-i18n="lede">Android, Android TV et Windows.</p>
+      </header>
 
-      <div class="stage" id="stage">
-        <img id="shot" src="/media/home-phone.png" alt="ARICH Player" width="540" height="1170" />
+      <div class="cta">
+        <a class="store" id="playPrimary" href="https://play.google.com/store/apps/details?id=com.arich.iptv" rel="noopener">
+          <span class="store__gate" aria-hidden="true"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></span>
+          <img class="store__img" data-play-badge src="/media/badges/google-play-fr.png" alt="Disponible sur Google Play" width="246" height="73" />
+        </a>
+        <a class="btn btn--ghost btn--glow" id="apkPrimary" href="https://github.com/chari-ismael/arich-player/releases/download/v3.0.27/ArichPlayer-v3.0.27.apk" rel="noopener">
+          <span aria-hidden="true">↓</span>
+          <span data-i18n="apk">Télécharger l’APK</span>
+        </a>
+        <a class="btn btn--linear btn--glow" id="winPrimary" href="https://github.com/chari-ismael/arich-player/releases/download/v3.0.27/ArichPlayer-v3.0.27-Setup.exe" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0l4-4m-4 4l-4-4M5 19h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span data-i18n="win_dl">Installer</span>
+        </a>
       </div>
+      <p class="cta__meta" id="meta">3.0.27 · Android 8.0+ · Windows 10+</p>
 
-      <div>
-        <a class="cta" id="primary" href="https://play.google.com/store/apps/details?id=com.arich.iptv">Ouvrir dans Google Play</a>
-        <div class="alts" id="alts"></div>
-        <p class="note" id="note" hidden></p>
+      <div class="plats">
+        <article class="plat">
+          <div>
+            <h2>Android</h2>
+            <p data-i18n="plat_android">Téléphone et tablette.</p>
+          </div>
+          <div class="plat__actions">
+            <a class="store store--sm" id="playAndroid" href="https://play.google.com/store/apps/details?id=com.arich.iptv" rel="noopener">
+              <span class="store__gate" aria-hidden="true"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></span>
+              <img class="store__img" data-play-badge src="/media/badges/google-play-fr.png" alt="Disponible sur Google Play" width="196" height="58" />
+            </a>
+            <a class="btn btn--ghost btn--glow btn--sm apk" href="https://github.com/chari-ismael/arich-player/releases/download/v3.0.27/ArichPlayer-v3.0.27.apk" rel="noopener" data-i18n="apk">Télécharger l’APK</a>
+          </div>
+        </article>
+        <article class="plat">
+          <div>
+            <h2>Android TV</h2>
+            <p data-i18n="plat_tv">La même application, sur le grand écran.</p>
+          </div>
+          <div class="plat__actions">
+            <a class="store store--sm" id="playTv" href="https://play.google.com/store/apps/details?id=com.arich.iptv" rel="noopener">
+              <span class="store__gate" aria-hidden="true"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></span>
+              <img class="store__img" data-play-badge src="/media/badges/google-play-fr.png" alt="Disponible sur Google Play" width="196" height="58" />
+            </a>
+            <a class="btn btn--ghost btn--glow btn--sm apk" href="https://github.com/chari-ismael/arich-player/releases/download/v3.0.27/ArichPlayer-v3.0.27.apk" rel="noopener" data-i18n="apk">Télécharger l’APK</a>
+          </div>
+        </article>
+        <article class="plat" id="platWindows">
+          <div>
+            <h2>Windows</h2>
+            <p data-i18n="plat_win">PC — Windows 10 et 11.</p>
+          </div>
+          <div class="plat__actions">
+            <a class="btn btn--linear btn--glow btn--sm" id="winDownload" href="https://github.com/chari-ismael/arich-player/releases/download/v3.0.27/ArichPlayer-v3.0.27-Setup.exe" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0l4-4m-4 4l-4-4M5 19h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span data-i18n="win_dl">Installer</span>
+            </a>
+            <span class="btn btn--soon btn--sm" id="winSoon" hidden data-i18n="win_soon">Bientôt disponible</span>
+          </div>
+        </article>
       </div>
     </main>
 
-    <footer>
-      <a href="/">arich.fr</a>
-      <a href="/auth.html" id="account">Compte</a>
-      <span class="ver" id="ver"></span>
+    <footer class="footer">
+      <div class="footer__row">
+        <span>© 2026 ARICH</span>
+        <a href="/">arich.fr</a>
+        <a href="/auth.html" data-i18n="nav_account">Compte</a>
+        <a href="/privacy-policy.html" data-i18n="privacy">Confidentialité</a>
+        <a href="mailto:contact@arich.fr">contact@arich.fr</a>
+        <span class="end" id="footVer">3.0.27</span>
+      </div>
     </footer>
   </div>
 
   <script>
     const PLAY = 'https://play.google.com/store/apps/details?id=com.arich.iptv'
-    const FALLBACK = {
-      version: '3.0.27',
-      apk: 'https://github.com/chari-ismael/arich-player/releases/download/v3.0.27/ArichPlayer-v3.0.27.apk',
-      exe: '',
-    }
+    const APK_FALLBACK = 'https://github.com/chari-ismael/arich-player/releases/download/v3.0.27/ArichPlayer-v3.0.27.apk'
+    const WIN_FALLBACK = 'https://github.com/chari-ismael/arich-player/releases/download/v3.0.27/ArichPlayer-v3.0.27-Setup.exe'
     const COPY = {
       fr: {
-        kicker: 'Télécharger',
-        title: 'Le cinéma,<br /><em>chez vous.</em>',
-        lede: 'Une app. Votre bibliothèque. Rien d’autre à l’écran.',
-        play: 'Ouvrir dans Google Play',
-        apk: 'Fichier Android',
-        win: 'Télécharger pour Windows',
-        android: 'Android',
-        windows: 'Windows',
-        tv: 'Android TV',
-        account: 'Compte',
-        ios: 'Pas encore sur iPhone. ARICH se télécharge sur Android, TV ou Windows.',
-        mac: 'Pas de version Mac. Android, TV ou Windows.',
+        title: 'Télécharger ARICH PLAYER',
+        title_verb: 'Télécharger',
+        desc: 'Télécharger ARICH PLAYER pour Android, Android TV et Windows. Google Play ou APK.',
+        nav_home: 'Accueil',
+        nav_account: 'Compte',
+        kicker: 'Application',
+        lede: 'Android, Android TV et Windows.',
+        apk: 'Télécharger l’APK',
+        meta: '{v} · Android 8.0+ · Windows 10+',
+        plat_android: 'Téléphone et tablette.',
+        plat_tv: 'La même application, sur le grand écran.',
+        plat_win: 'PC — Windows 10 et 11. Installeur .exe.',
+        win_dl: 'Installer',
+        win_soon: 'Bientôt disponible',
+        play_alt: 'Disponible sur Google Play',
+        play_badge: '/media/badges/google-play-fr.png',
+        privacy: 'Confidentialité',
+        skip: 'Aller au contenu',
       },
       en: {
-        kicker: 'Download',
-        title: 'Cinema,<br /><em>at home.</em>',
-        lede: 'One app. Your library. Nothing else on screen.',
-        play: 'Get it on Google Play',
-        apk: 'Android file',
-        win: 'Download for Windows',
-        android: 'Android',
-        windows: 'Windows',
-        tv: 'Android TV',
-        account: 'Account',
-        ios: 'Not on iPhone yet. ARICH is for Android, TV or Windows.',
-        mac: 'No Mac build. Android, TV or Windows.',
+        title: 'Download ARICH PLAYER',
+        title_verb: 'Download',
+        desc: 'Download ARICH PLAYER for Android, Android TV, and Windows. Google Play or APK.',
+        nav_home: 'Home',
+        nav_account: 'Account',
+        kicker: 'App',
+        lede: 'Android, Android TV, and Windows.',
+        apk: 'Download APK',
+        meta: '{v} · Android 8.0+ · Windows 10+',
+        plat_android: 'Phone and tablet.',
+        plat_tv: 'The same app, on the big screen.',
+        plat_win: 'PC — Windows 10 and 11. Setup .exe.',
+        win_dl: 'Install',
+        win_soon: 'Coming soon',
+        play_alt: 'Get it on Google Play',
+        play_badge: '/media/badges/google-play-en.png',
+        privacy: 'Privacy',
+        skip: 'Skip to content',
       },
+    }
+
+    const files = {
+      version: '3.0.27',
+      size: '66 MB',
+      apk: APK_FALLBACK,
+      windows: { url: WIN_FALLBACK, version: '3.0.27' },
     }
 
     const params = new URLSearchParams(location.search)
     let lang = (params.get('lang') || localStorage.getItem('arich_lang') || navigator.language || 'fr')
-      .toLowerCase().startsWith('en') ? 'en' : 'fr'
-    const t = (k) => COPY[lang][k]
+      .toLowerCase()
+      .startsWith('en') ? 'en' : 'fr'
 
-    function detect() {
-      const forced = (params.get('os') || '').toLowerCase()
-      if (['android', 'tv', 'windows', 'ios', 'mac'].includes(forced)) return forced
-      const ua = navigator.userAgent || ''
-      const plat = navigator.platform || ''
-      if (/android/i.test(ua) && /(tv|googletv|bravia|aft|shield|smart-?tv)/i.test(ua)) return 'tv'
-      if (/android/i.test(ua)) return 'android'
-      if (/iphone|ipad|ipod/i.test(ua)) return 'ios'
-      if (/windows/i.test(ua + plat)) return 'windows'
-      if (/mac/i.test(plat) || /macintosh/i.test(ua)) return 'mac'
-      return 'android'
+    function fill(str) {
+      return str.replace('{v}', files.version).replace('{size}', files.size)
+    }
+
+    let typeTimer = null
+    let typeToken = 0
+    let typedVerb = ''
+
+    function typeTitle(verb, force) {
+      const typeEl = document.getElementById('titleType')
+      const caret = document.getElementById('titleCaret')
+      const name = document.getElementById('titleName')
+      const h1 = document.getElementById('pageTitle')
+      if (!typeEl || !caret || !name || !h1) return
+
+      h1.setAttribute('aria-label', `${verb} ARICH PLAYER`)
+      if (!force && typedVerb === verb && name.classList.contains('is-on')) return
+      typedVerb = verb
+
+      clearTimeout(typeTimer)
+      const token = ++typeToken
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      const full = verb
+
+      if (reduced) {
+        typeEl.textContent = full
+        caret.classList.add('is-done')
+        name.classList.add('is-on')
+        return
+      }
+
+      typeEl.textContent = ''
+      caret.classList.remove('is-done')
+      name.classList.remove('is-on')
+      let i = 0
+
+      const tick = () => {
+        if (token !== typeToken) return
+        if (i <= full.length) {
+          typeEl.textContent = full.slice(0, i)
+          i += 1
+          typeTimer = setTimeout(tick, i === 1 ? 280 : 38 + Math.random() * 28)
+          return
+        }
+        typeTimer = setTimeout(() => {
+          if (token !== typeToken) return
+          name.classList.add('is-on')
+          caret.classList.add('is-done')
+        }, 180)
+      }
+      tick()
+    }
+
+    function apply({ retype } = {}) {
+      const t = COPY[lang]
+      document.documentElement.lang = lang
+      document.title = t.title
+      const desc = document.querySelector('meta[name="description"]')
+      if (desc) desc.setAttribute('content', t.desc)
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        const key = el.getAttribute('data-i18n')
+        if (t[key]) el.textContent = fill(t[key])
+      })
+      typeTitle(t.title_verb, !!retype)
+      document.getElementById('meta').textContent = fill(t.meta)
+      document.getElementById('footVer').textContent = files.version
+      document.querySelector('.skip-link').textContent = t.skip
+      document.querySelectorAll('.lang button').forEach((b) => {
+        b.classList.toggle('is-on', b.dataset.lang === lang)
+        b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false')
+      })
+      document.querySelectorAll('#apkPrimary, .apk').forEach((a) => {
+        a.href = files.apk
+      })
+      document.querySelectorAll('[data-play-badge]').forEach((img) => {
+        img.src = t.play_badge
+        img.alt = t.play_alt
+      })
+      const winDl = document.getElementById('winDownload')
+      const winSoon = document.getElementById('winSoon')
+      if (files.windows && files.windows.url) {
+        winDl.hidden = false
+        winDl.href = files.windows.url
+        const winPrimary = document.getElementById('winPrimary')
+        if (winPrimary) winPrimary.href = files.windows.url
+        winSoon.hidden = true
+        if (files.windows.version) {
+          document.querySelector('#platWindows [data-i18n="plat_win"]').textContent =
+            t.plat_win + ' · ' + files.windows.version
+        }
+      } else {
+        winDl.hidden = true
+        winDl.removeAttribute('href')
+        winSoon.hidden = false
+      }
     }
 
     function setLang(next) {
@@ -258,92 +820,52 @@
       const u = new URL(location.href)
       u.searchParams.set('lang', lang)
       history.replaceState({}, '', u)
-      paint()
-    }
-
-    let files = { version: FALLBACK.version, apk: FALLBACK.apk, exe: FALLBACK.exe }
-
-    function link(href, label) {
-      return '<a href="' + href + '"' + (href.startsWith('http') ? ' rel="noopener"' : '') + '>' + label + '</a>'
-    }
-
-    function paint() {
-      const os = detect()
-      document.documentElement.lang = lang
-      document.getElementById('kicker').textContent = t('kicker')
-      document.getElementById('title').innerHTML = t('title')
-      document.getElementById('lede').textContent = t('lede')
-      document.getElementById('account').textContent = t('account')
-      document.getElementById('ver').textContent = files.version ? 'v' + files.version : ''
-      document.querySelectorAll('.lang button').forEach((b) => {
-        b.classList.toggle('is-on', b.dataset.lang === lang)
-      })
-
-      const shot = document.getElementById('shot')
-      const stage = document.getElementById('stage')
-      const primary = document.getElementById('primary')
-      const alts = document.getElementById('alts')
-      const note = document.getElementById('note')
-      const wide = os === 'windows' || os === 'tv'
-      stage.classList.toggle('is-wide', wide)
-      shot.src = wide ? '/media/player-land.png' : '/media/home-phone.png'
-
-      primary.hidden = false
-      primary.classList.remove('is-off')
-      note.hidden = true
-      note.textContent = ''
-
-      if (os === 'windows') {
-        if (files.exe) {
-          primary.href = files.exe
-          primary.textContent = t('win')
-        } else {
-          primary.href = files.apk
-          primary.textContent = t('apk')
-        }
-        alts.innerHTML = link(PLAY, t('play')) + ' ' + link(files.apk, t('android'))
-      } else if (os === 'tv') {
-        primary.href = files.apk
-        primary.textContent = t('apk')
-        alts.innerHTML = link(PLAY, t('play')) + (files.exe ? ' ' + link(files.exe, t('windows')) : '')
-      } else if (os === 'ios') {
-        primary.hidden = true
-        note.hidden = false
-        note.textContent = t('ios')
-        alts.innerHTML = link(files.apk, t('android')) + (files.exe ? ' ' + link(files.exe, t('windows')) : '')
-      } else if (os === 'mac') {
-        primary.href = PLAY
-        primary.textContent = t('play')
-        note.hidden = false
-        note.textContent = t('mac')
-        alts.innerHTML = link(files.apk, t('apk')) + (files.exe ? ' ' + link(files.exe, t('windows')) : '')
-      } else {
-        primary.href = PLAY
-        primary.textContent = t('play')
-        alts.innerHTML = link(files.apk, t('apk')) + (files.exe ? ' ' + link(files.exe, t('windows')) : '')
-      }
+      apply({ retype: true })
     }
 
     document.querySelectorAll('.lang button').forEach((b) => {
       b.addEventListener('click', () => setLang(b.dataset.lang))
     })
 
-    paint()
+    apply()
+
+    function pickWindows(assets) {
+      const list = assets || []
+      return list.find((a) => /\.(exe|msi|msix)$/i.test(a.name) && /setup|windows/i.test(a.name))
+        || list.find((a) => /\.(exe|msi|msix)$/i.test(a.name))
+    }
+
+    function setWindowsFrom(release) {
+      const asset = pickWindows(release && release.assets)
+      if (!asset || !asset.browser_download_url) return false
+      files.windows = {
+        url: asset.browser_download_url,
+        version: String(release.tag_name || '').replace(/^v/i, '') || '',
+      }
+      return true
+    }
 
     fetch('https://api.github.com/repos/chari-ismael/arich-player/releases/latest', {
       headers: { Accept: 'application/vnd.github+json' },
     }).then((r) => r.ok ? r.json() : null).then((raw) => {
       if (!raw) return
       const version = String(raw.tag_name || '').replace(/^v/i, '')
-      const assets = raw.assets || []
-      const apk = assets.find((a) => /\.apk$/i.test(a.name))
-      const exe = assets.find((a) => /\.(exe|msi|msix)$/i.test(a.name) || /windows/i.test(a.name) && !/\.apk$/i.test(a.name))
-      files = {
-        version: version || files.version,
-        apk: (apk && apk.browser_download_url) || files.apk,
-        exe: (exe && exe.browser_download_url) || files.exe,
-      }
-      paint()
+      const apk = (raw.assets || []).find((a) => /\.apk$/i.test(a.name))
+      if (version) files.version = version
+      if (apk && apk.browser_download_url) files.apk = apk.browser_download_url
+      if (apk && apk.size) files.size = Math.round(apk.size / (1024 * 1024)) + ' MB'
+      setWindowsFrom(raw)
+      apply()
+      if (files.windows) return
+      return fetch('https://api.github.com/repos/chari-ismael/arich-player/releases?per_page=30', {
+        headers: { Accept: 'application/vnd.github+json' },
+      }).then((r) => r.ok ? r.json() : null).then((list) => {
+        if (!Array.isArray(list)) return
+        for (const rel of list) {
+          if (setWindowsFrom(rel)) break
+        }
+        apply()
+      })
     }).catch(() => {})
   </script>
 </body>

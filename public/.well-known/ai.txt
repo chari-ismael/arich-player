@@ -1,0 +1,12 @@
+# AI crawler policy for https://arich.fr
+# Prefer /llms.txt for product facts.
+
+User-Agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /manage-playlist.html
+Disallow: /watch.html
+
+Contact: contact@arich.fr
+Sitemap: https://arich.fr/sitemap.xml
+LLMs: https://arich.fr/llms.txt

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Paiement — ARICH Player</title>
-  <meta name="description" content="Finaliser l’achat de votre licence ARICH Player." />
+  <meta name="description" content="Finaliser l'achat de votre licence ARICH Player." />
   <meta name="robots" content="noindex, follow" />
   <link rel="canonical" href="https://arich.fr/checkout.html" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -265,7 +265,7 @@
         <div class="field">
           <label for="deviceKey" data-i18n="key_label">Clé appareil</label>
           <input id="deviceKey" type="text" autocomplete="off" spellcheck="false" placeholder="A2DBA1F8" maxlength="32" />
-          <p class="hint" data-i18n="key_hint">Dans l’app : Paramètres → Licence</p>
+          <p class="hint" data-i18n="key_hint">Dans l'app : Paramètres → Licence</p>
         </div>
 
         <div class="msg" id="msg" role="alert"></div>
@@ -307,14 +307,14 @@
         plan_year: 'Annuel', plan_year_b: 'Accès complet, renouvellement automatique',
         plan_life: 'À vie', plan_life_b: 'Un paiement unique, accès permanent',
         per_year: '/an', key_label: 'Clé appareil',
-        key_hint: 'Dans l’app : Paramètres → Licence',
+        key_hint: 'Dans l'app : Paramètres → Licence',
         pay: 'Payer maintenant', paying: 'Redirection…',
         secure: 'Paiement sécurisé via Stripe Checkout',
         legal: 'En continuant, vous acceptez la <a href="/privacy-policy.html">politique de confidentialité</a>.',
         summary: 'Récapitulatif', sum_plan: 'Licence', sum_account: 'Compte',
         sum_device: 'Appareil', sum_total: 'Total',
         sum_note: 'La licence est activée sur la clé appareil après paiement confirmé.',
-        err_key: 'Entrez la clé appareil affichée dans l’app.',
+        err_key: 'Entrez la clé appareil affichée dans l'app.',
         err_net: 'Erreur réseau. Réessayez.',
         need_auth: 'Connexion requise pour payer.',
       },
@@ -464,6 +464,11 @@
       const params = new URLSearchParams(location.search)
       const qPlan = (params.get('plan') || 'lifetime').toLowerCase()
       plan = qPlan === 'yearly' ? 'yearly' : 'lifetime'
+      const qKey = (params.get('device_key') || params.get('device') || '').toUpperCase().replace(/[^A-Z0-9]/g, '')
+      if (qKey) {
+        const keyEl = document.getElementById('deviceKey')
+        if (keyEl) keyEl.value = qKey
+      }
 
       const savedLang = localStorage.getItem('arich_lang')
       const browser = (navigator.language || 'fr').toLowerCase().startsWith('en') ? 'en' : 'fr'

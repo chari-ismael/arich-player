@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Suppression des données — ARICH Player</title>
   <link rel="canonical" href="https://arich.fr/data-deletion.html" />
-  <meta name="description" content="Demandez la suppression de votre compte et de vos données personnelles ARICH Player (droit à l’effacement RGPD)." />
+  <meta name="description" content="Demandez la suppression de votre compte et de vos données personnelles ARICH Player (droit à l'effacement RGPD)." />
   <meta name="robots" content="index, follow" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -270,7 +270,7 @@
     </nav>
 
     <main class="shell">
-      <p class="eyebrow">Droit à l’effacement · RGPD</p>
+      <p class="eyebrow">Droit à l'effacement · RGPD</p>
       <h1>Suppression des données</h1>
       <p class="lede">Demandez la suppression de votre compte ARICH Player et des données personnelles associées. Traitement sous 30 jours.</p>
 
@@ -279,13 +279,13 @@
           <h2>Ce qui sera supprimé</h2>
           <ul class="clean">
             <li>Compte / adresse e-mail (si compte créé)</li>
-            <li>Identifiant d’appareil et enregistrements de licence liés</li>
-            <li>Sessions d’utilisation et métadonnées techniques associées</li>
+            <li>Identifiant d'appareil et enregistrements de licence liés</li>
+            <li>Sessions d'utilisation et métadonnées techniques associées</li>
             <li>Données de support liées à votre demande, hors archives légales</li>
           </ul>
           <div class="prose" style="margin-top:14px;">
-            <p><strong>Conservé si la loi l’exige :</strong> certaines traces de licence / facturation peuvent rester jusqu’à 2 ans après expiration (obligations comptables).</p>
-            <p><strong>Données locales :</strong> playlists IPTV, favoris et historique restent sur l’appareil — désinstallez l’app ou videz ses données pour les effacer.</p>
+            <p><strong>Conservé si la loi l'exige :</strong> certaines traces de licence / facturation peuvent rester jusqu'à 2 ans après expiration (obligations comptables).</p>
+            <p><strong>Données locales :</strong> playlists IPTV, favoris et historique restent sur l'appareil — désinstallez l'app ou videz ses données pour les effacer.</p>
           </div>
         </section>
 
@@ -307,13 +307,13 @@
               <div class="field">
                 <label for="email">E-mail *</label>
                 <input id="email" name="email" type="email" autocomplete="email" required placeholder="vous@exemple.com" />
-                <p class="hint">Utilisez l’e-mail de votre compte ARICH si vous en avez un.</p>
+                <p class="hint">Utilisez l'e-mail de votre compte ARICH si vous en avez un.</p>
               </div>
 
               <div class="field">
                 <label for="deviceKey">Device Key (optionnel)</label>
                 <input id="deviceKey" name="device_key" type="text" autocomplete="off" spellcheck="false" placeholder="ARICH-XXXX-XXXX-XXXX" />
-                <p class="hint">Aide à retrouver l’appareil si vous n’avez pas de compte e-mail.</p>
+                <p class="hint">Aide à retrouver l'appareil si vous n'avez pas de compte e-mail.</p>
               </div>
 
               <div class="field">
@@ -322,18 +322,18 @@
                   <option value="">Choisir…</option>
                   <option value="account_and_data">Compte + toutes les données personnelles</option>
                   <option value="device_only">Uniquement cet appareil / Device Key</option>
-                  <option value="access_copy">Demande d’accès (copie de mes données)</option>
+                  <option value="access_copy">Demande d'accès (copie de mes données)</option>
                 </select>
               </div>
 
               <div class="field">
                 <label for="message">Précisions (optionnel)</label>
-                <textarea id="message" name="message" placeholder="Contexte utile : date d’achat, modèle d’appareil…"></textarea>
+                <textarea id="message" name="message" placeholder="Contexte utile : date d'achat, modèle d'appareil…"></textarea>
               </div>
 
               <label class="check">
                 <input id="confirm" name="confirm" type="checkbox" required />
-                <span>Je confirme demander la suppression / le traitement indiqué, et j’ai lu la <a href="/privacy-policy.html">politique de confidentialité</a>.</span>
+                <span>Je confirme demander la suppression / le traitement indiqué, et j'ai lu la <a href="/privacy-policy.html">politique de confidentialité</a>.</span>
               </label>
 
               <div class="actions">
@@ -349,7 +349,7 @@
           <h2>Important</h2>
           <ul class="clean danger">
             <li>La suppression du compte est irréversible.</li>
-            <li>Une licence active liée à l’appareil / compte sera désactivée.</li>
+            <li>Une licence active liée à l'appareil / compte sera désactivée.</li>
             <li>Google Play / abonnements éventuels se gèrent aussi dans les réglages Google Play.</li>
           </ul>
           <div class="prose" style="margin-top:14px;">
@@ -390,7 +390,7 @@
         const confirmed = form.confirm.checked;
 
         if (!emailRe.test(email) || !scope || !confirmed) {
-          status.textContent = 'Vérifiez l’e-mail, le périmètre et la case de confirmation.';
+          status.textContent = 'Vérifiez l'e-mail, le périmètre et la case de confirmation.';
           status.classList.add('is-error');
           return;
         }
@@ -398,7 +398,7 @@
         const scopeLabels = {
           account_and_data: 'Compte + toutes les données personnelles',
           device_only: 'Uniquement cet appareil / Device Key',
-          access_copy: 'Demande d’accès (copie de mes données)',
+          access_copy: 'Demande d'accès (copie de mes données)',
         };
 
         btn.disabled = true;

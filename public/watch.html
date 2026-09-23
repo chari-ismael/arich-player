@@ -500,7 +500,7 @@
     <div class="hero">
       <p class="hero__eyebrow">Session partagée</p>
       <h1>Watch Together</h1>
-      <p>Même flux, même moment — synchronisé avec l’app ARICH Player.</p>
+      <p>Même flux, même moment — synchronisé avec l'app ARICH Player.</p>
     </div>
 
     <div id="errorBox" class="error-box" role="alert"></div>
@@ -512,7 +512,7 @@
 
     <div id="joinPanel" class="card hidden">
       <p class="title">Rejoindre une salle</p>
-      <p class="meta" style="margin-bottom:14px">Entrez le code à 6 caractères partagé par l’hôte.</p>
+      <p class="meta" style="margin-bottom:14px">Entrez le code à 6 caractères partagé par l'hôte.</p>
       <input id="codeInput" maxlength="6" placeholder="ABCDEF" autocomplete="off" inputmode="text" spellcheck="false" />
       <button class="btn btn-primary" id="joinBtn" style="width:100%">Rejoindre la session</button>
       <div class="steps" aria-hidden="true">
@@ -541,14 +541,14 @@
       </div>
       <div class="peers" id="peersList" aria-label="Participants"></div>
       <div class="row">
-        <button class="btn btn-primary" id="openAppBtn">Ouvrir dans l’app</button>
+        <button class="btn btn-primary" id="openAppBtn">Ouvrir dans l'app</button>
         <button class="btn btn-ghost" id="copyLinkBtn">Copier le lien</button>
       </div>
     </div>
 
     <div id="invalidPanel" class="card hidden">
       <p class="title">Salle introuvable</p>
-      <p class="meta">Ce code est invalide ou la session a expiré. Demandez un nouveau lien à l’hôte.</p>
+      <p class="meta">Ce code est invalide ou la session a expiré. Demandez un nouveau lien à l'hôte.</p>
       <div class="row" style="margin-top:16px">
         <a href="/" class="btn btn-ghost">Retour au site</a>
         <button type="button" class="btn btn-primary" id="retryJoinBtn">Entrer un code</button>
@@ -663,7 +663,7 @@
       const detail = error?.message || 'Connexion anonyme indisponible';
       throw new Error(
         `Impossible de rejoindre depuis le navigateur (${detail}). ` +
-        'Ouvrez le lien dans l’app ARICH Player, ou réessayez plus tard.',
+        'Ouvrez le lien dans l'app ARICH Player, ou réessayez plus tard.',
       );
     }
 
@@ -710,8 +710,8 @@
       if (isProgressive && !looksHls) {
         const isMkv = /\.mkv(\?|$)/i.test(rawUrl || '');
         if (isMkv) {
-          // Chrome/Firefox ne décodent pas Matroska — guider vers l’app
-          onFatal('Format MKV : lecture web non supportée. Ouvrez ce lien dans l’app ARICH Player.');
+          // Chrome/Firefox ne décodent pas Matroska — guider vers l'app
+          onFatal('Format MKV : lecture web non supportée. Ouvrez ce lien dans l'app ARICH Player.');
           return;
         }
         video.src = proxied;
@@ -719,7 +719,7 @@
         video.play().catch(() => {});
         setTimeout(() => {
           if (video.readyState < 2 && !placeholder.classList.contains('hidden')) {
-            onFatal('Lecture navigateur impossible pour ce fichier. Ouvrez l’app ARICH.');
+            onFatal('Lecture navigateur impossible pour ce fichier. Ouvrez l'app ARICH.');
           }
         }, 8000);
         return;

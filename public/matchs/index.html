@@ -125,7 +125,7 @@
   <div class="gate" id="gate">
     <div>
       <img src="/logo-mark.svg" width="48" height="48" alt="" />
-      <p>Ouverture d’ARICH Player…</p>
+      <p>Ouverture d'ARICH Player…</p>
     </div>
   </div>
   <header class="top">
@@ -136,7 +136,7 @@
         <span>Scores du jour</span>
       </div>
     </a>
-    <button class="open-app" id="open-app" type="button">Ouvrir l’app</button>
+    <button class="open-app" id="open-app" type="button">Ouvrir l'app</button>
   </header>
   <div class="tabs">
     <button class="tab on" data-f="all" type="button">Tous</button>
@@ -186,7 +186,7 @@
         location.href = intentFor(p);
         return;
       }
-      // Windows / desktop : le protocole est enregistré par l’app, pas le Play Store.
+      // Windows / desktop : le protocole est enregistré par l'app, pas le Play Store.
       location.href = protocolFor(p);
     }
 
@@ -279,7 +279,7 @@
       var hint = document.getElementById('hint');
       hint.textContent = list.length ? list.length + ' matchs' : '';
       if (!list.length) {
-        root.innerHTML = '<div class="empty">' + (filter === 'live' ? 'Aucun match en direct.' : 'Aucun match aujourd’hui.') + '</div>';
+        root.innerHTML = '<div class="empty">' + (filter === 'live' ? 'Aucun match en direct.' : 'Aucun match aujourd'hui.') + '</div>';
         return;
       }
       root.innerHTML = shown.map(function (g) {

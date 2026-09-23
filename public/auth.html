@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
@@ -588,7 +588,7 @@
     <p id="redirect-sub" class="t-mute" style="font-size:13px;margin:0" data-i18n="redirect_sub_web">Redirection en cours…</p>
     <div class="redirect-bar"><span></span></div>
     <button type="button" class="btn-shimmer" style="width:auto;min-width:200px;margin-top:8px;display:none" id="btn-open-app">
-      <span data-i18n="redirect_open">Ouvrir l’application</span>
+      <span data-i18n="redirect_open">Ouvrir l'application</span>
     </button>
   </div>
 
@@ -886,9 +886,9 @@
         signup_legal: 'En créant un compte, vous acceptez la <a class="legal-link" href="/privacy-policy.html">politique de confidentialité</a>.',
         footer_privacy: 'Confidentialité', footer_deletion: 'Suppression des données',
         redirect_title: 'Connexion réussie', redirect_sub_web: 'Redirection en cours…',
-        redirect_sub_app: 'Retour vers l’application ARICH…', redirect_sub_watch: 'Retour vers Watch Together…',
-        redirect_sub_space: 'Redirection vers votre espace…', redirect_sub_manual: 'L’application ne s’est pas ouverte ?',
-        redirect_open: 'Ouvrir l’application',
+        redirect_sub_app: 'Retour vers l'application ARICH…', redirect_sub_watch: 'Retour vers Watch Together…',
+        redirect_sub_space: 'Redirection vers votre espace…', redirect_sub_manual: 'L'application ne s'est pas ouverte ?',
+        redirect_open: 'Ouvrir l'application',
         strength_weak: 'Faible', strength_mid: 'Moyen', strength_strong: 'Fort',
         err_fill: 'Veuillez remplir tous les champs.', err_email: 'Veuillez entrer votre e-mail.',
         err_phone: 'Numéro invalide.', err_otp: 'Entrez le code reçu.',
@@ -914,7 +914,7 @@
         google_cta: 'Continue with Google', facebook_cta: 'Continue with Facebook',
         no_account: 'No account yet?', has_account: 'Already have an account?',
         forgot_link: 'Forgot password?', forgot_title: 'Forgot password',
-        forgot_lede: 'We’ll send a reset link.', forgot_cta: 'Send link',
+        forgot_lede: 'We'll send a reset link.', forgot_cta: 'Send link',
         forgot_ok_title: 'Email sent', forgot_ok_sub: 'Check your inbox to continue.',
         back_login: '← Back', pw_hint: 'At least 8 characters',
         magic_title: 'Magic link', magic_hint: 'A one-time email link — no password.', magic_cta: 'Send link',
@@ -929,7 +929,7 @@
         footer_privacy: 'Privacy', footer_deletion: 'Data deletion',
         redirect_title: 'Signed in', redirect_sub_web: 'Redirecting…',
         redirect_sub_app: 'Returning to the ARICH app…', redirect_sub_watch: 'Returning to Watch Together…',
-        redirect_sub_space: 'Redirecting to your dashboard…', redirect_sub_manual: 'App didn’t open automatically?',
+        redirect_sub_space: 'Redirecting to your dashboard…', redirect_sub_manual: 'App didn't open automatically?',
         redirect_open: 'Open the app',
         strength_weak: 'Weak', strength_mid: 'Fair', strength_strong: 'Strong',
         err_fill: 'Please fill in all fields.', err_email: 'Please enter your email.',
@@ -1188,8 +1188,23 @@
     }
     function isAndroid() { return /android/i.test(navigator.userAgent) }
     function isIos() { return /iphone|ipad|ipod/i.test(navigator.userAgent) }
+    function fromAppFlag() {
+      try { if (sessionStorage.getItem('arich_from_app') === '1') return true } catch (_) {}
+      return new URLSearchParams(location.search).get('from') === 'app'
+    }
     function shouldOpenApp() {
-      return isAndroid() || isIos() || sessionStorage.getItem('arich_from_app') === '1'
+      return isAndroid() || isIos() || fromAppFlag()
+    }
+    function openAppDeepLink(url) {
+      try {
+        const a = document.createElement('a')
+        a.href = url
+        a.rel = 'noopener'
+        document.body.appendChild(a)
+        a.click()
+        a.remove()
+      } catch (_) {}
+      try { location.href = url } catch (_) {}
     }
     async function buildAppDeepLink() {
       const hash = location.hash || ''
@@ -1219,7 +1234,7 @@
       document.querySelector('.auth-top')?.style.setProperty('visibility', 'hidden')
       document.querySelector('.auth-foot')?.style.setProperty('visibility', 'hidden')
       const nextUrl = getNextRedirectUrl()
-      const fromApp = sessionStorage.getItem('arich_from_app') === '1'
+      const fromApp = fromAppFlag()
       if (nextUrl && !fromApp) {
         if (sub) sub.textContent = t('redirect_sub_web')
         setTimeout(() => { location.href = nextUrl }, 900)
@@ -1228,7 +1243,7 @@
       if (shouldOpenApp()) {
         if (sub) sub.textContent = t('redirect_sub_app')
         const deepLink = await buildAppDeepLink()
-        setTimeout(() => { location.href = deepLink }, 600)
+        setTimeout(() => { openAppDeepLink(deepLink) }, 600)
         setTimeout(() => {
           const btn = document.getElementById('btn-open-app')
           if (btn) btn.style.display = 'inline-flex'
@@ -1602,7 +1617,7 @@
     document.getElementById('forgotLink')?.addEventListener('click', () => openExtra('forgot'))
     document.querySelectorAll('[data-extra]').forEach((el) => el.addEventListener('click', () => openExtra(el.getAttribute('data-extra'))))
     document.querySelectorAll('[data-extra-close]').forEach((el) => el.addEventListener('click', closeToMode))
-    document.getElementById('btn-open-app')?.addEventListener('click', async () => { location.href = await buildAppDeepLink() })
+    document.getElementById('btn-open-app')?.addEventListener('click', async () => { openAppDeepLink(await buildAppDeepLink()) })
     document.querySelectorAll('[data-toggle-pw]').forEach((btn) => btn.addEventListener('click', () => togglePw(btn.getAttribute('data-toggle-pw'), btn)))
     document.getElementById('signup-pw')?.addEventListener('input', (e) => checkStrength(e.target.value))
     document.getElementById('reset-pw')?.addEventListener('input', (e) => checkStrength(e.target.value, 'reset'))
@@ -1666,7 +1681,7 @@
       if (p.get('error') === 'invalid_request' && errCode === 'bad_oauth_state') {
         showMsg('login', lang === 'en'
           ? 'Sign-in session expired. Close this tab and try again from the ARICH app.'
-          : 'Session de connexion expirée. Fermez cet onglet et réessayez depuis l’application ARICH.')
+          : 'Session de connexion expirée. Fermez cet onglet et réessayez depuis l'application ARICH.')
         p.delete('error')
         p.delete('error_code')
         p.delete('error_description')

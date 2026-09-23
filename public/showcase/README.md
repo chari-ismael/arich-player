@@ -1,4 +1,4 @@
-﻿# ARICH showcase visuals (site)
+# ARICH showcase visuals (site)
 
 Dossier principal site : website/public/media/
 Copie miroir : website/public/showcase/

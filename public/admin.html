@@ -1207,6 +1207,7 @@ const FLAGS_DEF = [
   { key:'flag_auto_update',   label:'Mise à jour auto',     desc:'Vérifier les updates au démarrage' },
   { key:'flag_analytics',     label:'Analytics in-app',     desc:'Collecter les données d\'usage (anonyme)' },
   { key:'flag_beta_features', label:'Fonctions bêta',       desc:'Activer les fonctions en cours de test' },
+  { key:'flag_enforce_trial', label:'Verrouiller fin d'essai', desc:'Bloque l'accueil hors Match Center quand l'essai est terminé', def:false },
 ];
 
 const { createClient } = supabase;
@@ -2339,7 +2340,7 @@ async function loadFlags() {
   const el = document.getElementById('flags-list');
   el.style.display = 'block';
   el.innerHTML = FLAGS_DEF.map(f=>{
-    const val = cfgMap[f.key]!==undefined ? cfgMap[f.key]==='true' : true;
+    const val = cfgMap[f.key]!==undefined ? cfgMap[f.key]==='true' : (f.def !== false);
     return `
       <div class="flag-row">
         <div style="flex:1;">

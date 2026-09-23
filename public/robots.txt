@@ -1,0 +1,43 @@
+# https://arich.fr
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /manage-playlist.html
+Disallow: /tv-login.html
+Disallow: /tv-pair.html
+Disallow: /watch.html
+
+# AI / answer-engine crawlers — allow public marketing pages
+User-agent: GPTBot
+Allow: /
+Disallow: /admin.html
+Disallow: /manage-playlist.html
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+Sitemap: https://arich.fr/sitemap.xml

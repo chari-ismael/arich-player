@@ -19,6 +19,11 @@
       var isLink = head === 'm' || head === 'matchs' || head === 'v' || head === 'f';
       var path = location.pathname + location.search.replace(/[?&]web=1/, '');
 
+      if (head === 'download' || head === 'download.html') {
+        location.replace('/download/' + location.search + location.hash);
+        return;
+      }
+
       function intent(p) {
         var fallback = 'https://arich.fr' + p + (p.indexOf('?') >= 0 ? '&' : '?') + 'web=1';
         return 'intent://arich.fr' + p + '#Intent;scheme=https;package=' + PKG +
@@ -44,8 +49,8 @@
       document.title = isLink ? 'Ouvrir ARICH' : 'Page introuvable — ARICH';
       document.body.style.cssText = 'min-height:100vh;display:grid;place-items:center;background:#080a0f;color:#f0efec;font-family:Figtree,system-ui,sans-serif;text-align:center;padding:32px';
       document.body.innerHTML = isLink
-        ? '<div><p style="margin-bottom:16px">Ouvrez ce contenu dans ARICH Player.</p><p><a href="https://arich.fr/download" style="color:#d4a04a">Télécharger l’app</a> · <a href="https://play.google.com/store/apps/details?id=' + PKG + '" style="color:#d4a04a">Play Store</a></p></div>'
-        : '<div><h1>404</h1><p>Cette page n’existe pas.</p><p><a href="/" style="color:#d4a04a">Accueil</a></p></div>';
+        ? '<div><p style="margin-bottom:16px">Ouvrez ce contenu dans ARICH Player.</p><p><a href="https://arich.fr/download" style="color:#d4a04a">Télécharger l'app</a> · <a href="https://play.google.com/store/apps/details?id=' + PKG + '" style="color:#d4a04a">Play Store</a></p></div>'
+        : '<div><h1>404</h1><p>Cette page n'existe pas.</p><p><a href="/" style="color:#d4a04a">Accueil</a></p></div>';
     })();
   </script>
 </body>

@@ -4,7 +4,13 @@ import { resolve } from 'path'
 function rewriteDownload(req) {
   if (!req.url) return
   const u = new URL(req.url, 'http://arich.local')
-  if (u.pathname === '/download' || u.pathname === '/download/') {
+  const path = u.pathname
+  if (
+    path === '/download' ||
+    path === '/download/' ||
+    path === '/Download' ||
+    path === '/Download/'
+  ) {
     req.url = '/download/index.html' + u.search
   }
 }

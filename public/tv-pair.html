@@ -119,19 +119,19 @@
   <div class="card">
     <div class="brand">ARICH</div>
     <h1>Lier ma TV</h1>
-    <p class="lead" id="lead">Ouvrez l’application ARICH pour envoyer la playlist déjà enregistrée.</p>
+    <p class="lead" id="lead">Ouvrez l'application ARICH pour envoyer la playlist déjà enregistrée.</p>
 
     <div id="codeBadge" class="code-row"></div>
     <input id="codeManual" class="code-input hidden" maxlength="6" placeholder="ABC123" autocomplete="off" autocapitalize="characters" />
 
     <button type="button" class="btn btn-primary" id="btnOpenApp">Ouvrir ARICH</button>
-    <button type="button" class="btn btn-ghost" id="btnStay">Je tape le code dans l’app</button>
+    <button type="button" class="btn btn-ghost" id="btnStay">Je tape le code dans l'app</button>
 
-    <p class="hint" id="hint">Si l’app ne s’ouvre pas : ARICH → Réglages → Lier ma TV, puis ce code.</p>
+    <p class="hint" id="hint">Si l'app ne s'ouvre pas : ARICH → Réglages → Lier ma TV, puis ce code.</p>
     <div id="statusMsg" class="msg"></div>
 
     <details id="fallback">
-      <summary>Pas d’application ? Envoyer Xtream / M3U ici</summary>
+      <summary>Pas d'application ? Envoyer Xtream / M3U ici</summary>
       <form id="pairForm">
         <label>Type</label>
         <select id="type">
@@ -236,14 +236,14 @@
       }
     } else {
       codeManual.classList.remove('hidden');
-      hint.textContent = 'Tapez le code de la TV, puis Ouvrir ARICH — ou saisissez-le dans l’app : Réglages → Lier ma TV.';
+      hint.textContent = 'Tapez le code de la TV, puis Ouvrir ARICH — ou saisissez-le dans l'app : Réglages → Lier ma TV.';
     }
 
     document.getElementById('pairForm').onsubmit = function (e) {
       e.preventDefault();
       var code = currentCode();
       if (code.length < 6) {
-        showMsg('Code d’appairage invalide.', false);
+        showMsg('Code d'appairage invalide.', false);
         return;
       }
       var type = document.getElementById('type').value;

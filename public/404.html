@@ -19,6 +19,11 @@
       var isLink = head === 'm' || head === 'matchs' || head === 'v' || head === 'f';
       var path = location.pathname + location.search.replace(/[?&]web=1/, '');
 
+      if (head === 'login' || head === 'login.html') {
+        location.replace('/auth.html' + location.search + location.hash);
+        return;
+      }
+
       if (head === 'download' || head === 'download.html') {
         location.replace('/download/' + location.search + location.hash);
         return;

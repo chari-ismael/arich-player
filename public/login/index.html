@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connexion — ARICH</title>
+  <meta name="robots" content="noindex, follow" />
+  <link rel="canonical" href="https://arich.fr/login" />
+  <style>
+    html, body { margin: 0; height: 100%; background: #07090d; color: #F0EFEC;
+      font-family: system-ui, sans-serif; display: grid; place-items: center; }
+    p { font-size: 13px; letter-spacing: .16em; text-transform: uppercase;
+      color: rgba(240,239,236,.55); }
+    a { color: #D4A04A; }
+  </style>
+</head>
+<body>
+  <p>Redirection… <a id="fallback" href="/auth.html">Connexion</a></p>
+  <script>
+    const dest = '/auth.html' + location.search + location.hash;
+    const link = document.getElementById('fallback');
+    if (link) link.href = dest;
+    location.replace(dest);
+  </script>
+</body>
+</html>

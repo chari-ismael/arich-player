@@ -50,10 +50,17 @@
       background: var(--bg); transition: opacity .45s var(--ez), visibility .45s;
     }
     .boot.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
+    .boot-inner { display: grid; place-items: center; gap: 18px; }
     .boot span {
       font-family: Syne, sans-serif; font-size: 11px; letter-spacing: .2em;
       text-transform: uppercase; color: var(--mute);
     }
+    .boot-login {
+      color: var(--copper2); font-size: 13px; font-weight: 600;
+      text-decoration: none; border: 1px solid var(--line2);
+      padding: 8px 16px; border-radius: 999px;
+    }
+    .boot-login[hidden] { display: none; }
 
     .nav {
       position: relative; z-index: 10;
@@ -218,7 +225,12 @@
   </style>
 </head>
 <body>
-  <div class="boot" id="boot"><span data-i18n="loading">Chargement</span></div>
+  <div class="boot" id="boot">
+    <div class="boot-inner">
+      <span data-i18n="loading">Chargement</span>
+      <a class="boot-login" id="bootLogin" href="/login" hidden data-i18n="sign_in">Se connecter</a>
+    </div>
+  </div>
   <div class="scene" aria-hidden="true"></div>
 
   <header class="nav">
@@ -307,16 +319,17 @@
         plan_year: 'Annuel', plan_year_b: 'Accès complet, renouvellement automatique',
         plan_life: 'À vie', plan_life_b: 'Un paiement unique, accès permanent',
         per_year: '/an', key_label: 'Clé appareil',
-        key_hint: 'Dans l'app : Paramètres → Licence',
+        key_hint: "Dans l'app : Paramètres → Licence",
         pay: 'Payer maintenant', paying: 'Redirection…',
         secure: 'Paiement sécurisé via Stripe Checkout',
         legal: 'En continuant, vous acceptez la <a href="/privacy-policy.html">politique de confidentialité</a>.',
         summary: 'Récapitulatif', sum_plan: 'Licence', sum_account: 'Compte',
         sum_device: 'Appareil', sum_total: 'Total',
         sum_note: 'La licence est activée sur la clé appareil après paiement confirmé.',
-        err_key: 'Entrez la clé appareil affichée dans l'app.',
+        err_key: "Entrez la clé appareil affichée dans l'app.",
         err_net: 'Erreur réseau. Réessayez.',
         need_auth: 'Connexion requise pour payer.',
+        sign_in: 'Se connecter',
       },
       en: {
         loading: 'Loading', title: 'Checkout',
@@ -335,6 +348,7 @@
         err_key: 'Enter the device key shown in the app.',
         err_net: 'Network error. Try again.',
         need_auth: 'Sign in required to pay.',
+        sign_in: 'Sign in',
       },
     }
 
@@ -360,9 +374,19 @@
       try { localStorage.setItem('arich_lang', lang) } catch (_) {}
     }
 
+    function checkoutNext() {
+      const key = (document.getElementById('deviceKey')?.value || '').trim()
+      const q = new URLSearchParams({ plan })
+      if (key) q.set('device_key', key)
+      return `/checkout.html?${q.toString()}`
+    }
+
+    function loginUrl() {
+      return `/login?next=${encodeURIComponent(checkoutNext())}`
+    }
+
     function authRedirect() {
-      const next = `/checkout.html?plan=${encodeURIComponent(plan)}`
-      location.replace(`/auth.html?next=${encodeURIComponent(next)}`)
+      location.replace(loginUrl())
     }
 
     function setPlan(id) {
@@ -475,10 +499,29 @@
       applyLang(savedLang === 'en' || savedLang === 'fr' ? savedLang : browser)
       setPlan(plan)
 
+      const bootLogin = document.getElementById('bootLogin')
+      if (bootLogin) {
+        bootLogin.href = loginUrl()
+        setTimeout(() => { bootLogin.hidden = false }, 1200)
+      }
+
+      if (typeof supabase === 'undefined') {
+        authRedirect()
+        return
+      }
+
       const { createClient } = supabase
       const sb = createClient(SUPABASE_URL, SUPABASE_ANON)
-      const { data } = await sb.auth.getSession()
-      session = data.session
+      try {
+        const raced = Promise.race([
+          sb.auth.getSession(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3500)),
+        ])
+        const { data } = await raced
+        session = data?.session || null
+      } catch {
+        session = null
+      }
 
       if (!session?.user) {
         authRedirect()
@@ -494,7 +537,15 @@
 
       document.getElementById('main').hidden = false
       document.getElementById('boot')?.classList.add('is-done')
-    })()
+    })().catch(() => { authRedirect() })
+  </script>
+  <script>
+    setTimeout(function () {
+      var boot = document.getElementById('boot')
+      if (!boot || boot.classList.contains('is-done')) return
+      var next = '/checkout.html' + (location.search || '')
+      location.replace('/login?next=' + encodeURIComponent(next))
+    }, 2000)
   </script>
 </body>
 </html>

@@ -886,9 +886,9 @@
         signup_legal: 'En créant un compte, vous acceptez la <a class="legal-link" href="/privacy-policy.html">politique de confidentialité</a>.',
         footer_privacy: 'Confidentialité', footer_deletion: 'Suppression des données',
         redirect_title: 'Connexion réussie', redirect_sub_web: 'Redirection en cours…',
-        redirect_sub_app: 'Retour vers l'application ARICH…', redirect_sub_watch: 'Retour vers Watch Together…',
-        redirect_sub_space: 'Redirection vers votre espace…', redirect_sub_manual: 'L'application ne s'est pas ouverte ?',
-        redirect_open: 'Ouvrir l'application',
+        redirect_sub_app: "Retour vers l'application ARICH…", redirect_sub_watch: 'Retour vers Watch Together…',
+        redirect_sub_space: 'Redirection vers votre espace…', redirect_sub_manual: "L'application ne s'est pas ouverte ?",
+        redirect_open: "Ouvrir l'application",
         strength_weak: 'Faible', strength_mid: 'Moyen', strength_strong: 'Fort',
         err_fill: 'Veuillez remplir tous les champs.', err_email: 'Veuillez entrer votre e-mail.',
         err_phone: 'Numéro invalide.', err_otp: 'Entrez le code reçu.',
@@ -914,7 +914,7 @@
         google_cta: 'Continue with Google', facebook_cta: 'Continue with Facebook',
         no_account: 'No account yet?', has_account: 'Already have an account?',
         forgot_link: 'Forgot password?', forgot_title: 'Forgot password',
-        forgot_lede: 'We'll send a reset link.', forgot_cta: 'Send link',
+        forgot_lede: "We'll send a reset link.", forgot_cta: 'Send link',
         forgot_ok_title: 'Email sent', forgot_ok_sub: 'Check your inbox to continue.',
         back_login: '← Back', pw_hint: 'At least 8 characters',
         magic_title: 'Magic link', magic_hint: 'A one-time email link — no password.', magic_cta: 'Send link',
@@ -929,7 +929,7 @@
         footer_privacy: 'Privacy', footer_deletion: 'Data deletion',
         redirect_title: 'Signed in', redirect_sub_web: 'Redirecting…',
         redirect_sub_app: 'Returning to the ARICH app…', redirect_sub_watch: 'Returning to Watch Together…',
-        redirect_sub_space: 'Redirecting to your dashboard…', redirect_sub_manual: 'App didn't open automatically?',
+        redirect_sub_space: 'Redirecting to your dashboard…', redirect_sub_manual: "App didn't open automatically?",
         redirect_open: 'Open the app',
         strength_weak: 'Weak', strength_mid: 'Fair', strength_strong: 'Strong',
         err_fill: 'Please fill in all fields.', err_email: 'Please enter your email.',
@@ -1681,7 +1681,7 @@
       if (p.get('error') === 'invalid_request' && errCode === 'bad_oauth_state') {
         showMsg('login', lang === 'en'
           ? 'Sign-in session expired. Close this tab and try again from the ARICH app.'
-          : 'Session de connexion expirée. Fermez cet onglet et réessayez depuis l'application ARICH.')
+          : "Session de connexion expirée. Fermez cet onglet et réessayez depuis l'application ARICH.")
         p.delete('error')
         p.delete('error_code')
         p.delete('error_description')

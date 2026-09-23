@@ -67,10 +67,22 @@
       font-family: var(--font);
       color: var(--text);
       background:
-        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(110, 72, 36, 0.16), transparent 55%),
+        radial-gradient(ellipse 70% 42% at 18% -8%, rgba(197, 138, 42, 0.14), transparent 58%),
+        radial-gradient(ellipse 55% 40% at 88% 8%, rgba(80, 110, 160, 0.08), transparent 55%),
+        radial-gradient(ellipse 90% 50% at 50% 100%, rgba(20, 24, 32, 0.9), transparent 55%),
         var(--bg-deep);
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px;
     }
     a { color: inherit; text-decoration: none; }
     button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
@@ -96,6 +108,8 @@
       min-height: 100dvh;
       display: flex;
       flex-direction: column;
+      position: relative;
+      z-index: 1;
     }
 
     .nav {
@@ -157,67 +171,61 @@
       padding: 48px var(--pad) 72px;
     }
 
-    .head { margin-bottom: 22px; }
+    .head { margin-bottom: 28px; }
     .head__kicker {
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 0.2em;
       text-transform: uppercase;
       color: var(--copper);
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      opacity: 0;
+      transform: translateY(8px);
+      animation: riseIn 0.7s var(--ease) 80ms both;
     }
     .head__title {
       font-family: var(--display);
-      font-size: clamp(1.45rem, 3.4vw, 1.9rem);
+      font-size: clamp(1.7rem, 4.2vw, 2.35rem);
       font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.15;
-      margin-bottom: 8px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: baseline;
-      gap: 0.28em;
-      min-height: 1.25em;
+      letter-spacing: -0.035em;
+      line-height: 1.12;
+      margin-bottom: 12px;
+      min-height: 1.2em;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.06), 0 18px 40px rgba(0,0,0,0.35);
     }
     .head__title .type {
       display: inline;
-      white-space: pre;
+      white-space: pre-wrap;
     }
     .head__title .caret {
       display: inline-block;
-      width: 0.08em;
-      height: 0.92em;
-      margin-left: 1px;
-      background: var(--copper-2);
+      width: 0.085em;
+      height: 0.9em;
+      margin-left: 3px;
+      background: linear-gradient(180deg, #F0C56A, var(--copper));
       border-radius: 1px;
-      vertical-align: -0.08em;
-      box-shadow: 0 0 12px rgba(197, 138, 42, 0.55);
-      animation: caretBlink 1.05s steps(1) infinite;
+      vertical-align: -0.06em;
+      box-shadow: 0 0 14px rgba(197, 138, 42, 0.7);
+      animation: caretBlink 0.95s steps(1) infinite;
     }
     .head__title .caret.is-done {
       opacity: 0;
       animation: none;
-      transition: opacity 0.45s var(--ease);
-    }
-    .head__title .name {
-      white-space: nowrap;
-      opacity: 0;
-      transform: translateY(6px);
-      filter: blur(4px);
-      transition:
-        opacity 0.55s var(--ease),
-        transform 0.55s var(--ease),
-        filter 0.55s var(--ease);
-    }
-    .head__title .name.is-on {
-      opacity: 1;
-      transform: none;
-      filter: none;
+      transition: opacity 0.5s var(--ease);
     }
     .head__lede {
       color: var(--mute);
       font-size: 16px;
       max-width: 36ch;
+      opacity: 0;
+      transform: translateY(8px);
+      transition:
+        opacity 0.65s var(--ease),
+        transform 0.65s var(--ease);
+    }
+    .head__lede.is-on {
+      opacity: 1;
+      transform: none;
     }
 
     .cta {
@@ -484,20 +492,27 @@
     .plats { animation-delay: 280ms; }
     @media (prefers-reduced-motion: reduce) {
       .btn--copper.btn--glow { animation: none; }
-      .cta .btn, .cta .store, .plats { animation: none; }
+      .cta .btn, .cta .store, .plats, .head__kicker { animation: none; }
       .store:hover .store__img,
       .store:focus-visible .store__img { transform: none; }
       .head__title .caret { animation: none; opacity: 0; }
-      .head__title .name {
+      .head__lede {
         opacity: 1;
         transform: none;
-        filter: none;
         transition: none;
       }
     }
 
     .plats {
-      border-top: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 4px 18px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.03), transparent 28%),
+        rgba(255,255,255,0.015);
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow:
+        0 1px 0 rgba(255,255,255,0.04) inset,
+        0 20px 50px rgba(0,0,0,0.28);
     }
     .plat {
       display: grid;
@@ -507,6 +522,7 @@
       padding: 22px 0;
       border-bottom: 1px solid var(--line);
     }
+    .plat:last-child { border-bottom: 0; }
     .plat h2 {
       font-family: var(--display);
       font-size: 18px;
@@ -582,9 +598,8 @@
         <p class="head__kicker" data-i18n="kicker">Application</p>
         <h1 class="head__title" id="pageTitle">
           <span class="type" id="titleType"></span><span class="caret" id="titleCaret" aria-hidden="true"></span>
-          <span class="name" id="titleName">ARICH PLAYER</span>
         </h1>
-        <p class="head__lede" data-i18n="lede">Android, Android TV et Windows.</p>
+        <p class="head__lede" id="titleLede" data-i18n="lede">Android, Android TV et Windows.</p>
       </header>
 
       <div class="cta">
@@ -723,49 +738,59 @@
 
     let typeTimer = null
     let typeToken = 0
-    let typedVerb = ''
+    let typedLine = ''
 
-    function typeTitle(verb, force) {
+    function typeTitle(line, force) {
       const typeEl = document.getElementById('titleType')
       const caret = document.getElementById('titleCaret')
-      const name = document.getElementById('titleName')
+      const lede = document.getElementById('titleLede')
       const h1 = document.getElementById('pageTitle')
-      if (!typeEl || !caret || !name || !h1) return
+      if (!typeEl || !caret || !h1) return
 
-      h1.setAttribute('aria-label', `${verb} ARICH PLAYER`)
-      if (!force && typedVerb === verb && name.classList.contains('is-on')) return
-      typedVerb = verb
+      h1.setAttribute('aria-label', line)
+      if (!force && typedLine === line && typeEl.textContent === line) {
+        if (lede) lede.classList.add('is-on')
+        return
+      }
+      typedLine = line
 
       clearTimeout(typeTimer)
       const token = ++typeToken
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      const full = verb
+
+      if (lede) lede.classList.remove('is-on')
 
       if (reduced) {
-        typeEl.textContent = full
+        typeEl.textContent = line
         caret.classList.add('is-done')
-        name.classList.add('is-on')
+        if (lede) lede.classList.add('is-on')
         return
       }
 
       typeEl.textContent = ''
       caret.classList.remove('is-done')
-      name.classList.remove('is-on')
       let i = 0
+      const pauseAt = line.indexOf(' ') // pause after first word
 
       const tick = () => {
         if (token !== typeToken) return
-        if (i <= full.length) {
-          typeEl.textContent = full.slice(0, i)
+        if (i <= line.length) {
+          typeEl.textContent = line.slice(0, i)
+          const justPaused = pauseAt > 0 && i === pauseAt + 1
           i += 1
-          typeTimer = setTimeout(tick, i === 1 ? 280 : 38 + Math.random() * 28)
+          const delay = i === 1
+            ? 320
+            : justPaused
+              ? 320
+              : 42 + Math.random() * 36
+          typeTimer = setTimeout(tick, delay)
           return
         }
         typeTimer = setTimeout(() => {
           if (token !== typeToken) return
-          name.classList.add('is-on')
           caret.classList.add('is-done')
-        }, 180)
+          if (lede) lede.classList.add('is-on')
+        }, 220)
       }
       tick()
     }
@@ -780,7 +805,7 @@
         const key = el.getAttribute('data-i18n')
         if (t[key]) el.textContent = fill(t[key])
       })
-      typeTitle(t.title_verb, !!retype)
+      typeTitle(t.title, !!retype)
       document.getElementById('meta').textContent = fill(t.meta)
       document.getElementById('footVer').textContent = files.version
       document.querySelector('.skip-link').textContent = t.skip

@@ -26,7 +26,7 @@
   <meta name="twitter:description" content="Android, Android TV et Windows. Google Play ou APK." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -53,8 +53,8 @@
       --copper: #C58A2A;
       --copper-2: #D4A04A;
       --copper-dim: rgba(197, 138, 42, 0.18);
-      --font: "Figtree", system-ui, sans-serif;
-      --display: "Syne", system-ui, sans-serif;
+      --font: "IBM Plex Sans", "Segoe UI", sans-serif;
+      --display: "Instrument Serif", "Times New Roman", serif;
       --pad: clamp(20px, 5vw, 56px);
       --ink: #0a0c10;
       --ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -110,6 +110,61 @@
       flex-direction: column;
       position: relative;
       z-index: 1;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.55s var(--ease), transform 0.55s var(--ease);
+    }
+    .wrap.is-ready {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* Boot loader */
+    .boot {
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      display: grid;
+      place-items: center;
+      background: var(--bg-deep);
+      transition: opacity 0.55s var(--ease), visibility 0.55s;
+    }
+    .boot.is-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .boot__mark {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      object-fit: cover;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.08),
+        0 18px 48px rgba(197, 138, 42, 0.22);
+      animation: bootPulse 1.1s var(--ease) infinite;
+    }
+    .boot__ring {
+      position: absolute;
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      border: 1.5px solid transparent;
+      border-top-color: var(--copper-2);
+      border-right-color: rgba(197, 138, 42, 0.25);
+      animation: bootSpin 0.9s linear infinite;
+    }
+    .boot__inner {
+      position: relative;
+      display: grid;
+      place-items: center;
+    }
+    @keyframes bootPulse {
+      0%, 100% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.04); filter: brightness(1.08); }
+    }
+    @keyframes bootSpin {
+      to { transform: rotate(360deg); }
     }
 
     .nav {
@@ -126,10 +181,10 @@
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      font-family: var(--display);
+      font-family: var(--font);
       font-weight: 700;
-      font-size: 13px;
-      letter-spacing: 0.16em;
+      font-size: 12px;
+      letter-spacing: 0.18em;
     }
     .nav__brand img { border-radius: 8px; flex-shrink: 0; }
     .nav__end {
@@ -185,13 +240,13 @@
     }
     .head__title {
       font-family: var(--display);
-      font-size: clamp(1.7rem, 4.2vw, 2.35rem);
-      font-weight: 800;
-      letter-spacing: -0.035em;
+      font-size: clamp(2rem, 5vw, 2.85rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
       line-height: 1.12;
       margin-bottom: 12px;
       min-height: 1.2em;
-      text-shadow: 0 1px 0 rgba(255,255,255,0.06), 0 18px 40px rgba(0,0,0,0.35);
+      text-shadow: 0 1px 0 rgba(255,255,255,0.04), 0 18px 40px rgba(0,0,0,0.35);
     }
     .head__title .type {
       display: inline;
@@ -495,12 +550,8 @@
       .cta .btn, .cta .store, .plats, .head__kicker { animation: none; }
       .store:hover .store__img,
       .store:focus-visible .store__img { transform: none; }
-      .head__title .caret { animation: none; opacity: 0; }
-      .head__lede {
-        opacity: 1;
-        transform: none;
-        transition: none;
-      }
+      .boot__mark, .boot__ring { animation: none; }
+      .wrap { transition: opacity 0.25s ease; transform: none; }
     }
 
     .plats {
@@ -524,10 +575,10 @@
     }
     .plat:last-child { border-bottom: 0; }
     .plat h2 {
-      font-family: var(--display);
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 650;
+      letter-spacing: -0.01em;
     }
     .plat p {
       margin-top: 4px;
@@ -577,7 +628,14 @@
 <body>
   <a class="skip-link" href="#main">Aller au contenu</a>
 
-  <div class="wrap">
+  <div class="boot" id="boot" aria-hidden="true">
+    <div class="boot__inner">
+      <div class="boot__ring" aria-hidden="true"></div>
+      <img class="boot__mark" src="/logo-fg.png" alt="" width="64" height="64" />
+    </div>
+  </div>
+
+  <div class="wrap" id="app">
     <header class="nav">
       <a class="nav__brand" href="/">
         <img src="/logo-fg.png" alt="" width="32" height="32" />
@@ -739,6 +797,7 @@
     let typeTimer = null
     let typeToken = 0
     let typedLine = ''
+    let pageReady = false
 
     function typeTitle(line, force) {
       const typeEl = document.getElementById('titleType')
@@ -746,31 +805,26 @@
       const lede = document.getElementById('titleLede')
       const h1 = document.getElementById('pageTitle')
       if (!typeEl || !caret || !h1) return
+      if (!pageReady && !force) return
 
       h1.setAttribute('aria-label', line)
-      if (!force && typedLine === line && typeEl.textContent === line) {
-        if (lede) lede.classList.add('is-on')
+      // Don't restart mid-type when apply() refreshes links/version.
+      if (!force && typedLine === line) {
+        if (typeEl.textContent === line && lede) lede.classList.add('is-on')
         return
       }
       typedLine = line
 
       clearTimeout(typeTimer)
       const token = ++typeToken
-      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
       if (lede) lede.classList.remove('is-on')
 
-      if (reduced) {
-        typeEl.textContent = line
-        caret.classList.add('is-done')
-        if (lede) lede.classList.add('is-on')
-        return
-      }
-
+      // Always letter-by-letter (Windows often sets prefers-reduced-motion).
       typeEl.textContent = ''
       caret.classList.remove('is-done')
       let i = 0
-      const pauseAt = line.indexOf(' ') // pause after first word
+      const pauseAt = line.indexOf(' ')
 
       const tick = () => {
         if (token !== typeToken) return
@@ -779,10 +833,10 @@
           const justPaused = pauseAt > 0 && i === pauseAt + 1
           i += 1
           const delay = i === 1
-            ? 320
+            ? 180
             : justPaused
-              ? 320
-              : 42 + Math.random() * 36
+              ? 280
+              : 55 + Math.random() * 40
           typeTimer = setTimeout(tick, delay)
           return
         }
@@ -790,9 +844,38 @@
           if (token !== typeToken) return
           caret.classList.add('is-done')
           if (lede) lede.classList.add('is-on')
-        }, 220)
+        }, 200)
       }
       tick()
+    }
+
+    function revealPage() {
+      const boot = document.getElementById('boot')
+      const app = document.getElementById('app')
+      pageReady = true
+      if (app) app.classList.add('is-ready')
+      if (boot) boot.classList.add('is-out')
+      typeTitle(COPY[lang].title, true)
+      setTimeout(() => {
+        if (boot && boot.parentNode) boot.remove()
+      }, 700)
+    }
+
+    function runBoot() {
+      const boot = document.getElementById('boot')
+      if (!boot) {
+        revealPage()
+        return
+      }
+      // Soft return visits: shorter boot, still shows loader once per tab session.
+      const key = 'arich_dl_boot'
+      let returning = false
+      try { returning = sessionStorage.getItem(key) === '1' } catch (_) {}
+      const wait = returning ? 420 : 1100
+      setTimeout(() => {
+        try { sessionStorage.setItem(key, '1') } catch (_) {}
+        revealPage()
+      }, wait)
     }
 
     function apply({ retype } = {}) {
@@ -805,7 +888,7 @@
         const key = el.getAttribute('data-i18n')
         if (t[key]) el.textContent = fill(t[key])
       })
-      typeTitle(t.title, !!retype)
+      if (pageReady) typeTitle(t.title, !!retype)
       document.getElementById('meta').textContent = fill(t.meta)
       document.getElementById('footVer').textContent = files.version
       document.querySelector('.skip-link').textContent = t.skip
@@ -853,6 +936,7 @@
     })
 
     apply()
+    runBoot()
 
     function pickWindows(assets) {
       const list = assets || []

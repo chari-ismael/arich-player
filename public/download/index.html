@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -634,6 +634,18 @@
       <img class="boot__mark" src="/logo-fg.png" alt="" width="64" height="64" />
     </div>
   </div>
+  <script>
+    /* Fail-open : si le script principal plante, on retire le loader. */
+    setTimeout(function () {
+      var boot = document.getElementById('boot')
+      var app = document.getElementById('app')
+      if (app) app.classList.add('is-ready')
+      if (boot) {
+        boot.classList.add('is-out')
+        setTimeout(function () { if (boot.parentNode) boot.remove() }, 700)
+      }
+    }, 2800)
+  </script>
 
   <div class="wrap" id="app">
     <header class="nav">
@@ -744,7 +756,7 @@
         nav_account: 'Compte',
         kicker: 'Application',
         lede: 'Android, Android TV et Windows.',
-        apk: 'Télécharger l'APK',
+        apk: "Télécharger l'APK",
         meta: '{v} · Android 8.0+ · Windows 10+',
         plat_android: 'Téléphone et tablette.',
         plat_tv: 'La même application, sur le grand écran.',
@@ -935,8 +947,13 @@
       b.addEventListener('click', () => setLang(b.dataset.lang))
     })
 
-    apply()
-    runBoot()
+    try {
+      apply()
+      runBoot()
+    } catch (err) {
+      console.error('[download]', err)
+      revealPage()
+    }
 
     function pickWindows(assets) {
       const list = assets || []

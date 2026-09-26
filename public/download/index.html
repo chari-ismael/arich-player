@@ -848,7 +848,9 @@
   <script>
     const PLAY = 'https://play.google.com/store/apps/details?id=com.arich.iptv'
     const APK_FALLBACK = 'https://github.com/chari-ismael/arich-player/releases/download/v3.0.28/ArichPlayer-v3.0.28.apk'
-    const WIN_FALLBACK = 'https://github.com/chari-ismael/arich-player/releases/download/v3.0.27/ArichPlayer-v3.0.27-Setup.exe'
+    const WIN_BETA_API = 'https://aynucieohuowgkwyftiy.supabase.co/functions/v1/windows-beta-download'
+    const SUPABASE_ANON =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bnVjaWVvaHVvd2drd3lmdGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTIxMDMsImV4cCI6MjA4Nzg2ODEwM30.H43CVcyzEuYBQfBIlkn16r5uk768isHr4DeLduo1ETk'
     const COPY = {
       fr: {
         title: 'Télécharger ARICH PLAYER',
@@ -908,15 +910,12 @@
       },
     }
 
-    const BETA_WIN_CODE = 'BETATESTORS10'
-    const BETA_WIN_KEY = 'arich_win_beta_ok'
-
     const files = {
       version: '3.0.28',
       size: '112 MB',
       apk: APK_FALLBACK,
-      windows: { url: WIN_FALLBACK, version: '3.0.27' },
-      windowsFromGithub: false,
+      // Pas d’URL Windows côté client tant que le code n’est pas validé serveur.
+      windows: { url: '', version: '' },
     }
 
     const params = new URLSearchParams(location.search)
@@ -932,6 +931,7 @@
     let typeToken = 0
     let typedLine = ''
     let pageReady = false
+    let winBusy = false
 
     function typeTitle(line, force) {
       const typeEl = document.getElementById('titleType')
@@ -942,7 +942,6 @@
       if (!pageReady && !force) return
 
       h1.setAttribute('aria-label', line)
-      // Don't restart mid-type when apply() refreshes links/version.
       if (!force && typedLine === line) {
         if (typeEl.textContent === line && lede) lede.classList.add('is-on')
         return
@@ -954,7 +953,6 @@
 
       if (lede) lede.classList.remove('is-on')
 
-      // Always letter-by-letter (Windows often sets prefers-reduced-motion).
       typeEl.textContent = ''
       caret.classList.remove('is-done')
       let i = 0
@@ -1001,7 +999,6 @@
         revealPage()
         return
       }
-      // Soft return visits: shorter boot, still shows loader once per tab session.
       const key = 'arich_dl_boot'
       let returning = false
       try { returning = sessionStorage.getItem(key) === '1' } catch (_) {}
@@ -1044,16 +1041,17 @@
       const winDl = document.getElementById('winDownload')
       const winPrimary = document.getElementById('winPrimary')
       const winSoon = document.getElementById('winSoon')
-      const hasWin = !!(files.windows && files.windows.url)
       ;[winDl, winPrimary].forEach((btn) => {
         if (!btn) return
-        btn.hidden = !hasWin
-        btn.setAttribute('aria-disabled', hasWin ? 'false' : 'true')
+        btn.hidden = false
+        btn.setAttribute('aria-disabled', 'false')
       })
-      if (winSoon) winSoon.hidden = hasWin
-      if (hasWin && files.windows.version) {
-        const plat = document.querySelector('#platWindows [data-i18n="plat_win"]')
-        if (plat) plat.textContent = t.plat_win + ' · ' + files.windows.version
+      if (winSoon) winSoon.hidden = true
+      const plat = document.querySelector('#platWindows [data-i18n="plat_win"]')
+      if (plat) {
+        plat.textContent = files.windows.version
+          ? t.plat_win + ' · ' + files.windows.version
+          : t.plat_win
       }
     }
 
@@ -1066,25 +1064,11 @@
       apply({ retype: true })
     }
 
-    function isWinUnlocked() {
-      try { return sessionStorage.getItem(BETA_WIN_KEY) === '1' } catch (_) { return false }
-    }
-
-    function unlockWin() {
-      try { sessionStorage.setItem(BETA_WIN_KEY, '1') } catch (_) {}
-    }
-
-    function startWinDownload() {
-      const url = files.windows && files.windows.url
-      if (!url) {
-        const err = document.getElementById('winGateErr')
-        if (err) err.textContent = COPY[lang].gate_missing
-        return false
-      }
+    function startWinDownload(url) {
+      if (!url) return false
       const a = document.createElement('a')
       a.href = url
       a.rel = 'noopener'
-      a.download = ''
       document.body.appendChild(a)
       a.click()
       a.remove()
@@ -1101,6 +1085,7 @@
       if (err) err.textContent = ''
       if (input) {
         input.value = ''
+        input.disabled = false
         setTimeout(() => input.focus(), 40)
       }
     }
@@ -1112,17 +1097,28 @@
       setTimeout(() => { gate.hidden = true }, 280)
     }
 
+    async function claimWindowsDownload(code) {
+      const res = await fetch(WIN_BETA_API, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: SUPABASE_ANON,
+          Authorization: 'Bearer ' + SUPABASE_ANON,
+        },
+        body: JSON.stringify({ code: String(code || '').trim() }),
+      })
+      let data = null
+      try { data = await res.json() } catch (_) {}
+      if (!res.ok || !data || !data.url) {
+        const msg = (data && data.error) || COPY[lang].gate_err
+        const err = new Error(msg)
+        err.status = res.status
+        throw err
+      }
+      return data
+    }
+
     function requestWinDownload() {
-      if (!(files.windows && files.windows.url)) {
-        openWinGate()
-        const err = document.getElementById('winGateErr')
-        if (err) err.textContent = COPY[lang].gate_missing
-        return
-      }
-      if (isWinUnlocked()) {
-        startWinDownload()
-        return
-      }
       openWinGate()
     }
 
@@ -1139,20 +1135,35 @@
 
     const gateForm = document.getElementById('winGateForm')
     if (gateForm) {
-      gateForm.addEventListener('submit', (e) => {
+      gateForm.addEventListener('submit', async (e) => {
         e.preventDefault()
+        if (winBusy) return
         const input = document.getElementById('winGateInput')
         const err = document.getElementById('winGateErr')
-        const code = String((input && input.value) || '').trim().toUpperCase()
-        if (code !== BETA_WIN_CODE) {
+        const code = String((input && input.value) || '').trim()
+        if (!code) {
           if (err) err.textContent = COPY[lang].gate_err
           if (input) input.focus()
           return
         }
-        unlockWin()
+        winBusy = true
+        if (input) input.disabled = true
         if (err) err.textContent = ''
-        closeWinGate()
-        startWinDownload()
+        try {
+          const data = await claimWindowsDownload(code)
+          files.windows = { url: '', version: data.version || '' }
+          apply()
+          closeWinGate()
+          startWinDownload(data.url)
+        } catch (ex) {
+          if (err) err.textContent = (ex && ex.message) || COPY[lang].gate_err
+          if (input) {
+            input.disabled = false
+            input.focus()
+          }
+        } finally {
+          winBusy = false
+        }
       })
     }
     const gateClose = document.getElementById('winGateClose')
@@ -1175,28 +1186,9 @@
       revealPage()
     }
 
-    function pickWindows(assets) {
-      const list = assets || []
-      return list.find((a) => /\.(exe|msi|msix)$/i.test(a.name) && /setup|windows/i.test(a.name))
-        || list.find((a) => /\.(exe|msi|msix)$/i.test(a.name))
-    }
-
-    function setWindowsFrom(release) {
-      const asset = pickWindows(release && release.assets)
-      if (!asset || !asset.browser_download_url) return false
-      files.windows = {
-        url: asset.browser_download_url,
-        version: String(release.tag_name || '').replace(/^v/i, '') || '',
-      }
-      files.windowsFromGithub = true
-      return true
-    }
-
-    // Même logique que l’update sheet : dernière release avec APK +
-    // dernière release Windows (souvent plus ancienne que latest Android).
-    const GH_HEADERS = { Accept: 'application/vnd.github+json' }
-    fetch('https://api.github.com/repos/chari-ismael/arich-player/releases?per_page=30', {
-      headers: GH_HEADERS,
+    // APK only — jamais d’URL Windows dans le HTML / JS public.
+    fetch('https://api.github.com/repos/chari-ismael/arich-player/releases?per_page=15', {
+      headers: { Accept: 'application/vnd.github+json' },
     }).then((r) => r.ok ? r.json() : null).then((list) => {
       if (!Array.isArray(list) || !list.length) return
       const latest = list[0]
@@ -1207,10 +1199,6 @@
       if (apk && apk.browser_download_url) {
         files.apk = apk.browser_download_url
         if (apk.size) files.size = Math.round(apk.size / (1024 * 1024)) + ' MB'
-      }
-      // Première release (plus récente) qui a un installateur Windows.
-      for (const rel of list) {
-        if (setWindowsFrom(rel)) break
       }
       apply()
     }).catch(() => {})

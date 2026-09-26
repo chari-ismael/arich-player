@@ -823,10 +823,14 @@
       <div class="gate__card">
         <p class="gate__kicker" data-i18n="gate_kicker">Windows · bêta</p>
         <h2 class="gate__title" id="winGateTitle" data-i18n="gate_title">Code testeurs</h2>
-        <p class="gate__lede" data-i18n="gate_lede">L’installateur Windows est en bêta. Entre le code pour télécharger la dernière version.</p>
-        <form class="gate__row" id="winGateForm" autocomplete="off">
-          <input class="gate__input" id="winGateInput" type="text" name="beta_code" inputmode="text" autocomplete="off" spellcheck="false" maxlength="40" data-i18n-placeholder="gate_ph" placeholder="Code bêta" aria-label="Code bêta" />
-          <button type="submit" class="btn btn--linear btn--sm" data-i18n="gate_go">OK</button>
+        <p class="gate__lede" data-i18n="gate_lede">L’installateur Windows est en bêta. Entre ton email et le code pour télécharger.</p>
+        <form id="winGateForm" autocomplete="off">
+          <input class="gate__input" id="winGateEmail" type="email" name="email" inputmode="email" autocomplete="email" maxlength="160" required data-i18n-placeholder="gate_email_ph" placeholder="Email" aria-label="Email" style="width:100%;margin-bottom:8px;" />
+          <input class="gate__input" id="winGateName" type="text" name="name" autocomplete="nickname" maxlength="80" data-i18n-placeholder="gate_name_ph" placeholder="Prénom / pseudo (optionnel)" aria-label="Prénom" style="width:100%;margin-bottom:8px;" />
+          <div class="gate__row">
+            <input class="gate__input" id="winGateInput" type="text" name="beta_code" inputmode="text" autocomplete="off" spellcheck="false" maxlength="40" required data-i18n-placeholder="gate_ph" placeholder="Code bêta" aria-label="Code bêta" />
+            <button type="submit" class="btn btn--linear btn--sm" data-i18n="gate_go">OK</button>
+          </div>
         </form>
         <p class="gate__err" id="winGateErr" aria-live="polite"></p>
         <button type="button" class="gate__close" id="winGateClose" data-i18n="gate_close">Annuler</button>
@@ -873,11 +877,14 @@
         skip: 'Aller au contenu',
         gate_kicker: 'Windows · bêta',
         gate_title: 'Code testeurs',
-        gate_lede: "L'installateur Windows est en bêta. Entre le code pour télécharger la dernière version.",
+        gate_lede: "L'installateur Windows est en bêta. Entre ton email et le code pour télécharger.",
         gate_ph: 'Code bêta',
+        gate_email_ph: 'Email',
+        gate_name_ph: 'Prénom / pseudo (optionnel)',
         gate_go: 'OK',
         gate_close: 'Annuler',
         gate_err: 'Code incorrect.',
+        gate_email_err: 'Email requis.',
         gate_missing: 'Installateur Windows introuvable pour le moment.',
       },
       en: {
@@ -901,11 +908,14 @@
         skip: 'Skip to content',
         gate_kicker: 'Windows · beta',
         gate_title: 'Tester code',
-        gate_lede: 'The Windows installer is in beta. Enter the code to download the latest build.',
+        gate_lede: 'The Windows installer is in beta. Enter your email and the code to download.',
         gate_ph: 'Beta code',
+        gate_email_ph: 'Email',
+        gate_name_ph: 'Name / handle (optional)',
         gate_go: 'OK',
         gate_close: 'Cancel',
         gate_err: 'Incorrect code.',
+        gate_email_err: 'Email required.',
         gate_missing: 'Windows installer not available right now.',
       },
     }
@@ -1078,16 +1088,26 @@
     function openWinGate() {
       const gate = document.getElementById('winGate')
       const input = document.getElementById('winGateInput')
+      const emailEl = document.getElementById('winGateEmail')
+      const nameEl = document.getElementById('winGateName')
       const err = document.getElementById('winGateErr')
       if (!gate) return
       gate.hidden = false
       gate.classList.add('is-on')
       if (err) err.textContent = ''
-      if (input) {
-        input.value = ''
-        input.disabled = false
-        setTimeout(() => input.focus(), 40)
-      }
+      ;[input, emailEl, nameEl].forEach((el) => {
+        if (!el) return
+        el.disabled = false
+        if (el === input || el === nameEl) el.value = ''
+      })
+      try {
+        const saved = localStorage.getItem('arich_win_beta_email')
+        if (saved && emailEl && !emailEl.value) emailEl.value = saved
+      } catch (_) {}
+      setTimeout(() => {
+        if (emailEl && !emailEl.value) emailEl.focus()
+        else if (input) input.focus()
+      }, 40)
     }
 
     function closeWinGate() {
@@ -1097,15 +1117,30 @@
       setTimeout(() => { gate.hidden = true }, 280)
     }
 
-    async function claimWindowsDownload(code) {
+    async function claimWindowsDownload({ code, email, name }) {
+      const headers = {
+        'Content-Type': 'application/json',
+        apikey: SUPABASE_ANON,
+        Authorization: 'Bearer ' + SUPABASE_ANON,
+      }
+      // Si session ARICH présente, on la joint pour lier le compte.
+      try {
+        const raw = localStorage.getItem('sb-' + 'aynucieohuowgkwyftiy' + '-auth-token')
+          || Object.keys(localStorage).find((k) => k.includes('auth-token') && k.includes('supabase'))
+        if (raw) {
+          const parsed = JSON.parse(localStorage.getItem(raw) || localStorage.getItem('sb-aynucieohuowgkwyftiy-auth-token') || 'null')
+          const access = parsed && (parsed.access_token || (parsed.currentSession && parsed.currentSession.access_token))
+          if (access) headers.Authorization = 'Bearer ' + access
+        }
+      } catch (_) {}
       const res = await fetch(WIN_BETA_API, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          apikey: SUPABASE_ANON,
-          Authorization: 'Bearer ' + SUPABASE_ANON,
-        },
-        body: JSON.stringify({ code: String(code || '').trim() }),
+        headers,
+        body: JSON.stringify({
+          code: String(code || '').trim(),
+          email: String(email || '').trim(),
+          name: String(name || '').trim(),
+        }),
       })
       let data = null
       try { data = await res.json() } catch (_) {}
@@ -1139,28 +1174,36 @@
         e.preventDefault()
         if (winBusy) return
         const input = document.getElementById('winGateInput')
+        const emailEl = document.getElementById('winGateEmail')
+        const nameEl = document.getElementById('winGateName')
         const err = document.getElementById('winGateErr')
         const code = String((input && input.value) || '').trim()
+        const email = String((emailEl && emailEl.value) || '').trim()
+        const name = String((nameEl && nameEl.value) || '').trim()
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          if (err) err.textContent = COPY[lang].gate_email_err
+          if (emailEl) emailEl.focus()
+          return
+        }
         if (!code) {
           if (err) err.textContent = COPY[lang].gate_err
           if (input) input.focus()
           return
         }
         winBusy = true
-        if (input) input.disabled = true
+        ;[input, emailEl, nameEl].forEach((el) => { if (el) el.disabled = true })
         if (err) err.textContent = ''
         try {
-          const data = await claimWindowsDownload(code)
+          const data = await claimWindowsDownload({ code, email, name })
+          try { localStorage.setItem('arich_win_beta_email', email) } catch (_) {}
           files.windows = { url: '', version: data.version || '' }
           apply()
           closeWinGate()
           startWinDownload(data.url)
         } catch (ex) {
           if (err) err.textContent = (ex && ex.message) || COPY[lang].gate_err
-          if (input) {
-            input.disabled = false
-            input.focus()
-          }
+          ;[input, emailEl, nameEl].forEach((el) => { if (el) el.disabled = false })
+          if (input) input.focus()
         } finally {
           winBusy = false
         }

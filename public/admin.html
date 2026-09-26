@@ -421,7 +421,7 @@ textarea{resize:vertical;min-height:80px}
   </button>
   <button class="s-item" id="sl-promos" onclick="show('promos')">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-    <span class="label">Codes promo</span>
+    <span class="label">Codes Redeem</span>
   </button>
   <div class="s-div"></div>
   <div class="s-group-label">Communication</div>
@@ -451,6 +451,10 @@ textarea{resize:vertical;min-height:80px}
   <button class="s-item" id="sl-broadcast" onclick="show('broadcast')">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/></svg>
     <span class="label">Broadcast</span>
+  </button>
+  <button class="s-item" id="sl-winbeta" onclick="show('winbeta')">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+    <span class="label">Windows bêta</span>
   </button>
   <button class="s-item" id="sl-logs" onclick="show('logs')">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -803,10 +807,10 @@ textarea{resize:vertical;min-height:80px}
   </div>
 </section>
 
-<!-- ══════ CODES PROMO ══════ -->
+<!-- ══════ CODES REDEEM ══════ -->
 <section class="sec" id="sec-promos">
   <div class="ph">
-    <div class="ph-left"><h1>Codes promo 🎟️</h1><p>Créez et gérez les réductions.</p></div>
+    <div class="ph-left"><h1>Codes Redeem</h1><p>Promo % pour un achat Arich+, ou accès gratuit temporaire / à vie. Saisissables dans l’app (Windows, tel, TV).</p></div>
     <div class="ph-actions">
       <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-promo')">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -817,7 +821,7 @@ textarea{resize:vertical;min-height:80px}
   <div id="promos-loading" class="loading"><div class="big-spin"></div> Chargement…</div>
   <div id="promos-wrap" style="display:none;">
     <div style="display:flex;flex-direction:column;gap:11px;" id="promos-list"></div>
-    <div class="empty" id="promos-empty" style="display:none;margin-top:20px;"><span class="empty-icon">🎟️</span><h3>Aucun code promo</h3><p>Créez votre premier code de réduction.</p></div>
+    <div class="empty" id="promos-empty" style="display:none;margin-top:20px;"><span class="empty-icon">🎟️</span><h3>Aucun code</h3><p>Créez un code promo ou un accès gratuit.</p></div>
   </div>
 </section>
 
@@ -1026,6 +1030,47 @@ textarea{resize:vertical;min-height:80px}
 </section>
 
 <!-- ══════ LOGS ══════ -->
+<!-- ══════ WINDOWS BETA ══════ -->
+<section class="sec" id="sec-winbeta">
+  <div class="ph"><div class="ph-left"><h1>Windows bêta 🖥️</h1><p>Qui a téléchargé l’installateur Windows (code testeurs).</p></div>
+    <div class="ph-actions">
+      <button class="btn btn-ghost btn-sm" onclick="winBetaLoaded=false;loadWinBeta()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Rafraîchir
+      </button>
+    </div>
+  </div>
+  <div id="winbeta-loading" class="loading"><div class="big-spin"></div> Chargement…</div>
+  <div id="winbeta-wrap" style="display:none">
+    <div class="card" style="margin-bottom:14px;">
+      <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:center;">
+        <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;">Téléchargements</div><div style="font-size:22px;font-weight:600;" id="winbeta-count">0</div></div>
+        <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;">Emails uniques</div><div style="font-size:22px;font-weight:600;" id="winbeta-unique">0</div></div>
+      </div>
+    </div>
+    <div class="toolbar" style="margin-bottom:10px;">
+      <input type="text" id="winbeta-search" placeholder="Email, nom, IP, version…" oninput="filterWinBeta()" style="max-width:280px;">
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Quand</th>
+            <th>Email</th>
+            <th>Nom</th>
+            <th>Version</th>
+            <th>IP</th>
+            <th>Compte</th>
+          </tr>
+        </thead>
+        <tbody id="winbeta-tbody"></tbody>
+      </table>
+      <div id="winbeta-empty" class="empty" style="display:none;">Aucun téléchargement pour l’instant.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ LOGS ══════ -->
 <section class="sec" id="sec-logs">
   <div class="ph"><div class="ph-left"><h1>Logs admin 📄</h1><p>Toutes les actions effectuées sur le panel.</p></div>
     <div class="ph-actions">
@@ -1166,16 +1211,25 @@ textarea{resize:vertical;min-height:80px}
   </div>
 </div>
 
-<!-- ADD PROMO -->
+<!-- ADD REDEEM CODE -->
 <div class="modal-bd" id="modal-add-promo">
   <div class="modal">
-    <div class="modal-head"><div class="modal-title">🎟️ Nouveau code promo</div><button class="modal-close" onclick="closeModal('modal-add-promo')">✕</button></div>
+    <div class="modal-head"><div class="modal-title">Nouveau code Redeem</div><button class="modal-close" onclick="closeModal('modal-add-promo')">✕</button></div>
     <div class="form-grid">
-      <div class="field"><label>Code *</label><input type="text" id="promo-code-input" placeholder="ARICH50" style="text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()"></div>
-      <div class="field"><label>Réduction (%)</label><input type="number" id="promo-discount" placeholder="50" min="1" max="100"></div>
-      <div class="field"><label>Utilisations max</label><input type="number" id="promo-max-uses" placeholder="100" min="1"></div>
+      <div class="field"><label>Code *</label><input type="text" id="promo-code-input" placeholder="ARICH100" style="text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()"></div>
+      <div class="field"><label>Type *</label>
+        <select id="promo-kind" onchange="onPromoKindChange()">
+          <option value="discount">Promo % (checkout Arich+)</option>
+          <option value="plus_days">Arich+ gratuit (jours)</option>
+          <option value="trial_days">Essai gratuit (jours)</option>
+          <option value="lifetime">Arich+ à vie (100%)</option>
+        </select>
+      </div>
+      <div class="field" id="promo-discount-wrap"><label>Réduction (%)</label><input type="number" id="promo-discount" placeholder="50" min="1" max="100" value="50"></div>
+      <div class="field" id="promo-days-wrap" style="display:none;"><label>Jours offerts</label><input type="number" id="promo-days" placeholder="30" min="1" max="3650" value="30"></div>
+      <div class="field"><label>Utilisations max</label><input type="number" id="promo-max-uses" placeholder="1" min="1" value="1"></div>
       <div class="field"><label>Expiration</label><input type="date" id="promo-expiry"></div>
-      <div class="field full"><label>Description</label><input type="text" id="promo-desc" placeholder="Promo de lancement…"></div>
+      <div class="field full"><label>Notes</label><input type="text" id="promo-desc" placeholder="Influenceur X · test presse…"></div>
     </div>
     <div id="promo-msg" class="msg" style="margin-top:10px;"></div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modal-add-promo')">Annuler</button><button class="btn btn-primary" id="btn-add-promo" onclick="addPromo()"><span class="spin"></span><span class="blbl">Créer le code</span></button></div>
@@ -1219,7 +1273,9 @@ let currentDevice = null, currentLicId = null;
 let devFilter = 'all', licFilter = 'all', plFilter = 'all', payFilter = 'all';
 let devicesLoaded=false, licLoaded=false, plLoaded=false, promosLoaded=false;
 let logsLoaded=false, dashLoaded=false, analyticsLoaded=false, revenueLoaded=false;
+let winBetaLoaded=false;
 let allLogs = [];
+let allWinBeta = [];
 
 function updateClock() {
   const el = document.getElementById('nav-time');
@@ -1308,7 +1364,7 @@ window.addEventListener('DOMContentLoaded', () => {
 function toggleSB() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sov').classList.toggle('show'); }
 function closeSB()  { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sov').classList.remove('show'); }
 
-const SECTIONS = ['dashboard','revenue','analytics','devices','licenses','playlists','promos','notifs','emails','config','flags','killswitch','broadcast','logs'];
+const SECTIONS = ['dashboard','revenue','analytics','devices','licenses','playlists','promos','notifs','emails','config','flags','killswitch','broadcast','winbeta','logs'];
 const ON_LOAD = {
   dashboard: loadDashboard,
   revenue:   loadRevenue,
@@ -1323,6 +1379,7 @@ const ON_LOAD = {
   flags:     loadFlags,
   killswitch:loadKillSwitch,
   broadcast: loadBroadcast,
+  winbeta:   loadWinBeta,
   logs:      loadLogs,
 };
 
@@ -2031,17 +2088,33 @@ async function adminDeletePL(id) {
 }
 
 /* ════════════════════════════════════════
-   PROMOS
+   REDEEM CODES
 ════════════════════════════════════════ */
+function onPromoKindChange() {
+  const kind = document.getElementById('promo-kind')?.value || 'discount';
+  const disc = document.getElementById('promo-discount-wrap');
+  const days = document.getElementById('promo-days-wrap');
+  if (disc) disc.style.display = kind === 'discount' ? '' : 'none';
+  if (days) days.style.display = (kind === 'plus_days' || kind === 'trial_days') ? '' : 'none';
+}
+
 async function loadPromos() {
   if (promosLoaded) return; promosLoaded = true;
   document.getElementById('promos-loading').style.display = 'flex';
   document.getElementById('promos-wrap').style.display = 'none';
-  const { data, error } = await sb.from('promo_codes').select('*').order('created_at',{ascending:false});
+  const { data, error } = await sb.from('redeem_codes').select('*').order('created_at',{ascending:false});
   document.getElementById('promos-loading').style.display = 'none';
   document.getElementById('promos-wrap').style.display = 'block';
-  if (error||!data?.length) { document.getElementById('promos-empty').style.display='block'; return; }
+  if (error||!data?.length) { document.getElementById('promos-empty').style.display='block'; if (error) toast('❌ '+error.message); return; }
   renderPromos(data);
+}
+
+function redeemKindLabel(p) {
+  if (p.kind === 'discount') return (p.discount_percent||0) + '% checkout';
+  if (p.kind === 'lifetime') return 'Arich+ à vie';
+  if (p.kind === 'plus_days') return 'Arich+ ' + (p.grant_days||0) + ' j';
+  if (p.kind === 'trial_days') return 'Essai ' + (p.grant_days||0) + ' j';
+  return p.kind || '—';
 }
 
 function renderPromos(rows) {
@@ -2052,19 +2125,21 @@ function renderPromos(rows) {
   rows.forEach(p=>{
     const exp = p.expires_at?new Date(p.expires_at).toLocaleDateString('fr-FR'):'Sans limite';
     const isExp = p.expires_at&&new Date(p.expires_at)<new Date();
+    const active = p.is_active !== false && !isExp;
     el.innerHTML+=`
       <div class="promo-card">
         <div style="display:flex;align-items:center;gap:14px;flex:1;flex-wrap:wrap;">
           <div class="promo-code">${esc(p.code)}</div>
           <div>
-            <div style="font-size:13px;font-weight:600;">${p.discount_percent||p.discount||0}% de réduction</div>
-            <div style="font-size:11.5px;color:var(--muted);margin-top:2px;">${esc(p.description||'')} · ${p.uses_count||0}/${p.max_uses||'∞'} utilisations</div>
+            <div style="font-size:13px;font-weight:600;">${esc(redeemKindLabel(p))}</div>
+            <div style="font-size:11.5px;color:var(--muted);margin-top:2px;">${esc(p.notes||'')} · ${p.redemptions_count||0}/${p.max_redemptions??'∞'} utilisations</div>
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-          <span class="badge ${isExp?'b-red':'b-green'}">${isExp?'Expiré':'Actif'}</span>
+          <span class="badge ${active?'b-green':'b-red'}">${active?'Actif':(isExp?'Expiré':'Off')}</span>
           <span style="font-size:11px;color:var(--muted);">Expire ${exp}</span>
           <button class="btn btn-ghost btn-xs" onclick="copyText('${esc(p.code)}')">📋</button>
+          <button class="btn btn-ghost btn-xs" onclick="toggleRedeem('${p.id}', ${p.is_active!==false})">${p.is_active!==false?'Pause':'ON'}</button>
           <button class="btn btn-danger btn-xs" onclick="deletePromo('${p.id}')">🗑️</button>
         </div>
       </div>`;
@@ -2072,28 +2147,48 @@ function renderPromos(rows) {
 }
 
 async function addPromo() {
-  const code   = document.getElementById('promo-code-input').value.trim();
+  const code   = (document.getElementById('promo-code-input').value||'').trim().toUpperCase();
+  const kind   = document.getElementById('promo-kind').value;
   const disc   = parseInt(document.getElementById('promo-discount').value)||0;
-  const maxU   = parseInt(document.getElementById('promo-max-uses').value)||null;
+  const days   = parseInt(document.getElementById('promo-days').value)||0;
+  const maxU   = parseInt(document.getElementById('promo-max-uses').value);
   const expiry = document.getElementById('promo-expiry').value;
-  const desc   = document.getElementById('promo-desc').value.trim();
-  if (!code||!disc) { showModalMsg('promo-msg','Code et réduction obligatoires'); return; }
+  const notes  = document.getElementById('promo-desc').value.trim();
+  if (!code) { showModalMsg('promo-msg','Code obligatoire'); return; }
+  if (kind === 'discount' && (!disc || disc < 1 || disc > 100)) { showModalMsg('promo-msg','Réduction 1–100%'); return; }
+  if ((kind === 'plus_days' || kind === 'trial_days') && days < 1) { showModalMsg('promo-msg','Nombre de jours requis'); return; }
   setLoading('btn-add-promo', true);
-  const row = { code, discount_percent:disc, description:desc, uses_count:0, is_active:true };
-  if (maxU) row.max_uses = maxU;
+  const row = {
+    code,
+    kind,
+    notes: notes || null,
+    redemptions_count: 0,
+    is_active: true,
+    discount_percent: kind === 'discount' ? disc : null,
+    grant_days: (kind === 'plus_days' || kind === 'trial_days') ? days : null,
+  };
+  if (!isNaN(maxU) && maxU > 0) row.max_redemptions = maxU;
+  else row.max_redemptions = 1;
   if (expiry) row.expires_at = new Date(expiry).toISOString();
-  const { error } = await sb.from('promo_codes').insert([row]);
+  const { error } = await sb.from('redeem_codes').insert([row]);
   setLoading('btn-add-promo', false);
   if (error) { showModalMsg('promo-msg',error.message); return; }
-  await logAction('create_promo','—',{code,discount:disc});
-  toast('🎟️ Code promo créé !'); closeModal('modal-add-promo'); promosLoaded=false; loadPromos();
+  await logAction('create_redeem','—',{code,kind});
+  toast('Code Redeem créé'); closeModal('modal-add-promo'); promosLoaded=false; loadPromos();
+}
+
+async function toggleRedeem(id, currentlyActive) {
+  const { error } = await sb.from('redeem_codes').update({ is_active: !currentlyActive }).eq('id', id);
+  if (error) { toast('❌ '+error.message); return; }
+  toast(currentlyActive ? 'Code en pause' : 'Code réactivé');
+  promosLoaded=false; loadPromos();
 }
 
 async function deletePromo(id) {
-  if (!confirm('Supprimer ce code promo ?')) return;
-  const { error } = await sb.from('promo_codes').delete().eq('id', id);
+  if (!confirm('Supprimer ce code ?')) return;
+  const { error } = await sb.from('redeem_codes').delete().eq('id', id);
   if (error) { toast('❌ '+error.message); return; }
-  toast('🗑️ Code supprimé'); promosLoaded=false; loadPromos();
+  toast('Code supprimé'); promosLoaded=false; loadPromos();
 }
 
 /* ════════════════════════════════════════
@@ -2363,6 +2458,59 @@ async function saveFlags() {
   }
   await logAction('save_flags','—');
   toast('🚩 Feature flags sauvegardés');
+}
+
+/* ════════════════════════════════════════
+   WINDOWS BETA DOWNLOADS
+════════════════════════════════════════ */
+async function loadWinBeta() {
+  if (winBetaLoaded) return; winBetaLoaded = true;
+  document.getElementById('winbeta-loading').style.display = 'flex';
+  document.getElementById('winbeta-wrap').style.display = 'none';
+  const { data, error } = await sb.from('windows_beta_downloads')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(500);
+  document.getElementById('winbeta-loading').style.display = 'none';
+  document.getElementById('winbeta-wrap').style.display = 'block';
+  if (error) { toast('❌ '+error.message); winBetaLoaded=false; return; }
+  allWinBeta = data || [];
+  document.getElementById('winbeta-count').textContent = String(allWinBeta.length);
+  document.getElementById('winbeta-unique').textContent = String(new Set(allWinBeta.map(r => (r.email||'').toLowerCase())).size);
+  renderWinBeta(allWinBeta);
+}
+
+function filterWinBeta() {
+  const q = (document.getElementById('winbeta-search')?.value || '').toLowerCase();
+  const rows = q
+    ? allWinBeta.filter(r =>
+        (r.email||'').toLowerCase().includes(q) ||
+        (r.name||'').toLowerCase().includes(q) ||
+        (r.ip||'').toLowerCase().includes(q) ||
+        (r.version||'').toLowerCase().includes(q) ||
+        (r.auth_email||'').toLowerCase().includes(q))
+    : allWinBeta;
+  renderWinBeta(rows);
+}
+
+function renderWinBeta(rows) {
+  const tbody = document.getElementById('winbeta-tbody');
+  const empty = document.getElementById('winbeta-empty');
+  tbody.innerHTML = '';
+  if (!rows.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  rows.forEach(r => {
+    const date = r.created_at ? new Date(r.created_at).toLocaleString('fr-FR') : '—';
+    const acct = r.auth_email || (r.auth_user_id ? r.auth_user_id.slice(0,8)+'…' : '—');
+    tbody.innerHTML += `<tr>
+      <td style="font-size:11.5px;color:var(--muted);white-space:nowrap;">${date}</td>
+      <td class="td-main">${esc(r.email||'—')}</td>
+      <td>${esc(r.name||'—')}</td>
+      <td><span class="badge b-purple">${esc(r.version||'—')}</span></td>
+      <td class="td-mono" style="font-size:11px;">${esc(r.ip||'—')}</td>
+      <td style="font-size:11.5px;color:var(--sub);">${esc(acct)}</td>
+    </tr>`;
+  });
 }
 
 /* ════════════════════════════════════════
